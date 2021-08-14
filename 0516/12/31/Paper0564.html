@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Tensor-based Multi-index Representation Learning for Major Depression Disorder Detection with Resting-state fMRI | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Tensor-based Multi-index Representation Learning for Major Depression Disorder Detection with Resting-state fMRI" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Dongren Yao, Erkun Yang, Hao Guan, Jing Sui, Zhizhong Zhang, Mingxia Liu Abstract Major depressive disorder (MDD) is a common and costly mental illness whose pathophysiology is difficult to clarify. Resting-state functional MRI (rs-fMRI) provides a non-invasive solution for the study of functional brain network abnormalities in MDD patients. Existing studies have shown that multiple indexes derived from rs-fMRI, such as fractional amplitude of low-frequency fluctuations (fALFF) and voxel-mirrored homotopic connectivity (VMHC) and degree centrality (DC), help depict functional mechanisms of brain disorders from different perspectives. However, previous methods generally treat these indexes independently, without considering their potentially complementary relationship. Moreover, it is usually very challenging to effectively fuse multi-index representations for disease analysis, due to the significant heterogeneity among indexes in the feature distribution. In this paper, we propose a tensor-based multi-index representation learning (TMRL) framework for fMRI-based MDD detection. In TMRL, we first generate multi-index representations (i.e., fALFF, VMHC and DC) for each subject, followed by patch selection via group comparison for each index. We further develop a tensor-based multi-task learning model (with a tensor-based regularizer) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results on 533 subjects with rs-fMRI data demonstrate that the TMRL outperforms several state-of-the-art methods in MDD identification. Link to paper https://doi.org/10.1007/978-3-030-87240-3_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a multi-task learning model for detection of major depressive disorder using functional MRI data. The model employs a novel regularizer based on the recently proposed tensor nuclear norm (which measures the rank of a block circulant matrix constructed by all projection matrices) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results demonstrate that the proposal outperforms several state-of-the-art methods in MDD identification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of the recently proposed tensor nuclear norm for regularizing the multi-task learning model is novel and interesting. Overall, the paper is well written and the method looks sound. The code will be freely released to the public via GitHub. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be freely released to the public via GitHub. Still, the method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4) which raises concerns whether the algorithm was correctly implemented and whether the experimental results are correctly interpreted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Comments: In the formulated problems (1) and (4), the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is not defined. Since the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) used in the paper is new (not the commonly used ones that are defined based on the Tucker or CP ranks), it needs to be defined/explained. However, the tensor nuclear norm is neither defined nor adequately explained. It does not even cite the original paper that proposed this norm: [a] Lu, Canyi, et al. “Tensor robust principal component analysis with a new tensor nuclear norm.” IEEE transactions on pattern analysis and machine intelligence 42.4 (2019): 925-938. In particular, the description ‘‘The high-order tensor low-rank norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) measures the rank of a block circulant matrix constructed by all projection matrices, where \(\|\cdot\|_{\circledast}\) is the tensor nuclear norm’’ is not very clear to me. For example, what is a block circulant matrix defined exactly? It would be clearer if it is described e.g., as The \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is the tensor nuclear norm of \(\mathbf{\mathcal{U}}\) defined in [Lu, Canyi, et al., 2019]. The tensor nuclear norm of \(\mathbf{\mathcal{U}}\) can be thought of as a convex relaxation/surrogate of the rank of the block circulant matrix \mathop\left(\mathbf{\mathcal{U}}\right) \in \mathbb{R}^{dV \times CV} of \(\mathbf{\mathcal{U}}\) [Lu, Canyi, et al., 2019]: \begin{equation*} \mathop\left(\bm{\mathcal{U}}\right) = \begin{bmatrix} \mathbf{U}^{(1)} &amp; \mathbf{U}^{(V)} &amp; \dots &amp; \mathbf{U}^{(2)} \\ \mathbf{U}^{(2)} &amp; \mathbf{U}^{(1)} &amp; \dots &amp; \mathbf{U}^{(3)} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \mathbf{U}^{(V)} &amp; \mathbf{U}^{(V-1)} &amp; \dots &amp; \mathbf{U}^{(1)} \end{bmatrix}. \end{equation*} The algorithm to solve the formulated problem (4) is not clearly/correctly presented. First, the presented algorithm is the alternating direction method of multipliers (ADMM) [13], NOT the Augmented Lagrange Multiplier (ALM) [12]. Please note that the presented algorithm solves an equivalent problem (by introducing an auxiliary tensor variable \(\mathbf{\mathcal{G}}\)): \begin{equation} \begin{aligned} \min_{\mathbf{\tilde{U}},\bm{\mathcal{G}}} \quad &amp; \|\mathbf{\tilde{U}}^{ T} \mathbf{\tilde{X}} - \mathbf{\tilde{Y}}\|_F^2 + \alpha \|\bm{\mathcal{G}}\|_{\circledast} + \beta \mathop\left(\mathbf{\tilde{U}}^{T} \mathbf{M} \mathbf{\tilde{U}}\right) \\ \textrm{s.t.} \quad &amp; \bm{\mathcal{U}} = \bm{\mathcal{G}} \end{aligned} \end{equation} and to solve this problem it updates \(\mathbf{\mathcal{U}}\) and \(\mathbf{\mathcal{G}}\) in an alternating or sequential fashion, instead of updating them jointly. Second, the presented algorithm is not complete since it does not mention how the dual variable \(\mathbf{\mathcal{W}}\) is updated. Third, the closed-form solution of problem (6) should be provided. Putting all together, the ADMM algorithm consists of the iterations: \begin{algorithmic} \STATE Update \bm{\mathcal{U}} via solving problem (6): \[\mathbf{\tilde{U}}^{k+1} = \left(2 \mathbf{\tilde{X}}\mathbf{\tilde{X}}^{T}+2\beta\mathbf{M}+ \rho \mathbf{I}_{dV}\right)^{-1} \left(2 \mathbf{\tilde{X}} \mathbf{\tilde{Y}}^{T} - \mathbf{\tilde{W}}^k + \rho \mathbf{\tilde{G}}^k\right).\] \STATE Update $\bm{\mathcal{G}}$ according to Theorem 1. \STATE Update the dual variable $\bm{\mathcal{W}}$: \begin{equation} \bm{\mathcal{W}}^{k+1} = \bm{\mathcal{W}}^k + \rho \left(\bm{\mathcal{U}}^{k+1} - \bm{\mathcal{G}}^{k+1}\right). \end{equation} \end{algorithmic} In Section 2.2, “Prediction with Metric Learning”, why is the latent representation of a new test subject \(\mathbf{z} = [\mathbf{z}^{(1)}; \mathbf{z}^{(1)}; \dots; \mathbf{z}^{(V)}] \in \mathbb{R}^{dV}\) defined as \begin{equation*} \mathbf{\hat{z}} = \begin{bmatrix} \mathbf{U}^{(1)}\\ \mathbf{U}^{(2)}\\ \vdots\\ \mathbf{U}^{(V)} \end{bmatrix}^{ T} \begin{bmatrix} \mathbf{z}^{(1)}\\ \mathbf{z}^{(2)}\\ \vdots\\ \mathbf{z}^{(V)} \end{bmatrix} = \sum_{v=1}^V {\mathbf{U}^{(v)}}^{ T} \mathbf{z}^{(v)} \in \mathbb{R}^C, \end{equation*} not as \begin{equation*} \mathbf{\hat{z}} = \begin{bmatrix} {\mathbf{U}^{(1)}}^{ T}\mathbf{z}^{(1)}\\ {\mathbf{U}^{(2)}}^{ T}\mathbf{z}^{(2)}\\ \vdots\\ {\mathbf{U}^{(V)}}^{ T}\mathbf{z}^{(V)} \end{bmatrix} \in \mathbb{R}^{CV} \end{equation*} ? It seems that the latter representation is more powerful since it has a much higher dimension ($C*V \gg C$). In Supplementary Materials Theorem 2, “the optimization problem in Eq. (5)” should be “the optimization problem in Eq. (4)”. Moreover, can you briefly show why the iterates of the primal variables \(\mathbf{\mathcal{G}}, \mathbf{\tilde{U}}\) converge to an optimal solution? Please note that according to reference [13] (subsection 3.2.1), the objective function and dual variables of the ADMM iterates converge but the primal variables need not. Other mistakes/typos: In the second line below Eq. (1), “Bregman Discrepancy” should be “Bregman divergence”. For consistency, it needs to change the \(\sum_{i,j=1 (i\neq j)}^V\) in Eq. (1) to \(\sum_{1 \leq i &lt; j \leq V}\), or alternatively, insert a scaling constant of 2 before the third term in Eq. (4). Section 2.2, “Prediction with Metric Learning”: The \(\mathbf{U}\) should be written as \(\mathbf{\tilde{U}}\) (which is defined in Eq. (2)). In Eq. (7), \((\mathbf{x}_i,\mathbf{x}_j)\) should be \((\mathbf{x}_i-\mathbf{x}_j)\). Also, please make clear that \(\mathbf{x}_i = [\mathbf{x}_i^{(1)}; \mathbf{x}_i^{(1)}; \dots; \mathbf{x}_i^{(V)}] \in \mathbb{R}^{dV}\). In line 1 below Eq. (7), the transpose operator \(^{ T}\) should be applied to the right \(\mathbf{U}\) instead of the left one. It is a little confusing the same symbol $\mathbf{M}$ is used in both Eq. (3) and Eq. (7) for two different matrices. Please use a different notation. “ASD” should be “MDD”. “$m$ sample” should be “the $m$ samples”. Section 3, “Competing Methods”: The range ${0.01, 0.05, \dots, 10}$ is not completely clear. Is it ${0.01, 0.05, 0.1, 0.5, 1, 5, 10}$? Section 3, “Results of MDD Detection”: The description “``“the TMRL achieves at least 4\% improvement in terms of ACC and SPE values and 2\% improvement in terms of SEN and F1 metrics” seems not accurate. According to Table 2, the improvement of TMRL over the second-best method is ACC: (0.642-0.594)/0.594 = 8.08\%, SEN: (0.643-0.621)/0.621 = 3.54\%, SPE: (0.639-0.579)/0.579 = 10.36\%, F1: (0.654-0.626)/0.626 = 4.47\%. Section 3, “Comparison with State-of-the-Arts”: “one single index” should read as “a single index”. Supplementary Materials: Please cite the source/reference for Theorem 1, e.g., [Lu, Canyi, et al., 2019]. In Theorem 1, please make it clear that $*$ denotes the tensor-tensor product (t-product) [M. E. Kilmer and C. D. Martin, 2011] and $^T$ denotes the conjugate transpose of a tensor [Lu, Canyi, et al., 2019]. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See main strengths and main weaknesses of the paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed to fuse multi-index representations for major depressive disorder (MDD) classification. The fusion was based on multi-task learning that mapped the fALFF, DC, and VMHC features in a latent space that the representations were complementary and not redundancy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This research’s feature representations are of clinical and practical meaning. Comprehensive experiments were carried and the results show obvious performance improvement. The potential of the proposed method is of significance, it can be useful for patients with MDD. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1 Although the results of the proposed method are better than the results of other state-of-the-art methods. The values are still very low (all below 0.66), which reduce the clinical significance of the proposed method. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The statement of ethics approval is missing in Material part. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors should give more descriptions in Fig 1. ’s caption, e.g., different color arrows. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper proposed a novel method based on multi-task learning. The method designing is rigorous and reasonable with better performance for MDD diagnosis, which is useful in clinical. Although the results of MDD diagnosis are not good enough, I think this method may have potential in other clinical application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose TMRL : Tensor-based Multi-index Representation Learning framework. TMRL is used on low level rs-fMRI descriptors (fALFF, VMHC, DC) to predict Major Depression Disorder (MDD). It is a linear model on tensors of multi-index representations, while multitask represents subject MDD status. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Original low rank tensor regularisation of a multitask linear model. Consistent comparison with state-of-the-art works. Consistent benchmark of different predictive models. Insightful neuroimaging-based interpretation of the relevant features. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The multitask learning of MDD usefulness is not clear since the prediction relies on one MDD information only (1 and 0). The use of fALFF, VMHC, DC is not clearly motivated. In particular, functional connectivity matrices that are often considered as state-of-the art features are not included in the comparative study. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The dataset is private (from a local hospital). As mentioned in the manuscript, the authors are committed to publish the code in GitHub once the review process completed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please include functional connectivity matrices in the comparison in order to highlight the benefits of TMRL. Please include non-linear models in the comparison of predictive models. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is original and the application shows consistent improvements in terms of MDD prediction. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The proposed method has its own novelty and the comprehensive experiments were well conducted by supporting the validity of the methods. However, it is highly recommended to reflect the reviewers’ comments on clinical significance of the performance and motivation of using the features of fALFF, VMHC, and DC. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback N/A back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Dongren Yao, Erkun Yang, Hao Guan, Jing Sui, Zhizhong Zhang, Mingxia Liu Abstract Major depressive disorder (MDD) is a common and costly mental illness whose pathophysiology is difficult to clarify. Resting-state functional MRI (rs-fMRI) provides a non-invasive solution for the study of functional brain network abnormalities in MDD patients. Existing studies have shown that multiple indexes derived from rs-fMRI, such as fractional amplitude of low-frequency fluctuations (fALFF) and voxel-mirrored homotopic connectivity (VMHC) and degree centrality (DC), help depict functional mechanisms of brain disorders from different perspectives. However, previous methods generally treat these indexes independently, without considering their potentially complementary relationship. Moreover, it is usually very challenging to effectively fuse multi-index representations for disease analysis, due to the significant heterogeneity among indexes in the feature distribution. In this paper, we propose a tensor-based multi-index representation learning (TMRL) framework for fMRI-based MDD detection. In TMRL, we first generate multi-index representations (i.e., fALFF, VMHC and DC) for each subject, followed by patch selection via group comparison for each index. We further develop a tensor-based multi-task learning model (with a tensor-based regularizer) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results on 533 subjects with rs-fMRI data demonstrate that the TMRL outperforms several state-of-the-art methods in MDD identification. Link to paper https://doi.org/10.1007/978-3-030-87240-3_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a multi-task learning model for detection of major depressive disorder using functional MRI data. The model employs a novel regularizer based on the recently proposed tensor nuclear norm (which measures the rank of a block circulant matrix constructed by all projection matrices) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results demonstrate that the proposal outperforms several state-of-the-art methods in MDD identification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of the recently proposed tensor nuclear norm for regularizing the multi-task learning model is novel and interesting. Overall, the paper is well written and the method looks sound. The code will be freely released to the public via GitHub. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be freely released to the public via GitHub. Still, the method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4) which raises concerns whether the algorithm was correctly implemented and whether the experimental results are correctly interpreted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Comments: In the formulated problems (1) and (4), the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is not defined. Since the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) used in the paper is new (not the commonly used ones that are defined based on the Tucker or CP ranks), it needs to be defined/explained. However, the tensor nuclear norm is neither defined nor adequately explained. It does not even cite the original paper that proposed this norm: [a] Lu, Canyi, et al. “Tensor robust principal component analysis with a new tensor nuclear norm.” IEEE transactions on pattern analysis and machine intelligence 42.4 (2019): 925-938. In particular, the description ‘‘The high-order tensor low-rank norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) measures the rank of a block circulant matrix constructed by all projection matrices, where \(\|\cdot\|_{\circledast}\) is the tensor nuclear norm’’ is not very clear to me. For example, what is a block circulant matrix defined exactly? It would be clearer if it is described e.g., as The \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is the tensor nuclear norm of \(\mathbf{\mathcal{U}}\) defined in [Lu, Canyi, et al., 2019]. The tensor nuclear norm of \(\mathbf{\mathcal{U}}\) can be thought of as a convex relaxation/surrogate of the rank of the block circulant matrix \mathop\left(\mathbf{\mathcal{U}}\right) \in \mathbb{R}^{dV \times CV} of \(\mathbf{\mathcal{U}}\) [Lu, Canyi, et al., 2019]: \begin{equation*} \mathop\left(\bm{\mathcal{U}}\right) = \begin{bmatrix} \mathbf{U}^{(1)} &amp; \mathbf{U}^{(V)} &amp; \dots &amp; \mathbf{U}^{(2)} \\ \mathbf{U}^{(2)} &amp; \mathbf{U}^{(1)} &amp; \dots &amp; \mathbf{U}^{(3)} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \mathbf{U}^{(V)} &amp; \mathbf{U}^{(V-1)} &amp; \dots &amp; \mathbf{U}^{(1)} \end{bmatrix}. \end{equation*} The algorithm to solve the formulated problem (4) is not clearly/correctly presented. First, the presented algorithm is the alternating direction method of multipliers (ADMM) [13], NOT the Augmented Lagrange Multiplier (ALM) [12]. Please note that the presented algorithm solves an equivalent problem (by introducing an auxiliary tensor variable \(\mathbf{\mathcal{G}}\)): \begin{equation} \begin{aligned} \min_{\mathbf{\tilde{U}},\bm{\mathcal{G}}} \quad &amp; \|\mathbf{\tilde{U}}^{ T} \mathbf{\tilde{X}} - \mathbf{\tilde{Y}}\|_F^2 + \alpha \|\bm{\mathcal{G}}\|_{\circledast} + \beta \mathop\left(\mathbf{\tilde{U}}^{T} \mathbf{M} \mathbf{\tilde{U}}\right) \\ \textrm{s.t.} \quad &amp; \bm{\mathcal{U}} = \bm{\mathcal{G}} \end{aligned} \end{equation} and to solve this problem it updates \(\mathbf{\mathcal{U}}\) and \(\mathbf{\mathcal{G}}\) in an alternating or sequential fashion, instead of updating them jointly. Second, the presented algorithm is not complete since it does not mention how the dual variable \(\mathbf{\mathcal{W}}\) is updated. Third, the closed-form solution of problem (6) should be provided. Putting all together, the ADMM algorithm consists of the iterations: \begin{algorithmic} \STATE Update \bm{\mathcal{U}} via solving problem (6): \[\mathbf{\tilde{U}}^{k+1} = \left(2 \mathbf{\tilde{X}}\mathbf{\tilde{X}}^{T}+2\beta\mathbf{M}+ \rho \mathbf{I}_{dV}\right)^{-1} \left(2 \mathbf{\tilde{X}} \mathbf{\tilde{Y}}^{T} - \mathbf{\tilde{W}}^k + \rho \mathbf{\tilde{G}}^k\right).\] \STATE Update $\bm{\mathcal{G}}$ according to Theorem 1. \STATE Update the dual variable $\bm{\mathcal{W}}$: \begin{equation} \bm{\mathcal{W}}^{k+1} = \bm{\mathcal{W}}^k + \rho \left(\bm{\mathcal{U}}^{k+1} - \bm{\mathcal{G}}^{k+1}\right). \end{equation} \end{algorithmic} In Section 2.2, “Prediction with Metric Learning”, why is the latent representation of a new test subject \(\mathbf{z} = [\mathbf{z}^{(1)}; \mathbf{z}^{(1)}; \dots; \mathbf{z}^{(V)}] \in \mathbb{R}^{dV}\) defined as \begin{equation*} \mathbf{\hat{z}} = \begin{bmatrix} \mathbf{U}^{(1)}\\ \mathbf{U}^{(2)}\\ \vdots\\ \mathbf{U}^{(V)} \end{bmatrix}^{ T} \begin{bmatrix} \mathbf{z}^{(1)}\\ \mathbf{z}^{(2)}\\ \vdots\\ \mathbf{z}^{(V)} \end{bmatrix} = \sum_{v=1}^V {\mathbf{U}^{(v)}}^{ T} \mathbf{z}^{(v)} \in \mathbb{R}^C, \end{equation*} not as \begin{equation*} \mathbf{\hat{z}} = \begin{bmatrix} {\mathbf{U}^{(1)}}^{ T}\mathbf{z}^{(1)}\\ {\mathbf{U}^{(2)}}^{ T}\mathbf{z}^{(2)}\\ \vdots\\ {\mathbf{U}^{(V)}}^{ T}\mathbf{z}^{(V)} \end{bmatrix} \in \mathbb{R}^{CV} \end{equation*} ? It seems that the latter representation is more powerful since it has a much higher dimension ($C*V \gg C$). In Supplementary Materials Theorem 2, “the optimization problem in Eq. (5)” should be “the optimization problem in Eq. (4)”. Moreover, can you briefly show why the iterates of the primal variables \(\mathbf{\mathcal{G}}, \mathbf{\tilde{U}}\) converge to an optimal solution? Please note that according to reference [13] (subsection 3.2.1), the objective function and dual variables of the ADMM iterates converge but the primal variables need not. Other mistakes/typos: In the second line below Eq. (1), “Bregman Discrepancy” should be “Bregman divergence”. For consistency, it needs to change the \(\sum_{i,j=1 (i\neq j)}^V\) in Eq. (1) to \(\sum_{1 \leq i &lt; j \leq V}\), or alternatively, insert a scaling constant of 2 before the third term in Eq. (4). Section 2.2, “Prediction with Metric Learning”: The \(\mathbf{U}\) should be written as \(\mathbf{\tilde{U}}\) (which is defined in Eq. (2)). In Eq. (7), \((\mathbf{x}_i,\mathbf{x}_j)\) should be \((\mathbf{x}_i-\mathbf{x}_j)\). Also, please make clear that \(\mathbf{x}_i = [\mathbf{x}_i^{(1)}; \mathbf{x}_i^{(1)}; \dots; \mathbf{x}_i^{(V)}] \in \mathbb{R}^{dV}\). In line 1 below Eq. (7), the transpose operator \(^{ T}\) should be applied to the right \(\mathbf{U}\) instead of the left one. It is a little confusing the same symbol $\mathbf{M}$ is used in both Eq. (3) and Eq. (7) for two different matrices. Please use a different notation. “ASD” should be “MDD”. “$m$ sample” should be “the $m$ samples”. Section 3, “Competing Methods”: The range ${0.01, 0.05, \dots, 10}$ is not completely clear. Is it ${0.01, 0.05, 0.1, 0.5, 1, 5, 10}$? Section 3, “Results of MDD Detection”: The description “``“the TMRL achieves at least 4\% improvement in terms of ACC and SPE values and 2\% improvement in terms of SEN and F1 metrics” seems not accurate. According to Table 2, the improvement of TMRL over the second-best method is ACC: (0.642-0.594)/0.594 = 8.08\%, SEN: (0.643-0.621)/0.621 = 3.54\%, SPE: (0.639-0.579)/0.579 = 10.36\%, F1: (0.654-0.626)/0.626 = 4.47\%. Section 3, “Comparison with State-of-the-Arts”: “one single index” should read as “a single index”. Supplementary Materials: Please cite the source/reference for Theorem 1, e.g., [Lu, Canyi, et al., 2019]. In Theorem 1, please make it clear that $*$ denotes the tensor-tensor product (t-product) [M. E. Kilmer and C. D. Martin, 2011] and $^T$ denotes the conjugate transpose of a tensor [Lu, Canyi, et al., 2019]. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See main strengths and main weaknesses of the paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed to fuse multi-index representations for major depressive disorder (MDD) classification. The fusion was based on multi-task learning that mapped the fALFF, DC, and VMHC features in a latent space that the representations were complementary and not redundancy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This research’s feature representations are of clinical and practical meaning. Comprehensive experiments were carried and the results show obvious performance improvement. The potential of the proposed method is of significance, it can be useful for patients with MDD. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1 Although the results of the proposed method are better than the results of other state-of-the-art methods. The values are still very low (all below 0.66), which reduce the clinical significance of the proposed method. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The statement of ethics approval is missing in Material part. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors should give more descriptions in Fig 1. ’s caption, e.g., different color arrows. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper proposed a novel method based on multi-task learning. The method designing is rigorous and reasonable with better performance for MDD diagnosis, which is useful in clinical. Although the results of MDD diagnosis are not good enough, I think this method may have potential in other clinical application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose TMRL : Tensor-based Multi-index Representation Learning framework. TMRL is used on low level rs-fMRI descriptors (fALFF, VMHC, DC) to predict Major Depression Disorder (MDD). It is a linear model on tensors of multi-index representations, while multitask represents subject MDD status. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Original low rank tensor regularisation of a multitask linear model. Consistent comparison with state-of-the-art works. Consistent benchmark of different predictive models. Insightful neuroimaging-based interpretation of the relevant features. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The multitask learning of MDD usefulness is not clear since the prediction relies on one MDD information only (1 and 0). The use of fALFF, VMHC, DC is not clearly motivated. In particular, functional connectivity matrices that are often considered as state-of-the art features are not included in the comparative study. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The dataset is private (from a local hospital). As mentioned in the manuscript, the authors are committed to publish the code in GitHub once the review process completed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please include functional connectivity matrices in the comparison in order to highlight the benefits of TMRL. Please include non-linear models in the comparison of predictive models. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is original and the application shows consistent improvements in terms of MDD prediction. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The proposed method has its own novelty and the comprehensive experiments were well conducted by supporting the validity of the methods. However, it is highly recommended to reflect the reviewers’ comments on clinical significance of the performance and motivation of using the features of fALFF, VMHC, and DC. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback N/A back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0516/12/31/Paper0564" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0516/12/31/Paper0564" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0516-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tensor-based Multi-index Representation Learning for Major Depression Disorder Detection with Resting-state fMRI" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0516/12/31/Paper0564"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0516/12/31/Paper0564","headline":"Tensor-based Multi-index Representation Learning for Major Depression Disorder Detection with Resting-state fMRI","dateModified":"0517-01-03T00:00:00-05:17","datePublished":"0516-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Dongren Yao, Erkun Yang, Hao Guan, Jing Sui, Zhizhong Zhang, Mingxia Liu Abstract Major depressive disorder (MDD) is a common and costly mental illness whose pathophysiology is difficult to clarify. Resting-state functional MRI (rs-fMRI) provides a non-invasive solution for the study of functional brain network abnormalities in MDD patients. Existing studies have shown that multiple indexes derived from rs-fMRI, such as fractional amplitude of low-frequency fluctuations (fALFF) and voxel-mirrored homotopic connectivity (VMHC) and degree centrality (DC), help depict functional mechanisms of brain disorders from different perspectives. However, previous methods generally treat these indexes independently, without considering their potentially complementary relationship. Moreover, it is usually very challenging to effectively fuse multi-index representations for disease analysis, due to the significant heterogeneity among indexes in the feature distribution. In this paper, we propose a tensor-based multi-index representation learning (TMRL) framework for fMRI-based MDD detection. In TMRL, we first generate multi-index representations (i.e., fALFF, VMHC and DC) for each subject, followed by patch selection via group comparison for each index. We further develop a tensor-based multi-task learning model (with a tensor-based regularizer) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results on 533 subjects with rs-fMRI data demonstrate that the TMRL outperforms several state-of-the-art methods in MDD identification. Link to paper https://doi.org/10.1007/978-3-030-87240-3_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a multi-task learning model for detection of major depressive disorder using functional MRI data. The model employs a novel regularizer based on the recently proposed tensor nuclear norm (which measures the rank of a block circulant matrix constructed by all projection matrices) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results demonstrate that the proposal outperforms several state-of-the-art methods in MDD identification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of the recently proposed tensor nuclear norm for regularizing the multi-task learning model is novel and interesting. Overall, the paper is well written and the method looks sound. The code will be freely released to the public via GitHub. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be freely released to the public via GitHub. Still, the method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4) which raises concerns whether the algorithm was correctly implemented and whether the experimental results are correctly interpreted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Comments: In the formulated problems (1) and (4), the tensor nuclear norm \\(\\|\\mathbf{\\mathcal{U}}\\|_{\\circledast}\\) is not defined. Since the tensor nuclear norm \\(\\|\\mathbf{\\mathcal{U}}\\|_{\\circledast}\\) used in the paper is new (not the commonly used ones that are defined based on the Tucker or CP ranks), it needs to be defined/explained. However, the tensor nuclear norm is neither defined nor adequately explained. It does not even cite the original paper that proposed this norm: [a] Lu, Canyi, et al. “Tensor robust principal component analysis with a new tensor nuclear norm.” IEEE transactions on pattern analysis and machine intelligence 42.4 (2019): 925-938. In particular, the description ‘‘The high-order tensor low-rank norm \\(\\|\\mathbf{\\mathcal{U}}\\|_{\\circledast}\\) measures the rank of a block circulant matrix constructed by all projection matrices, where \\(\\|\\cdot\\|_{\\circledast}\\) is the tensor nuclear norm’’ is not very clear to me. For example, what is a block circulant matrix defined exactly? It would be clearer if it is described e.g., as The \\(\\|\\mathbf{\\mathcal{U}}\\|_{\\circledast}\\) is the tensor nuclear norm of \\(\\mathbf{\\mathcal{U}}\\) defined in [Lu, Canyi, et al., 2019]. The tensor nuclear norm of \\(\\mathbf{\\mathcal{U}}\\) can be thought of as a convex relaxation/surrogate of the rank of the block circulant matrix \\mathop\\left(\\mathbf{\\mathcal{U}}\\right) \\in \\mathbb{R}^{dV \\times CV} of \\(\\mathbf{\\mathcal{U}}\\) [Lu, Canyi, et al., 2019]: \\begin{equation*} \\mathop\\left(\\bm{\\mathcal{U}}\\right) = \\begin{bmatrix} \\mathbf{U}^{(1)} &amp; \\mathbf{U}^{(V)} &amp; \\dots &amp; \\mathbf{U}^{(2)} \\\\ \\mathbf{U}^{(2)} &amp; \\mathbf{U}^{(1)} &amp; \\dots &amp; \\mathbf{U}^{(3)} \\\\ \\vdots &amp; \\vdots &amp; \\ddots &amp; \\vdots \\\\ \\mathbf{U}^{(V)} &amp; \\mathbf{U}^{(V-1)} &amp; \\dots &amp; \\mathbf{U}^{(1)} \\end{bmatrix}. \\end{equation*} The algorithm to solve the formulated problem (4) is not clearly/correctly presented. First, the presented algorithm is the alternating direction method of multipliers (ADMM) [13], NOT the Augmented Lagrange Multiplier (ALM) [12]. Please note that the presented algorithm solves an equivalent problem (by introducing an auxiliary tensor variable \\(\\mathbf{\\mathcal{G}}\\)): \\begin{equation} \\begin{aligned} \\min_{\\mathbf{\\tilde{U}},\\bm{\\mathcal{G}}} \\quad &amp; \\|\\mathbf{\\tilde{U}}^{ T} \\mathbf{\\tilde{X}} - \\mathbf{\\tilde{Y}}\\|_F^2 + \\alpha \\|\\bm{\\mathcal{G}}\\|_{\\circledast} + \\beta \\mathop\\left(\\mathbf{\\tilde{U}}^{T} \\mathbf{M} \\mathbf{\\tilde{U}}\\right) \\\\ \\textrm{s.t.} \\quad &amp; \\bm{\\mathcal{U}} = \\bm{\\mathcal{G}} \\end{aligned} \\end{equation} and to solve this problem it updates \\(\\mathbf{\\mathcal{U}}\\) and \\(\\mathbf{\\mathcal{G}}\\) in an alternating or sequential fashion, instead of updating them jointly. Second, the presented algorithm is not complete since it does not mention how the dual variable \\(\\mathbf{\\mathcal{W}}\\) is updated. Third, the closed-form solution of problem (6) should be provided. Putting all together, the ADMM algorithm consists of the iterations: \\begin{algorithmic} \\STATE Update \\bm{\\mathcal{U}} via solving problem (6): \\[\\mathbf{\\tilde{U}}^{k+1} = \\left(2 \\mathbf{\\tilde{X}}\\mathbf{\\tilde{X}}^{T}+2\\beta\\mathbf{M}+ \\rho \\mathbf{I}_{dV}\\right)^{-1} \\left(2 \\mathbf{\\tilde{X}} \\mathbf{\\tilde{Y}}^{T} - \\mathbf{\\tilde{W}}^k + \\rho \\mathbf{\\tilde{G}}^k\\right).\\] \\STATE Update $\\bm{\\mathcal{G}}$ according to Theorem 1. \\STATE Update the dual variable $\\bm{\\mathcal{W}}$: \\begin{equation} \\bm{\\mathcal{W}}^{k+1} = \\bm{\\mathcal{W}}^k + \\rho \\left(\\bm{\\mathcal{U}}^{k+1} - \\bm{\\mathcal{G}}^{k+1}\\right). \\end{equation} \\end{algorithmic} In Section 2.2, “Prediction with Metric Learning”, why is the latent representation of a new test subject \\(\\mathbf{z} = [\\mathbf{z}^{(1)}; \\mathbf{z}^{(1)}; \\dots; \\mathbf{z}^{(V)}] \\in \\mathbb{R}^{dV}\\) defined as \\begin{equation*} \\mathbf{\\hat{z}} = \\begin{bmatrix} \\mathbf{U}^{(1)}\\\\ \\mathbf{U}^{(2)}\\\\ \\vdots\\\\ \\mathbf{U}^{(V)} \\end{bmatrix}^{ T} \\begin{bmatrix} \\mathbf{z}^{(1)}\\\\ \\mathbf{z}^{(2)}\\\\ \\vdots\\\\ \\mathbf{z}^{(V)} \\end{bmatrix} = \\sum_{v=1}^V {\\mathbf{U}^{(v)}}^{ T} \\mathbf{z}^{(v)} \\in \\mathbb{R}^C, \\end{equation*} not as \\begin{equation*} \\mathbf{\\hat{z}} = \\begin{bmatrix} {\\mathbf{U}^{(1)}}^{ T}\\mathbf{z}^{(1)}\\\\ {\\mathbf{U}^{(2)}}^{ T}\\mathbf{z}^{(2)}\\\\ \\vdots\\\\ {\\mathbf{U}^{(V)}}^{ T}\\mathbf{z}^{(V)} \\end{bmatrix} \\in \\mathbb{R}^{CV} \\end{equation*} ? It seems that the latter representation is more powerful since it has a much higher dimension ($C*V \\gg C$). In Supplementary Materials Theorem 2, “the optimization problem in Eq. (5)” should be “the optimization problem in Eq. (4)”. Moreover, can you briefly show why the iterates of the primal variables \\(\\mathbf{\\mathcal{G}}, \\mathbf{\\tilde{U}}\\) converge to an optimal solution? Please note that according to reference [13] (subsection 3.2.1), the objective function and dual variables of the ADMM iterates converge but the primal variables need not. Other mistakes/typos: In the second line below Eq. (1), “Bregman Discrepancy” should be “Bregman divergence”. For consistency, it needs to change the \\(\\sum_{i,j=1 (i\\neq j)}^V\\) in Eq. (1) to \\(\\sum_{1 \\leq i &lt; j \\leq V}\\), or alternatively, insert a scaling constant of 2 before the third term in Eq. (4). Section 2.2, “Prediction with Metric Learning”: The \\(\\mathbf{U}\\) should be written as \\(\\mathbf{\\tilde{U}}\\) (which is defined in Eq. (2)). In Eq. (7), \\((\\mathbf{x}_i,\\mathbf{x}_j)\\) should be \\((\\mathbf{x}_i-\\mathbf{x}_j)\\). Also, please make clear that \\(\\mathbf{x}_i = [\\mathbf{x}_i^{(1)}; \\mathbf{x}_i^{(1)}; \\dots; \\mathbf{x}_i^{(V)}] \\in \\mathbb{R}^{dV}\\). In line 1 below Eq. (7), the transpose operator \\(^{ T}\\) should be applied to the right \\(\\mathbf{U}\\) instead of the left one. It is a little confusing the same symbol $\\mathbf{M}$ is used in both Eq. (3) and Eq. (7) for two different matrices. Please use a different notation. “ASD” should be “MDD”. “$m$ sample” should be “the $m$ samples”. Section 3, “Competing Methods”: The range ${0.01, 0.05, \\dots, 10}$ is not completely clear. Is it ${0.01, 0.05, 0.1, 0.5, 1, 5, 10}$? Section 3, “Results of MDD Detection”: The description “``“the TMRL achieves at least 4\\% improvement in terms of ACC and SPE values and 2\\% improvement in terms of SEN and F1 metrics” seems not accurate. According to Table 2, the improvement of TMRL over the second-best method is ACC: (0.642-0.594)/0.594 = 8.08\\%, SEN: (0.643-0.621)/0.621 = 3.54\\%, SPE: (0.639-0.579)/0.579 = 10.36\\%, F1: (0.654-0.626)/0.626 = 4.47\\%. Section 3, “Comparison with State-of-the-Arts”: “one single index” should read as “a single index”. Supplementary Materials: Please cite the source/reference for Theorem 1, e.g., [Lu, Canyi, et al., 2019]. In Theorem 1, please make it clear that $*$ denotes the tensor-tensor product (t-product) [M. E. Kilmer and C. D. Martin, 2011] and $^T$ denotes the conjugate transpose of a tensor [Lu, Canyi, et al., 2019]. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See main strengths and main weaknesses of the paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed to fuse multi-index representations for major depressive disorder (MDD) classification. The fusion was based on multi-task learning that mapped the fALFF, DC, and VMHC features in a latent space that the representations were complementary and not redundancy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This research’s feature representations are of clinical and practical meaning. Comprehensive experiments were carried and the results show obvious performance improvement. The potential of the proposed method is of significance, it can be useful for patients with MDD. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1 Although the results of the proposed method are better than the results of other state-of-the-art methods. The values are still very low (all below 0.66), which reduce the clinical significance of the proposed method. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The statement of ethics approval is missing in Material part. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors should give more descriptions in Fig 1. ’s caption, e.g., different color arrows. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper proposed a novel method based on multi-task learning. The method designing is rigorous and reasonable with better performance for MDD diagnosis, which is useful in clinical. Although the results of MDD diagnosis are not good enough, I think this method may have potential in other clinical application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose TMRL : Tensor-based Multi-index Representation Learning framework. TMRL is used on low level rs-fMRI descriptors (fALFF, VMHC, DC) to predict Major Depression Disorder (MDD). It is a linear model on tensors of multi-index representations, while multitask represents subject MDD status. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Original low rank tensor regularisation of a multitask linear model. Consistent comparison with state-of-the-art works. Consistent benchmark of different predictive models. Insightful neuroimaging-based interpretation of the relevant features. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The multitask learning of MDD usefulness is not clear since the prediction relies on one MDD information only (1 and 0). The use of fALFF, VMHC, DC is not clearly motivated. In particular, functional connectivity matrices that are often considered as state-of-the art features are not included in the comparative study. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The dataset is private (from a local hospital). As mentioned in the manuscript, the authors are committed to publish the code in GitHub once the review process completed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please include functional connectivity matrices in the comparison in order to highlight the benefits of TMRL. Please include non-linear models in the comparison of predictive models. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is original and the application shows consistent improvements in terms of MDD prediction. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The proposed method has its own novelty and the comprehensive experiments were well conducted by supporting the validity of the methods. However, it is highly recommended to reflect the reviewers’ comments on clinical significance of the performance and motivation of using the features of fALFF, VMHC, and DC. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback N/A back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Yao, Dongren,Yang, Erkun,Guan, Hao,Sui, Jing,Zhang, Zhizhong,Liu, Mingxia" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Tensor-based Multi-index Representation Learning for Major Depression Disorder Detection with Resting-state fMRI</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Yao, Dongren"
+        class="post-tags">
+        Yao, Dongren
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Erkun"
+        class="post-tags">
+        Yang, Erkun
+      </a> |  
+      
+      <a href="kittywong/tags#Guan, Hao"
+        class="post-tags">
+        Guan, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Sui, Jing"
+        class="post-tags">
+        Sui, Jing
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Zhizhong"
+        class="post-tags">
+        Zhang, Zhizhong
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Mingxia"
+        class="post-tags">
+        Liu, Mingxia
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Dongren Yao, Erkun Yang, Hao Guan, Jing Sui, Zhizhong Zhang, Mingxia Liu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Major depressive disorder (MDD) is a common and costly mental illness whose pathophysiology is difficult to clarify. Resting-state functional MRI (rs-fMRI) provides a non-invasive solution for the study of functional brain network abnormalities in MDD patients. Existing studies have shown that multiple indexes derived from rs-fMRI, such as fractional amplitude of low-frequency fluctuations (fALFF) and voxel-mirrored homotopic connectivity (VMHC) and degree centrality (DC), help depict functional mechanisms of brain disorders from different perspectives. However, previous methods generally treat these indexes independently, without considering their potentially complementary relationship. 
+Moreover, it is usually very challenging to effectively fuse multi-index representations for disease analysis, due to the significant heterogeneity among indexes in the feature distribution. In this paper, we propose a tensor-based multi-index representation learning (TMRL) framework for fMRI-based MDD detection. 
+In TMRL, we first generate multi-index representations (i.e., fALFF, VMHC and DC) for each subject, followed by patch selection via group comparison for each index. We further develop a tensor-based multi-task learning model (with a tensor-based regularizer) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results on 533 subjects with rs-fMRI data demonstrate that the TMRL outperforms several state-of-the-art methods in MDD identification.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87240-3_17">https://doi.org/10.1007/978-3-030-87240-3_17</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a multi-task learning model for detection of major depressive disorder using functional MRI data. The model employs a novel regularizer based on the recently proposed tensor nuclear norm (which measures the rank of a block circulant matrix constructed by all projection matrices) to align multi-index representations into a common latent space, followed by MDD prediction. Experimental results demonstrate that the proposal outperforms several state-of-the-art methods in MDD identification.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The application of the recently proposed tensor nuclear norm for regularizing the multi-task learning model is novel and interesting.
+Overall, the paper is well written and the method looks sound.
+The code will be freely released to the public via GitHub.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The method (both model and algorithm) is not clearly presented/explained (See detailed comments 1-4).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ol>
+        <li>The code will be freely released to the public via GitHub.</li>
+        <li>Still, the method (both model and algorithm) is not clearly presented/explained  (See detailed comments 1-4) which raises concerns whether the algorithm was correctly implemented and whether the experimental results are correctly interpreted.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Comments:</p>
+
+      <ol>
+        <li>In the formulated problems (1) and (4), the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is not defined.
+Since the tensor nuclear norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) used in the paper is new (not the commonly used ones that are defined based on the Tucker or CP ranks), it needs to be defined/explained. However, the tensor nuclear norm is neither defined nor adequately explained. It does not even cite the original paper that proposed this norm:
+[a] Lu, Canyi, et al. “Tensor robust principal component analysis with a new tensor nuclear norm.” IEEE transactions on pattern analysis and machine intelligence 42.4 (2019): 925-938.
+In particular, the description ‘‘The high-order tensor low-rank norm \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) measures the rank of a block circulant matrix constructed by all projection matrices, where \(\|\cdot\|_{\circledast}\) is the tensor nuclear norm’’ is not very clear to me. For example, what is a block circulant matrix defined exactly? It would be clearer if it is described e.g., as
+The \(\|\mathbf{\mathcal{U}}\|_{\circledast}\) is the tensor nuclear norm of \(\mathbf{\mathcal{U}}\) defined in [Lu, Canyi, et al., 2019]. The tensor nuclear norm of \(\mathbf{\mathcal{U}}\) can be thought of as a convex relaxation/surrogate of the rank of the block circulant matrix <code class="language-plaintext highlighter-rouge">\mathop\left(\mathbf{\mathcal{U}}\right) \in \mathbb{R}^{dV \times CV}</code> of \(\mathbf{\mathcal{U}}\) [Lu, Canyi, et al., 2019]:
+          <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\begin{equation*}
+\mathop\left(\bm{\mathcal{U}}\right) =
+\begin{bmatrix}
+\mathbf{U}^{(1)} &amp; \mathbf{U}^{(V)} &amp; \dots &amp; \mathbf{U}^{(2)} \\
+\mathbf{U}^{(2)} &amp; \mathbf{U}^{(1)} &amp; \dots &amp; \mathbf{U}^{(3)} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\mathbf{U}^{(V)} &amp; \mathbf{U}^{(V-1)} &amp; \dots &amp; \mathbf{U}^{(1)}
+\end{bmatrix}.
+\end{equation*}
+</code></pre></div>          </div>
+        </li>
+        <li>The algorithm to solve the formulated problem (4) is not clearly/correctly presented.
+First, the presented algorithm is the alternating direction method of multipliers (ADMM) [13], NOT the Augmented Lagrange Multiplier (ALM) [12].
+Please note that the presented algorithm solves an equivalent problem (by introducing an auxiliary tensor variable \(\mathbf{\mathcal{G}}\)):
+          <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\begin{equation}
+\begin{aligned}
+\min_{\mathbf{\tilde{U}},\bm{\mathcal{G}}} \quad &amp; \|\mathbf{\tilde{U}}^{ T} \mathbf{\tilde{X}} - \mathbf{\tilde{Y}}\|_F^2 + \alpha \|\bm{\mathcal{G}}\|_{\circledast} + \beta \mathop\left(\mathbf{\tilde{U}}^{T} \mathbf{M} \mathbf{\tilde{U}}\right) \\
+\textrm{s.t.} \quad &amp; \bm{\mathcal{U}} = \bm{\mathcal{G}}
+\end{aligned}
+\end{equation}
+</code></pre></div>          </div>
+          <p>and to solve this problem it updates \(\mathbf{\mathcal{U}}\) and \(\mathbf{\mathcal{G}}\) in an alternating or sequential fashion, instead of updating them jointly.
+Second, the presented algorithm is not complete since it does not mention how the dual variable \(\mathbf{\mathcal{W}}\) is updated.
+Third, the closed-form solution of problem (6) should be provided.
+Putting all together, the ADMM algorithm consists of the iterations:</p>
+          <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\begin{algorithmic}
+\STATE Update \bm{\mathcal{U}} via solving problem (6):
+\[\mathbf{\tilde{U}}^{k+1} =
+ \left(2 \mathbf{\tilde{X}}\mathbf{\tilde{X}}^{T}+2\beta\mathbf{M}+
+ \rho \mathbf{I}_{dV}\right)^{-1} \left(2 \mathbf{\tilde{X}}
+ \mathbf{\tilde{Y}}^{T} - 
+ \mathbf{\tilde{W}}^k + 
+ \rho \mathbf{\tilde{G}}^k\right).\]
+\STATE Update $\bm{\mathcal{G}}$ according to Theorem 1.
+\STATE Update the dual variable $\bm{\mathcal{W}}$:
+\begin{equation}
+\bm{\mathcal{W}}^{k+1} = \bm{\mathcal{W}}^k + 
+\rho \left(\bm{\mathcal{U}}^{k+1} - \bm{\mathcal{G}}^{k+1}\right).
+\end{equation}
+\end{algorithmic}
+</code></pre></div>          </div>
+        </li>
+        <li>In Section 2.2, “Prediction with Metric Learning”, why is the latent representation of a new test subject \(\mathbf{z} = [\mathbf{z}^{(1)}; \mathbf{z}^{(1)}; \dots; \mathbf{z}^{(V)}] \in \mathbb{R}^{dV}\) defined as
+          <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\begin{equation*}
+\mathbf{\hat{z}} =
+\begin{bmatrix}
+\mathbf{U}^{(1)}\\
+\mathbf{U}^{(2)}\\
+\vdots\\
+\mathbf{U}^{(V)}
+\end{bmatrix}^{ T}
+\begin{bmatrix}
+\mathbf{z}^{(1)}\\
+\mathbf{z}^{(2)}\\
+\vdots\\
+\mathbf{z}^{(V)}
+\end{bmatrix} = \sum_{v=1}^V {\mathbf{U}^{(v)}}^{ T} \mathbf{z}^{(v)} \in \mathbb{R}^C,
+\end{equation*}
+</code></pre></div>          </div>
+          <p>not as</p>
+          <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\begin{equation*}
+\mathbf{\hat{z}} =
+\begin{bmatrix}
+{\mathbf{U}^{(1)}}^{ T}\mathbf{z}^{(1)}\\
+{\mathbf{U}^{(2)}}^{ T}\mathbf{z}^{(2)}\\
+\vdots\\
+{\mathbf{U}^{(V)}}^{ T}\mathbf{z}^{(V)}
+\end{bmatrix} \in \mathbb{R}^{CV}
+\end{equation*}
+</code></pre></div>          </div>
+          <p>? It seems that the latter representation is more powerful since it has a much higher dimension ($C*V \gg C$).</p>
+        </li>
+        <li>
+          <p>In Supplementary Materials Theorem 2, “the optimization problem in Eq. (5)” should be “the optimization problem in Eq. (4)”. Moreover, can you briefly show why the iterates of the primal variables \(\mathbf{\mathcal{G}}, \mathbf{\tilde{U}}\) converge to an optimal solution? Please note that according to reference [13] (subsection 3.2.1), the objective function and dual variables of the ADMM iterates converge but the primal variables need not.</p>
+        </li>
+        <li>Other mistakes/typos:
+In the second line below Eq. (1), “Bregman Discrepancy” should be “Bregman divergence”.
+For consistency, it needs to change the \(\sum_{i,j=1 (i\neq j)}^V\) in Eq. (1) to \(\sum_{1 \leq i &lt; j \leq V}\), or alternatively, insert a scaling constant of 2 before the third term in Eq. (4).
+Section 2.2, “Prediction with Metric Learning”:
+The \(\mathbf{U}\) should be written as \(\mathbf{\tilde{U}}\) (which is defined in Eq. (2)).
+In Eq. (7), \((\mathbf{x}_i,\mathbf{x}_j)\) should be \((\mathbf{x}_i-\mathbf{x}_j)\). Also, please make clear that \(\mathbf{x}_i = [\mathbf{x}_i^{(1)}; \mathbf{x}_i^{(1)}; \dots; \mathbf{x}_i^{(V)}] \in \mathbb{R}^{dV}\).
+In line 1 below Eq. (7), the transpose operator \(^{ T}\) should be applied to the right \(\mathbf{U}\) instead of the left one.
+It is a little confusing the same symbol $\mathbf{M}$ is used in both Eq. (3) and Eq. (7) for two different matrices. Please use a different notation.
+“ASD” should be “MDD”.
+“$m$ sample” should be “the $m$ samples”.
+Section 3, “Competing Methods”:
+The range ${0.01, 0.05, \dots, 10}$ is not completely clear. Is it ${0.01, 0.05, 0.1, 0.5, 1, 5, 10}$?
+Section 3, “Results of MDD Detection”:
+The description “``“the TMRL achieves at least 4\% improvement in terms of ACC and SPE values and 2\% improvement in terms of SEN and F1 metrics” seems not accurate. According to Table 2, the improvement of TMRL over the second-best method is ACC: (0.642-0.594)/0.594 = 8.08\%, SEN: (0.643-0.621)/0.621 = 3.54\%, SPE: (0.639-0.579)/0.579 = 10.36\%, F1: (0.654-0.626)/0.626 = 4.47\%.
+Section 3, “Comparison with State-of-the-Arts”:
+“one single index” should read as “a single index”.</li>
+      </ol>
+
+      <p>Supplementary Materials:
+Please cite the source/reference for Theorem 1, e.g., [Lu, Canyi, et al., 2019].
+In Theorem 1, please make it clear that $*$ denotes the tensor-tensor product (t-product) [M. E. Kilmer and C. D. Martin, 2011] and $^T$ denotes the conjugate transpose of a tensor [Lu, Canyi, et al., 2019].</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>See main strengths and main weaknesses of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed to fuse multi-index representations for major depressive disorder (MDD) classification. The fusion was based on multi-task learning that mapped the fALFF, DC, and VMHC features in a latent space that the representations were complementary and not redundancy.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>This research’s feature representations are of clinical and practical meaning.</li>
+        <li>Comprehensive experiments were carried and the results show obvious performance improvement.</li>
+        <li>The potential of the proposed method is of significance, it can be useful for patients with MDD.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>1	Although the results of the proposed method are better than the results of other state-of-the-art methods. The values are still very low (all below 0.66), which reduce the clinical significance of the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The statement of ethics approval is missing in Material part.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>Authors should give more descriptions in Fig 1. ’s caption, e.g., different color arrows.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This paper proposed a novel method based on multi-task learning. The method designing is rigorous and reasonable with better performance for MDD diagnosis, which is useful in clinical. Although the results of MDD diagnosis are not good enough, I think this method may have potential in other clinical application.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose TMRL : Tensor-based Multi-index Representation Learning framework. TMRL is used on low level rs-fMRI descriptors (fALFF, VMHC, DC) to predict Major Depression Disorder (MDD). It is a linear model on tensors of multi-index representations, while multitask represents subject MDD status.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Original low rank tensor regularisation of a multitask linear model.</p>
+        </li>
+        <li>
+          <p>Consistent comparison with state-of-the-art works.</p>
+        </li>
+        <li>
+          <p>Consistent benchmark of different predictive models.</p>
+        </li>
+        <li>
+          <p>Insightful neuroimaging-based interpretation of the relevant features.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The multitask learning of MDD usefulness is not clear since the prediction relies on one MDD information only (1 and 0).</p>
+        </li>
+        <li>
+          <p>The use of fALFF, VMHC, DC is not clearly motivated. In particular, functional connectivity matrices that are often considered as state-of-the art features are not included in the comparative study.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The dataset is private (from a local hospital). 
+As mentioned in the manuscript, the authors are committed to publish the code in GitHub once the review process completed.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Please include functional connectivity matrices in the comparison in order to highlight the benefits of TMRL.</p>
+        </li>
+        <li>
+          <p>Please include non-linear models in the comparison of predictive models.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The method is original and the application shows consistent improvements in terms of MDD prediction.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The proposed method has its own novelty and the comprehensive experiments were well conducted by supporting the validity of the methods.</p>
+
+      <p>However, it is highly recommended to reflect the reviewers’ comments on clinical significance of the performance and motivation of using the features of fALFF, VMHC, and DC.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>N/A</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0516-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0517-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Yao, Dongren"
+        class="post-category">
+        Yao, Dongren
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Erkun"
+        class="post-category">
+        Yang, Erkun
+      </a> |  
+      
+      <a href="kittywong/tags#Guan, Hao"
+        class="post-category">
+        Guan, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Sui, Jing"
+        class="post-category">
+        Sui, Jing
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Zhizhong"
+        class="post-category">
+        Zhang, Zhizhong
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Mingxia"
+        class="post-category">
+        Liu, Mingxia
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0517/12/31/Paper0599">
+          Region Ensemble Network for MCI Conversion Prediction With a Relation Regularized Loss
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0515/12/31/Paper0545">
+          Categorical Relation-Preserving Contrastive Knowledge Distillation for Medical Image Classification
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

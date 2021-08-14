@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sophia Bano, Brian Dromey, Francisco Vasconcelos, Raffaele Napolitano, Anna L. David, Donald M. Peebles, Danail Stoyanov Abstract During pregnancy, ultrasound examination in the second trimester can assess fetal size according to standardized charts. To achieve a reproducible and accurate measurement, a sonographer needs to identify three standard 2D planes of the fetal anatomy (head, abdomen, femur) and manually mark the key anatomical landmarks on the image for accurate biometry and fetal weight estimation. This can be a time-consuming operator-dependent task, especially for a trainee sonographer. Computer-assisted techniques can help in automating the fetal biometry computation process. In this paper, we present a unified automated framework for estimating all measurements needed for the fetal weight assessment. The proposed framework semantically segments the key fetal anatomies using state-of-the-art segmentation models, followed by region fitting and scale recovery for the biometry estimation. We present an ablation study of segmentation algorithms to show their robustness through 4-fold cross-validation on a dataset of 349 ultrasound standard plane images from 42 pregnancies. Moreover, we show that the network with the best segmentation performance tends to be more accurate for biometry estimation. Furthermore, we demonstrate that the error between clinically measured and predicted fetal biometry is lower than the permissible error during routine clinical measurements. Link to paper https://doi.org/10.1007/978-3-030-87234-2_22 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper In this paper, the authors present a fully automatic method to measure fetal biometry from standardized ultrasound planes. Their work is incremental in combining successful previous models of fetal anatomy segmentation, but because of the completeness of the overall framework and its good validation on hundreds of US images, it makes a valuable contribution to MICCAI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Great integration of many previously solved aspects of fetal ultrasound analysis into a common method. Clarity of the method, it’s easy to follow what has been done. Powerful validation of many US images. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of addressing usability of given US frames. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Neither dataset nor code open, but at least almost all key parameters provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In general, I find this work an excellent continuation of previous fetal ultrasound analysis efforts. I don’t have any major concerns with this work. There are a couple of questions, though: 1) The authors write that all images were considered optimal and of sufficient diagnostic quality. If I remember correctly from exams on my own kid, the biggest challenge was not necessarily to manually click these measurements but to identify suitable planes in the first place. Given there is quite substantial prior art on this issue, I wonder if the authors have considered it or could at least make a comment in the discussion. 2) The explanations of which measurements are needed are somewhat repetitive, e.g. the list is in both Section 1 and 2. Maybe one of them could be removed and instead, the reader could be provided with an exemplary formula of how these measurements can be used to assess fetal weight. 3) I wonder if the choice to use rectangle fitting on the femur is the best way to extract a length measurement. In Fig. 2, there is an example image where the rectangle diameter will over-estimate the femur length. Have you used different ways for length extraction? 4) On the multi-label segmentation: Since there are already works on standard plane classification, it would have been plausible to train distinct segmentation networks for each of the three anatomies because there is zero overlap, i.e. there are no frames with more than one anatomy visible. In particular, a dedicated network could have improved the poor segmentation of the femur. Apart from the obvious performance advantages, are there any other reasons for your architecture choice? 5) I think that there is no need to resample all images before data augmentation and cropping, this will just deteriorate the image quality a bit. Minor remarks: Please perform a thorough spelling and grammar revision. A few examples: “The proposed framework semantically segment” in the abstract -&gt; “segments”, “Recommended assessment and quality control metrics varying” in the intro -&gt; “vary”, “Obstetricians” should be lower-case, “that the error … were minimal” in the conclusion -&gt; “were”, etc. Unlike stated in Section 2, Fig. does not contain a), b), c) sub-figures but uses left/middle/right. Fig. 3 is cut-off at the right side. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great systems paper, well-done validation of the method, clarity of the approach. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper An AutoFB framework based on U-Net and Deeplabv3 to segment the head, abdomen, and femur in ultrasound fetal images is proposed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The combination of a U-Net and a Deeplabv3 neuronal networks to segment and to measure the main ultrasound fetal metrics in the second gestational trimester. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. –It is not clear how it classifies between the three planes Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is necessary to give more detail about how to adjust the ellipse and networks architecture. In section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html a space is missing in: three standard planes.While this task –&gt; three standard planes. While this task and decoupled from the encoder.We briefly Only define abbreviations once It is not clear how it classifies between the three planes The bounding box in the measurement of femur length is only correct, when the femur is completely horizontal to the acquisition plane. What happens when the acquisition of the femur is angulated? There is repeated information in section 3.2 and 2 (fetal biometry) I recommend joining both sections. The authors mention: In this paper, we propose to perform all the relevant measurements for fetal weight assessment within a unified automated system, which is our main contribution. However, in section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable to make the measurements, as mentioned in their contribution. Can you justify this? What you mean by “unified automated system”? Were the annotations made by obstetric experts? The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. A discussion is necessary comparing the results with other works reported in the state of the art. It is necessary to give more detail about how to adjust the ellipse and networks architecture Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The segmentation of the femur, head and abdomen in fetal ultrasound images is well studied. Their results are competitive but there is no clear methodological contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper presents a novel method to automatically estimate fetal biometry. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well-written and easy to follow. The results are also well presented. The paper has value to automate fetal biometry estimation Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the method in segmentation is very limited. In fact, they used a segmentation network and then fetal biometry parameters can be estimated easily. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code and data are not publically available but the details are well explained that the method can be implemented. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1- Why authors use a simple block-matching when other parts are CNN? 2- The authors use one network for segmentation of the three planes. Why not first classify the plane and then use specialized network for segmentation of that plane? 3- The authors mentioned that they used weighted cross entropy since the data is not balanced. Why the authors did not use Dice loss (it is also robust to unbalanced data) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper has value in fetal biometry estimation but I do not think it has some ground breaking contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a framework to measure fetal biometry from standardized ultrasound planes. All reviewers have acknowledged that : (i) the contribution of the paper is not an innovative method, but rather a system or a framework with an extensive validation, and that (ii) the paper is very clear and well written. Because of the limited technical novelty, this paper had gotten mixed scores, so I would like to invite the authors for a rebuttal. In particular, below are some points I suggest to be addressed in the rebuttal: How does this work make a significant contribution to the field? Can you please justify your architecture choice? and clarify the way the 3 planes are handled. This is an important point raised by all reviewers. The authors processed a total of 346 acquisitions, from 42 fetuses. Are the images originating from the same fetuses in the same fold? In addition, if space is left, the authors can also address additional points raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of this work has been acknowledged in the reviews. Even though there is not technical novelty, this paper has some value for the MICCAI community working on US images. The authors were able to show the impact of their paper in the rebuttal and reasonably responded to the concerns raised by the reviewers, hence I recommend acceptance for this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a fully automatic framework to measure fetal biometry from standardized ultrasound planes. I think that this is a solid work, with a contribution given rather in solving a practical/clinical need, thus the completeness of the overall framework and its good validation on big data set, it makes in my opinion a very interesting and valid scientific contribution to MICCAI. The meta reviewer raised some concerns though related to the 3 planes handling and possible risk of having mixed planes from the same subject in training and testing. Authors clarified both points in a very satisfactory manner in their rebuttal. I think though authors should include if possible Haussdorf distance metrics (percentile), as complementary to other overlap metrics, provide a more solid assessment. Overall I would recommend the paper for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper, titled “AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes”, was reviewed by 3 reviewers with varying experience/seniority, all agreed that this submission was well written: R1 strength - good integration - clarity - validation weakness - usability - reproducibility R2 strength - method weakness - metric for evaluation - correlation between data - reproducibility R3 strength - writing quality - results - clinical significance weakness - novelty The primary AC noted that the limited technical novelty was the main reason for mixed scores. Reviewers also pointed out that Reproducibility may be of an issue as this is a complex/complete system and no code will be released. This AC reminds the reviewers that, according to the reviewer guideline (https://miccai2021.org/en/REVIEWER-GUIDELINES.html), a CAI-based paper should be evaluated differently from MIC-based paper, where the requirement for novelty may differ. Based on my reading of the manuscript and the rebuttal, this AC judged this manuscript to fall under the categories of “1. Presentation of a device or technology that has potential clinical significance”, and “2. Demonstration of clinical feasibility, even on a single subject/animal/phantom”. As this paper is well written, describing a complete system with an extensive validation, I would recommend the decision to accept this manuscript. Authors are strongly recommended to re-consider the issue of reproducibility to increase its potential impact to the CAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive feedback. All reviewers acknowledged the completeness, clarity and detailed experimentation validating the end-to-end framework. Below we reply to the specific comments: MR Contribution to the field: Our main contribution is a unified fetal assessment framework that performs fetal anatomy segmentation including 3-plane classification through multiclass segmentation and biometry estimation (pg 2, ln 27). To the best of our knowledge, such a holistic framework is lacking in the literature and even if individual components have been experimented with, this paper describes and validates their integrated use on a clinical task, estimating fetal biometry &amp; weight. Existing methods only focus on segmenting/estimating biometry of specific anatomy or plane classification (pg 2, ln 10). We demonstrated the robustness by experimenting using real clinical data and validated both inferred segmentation and estimated biometry. Moreover, AutoFB is of high clinical relevance as it will enable automating biometry for monitoring fetal growth, a task currently affected by high inter-operator variability [5] due to manual selection of key landmarks in US plane. Architecture choice &amp; 3 planes classification: R3 suggests performing classification first and then segmentation instead of our proposed multi-class segmentation framework which jointly solves the 3-plane detection and anatomy segmentation. While this alternative could work, we do not see any reason to opt for a more complicated system that involves different stages of network training, tuning more parameters, and likely more computation time. We demonstrate that our solution works reliably while being simple and intuitive to understand. We will make this clearer in the CR. Data split into folds (R2): The acquired data from 42 fetuses (346 US images) was divided into 4 folds such that each fold contained approximately the same number of images and all US images originating from a single fetus were only included in a particular fold (Table 2; pg 6, ln 3). Hence there was no subject data overlap in the 4 folds used for cross-validation. We will make this detail clearer in the CR. R1 &amp; R2 Bounding Box (BB) fitting for femur measurement: We fitted a horizontal BB (Fig. 2; pg 5, ln 14) to the femur predicted mask and considered its diagonal as the Femur Length (FL) estimate. A femur is not necessarily aligned to the horizontal/vertical axis, hence the use of BB diagonal as FL always holds. In a rare case where the femur is aligned with the horizontal/vertical axis, our modelling still holds as then the BB width/height and diagonal length become approximately equal. R2 Segmentation of femur, head &amp; abdomen is well studied: While fetal anatomy segmentation has been studied and evaluated with specific metrics (IoU, DICE), its use for calculating biometry and its accuracy assessment with the relevant clinical metrics (distance, weight errors) is far from well-studied in the literature. Adding Hausdorff distance: This is a good suggestion. Though we evaluated using IoU which is the most commonly used metric in image segmentation, Hausdorff distance could evaluate the consistency of the contour. We will investigate this in future. A ruler markers template for px/mm calibration makes the system not generalisable: Please note obtaining US scale is always system-dependent because it must be extracted either from a) visual interface of the US machine; b) raw data, involving access to a proprietary API. It is not clear which aspect R2 thinks could be generalised better than the current approach. We use a) since we do not have access to b). The same template matching approach is easy to deploy on systems other than GE Voluson since all medical grade US machines have a similar ruler available. R3 Why DICE not used? During the ablation study (not reported), we experimented with different losses including DICE and found wCE to be the most effective. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sophia Bano, Brian Dromey, Francisco Vasconcelos, Raffaele Napolitano, Anna L. David, Donald M. Peebles, Danail Stoyanov Abstract During pregnancy, ultrasound examination in the second trimester can assess fetal size according to standardized charts. To achieve a reproducible and accurate measurement, a sonographer needs to identify three standard 2D planes of the fetal anatomy (head, abdomen, femur) and manually mark the key anatomical landmarks on the image for accurate biometry and fetal weight estimation. This can be a time-consuming operator-dependent task, especially for a trainee sonographer. Computer-assisted techniques can help in automating the fetal biometry computation process. In this paper, we present a unified automated framework for estimating all measurements needed for the fetal weight assessment. The proposed framework semantically segments the key fetal anatomies using state-of-the-art segmentation models, followed by region fitting and scale recovery for the biometry estimation. We present an ablation study of segmentation algorithms to show their robustness through 4-fold cross-validation on a dataset of 349 ultrasound standard plane images from 42 pregnancies. Moreover, we show that the network with the best segmentation performance tends to be more accurate for biometry estimation. Furthermore, we demonstrate that the error between clinically measured and predicted fetal biometry is lower than the permissible error during routine clinical measurements. Link to paper https://doi.org/10.1007/978-3-030-87234-2_22 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper In this paper, the authors present a fully automatic method to measure fetal biometry from standardized ultrasound planes. Their work is incremental in combining successful previous models of fetal anatomy segmentation, but because of the completeness of the overall framework and its good validation on hundreds of US images, it makes a valuable contribution to MICCAI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Great integration of many previously solved aspects of fetal ultrasound analysis into a common method. Clarity of the method, it’s easy to follow what has been done. Powerful validation of many US images. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of addressing usability of given US frames. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Neither dataset nor code open, but at least almost all key parameters provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In general, I find this work an excellent continuation of previous fetal ultrasound analysis efforts. I don’t have any major concerns with this work. There are a couple of questions, though: 1) The authors write that all images were considered optimal and of sufficient diagnostic quality. If I remember correctly from exams on my own kid, the biggest challenge was not necessarily to manually click these measurements but to identify suitable planes in the first place. Given there is quite substantial prior art on this issue, I wonder if the authors have considered it or could at least make a comment in the discussion. 2) The explanations of which measurements are needed are somewhat repetitive, e.g. the list is in both Section 1 and 2. Maybe one of them could be removed and instead, the reader could be provided with an exemplary formula of how these measurements can be used to assess fetal weight. 3) I wonder if the choice to use rectangle fitting on the femur is the best way to extract a length measurement. In Fig. 2, there is an example image where the rectangle diameter will over-estimate the femur length. Have you used different ways for length extraction? 4) On the multi-label segmentation: Since there are already works on standard plane classification, it would have been plausible to train distinct segmentation networks for each of the three anatomies because there is zero overlap, i.e. there are no frames with more than one anatomy visible. In particular, a dedicated network could have improved the poor segmentation of the femur. Apart from the obvious performance advantages, are there any other reasons for your architecture choice? 5) I think that there is no need to resample all images before data augmentation and cropping, this will just deteriorate the image quality a bit. Minor remarks: Please perform a thorough spelling and grammar revision. A few examples: “The proposed framework semantically segment” in the abstract -&gt; “segments”, “Recommended assessment and quality control metrics varying” in the intro -&gt; “vary”, “Obstetricians” should be lower-case, “that the error … were minimal” in the conclusion -&gt; “were”, etc. Unlike stated in Section 2, Fig. does not contain a), b), c) sub-figures but uses left/middle/right. Fig. 3 is cut-off at the right side. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great systems paper, well-done validation of the method, clarity of the approach. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper An AutoFB framework based on U-Net and Deeplabv3 to segment the head, abdomen, and femur in ultrasound fetal images is proposed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The combination of a U-Net and a Deeplabv3 neuronal networks to segment and to measure the main ultrasound fetal metrics in the second gestational trimester. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. –It is not clear how it classifies between the three planes Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is necessary to give more detail about how to adjust the ellipse and networks architecture. In section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html a space is missing in: three standard planes.While this task –&gt; three standard planes. While this task and decoupled from the encoder.We briefly Only define abbreviations once It is not clear how it classifies between the three planes The bounding box in the measurement of femur length is only correct, when the femur is completely horizontal to the acquisition plane. What happens when the acquisition of the femur is angulated? There is repeated information in section 3.2 and 2 (fetal biometry) I recommend joining both sections. The authors mention: In this paper, we propose to perform all the relevant measurements for fetal weight assessment within a unified automated system, which is our main contribution. However, in section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable to make the measurements, as mentioned in their contribution. Can you justify this? What you mean by “unified automated system”? Were the annotations made by obstetric experts? The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. A discussion is necessary comparing the results with other works reported in the state of the art. It is necessary to give more detail about how to adjust the ellipse and networks architecture Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The segmentation of the femur, head and abdomen in fetal ultrasound images is well studied. Their results are competitive but there is no clear methodological contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper presents a novel method to automatically estimate fetal biometry. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well-written and easy to follow. The results are also well presented. The paper has value to automate fetal biometry estimation Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the method in segmentation is very limited. In fact, they used a segmentation network and then fetal biometry parameters can be estimated easily. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code and data are not publically available but the details are well explained that the method can be implemented. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1- Why authors use a simple block-matching when other parts are CNN? 2- The authors use one network for segmentation of the three planes. Why not first classify the plane and then use specialized network for segmentation of that plane? 3- The authors mentioned that they used weighted cross entropy since the data is not balanced. Why the authors did not use Dice loss (it is also robust to unbalanced data) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper has value in fetal biometry estimation but I do not think it has some ground breaking contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a framework to measure fetal biometry from standardized ultrasound planes. All reviewers have acknowledged that : (i) the contribution of the paper is not an innovative method, but rather a system or a framework with an extensive validation, and that (ii) the paper is very clear and well written. Because of the limited technical novelty, this paper had gotten mixed scores, so I would like to invite the authors for a rebuttal. In particular, below are some points I suggest to be addressed in the rebuttal: How does this work make a significant contribution to the field? Can you please justify your architecture choice? and clarify the way the 3 planes are handled. This is an important point raised by all reviewers. The authors processed a total of 346 acquisitions, from 42 fetuses. Are the images originating from the same fetuses in the same fold? In addition, if space is left, the authors can also address additional points raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of this work has been acknowledged in the reviews. Even though there is not technical novelty, this paper has some value for the MICCAI community working on US images. The authors were able to show the impact of their paper in the rebuttal and reasonably responded to the concerns raised by the reviewers, hence I recommend acceptance for this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a fully automatic framework to measure fetal biometry from standardized ultrasound planes. I think that this is a solid work, with a contribution given rather in solving a practical/clinical need, thus the completeness of the overall framework and its good validation on big data set, it makes in my opinion a very interesting and valid scientific contribution to MICCAI. The meta reviewer raised some concerns though related to the 3 planes handling and possible risk of having mixed planes from the same subject in training and testing. Authors clarified both points in a very satisfactory manner in their rebuttal. I think though authors should include if possible Haussdorf distance metrics (percentile), as complementary to other overlap metrics, provide a more solid assessment. Overall I would recommend the paper for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper, titled “AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes”, was reviewed by 3 reviewers with varying experience/seniority, all agreed that this submission was well written: R1 strength - good integration - clarity - validation weakness - usability - reproducibility R2 strength - method weakness - metric for evaluation - correlation between data - reproducibility R3 strength - writing quality - results - clinical significance weakness - novelty The primary AC noted that the limited technical novelty was the main reason for mixed scores. Reviewers also pointed out that Reproducibility may be of an issue as this is a complex/complete system and no code will be released. This AC reminds the reviewers that, according to the reviewer guideline (https://miccai2021.org/en/REVIEWER-GUIDELINES.html), a CAI-based paper should be evaluated differently from MIC-based paper, where the requirement for novelty may differ. Based on my reading of the manuscript and the rebuttal, this AC judged this manuscript to fall under the categories of “1. Presentation of a device or technology that has potential clinical significance”, and “2. Demonstration of clinical feasibility, even on a single subject/animal/phantom”. As this paper is well written, describing a complete system with an extensive validation, I would recommend the decision to accept this manuscript. Authors are strongly recommended to re-consider the issue of reproducibility to increase its potential impact to the CAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive feedback. All reviewers acknowledged the completeness, clarity and detailed experimentation validating the end-to-end framework. Below we reply to the specific comments: MR Contribution to the field: Our main contribution is a unified fetal assessment framework that performs fetal anatomy segmentation including 3-plane classification through multiclass segmentation and biometry estimation (pg 2, ln 27). To the best of our knowledge, such a holistic framework is lacking in the literature and even if individual components have been experimented with, this paper describes and validates their integrated use on a clinical task, estimating fetal biometry &amp; weight. Existing methods only focus on segmenting/estimating biometry of specific anatomy or plane classification (pg 2, ln 10). We demonstrated the robustness by experimenting using real clinical data and validated both inferred segmentation and estimated biometry. Moreover, AutoFB is of high clinical relevance as it will enable automating biometry for monitoring fetal growth, a task currently affected by high inter-operator variability [5] due to manual selection of key landmarks in US plane. Architecture choice &amp; 3 planes classification: R3 suggests performing classification first and then segmentation instead of our proposed multi-class segmentation framework which jointly solves the 3-plane detection and anatomy segmentation. While this alternative could work, we do not see any reason to opt for a more complicated system that involves different stages of network training, tuning more parameters, and likely more computation time. We demonstrate that our solution works reliably while being simple and intuitive to understand. We will make this clearer in the CR. Data split into folds (R2): The acquired data from 42 fetuses (346 US images) was divided into 4 folds such that each fold contained approximately the same number of images and all US images originating from a single fetus were only included in a particular fold (Table 2; pg 6, ln 3). Hence there was no subject data overlap in the 4 folds used for cross-validation. We will make this detail clearer in the CR. R1 &amp; R2 Bounding Box (BB) fitting for femur measurement: We fitted a horizontal BB (Fig. 2; pg 5, ln 14) to the femur predicted mask and considered its diagonal as the Femur Length (FL) estimate. A femur is not necessarily aligned to the horizontal/vertical axis, hence the use of BB diagonal as FL always holds. In a rare case where the femur is aligned with the horizontal/vertical axis, our modelling still holds as then the BB width/height and diagonal length become approximately equal. R2 Segmentation of femur, head &amp; abdomen is well studied: While fetal anatomy segmentation has been studied and evaluated with specific metrics (IoU, DICE), its use for calculating biometry and its accuracy assessment with the relevant clinical metrics (distance, weight errors) is far from well-studied in the literature. Adding Hausdorff distance: This is a good suggestion. Though we evaluated using IoU which is the most commonly used metric in image segmentation, Hausdorff distance could evaluate the consistency of the contour. We will investigate this in future. A ruler markers template for px/mm calibration makes the system not generalisable: Please note obtaining US scale is always system-dependent because it must be extracted either from a) visual interface of the US machine; b) raw data, involving access to a proprietary API. It is not clear which aspect R2 thinks could be generalised better than the current approach. We use a) since we do not have access to b). The same template matching approach is easy to deploy on systems other than GE Voluson since all medical grade US machines have a similar ruler available. R3 Why DICE not used? During the ablation study (not reported), we experimented with different losses including DICE and found wCE to be the most effective. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0721/12/31/Paper1866" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0721/12/31/Paper1866" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0721-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0721/12/31/Paper1866"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0721/12/31/Paper1866","headline":"AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes","dateModified":"0722-01-05T00:00:00-05:17","datePublished":"0721-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Sophia Bano, Brian Dromey, Francisco Vasconcelos, Raffaele Napolitano, Anna L. David, Donald M. Peebles, Danail Stoyanov Abstract During pregnancy, ultrasound examination in the second trimester can assess fetal size according to standardized charts. To achieve a reproducible and accurate measurement, a sonographer needs to identify three standard 2D planes of the fetal anatomy (head, abdomen, femur) and manually mark the key anatomical landmarks on the image for accurate biometry and fetal weight estimation. This can be a time-consuming operator-dependent task, especially for a trainee sonographer. Computer-assisted techniques can help in automating the fetal biometry computation process. In this paper, we present a unified automated framework for estimating all measurements needed for the fetal weight assessment. The proposed framework semantically segments the key fetal anatomies using state-of-the-art segmentation models, followed by region fitting and scale recovery for the biometry estimation. We present an ablation study of segmentation algorithms to show their robustness through 4-fold cross-validation on a dataset of 349 ultrasound standard plane images from 42 pregnancies. Moreover, we show that the network with the best segmentation performance tends to be more accurate for biometry estimation. Furthermore, we demonstrate that the error between clinically measured and predicted fetal biometry is lower than the permissible error during routine clinical measurements. Link to paper https://doi.org/10.1007/978-3-030-87234-2_22 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper In this paper, the authors present a fully automatic method to measure fetal biometry from standardized ultrasound planes. Their work is incremental in combining successful previous models of fetal anatomy segmentation, but because of the completeness of the overall framework and its good validation on hundreds of US images, it makes a valuable contribution to MICCAI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Great integration of many previously solved aspects of fetal ultrasound analysis into a common method. Clarity of the method, it’s easy to follow what has been done. Powerful validation of many US images. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of addressing usability of given US frames. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Neither dataset nor code open, but at least almost all key parameters provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In general, I find this work an excellent continuation of previous fetal ultrasound analysis efforts. I don’t have any major concerns with this work. There are a couple of questions, though: 1) The authors write that all images were considered optimal and of sufficient diagnostic quality. If I remember correctly from exams on my own kid, the biggest challenge was not necessarily to manually click these measurements but to identify suitable planes in the first place. Given there is quite substantial prior art on this issue, I wonder if the authors have considered it or could at least make a comment in the discussion. 2) The explanations of which measurements are needed are somewhat repetitive, e.g. the list is in both Section 1 and 2. Maybe one of them could be removed and instead, the reader could be provided with an exemplary formula of how these measurements can be used to assess fetal weight. 3) I wonder if the choice to use rectangle fitting on the femur is the best way to extract a length measurement. In Fig. 2, there is an example image where the rectangle diameter will over-estimate the femur length. Have you used different ways for length extraction? 4) On the multi-label segmentation: Since there are already works on standard plane classification, it would have been plausible to train distinct segmentation networks for each of the three anatomies because there is zero overlap, i.e. there are no frames with more than one anatomy visible. In particular, a dedicated network could have improved the poor segmentation of the femur. Apart from the obvious performance advantages, are there any other reasons for your architecture choice? 5) I think that there is no need to resample all images before data augmentation and cropping, this will just deteriorate the image quality a bit. Minor remarks: Please perform a thorough spelling and grammar revision. A few examples: “The proposed framework semantically segment” in the abstract -&gt; “segments”, “Recommended assessment and quality control metrics varying” in the intro -&gt; “vary”, “Obstetricians” should be lower-case, “that the error … were minimal” in the conclusion -&gt; “were”, etc. Unlike stated in Section 2, Fig. does not contain a), b), c) sub-figures but uses left/middle/right. Fig. 3 is cut-off at the right side. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great systems paper, well-done validation of the method, clarity of the approach. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper An AutoFB framework based on U-Net and Deeplabv3 to segment the head, abdomen, and femur in ultrasound fetal images is proposed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The combination of a U-Net and a Deeplabv3 neuronal networks to segment and to measure the main ultrasound fetal metrics in the second gestational trimester. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. –It is not clear how it classifies between the three planes Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is necessary to give more detail about how to adjust the ellipse and networks architecture. In section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html a space is missing in: three standard planes.While this task –&gt; three standard planes. While this task and decoupled from the encoder.We briefly Only define abbreviations once It is not clear how it classifies between the three planes The bounding box in the measurement of femur length is only correct, when the femur is completely horizontal to the acquisition plane. What happens when the acquisition of the femur is angulated? There is repeated information in section 3.2 and 2 (fetal biometry) I recommend joining both sections. The authors mention: In this paper, we propose to perform all the relevant measurements for fetal weight assessment within a unified automated system, which is our main contribution. However, in section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable to make the measurements, as mentioned in their contribution. Can you justify this? What you mean by “unified automated system”? Were the annotations made by obstetric experts? The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better. The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric. A discussion is necessary comparing the results with other works reported in the state of the art. It is necessary to give more detail about how to adjust the ellipse and networks architecture Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The segmentation of the femur, head and abdomen in fetal ultrasound images is well studied. Their results are competitive but there is no clear methodological contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper presents a novel method to automatically estimate fetal biometry. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well-written and easy to follow. The results are also well presented. The paper has value to automate fetal biometry estimation Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the method in segmentation is very limited. In fact, they used a segmentation network and then fetal biometry parameters can be estimated easily. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code and data are not publically available but the details are well explained that the method can be implemented. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1- Why authors use a simple block-matching when other parts are CNN? 2- The authors use one network for segmentation of the three planes. Why not first classify the plane and then use specialized network for segmentation of that plane? 3- The authors mentioned that they used weighted cross entropy since the data is not balanced. Why the authors did not use Dice loss (it is also robust to unbalanced data) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper has value in fetal biometry estimation but I do not think it has some ground breaking contribution. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a framework to measure fetal biometry from standardized ultrasound planes. All reviewers have acknowledged that : (i) the contribution of the paper is not an innovative method, but rather a system or a framework with an extensive validation, and that (ii) the paper is very clear and well written. Because of the limited technical novelty, this paper had gotten mixed scores, so I would like to invite the authors for a rebuttal. In particular, below are some points I suggest to be addressed in the rebuttal: How does this work make a significant contribution to the field? Can you please justify your architecture choice? and clarify the way the 3 planes are handled. This is an important point raised by all reviewers. The authors processed a total of 346 acquisitions, from 42 fetuses. Are the images originating from the same fetuses in the same fold? In addition, if space is left, the authors can also address additional points raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of this work has been acknowledged in the reviews. Even though there is not technical novelty, this paper has some value for the MICCAI community working on US images. The authors were able to show the impact of their paper in the rebuttal and reasonably responded to the concerns raised by the reviewers, hence I recommend acceptance for this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a fully automatic framework to measure fetal biometry from standardized ultrasound planes. I think that this is a solid work, with a contribution given rather in solving a practical/clinical need, thus the completeness of the overall framework and its good validation on big data set, it makes in my opinion a very interesting and valid scientific contribution to MICCAI. The meta reviewer raised some concerns though related to the 3 planes handling and possible risk of having mixed planes from the same subject in training and testing. Authors clarified both points in a very satisfactory manner in their rebuttal. I think though authors should include if possible Haussdorf distance metrics (percentile), as complementary to other overlap metrics, provide a more solid assessment. Overall I would recommend the paper for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper, titled “AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes”, was reviewed by 3 reviewers with varying experience/seniority, all agreed that this submission was well written: R1 strength - good integration - clarity - validation weakness - usability - reproducibility R2 strength - method weakness - metric for evaluation - correlation between data - reproducibility R3 strength - writing quality - results - clinical significance weakness - novelty The primary AC noted that the limited technical novelty was the main reason for mixed scores. Reviewers also pointed out that Reproducibility may be of an issue as this is a complex/complete system and no code will be released. This AC reminds the reviewers that, according to the reviewer guideline (https://miccai2021.org/en/REVIEWER-GUIDELINES.html), a CAI-based paper should be evaluated differently from MIC-based paper, where the requirement for novelty may differ. Based on my reading of the manuscript and the rebuttal, this AC judged this manuscript to fall under the categories of “1. Presentation of a device or technology that has potential clinical significance”, and “2. Demonstration of clinical feasibility, even on a single subject/animal/phantom”. As this paper is well written, describing a complete system with an extensive validation, I would recommend the decision to accept this manuscript. Authors are strongly recommended to re-consider the issue of reproducibility to increase its potential impact to the CAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive feedback. All reviewers acknowledged the completeness, clarity and detailed experimentation validating the end-to-end framework. Below we reply to the specific comments: MR Contribution to the field: Our main contribution is a unified fetal assessment framework that performs fetal anatomy segmentation including 3-plane classification through multiclass segmentation and biometry estimation (pg 2, ln 27). To the best of our knowledge, such a holistic framework is lacking in the literature and even if individual components have been experimented with, this paper describes and validates their integrated use on a clinical task, estimating fetal biometry &amp; weight. Existing methods only focus on segmenting/estimating biometry of specific anatomy or plane classification (pg 2, ln 10). We demonstrated the robustness by experimenting using real clinical data and validated both inferred segmentation and estimated biometry. Moreover, AutoFB is of high clinical relevance as it will enable automating biometry for monitoring fetal growth, a task currently affected by high inter-operator variability [5] due to manual selection of key landmarks in US plane. Architecture choice &amp; 3 planes classification: R3 suggests performing classification first and then segmentation instead of our proposed multi-class segmentation framework which jointly solves the 3-plane detection and anatomy segmentation. While this alternative could work, we do not see any reason to opt for a more complicated system that involves different stages of network training, tuning more parameters, and likely more computation time. We demonstrate that our solution works reliably while being simple and intuitive to understand. We will make this clearer in the CR. Data split into folds (R2): The acquired data from 42 fetuses (346 US images) was divided into 4 folds such that each fold contained approximately the same number of images and all US images originating from a single fetus were only included in a particular fold (Table 2; pg 6, ln 3). Hence there was no subject data overlap in the 4 folds used for cross-validation. We will make this detail clearer in the CR. R1 &amp; R2 Bounding Box (BB) fitting for femur measurement: We fitted a horizontal BB (Fig. 2; pg 5, ln 14) to the femur predicted mask and considered its diagonal as the Femur Length (FL) estimate. A femur is not necessarily aligned to the horizontal/vertical axis, hence the use of BB diagonal as FL always holds. In a rare case where the femur is aligned with the horizontal/vertical axis, our modelling still holds as then the BB width/height and diagonal length become approximately equal. R2 Segmentation of femur, head &amp; abdomen is well studied: While fetal anatomy segmentation has been studied and evaluated with specific metrics (IoU, DICE), its use for calculating biometry and its accuracy assessment with the relevant clinical metrics (distance, weight errors) is far from well-studied in the literature. Adding Hausdorff distance: This is a good suggestion. Though we evaluated using IoU which is the most commonly used metric in image segmentation, Hausdorff distance could evaluate the consistency of the contour. We will investigate this in future. A ruler markers template for px/mm calibration makes the system not generalisable: Please note obtaining US scale is always system-dependent because it must be extracted either from a) visual interface of the US machine; b) raw data, involving access to a proprietary API. It is not clear which aspect R2 thinks could be generalised better than the current approach. We use a) since we do not have access to b). The same template matching approach is easy to deploy on systems other than GE Voluson since all medical grade US machines have a similar ruler available. R3 Why DICE not used? During the ablation study (not reported), we experimented with different losses including DICE and found wCE to be the most effective. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Bano, Sophia,Dromey, Brian,Vasconcelos, Francisco,Napolitano, Raffaele,David, Anna L.,Peebles, Donald M.,Stoyanov, Danail" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Fetal Imaging"
+        class="post-category">
+        Clinical applications - Fetal Imaging
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Bano, Sophia"
+        class="post-tags">
+        Bano, Sophia
+      </a> |  
+      
+      <a href="kittywong/tags#Dromey, Brian"
+        class="post-tags">
+        Dromey, Brian
+      </a> |  
+      
+      <a href="kittywong/tags#Vasconcelos, Francisco"
+        class="post-tags">
+        Vasconcelos, Francisco
+      </a> |  
+      
+      <a href="kittywong/tags#Napolitano, Raffaele"
+        class="post-tags">
+        Napolitano, Raffaele
+      </a> |  
+      
+      <a href="kittywong/tags#David, Anna L."
+        class="post-tags">
+        David, Anna L.
+      </a> |  
+      
+      <a href="kittywong/tags#Peebles, Donald M."
+        class="post-tags">
+        Peebles, Donald M.
+      </a> |  
+      
+      <a href="kittywong/tags#Stoyanov, Danail"
+        class="post-tags">
+        Stoyanov, Danail
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Sophia Bano, Brian Dromey, Francisco Vasconcelos, Raffaele Napolitano, Anna L. David, Donald M. Peebles, Danail Stoyanov
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>During pregnancy, ultrasound examination in the second trimester can assess fetal size according to standardized charts. To achieve a reproducible and accurate measurement, a sonographer needs to identify three standard 2D planes of the fetal anatomy (head, abdomen, femur) and manually mark the key anatomical landmarks on the image for accurate biometry and fetal weight estimation. This can be a time-consuming operator-dependent task, especially for a trainee sonographer. Computer-assisted techniques can help in automating the fetal biometry computation process. In this paper, we present a unified automated framework for estimating all measurements needed for the fetal weight assessment. The proposed framework semantically segments the key fetal anatomies using state-of-the-art segmentation models, followed by region fitting and scale recovery for the biometry estimation. We present an ablation study of segmentation algorithms to show their robustness through 4-fold cross-validation on a dataset of 349 ultrasound standard plane images from 42 pregnancies. Moreover, we show that the network with the best segmentation performance tends to be more accurate for biometry estimation. Furthermore, we demonstrate that the error between clinically measured and predicted fetal biometry is lower than the permissible error during routine clinical measurements. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87234-2_22">https://doi.org/10.1007/978-3-030-87234-2_22</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the authors present a fully automatic method to measure fetal biometry from standardized ultrasound planes. Their work is incremental in combining successful previous models of fetal anatomy segmentation, but because of the completeness of the overall framework and its good validation on hundreds of US images, it makes a valuable contribution to MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Great integration of many previously solved aspects of fetal ultrasound analysis into a common method.</li>
+        <li>Clarity of the method, it’s easy to follow what has been done.</li>
+        <li>Powerful validation of many US images.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Lack of addressing usability of given US frames.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Neither dataset nor code open, but at least almost all key parameters provided in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>In general, I find this work an excellent continuation of previous fetal ultrasound analysis efforts. I don’t have any major concerns with this work. There are a couple of questions, though:</p>
+
+      <p>1) The authors write that all images were considered optimal and of sufficient diagnostic quality. If I remember correctly from exams on my own kid, the biggest challenge was not necessarily to manually click these measurements but to identify suitable planes in the first place. Given there is quite substantial prior art on this issue, I wonder if the authors have considered it or could at least make a comment in the discussion.</p>
+
+      <p>2) The explanations of which measurements are needed are somewhat repetitive, e.g. the list is in both Section 1 and 2. Maybe one of them could be removed and instead, the reader could be provided with an exemplary formula of how these measurements can be used to assess fetal weight.</p>
+
+      <p>3) I wonder if the choice to use rectangle fitting on the femur is the best way to extract a length measurement. In Fig. 2, there is an example image where the rectangle diameter will over-estimate the femur length. Have you used different ways for length extraction?</p>
+
+      <p>4) On the multi-label segmentation: Since there are already works on standard plane classification, it would have been plausible to train distinct segmentation networks for each of the three anatomies because there is zero overlap, i.e. there are no frames with more than one anatomy visible. In particular, a dedicated network could have improved the poor segmentation of the femur. Apart from the obvious performance advantages, are there any other reasons for your architecture choice?</p>
+
+      <p>5) I think that there is no need to resample all images before data augmentation and cropping, this will just deteriorate the image quality a bit.</p>
+
+      <p>Minor remarks:</p>
+      <ul>
+        <li>Please perform a thorough spelling and grammar revision. A few examples: “The proposed framework semantically segment” in the abstract -&gt; “segments”, “Recommended assessment and quality control metrics varying” in the intro -&gt; “vary”, “Obstetricians” should be lower-case, “that the error … were minimal” in the conclusion -&gt; “were”, etc.</li>
+        <li>Unlike stated in Section 2, Fig. does not contain a), b), c) sub-figures but uses left/middle/right.</li>
+        <li>Fig. 3 is cut-off at the right side.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Great systems paper, well-done validation of the method, clarity of the approach.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>An AutoFB framework based on U-Net and Deeplabv3 to segment the head, abdomen, and femur in ultrasound fetal images is proposed.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The combination of a U-Net and a Deeplabv3 neuronal networks to segment and to measure the main ultrasound fetal metrics in the second gestational trimester.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <ul>
+            <li>The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric.</li>
+          </ul>
+        </li>
+        <li>
+          <ul>
+            <li>The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <p>–It is not clear how it classifies between the three planes</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>It is necessary to give more detail about how to adjust the ellipse and networks architecture.</p>
+        </li>
+        <li>
+          <p>In section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>a space is missing in:  three standard planes.While this task –&gt; three standard planes. While this task and decoupled from the encoder.We briefly</p>
+        </li>
+        <li>
+          <p>Only define abbreviations once</p>
+        </li>
+        <li>
+          <p>It is not clear how it classifies between the three planes</p>
+        </li>
+        <li>
+          <p>The bounding box in the measurement of femur length is only correct, when the femur is completely horizontal to the acquisition plane. What happens when the acquisition of the femur is angulated?</p>
+        </li>
+        <li>
+          <p>There is repeated information in section 3.2 and 2 (fetal biometry) I recommend joining both sections.</p>
+        </li>
+        <li>
+          <p>The authors mention: In this paper, we propose to perform all the relevant measurements for fetal weight assessment within a unified automated system, which is our main contribution. However, in section 3.2 it is mentioned that a GE VOLUSON equipment was used, where a “ruler markers template” was made to determine the resolution of the images (px / mm). This means that the system is not generalizable to make the measurements, as mentioned in their contribution. Can you justify this? What you mean by “unified automated system”?</p>
+        </li>
+        <li>
+          <p>Were the annotations made by obstetric experts?</p>
+        </li>
+        <li>
+          <p>The authors processed a total of 346 acquisitions, from 42 fetuses. Therefore, one or more images were acquired for each fetus. How do you know if there is not a high correlation between the acquisitions of the same fetus? This can affect the segmentation performance? Justify this quantitatively. Maybe a stratified CV would be better.</p>
+        </li>
+        <li>
+          <p>The hausdorff distance can be a good complementary metric to evaluate segmentation. The IoU is an area-based metric, and a hausdorff is a contour-based one. I would recommend, add this metric.</p>
+        </li>
+        <li>
+          <p>A discussion is necessary comparing the results with other works reported in the state of the art.</p>
+        </li>
+        <li>
+          <p>It is necessary to give more detail about how to adjust the ellipse and networks architecture</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The segmentation of the femur, head and abdomen in fetal ultrasound images is well studied. Their results are competitive but there is no clear methodological contribution.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a novel method to automatically estimate fetal biometry.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper is well-written and easy to follow. The results are also well presented. The paper has value to automate fetal biometry estimation</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The novelty of the method in segmentation is very limited. In fact, they used a segmentation network and then fetal biometry parameters can be estimated easily.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The code and data are not publically available but the details are well explained that the method can be implemented.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>1- Why authors use a simple block-matching when other parts are CNN?
+2- The authors use one network for segmentation of the three planes. Why not first classify the plane and then use specialized network for segmentation of that plane?
+3- The authors mentioned that they used weighted cross entropy since the data is not balanced. Why the authors did not use Dice loss (it is also robust to unbalanced data)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper has value in fetal biometry estimation but I do not think it has some ground breaking contribution.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>In this paper, the authors present a framework to measure fetal biometry from standardized ultrasound planes.</p>
+
+      <p>All reviewers have acknowledged that : (i) the contribution of the paper is not an innovative method, but rather a system or a framework with an extensive validation, and that (ii) the paper is very clear and well written.</p>
+
+      <p>Because of the limited technical novelty, this paper had gotten mixed scores, so I would like to invite the authors for a rebuttal.</p>
+
+      <p>In particular, below are some points I suggest to be addressed in the rebuttal:</p>
+      <ul>
+        <li>How does this work make a significant contribution to the field?</li>
+        <li>Can you please justify your architecture choice? and clarify the way the 3 planes are handled. This is an important point raised by all reviewers.</li>
+        <li>The authors processed a total of 346 acquisitions, from 42 fetuses. Are the images originating from the same fetuses in the same fold?</li>
+      </ul>
+
+      <p>In addition, if space is left, the authors can also address additional points raised by the reviewers.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The practical value of this work has been acknowledged in the reviews.
+Even though there is not technical novelty, this paper has some value for the MICCAI community working on US images. The authors were able to show the impact of their paper in the rebuttal and reasonably responded to the concerns raised by the reviewers, hence I recommend acceptance for this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>11</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors present a fully automatic framework to measure fetal biometry from standardized ultrasound planes. I think that this is a solid work, with a contribution given rather in solving a practical/clinical need, thus the completeness of the overall framework and its good validation on big data set, it makes in my opinion a very interesting and valid scientific contribution to MICCAI. The meta reviewer raised some concerns though related to the 3 planes handling and possible risk of having mixed planes from the same subject in training and testing. Authors clarified both points in a very satisfactory manner in their rebuttal. I think though authors should include if possible Haussdorf distance metrics (percentile), as complementary to other overlap metrics, provide a more solid assessment. Overall I would recommend the paper for acceptance.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+
+      <p>This paper, titled “AutoFB: Automating Fetal Biometry Estimation from Standard Ultrasound Planes”, was reviewed by 3 reviewers with varying experience/seniority, all agreed that this submission was well written:</p>
+
+      <p>R1	strength	- good integration
+				- clarity
+				- validation
+	weakness	- usability
+				- reproducibility
+R2	strength	- method
+	weakness	- metric for evaluation
+				- correlation between data
+				- reproducibility
+R3	strength	- writing quality
+				- results
+				- clinical significance
+	weakness	- novelty</p>
+
+      <p>The primary AC noted that the limited technical novelty was the main reason for mixed scores. Reviewers also pointed out that Reproducibility may be of an issue as this is a complex/complete system and no code will be released. This AC reminds the reviewers that, according to the reviewer guideline (https://miccai2021.org/en/REVIEWER-GUIDELINES.html), a CAI-based paper should be evaluated differently from MIC-based paper, where the requirement for novelty may differ. Based on my reading of the manuscript and the rebuttal, this AC judged this manuscript to fall under the categories of “1. Presentation of a device or technology that has potential clinical significance”, and “2. Demonstration of clinical feasibility, even on a single subject/animal/phantom”.</p>
+
+      <p>As this paper is well written, describing a complete system with an extensive validation, I would recommend the decision to accept this manuscript. Authors are strongly recommended to re-consider the issue of reproducibility to increase its potential impact to the CAI community.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their constructive feedback. All reviewers acknowledged the completeness, clarity and detailed experimentation validating the end-to-end framework. Below we reply to the specific comments:</p>
+
+  <p>MR
+Contribution to the field: Our main contribution is a unified fetal assessment framework that performs fetal anatomy segmentation including 3-plane classification through multiclass segmentation and biometry estimation (pg 2, ln 27). To the best of our knowledge, such a holistic framework is lacking in the literature and even if individual components have been experimented with, this paper describes and validates their integrated use on a clinical task, estimating fetal biometry &amp; weight. Existing methods only focus on segmenting/estimating biometry of specific anatomy or plane classification (pg 2, ln 10). We demonstrated the robustness by experimenting using real clinical data and validated both inferred segmentation and estimated biometry. Moreover, AutoFB is of high clinical relevance as it will enable automating biometry for monitoring fetal growth, a task currently affected by high inter-operator variability [5] due to manual selection of key landmarks in US plane.</p>
+
+  <p>Architecture choice &amp; 3 planes classification: R3 suggests performing classification first and then segmentation instead of our proposed multi-class segmentation framework which jointly solves the 3-plane detection and anatomy segmentation. While this alternative could work, we do not see any reason to opt for a more complicated system that involves different stages of network training, tuning more parameters, and likely more computation time. We demonstrate that our solution works reliably while being simple and intuitive to understand. We will make this clearer in the CR.</p>
+
+  <p>Data split into folds (R2): The acquired data from 42 fetuses (346 US images) was divided into 4 folds such that each fold contained approximately the same number of images and all US images originating from a single fetus were only included in a particular fold (Table 2; pg 6, ln 3). Hence there was no subject data overlap in the 4 folds used for cross-validation. We will make this detail clearer in the CR.</p>
+
+  <p>R1 &amp; R2
+Bounding Box (BB) fitting for femur measurement: We fitted a horizontal BB (Fig. 2; pg 5, ln 14) to the femur predicted mask and considered its diagonal as the Femur Length (FL) estimate. A femur is not necessarily aligned to the horizontal/vertical axis, hence the use of BB diagonal as FL always holds. In a rare case where the femur is aligned with the horizontal/vertical axis, our modelling still holds as then the BB width/height and diagonal length become approximately equal.</p>
+
+  <p>R2
+Segmentation of femur, head &amp; abdomen is well studied: While fetal anatomy segmentation has been studied and evaluated with specific metrics (IoU, DICE), its use for calculating biometry and its accuracy assessment with the relevant clinical metrics (distance, weight errors) is far from well-studied in the literature.</p>
+
+  <p>Adding Hausdorff distance: This is a good suggestion. Though we evaluated using IoU which is the most commonly used metric in image segmentation, Hausdorff distance could evaluate the consistency of the contour. We will investigate this in future.</p>
+
+  <p>A ruler markers template for px/mm calibration makes the system not generalisable: Please note obtaining US scale is always system-dependent because it must be extracted either from a) visual interface of the US machine; b) raw data, involving access to a proprietary API. It is not clear which aspect R2 thinks could be generalised better than the current approach. We use a) since we do not have access to b). The same template matching approach is easy to deploy on systems other than GE Voluson since all medical grade US machines have a similar ruler available.</p>
+
+  <p>R3
+Why DICE not used? During the ablation study (not reported), we experimented with different losses including DICE and found wCE to be the most effective.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0721-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0722-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Fetal Imaging"
+        class="post-category">
+        Clinical applications - Fetal Imaging
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Bano, Sophia"
+        class="post-category">
+        Bano, Sophia
+      </a> |  
+      
+      <a href="kittywong/tags#Dromey, Brian"
+        class="post-category">
+        Dromey, Brian
+      </a> |  
+      
+      <a href="kittywong/tags#Vasconcelos, Francisco"
+        class="post-category">
+        Vasconcelos, Francisco
+      </a> |  
+      
+      <a href="kittywong/tags#Napolitano, Raffaele"
+        class="post-category">
+        Napolitano, Raffaele
+      </a> |  
+      
+      <a href="kittywong/tags#David, Anna L."
+        class="post-category">
+        David, Anna L.
+      </a> |  
+      
+      <a href="kittywong/tags#Peebles, Donald M."
+        class="post-category">
+        Peebles, Donald M.
+      </a> |  
+      
+      <a href="kittywong/tags#Stoyanov, Danail"
+        class="post-category">
+        Stoyanov, Danail
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0722/12/31/Paper2019">
+          Learning Spatiotemporal Probabilistic Atlas of Fetal Brains with Anatomically Constrained Registration Network
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0720/12/31/Paper1567">
+          EllipseNet: Anchor-Free Ellipse Detection for Automatic Cardiac Biometrics in Fetal Echocardiography
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

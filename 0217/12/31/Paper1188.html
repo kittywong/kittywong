@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Implicit field learning for unsupervised anomaly detection in medical images | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Implicit field learning for unsupervised anomaly detection in medical images" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sergio Naval Marimont, Giacomo Tarroni Abstract We propose a novel unsupervised out-of-distribution detection method for medical images based on implicit fields image representations. In our approach, an auto-decoder feed-forward neural network learns the distribution of healthy images in the form of a mapping between spatial coordinates and probabilities over a proxy for tissue types. At inference time, the learnt distribution is used to retrieve, from a given test image, a restoration, i.e. an image maximally consistent with the input one but belonging to the healthy distribution. Anomalies are localized using the voxel-wise probability predicted by our model for the restored image. We tested our approach in the task of unsupervised localization of gliomas on brain MR images, and compared it to several others VAE-based anomaly detection methods. Results show that the proposed technique substantially outperforms them (average DICE 0.640 vs 0.518 for the best performing VAE-based alternative) while also requiring considerably less computing time. Link to paper https://doi.org/10.1007/978-3-030-87196-3_18 Link to the code repository https://github.com/snavalm/ifl_unsup_anom_det Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an anomaly detection method that relies on an implicit field learning mechanism. An auto-decoder is used to learn the latent distribution of intensity-encoded images and maps spatial coordinates to intensity cluster probabilities. In inference time, these probabilities are then used to compute a voxel-wise anomaly score. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed adaptations for implicit field networiks are interesting. With an auto-decoder based model, restored images are expected to be maximally faithful to the input image while complying with the healthy distribution. The implicit field mechanism, which learns voxel-wise mappings, decouple the trained model from the input image resolution and effectively increase the training size (results reported are based on trained models without data augmentation). Comparative results with VAE-based methods are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper lacks justifications of design choices such as the need for coordinate encoding and the benefits of the auto-decoder versus auto-encoder (given the compute time discussions in the results section). The proposed intensity encoding ignores spatial correlations, and relies on a subsequent denoising (mode-pooling). No discussion about how hyperparameters were select, e.g. number of clusters for intensity encoding. The paper does not report comparisons with GAN-based methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors made code and data available. The paper contains enough technical details for a reader to reproduce the method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html How are hyperparameters selected? What is the rationale behind the coordinate encoding function? Is using the coordinate values without encoding expected to have poor performance? Why are different mode-pooling filter sizes used for training and testing/validation sets? Is the proposed method expected to outperform GAN-based methods (e.g., AnoGAN, which rely on optimized latents)? Why or why not? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting adaptation to the implicit field networks for the anamoly detection task. Results and comparison with VAE-based methods are convincing. However, the paper needs to be revised to further expand on the justification of different design choices, the selection of hyperparameters, and comparisons with GAN-based methods. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes to use implicit representations for localized anomaly detection, which to the best of my knowledge is a novel approach to the problem. A distribution over healthy samples is learned via an auto-decoder. At test time, pixel-wise anomaly scores are constructed as negative log-likelihoods of the predicted intensity class probabilities (the authors bin intensities with k-means). Training on HCP and testing on BraTS 2018, the authors report impressive results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The methodology is novel and the results are very good Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some design decisions appear a bit arbitrary and it is not entirely clear, how much of the performance increase over baselines is due to the methodology and how much due to simpler steps like the post-processing. The method is only demonstrated on a single dataset. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that “Implementation, trained models and test sets are made publicly available” (although I don’t understand how the authors want to make BraTS data available without appropriate rights, and the data is available by request anyway) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I think your paper would benefit most from testing on more datasets. I trust that all baselines are tested on the binned intensities as well? What happens if you don’t do this binning, it’s not like your method is incapable of working with continuous values. The AS would be different, so I’m getting the feeling that results wouldn’t have been as impressive? Would be interesting to at least see results with a much larger number of classes. Why do you sample K random points instead of using the entire image for the latent codes (especially at test time)? Some processing steps seem somewhat ad-hoc, leaving me with the impression that they were only added to improve your model relative to the baselines. I’m specifically referring to the mode-pooling and the post-processing. Would be great to see ablations Baselines in 3D would make the paper even stronger, is there really nothing out there that you could have compared yourselves with? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method with very good results, presented clearly. More datasets would move this towards a clearer accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper introduces VAE anomaly detection methods based on Implicit field learning on 3D medical photographs. Experiments are conducted on brain MR images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is mostly well-written and clear. The proposed methods explore the use of implicit field learning in 3D medical images. The method achieves good performance in terms of AUC, although lacks some baselines(See comments below). Most of the aspects are described in sufficient detail to enable the reproduction of results. Anomaly detection based on voxels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation between original implicit field learning and the proposed one could better demonstrate the contributions of the paper. The paper shows the SOTA results when compared with VAEs. However, it lacks most important baselines in the table, such as anogan [ref1], f-anogan [ref2] , ADGAN [ref3] or Zimmerer et al. [ref4]. More detailed ablation studies would better clarify the contribution of different component. Reference: ref1: Schlegl, Thomas, et al. “Unsupervised anomaly detection with generative adversarial networks to guide marker discovery.” International conference on information processing in medical imaging. Springer, Cham, 2017. ref2: Schlegl, T., Seeböck, P., Waldstein, S.M., Langs, G. and Schmidt-Erfurth, U., 2019. f-AnoGAN: Fast unsupervised anomaly detection with generative adversarial networks. Medical image analysis, 54, pp.30-44. ref3: Liu, Y., Tian, Y., Maicas, G., Pu, L.Z.C.T., Singh, R., Verjans, J.W. and Carneiro, G., 2020, April. Photoshopping colonoscopy video frames. In 2020 IEEE 17th International Symposium on Biomedical Imaging (ISBI) (pp. 1-5). IEEE. ref4: Zimmerer, D., Kohl, S.A., Petersen, J., Isensee, F. and Maier-Hein, K.H., 2018. Context-encoding variational autoencoder for unsupervised anomaly detection. arXiv preprint arXiv:1812.05941. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claim to make sure the reproducibility of this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well writtee and clear to understand. However, I have some concern about the experiments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the technical novelty of the proposed method can be considered as sufficient. At the moment, there are several issues that can be addressed during the rebuttal. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The article received very positive reviews from all reviewers. There is clear technical novelty and experimental results back-up the novelty as well. I would like to raise two concerns for the authors. First is the large discrepancy between the results provided in the comparative study of Baur et al. (cited as [2]) and here. Can authors please explain this discrepancy? Second, can having an explicit dependence on coordinates create an adverse effect for other anatomies? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback Regarding hyper-parameters, pre-processing and AS post-processing, we used the validation set described in our submission to tune hyper-parameters, including the number of bins for intensities (we evaluated 7, 10 and 15), image smoothing, post-processing of Anomaly Scores (AS). In 3D-IF, using mode-pool kernels of size 3 produced slightly better result in the validation set (Kernel of size 3 increased [DICE] by ~0.015 vs size 2 and ~0.035 vs no mode-pooling). We used the same post-processing pipeline of AS in the baselines and in our method, (min-pooling + average pooling as proposed by authors of [6]), tuning as hyper-parameter the kernel-size of the average pooling layer. With regards encoding function, we do not expect performance to decrease significantly without it although we did not run the ablation. We included the encoding function relying on the empirical results shown in https://arxiv.org/abs/2003.08934. Authors justify the encoding function using the following statement “This is consistent with recent work by Rahaman et al. (2018), which shows that deep networks are biased towards learning lower frequency functions. They additionally show that mapping the inputs to a higher dimensional space using high frequency functions before passing them to the network enables better fitting of data that contains high frequency variation”. Regarding the baselines selected, based on the findings from the comparative study of Baur et al. (cited as [2]), TABLE IV (GB - Glioma dataset), it seems that VAE-based approaches outperform GAN-based ones in our task. This is why we included only the former in our experiments. Using DICE as metric, [2] results were as follows: VAE-restoration 0.435 (top-performing), VAE 0.374, f-AnoGAN 0.379 and Context VAE 0.333. Additionally, we included the baseline method [6] that proposed a different restoration method but was not included in the comparative study [2]. Baseline AS are as proposed by original authors and consequently do not include intensity bins. In future work, we intend to expand our comparisons by including experiments with IF trained to reconstruct continuous intensity values and VAE trained to reconstruct intensity bins. We expect that intensity bins / cross-entropy as Anomaly Scores will improve performance in VAEs compared to the standard L1/L2 distance, specially in anomalies with intensities near to the intensities of normal tissues. We assume that when using L1/L2 between image and reconstruction as Anomaly Score, only anomalies with very different intensities compared to normal tissues are identified. Using intensity bins + cross-entropy as AS will alleviate this issue. In our implementation of VAE baselines, we adapted the VQ-VAE architecture that authors of [6] made publicly available. As a result, our VAE is deeper than the one used in [2], used residual connections, batch-normalization and different activation functions. We also performed hyper-parameter tuning for the VAE baseline methods. The latent size performing best was only 10 ([2] used 128) and performance quickly degraded when increasing latent size (VAEs with larger latent sizes reconstructed anomalies). Our VAE with a more expressive architecture and a smaller latent space achieved 0.447 in our dataset (vs 0.374 in [2]). Additionally, when using the restoration approach to generate Anomaly Scores (AS), we could not replicate the findings from [2] and VAE-restoration underperformed the VAE reconstruction loss as AS (0.390 in our experiments vs 0.435 in [2]). As indicated in the last paragraph in Section 3, the network architecture differences could be limiting the effectivity of the restoration method (we hypothesize that residual connections or batch-normalization could be affecting the gradients w.r.t pixel intensities). We agree with the Reviewers on the need for additional experiments. In the future, we intend to test our approach with MS anomalies as proposed in [2] and different image modalities. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sergio Naval Marimont, Giacomo Tarroni Abstract We propose a novel unsupervised out-of-distribution detection method for medical images based on implicit fields image representations. In our approach, an auto-decoder feed-forward neural network learns the distribution of healthy images in the form of a mapping between spatial coordinates and probabilities over a proxy for tissue types. At inference time, the learnt distribution is used to retrieve, from a given test image, a restoration, i.e. an image maximally consistent with the input one but belonging to the healthy distribution. Anomalies are localized using the voxel-wise probability predicted by our model for the restored image. We tested our approach in the task of unsupervised localization of gliomas on brain MR images, and compared it to several others VAE-based anomaly detection methods. Results show that the proposed technique substantially outperforms them (average DICE 0.640 vs 0.518 for the best performing VAE-based alternative) while also requiring considerably less computing time. Link to paper https://doi.org/10.1007/978-3-030-87196-3_18 Link to the code repository https://github.com/snavalm/ifl_unsup_anom_det Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an anomaly detection method that relies on an implicit field learning mechanism. An auto-decoder is used to learn the latent distribution of intensity-encoded images and maps spatial coordinates to intensity cluster probabilities. In inference time, these probabilities are then used to compute a voxel-wise anomaly score. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed adaptations for implicit field networiks are interesting. With an auto-decoder based model, restored images are expected to be maximally faithful to the input image while complying with the healthy distribution. The implicit field mechanism, which learns voxel-wise mappings, decouple the trained model from the input image resolution and effectively increase the training size (results reported are based on trained models without data augmentation). Comparative results with VAE-based methods are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper lacks justifications of design choices such as the need for coordinate encoding and the benefits of the auto-decoder versus auto-encoder (given the compute time discussions in the results section). The proposed intensity encoding ignores spatial correlations, and relies on a subsequent denoising (mode-pooling). No discussion about how hyperparameters were select, e.g. number of clusters for intensity encoding. The paper does not report comparisons with GAN-based methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors made code and data available. The paper contains enough technical details for a reader to reproduce the method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html How are hyperparameters selected? What is the rationale behind the coordinate encoding function? Is using the coordinate values without encoding expected to have poor performance? Why are different mode-pooling filter sizes used for training and testing/validation sets? Is the proposed method expected to outperform GAN-based methods (e.g., AnoGAN, which rely on optimized latents)? Why or why not? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting adaptation to the implicit field networks for the anamoly detection task. Results and comparison with VAE-based methods are convincing. However, the paper needs to be revised to further expand on the justification of different design choices, the selection of hyperparameters, and comparisons with GAN-based methods. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes to use implicit representations for localized anomaly detection, which to the best of my knowledge is a novel approach to the problem. A distribution over healthy samples is learned via an auto-decoder. At test time, pixel-wise anomaly scores are constructed as negative log-likelihoods of the predicted intensity class probabilities (the authors bin intensities with k-means). Training on HCP and testing on BraTS 2018, the authors report impressive results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The methodology is novel and the results are very good Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some design decisions appear a bit arbitrary and it is not entirely clear, how much of the performance increase over baselines is due to the methodology and how much due to simpler steps like the post-processing. The method is only demonstrated on a single dataset. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that “Implementation, trained models and test sets are made publicly available” (although I don’t understand how the authors want to make BraTS data available without appropriate rights, and the data is available by request anyway) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I think your paper would benefit most from testing on more datasets. I trust that all baselines are tested on the binned intensities as well? What happens if you don’t do this binning, it’s not like your method is incapable of working with continuous values. The AS would be different, so I’m getting the feeling that results wouldn’t have been as impressive? Would be interesting to at least see results with a much larger number of classes. Why do you sample K random points instead of using the entire image for the latent codes (especially at test time)? Some processing steps seem somewhat ad-hoc, leaving me with the impression that they were only added to improve your model relative to the baselines. I’m specifically referring to the mode-pooling and the post-processing. Would be great to see ablations Baselines in 3D would make the paper even stronger, is there really nothing out there that you could have compared yourselves with? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method with very good results, presented clearly. More datasets would move this towards a clearer accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper introduces VAE anomaly detection methods based on Implicit field learning on 3D medical photographs. Experiments are conducted on brain MR images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is mostly well-written and clear. The proposed methods explore the use of implicit field learning in 3D medical images. The method achieves good performance in terms of AUC, although lacks some baselines(See comments below). Most of the aspects are described in sufficient detail to enable the reproduction of results. Anomaly detection based on voxels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation between original implicit field learning and the proposed one could better demonstrate the contributions of the paper. The paper shows the SOTA results when compared with VAEs. However, it lacks most important baselines in the table, such as anogan [ref1], f-anogan [ref2] , ADGAN [ref3] or Zimmerer et al. [ref4]. More detailed ablation studies would better clarify the contribution of different component. Reference: ref1: Schlegl, Thomas, et al. “Unsupervised anomaly detection with generative adversarial networks to guide marker discovery.” International conference on information processing in medical imaging. Springer, Cham, 2017. ref2: Schlegl, T., Seeböck, P., Waldstein, S.M., Langs, G. and Schmidt-Erfurth, U., 2019. f-AnoGAN: Fast unsupervised anomaly detection with generative adversarial networks. Medical image analysis, 54, pp.30-44. ref3: Liu, Y., Tian, Y., Maicas, G., Pu, L.Z.C.T., Singh, R., Verjans, J.W. and Carneiro, G., 2020, April. Photoshopping colonoscopy video frames. In 2020 IEEE 17th International Symposium on Biomedical Imaging (ISBI) (pp. 1-5). IEEE. ref4: Zimmerer, D., Kohl, S.A., Petersen, J., Isensee, F. and Maier-Hein, K.H., 2018. Context-encoding variational autoencoder for unsupervised anomaly detection. arXiv preprint arXiv:1812.05941. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claim to make sure the reproducibility of this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well writtee and clear to understand. However, I have some concern about the experiments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the technical novelty of the proposed method can be considered as sufficient. At the moment, there are several issues that can be addressed during the rebuttal. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The article received very positive reviews from all reviewers. There is clear technical novelty and experimental results back-up the novelty as well. I would like to raise two concerns for the authors. First is the large discrepancy between the results provided in the comparative study of Baur et al. (cited as [2]) and here. Can authors please explain this discrepancy? Second, can having an explicit dependence on coordinates create an adverse effect for other anatomies? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback Regarding hyper-parameters, pre-processing and AS post-processing, we used the validation set described in our submission to tune hyper-parameters, including the number of bins for intensities (we evaluated 7, 10 and 15), image smoothing, post-processing of Anomaly Scores (AS). In 3D-IF, using mode-pool kernels of size 3 produced slightly better result in the validation set (Kernel of size 3 increased [DICE] by ~0.015 vs size 2 and ~0.035 vs no mode-pooling). We used the same post-processing pipeline of AS in the baselines and in our method, (min-pooling + average pooling as proposed by authors of [6]), tuning as hyper-parameter the kernel-size of the average pooling layer. With regards encoding function, we do not expect performance to decrease significantly without it although we did not run the ablation. We included the encoding function relying on the empirical results shown in https://arxiv.org/abs/2003.08934. Authors justify the encoding function using the following statement “This is consistent with recent work by Rahaman et al. (2018), which shows that deep networks are biased towards learning lower frequency functions. They additionally show that mapping the inputs to a higher dimensional space using high frequency functions before passing them to the network enables better fitting of data that contains high frequency variation”. Regarding the baselines selected, based on the findings from the comparative study of Baur et al. (cited as [2]), TABLE IV (GB - Glioma dataset), it seems that VAE-based approaches outperform GAN-based ones in our task. This is why we included only the former in our experiments. Using DICE as metric, [2] results were as follows: VAE-restoration 0.435 (top-performing), VAE 0.374, f-AnoGAN 0.379 and Context VAE 0.333. Additionally, we included the baseline method [6] that proposed a different restoration method but was not included in the comparative study [2]. Baseline AS are as proposed by original authors and consequently do not include intensity bins. In future work, we intend to expand our comparisons by including experiments with IF trained to reconstruct continuous intensity values and VAE trained to reconstruct intensity bins. We expect that intensity bins / cross-entropy as Anomaly Scores will improve performance in VAEs compared to the standard L1/L2 distance, specially in anomalies with intensities near to the intensities of normal tissues. We assume that when using L1/L2 between image and reconstruction as Anomaly Score, only anomalies with very different intensities compared to normal tissues are identified. Using intensity bins + cross-entropy as AS will alleviate this issue. In our implementation of VAE baselines, we adapted the VQ-VAE architecture that authors of [6] made publicly available. As a result, our VAE is deeper than the one used in [2], used residual connections, batch-normalization and different activation functions. We also performed hyper-parameter tuning for the VAE baseline methods. The latent size performing best was only 10 ([2] used 128) and performance quickly degraded when increasing latent size (VAEs with larger latent sizes reconstructed anomalies). Our VAE with a more expressive architecture and a smaller latent space achieved 0.447 in our dataset (vs 0.374 in [2]). Additionally, when using the restoration approach to generate Anomaly Scores (AS), we could not replicate the findings from [2] and VAE-restoration underperformed the VAE reconstruction loss as AS (0.390 in our experiments vs 0.435 in [2]). As indicated in the last paragraph in Section 3, the network architecture differences could be limiting the effectivity of the restoration method (we hypothesize that residual connections or batch-normalization could be affecting the gradients w.r.t pixel intensities). We agree with the Reviewers on the need for additional experiments. In the future, we intend to test our approach with MS anomalies as proposed in [2] and different image modalities. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0217/12/31/Paper1188" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0217/12/31/Paper1188" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0217-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Implicit field learning for unsupervised anomaly detection in medical images" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0217/12/31/Paper1188"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0217/12/31/Paper1188","headline":"Implicit field learning for unsupervised anomaly detection in medical images","dateModified":"0218-01-01T00:00:00-05:17","datePublished":"0217-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Sergio Naval Marimont, Giacomo Tarroni Abstract We propose a novel unsupervised out-of-distribution detection method for medical images based on implicit fields image representations. In our approach, an auto-decoder feed-forward neural network learns the distribution of healthy images in the form of a mapping between spatial coordinates and probabilities over a proxy for tissue types. At inference time, the learnt distribution is used to retrieve, from a given test image, a restoration, i.e. an image maximally consistent with the input one but belonging to the healthy distribution. Anomalies are localized using the voxel-wise probability predicted by our model for the restored image. We tested our approach in the task of unsupervised localization of gliomas on brain MR images, and compared it to several others VAE-based anomaly detection methods. Results show that the proposed technique substantially outperforms them (average DICE 0.640 vs 0.518 for the best performing VAE-based alternative) while also requiring considerably less computing time. Link to paper https://doi.org/10.1007/978-3-030-87196-3_18 Link to the code repository https://github.com/snavalm/ifl_unsup_anom_det Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an anomaly detection method that relies on an implicit field learning mechanism. An auto-decoder is used to learn the latent distribution of intensity-encoded images and maps spatial coordinates to intensity cluster probabilities. In inference time, these probabilities are then used to compute a voxel-wise anomaly score. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed adaptations for implicit field networiks are interesting. With an auto-decoder based model, restored images are expected to be maximally faithful to the input image while complying with the healthy distribution. The implicit field mechanism, which learns voxel-wise mappings, decouple the trained model from the input image resolution and effectively increase the training size (results reported are based on trained models without data augmentation). Comparative results with VAE-based methods are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper lacks justifications of design choices such as the need for coordinate encoding and the benefits of the auto-decoder versus auto-encoder (given the compute time discussions in the results section). The proposed intensity encoding ignores spatial correlations, and relies on a subsequent denoising (mode-pooling). No discussion about how hyperparameters were select, e.g. number of clusters for intensity encoding. The paper does not report comparisons with GAN-based methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors made code and data available. The paper contains enough technical details for a reader to reproduce the method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html How are hyperparameters selected? What is the rationale behind the coordinate encoding function? Is using the coordinate values without encoding expected to have poor performance? Why are different mode-pooling filter sizes used for training and testing/validation sets? Is the proposed method expected to outperform GAN-based methods (e.g., AnoGAN, which rely on optimized latents)? Why or why not? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting adaptation to the implicit field networks for the anamoly detection task. Results and comparison with VAE-based methods are convincing. However, the paper needs to be revised to further expand on the justification of different design choices, the selection of hyperparameters, and comparisons with GAN-based methods. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes to use implicit representations for localized anomaly detection, which to the best of my knowledge is a novel approach to the problem. A distribution over healthy samples is learned via an auto-decoder. At test time, pixel-wise anomaly scores are constructed as negative log-likelihoods of the predicted intensity class probabilities (the authors bin intensities with k-means). Training on HCP and testing on BraTS 2018, the authors report impressive results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The methodology is novel and the results are very good Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some design decisions appear a bit arbitrary and it is not entirely clear, how much of the performance increase over baselines is due to the methodology and how much due to simpler steps like the post-processing. The method is only demonstrated on a single dataset. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that “Implementation, trained models and test sets are made publicly available” (although I don’t understand how the authors want to make BraTS data available without appropriate rights, and the data is available by request anyway) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I think your paper would benefit most from testing on more datasets. I trust that all baselines are tested on the binned intensities as well? What happens if you don’t do this binning, it’s not like your method is incapable of working with continuous values. The AS would be different, so I’m getting the feeling that results wouldn’t have been as impressive? Would be interesting to at least see results with a much larger number of classes. Why do you sample K random points instead of using the entire image for the latent codes (especially at test time)? Some processing steps seem somewhat ad-hoc, leaving me with the impression that they were only added to improve your model relative to the baselines. I’m specifically referring to the mode-pooling and the post-processing. Would be great to see ablations Baselines in 3D would make the paper even stronger, is there really nothing out there that you could have compared yourselves with? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method with very good results, presented clearly. More datasets would move this towards a clearer accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper introduces VAE anomaly detection methods based on Implicit field learning on 3D medical photographs. Experiments are conducted on brain MR images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is mostly well-written and clear. The proposed methods explore the use of implicit field learning in 3D medical images. The method achieves good performance in terms of AUC, although lacks some baselines(See comments below). Most of the aspects are described in sufficient detail to enable the reproduction of results. Anomaly detection based on voxels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation between original implicit field learning and the proposed one could better demonstrate the contributions of the paper. The paper shows the SOTA results when compared with VAEs. However, it lacks most important baselines in the table, such as anogan [ref1], f-anogan [ref2] , ADGAN [ref3] or Zimmerer et al. [ref4]. More detailed ablation studies would better clarify the contribution of different component. Reference: ref1: Schlegl, Thomas, et al. “Unsupervised anomaly detection with generative adversarial networks to guide marker discovery.” International conference on information processing in medical imaging. Springer, Cham, 2017. ref2: Schlegl, T., Seeböck, P., Waldstein, S.M., Langs, G. and Schmidt-Erfurth, U., 2019. f-AnoGAN: Fast unsupervised anomaly detection with generative adversarial networks. Medical image analysis, 54, pp.30-44. ref3: Liu, Y., Tian, Y., Maicas, G., Pu, L.Z.C.T., Singh, R., Verjans, J.W. and Carneiro, G., 2020, April. Photoshopping colonoscopy video frames. In 2020 IEEE 17th International Symposium on Biomedical Imaging (ISBI) (pp. 1-5). IEEE. ref4: Zimmerer, D., Kohl, S.A., Petersen, J., Isensee, F. and Maier-Hein, K.H., 2018. Context-encoding variational autoencoder for unsupervised anomaly detection. arXiv preprint arXiv:1812.05941. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claim to make sure the reproducibility of this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well writtee and clear to understand. However, I have some concern about the experiments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the technical novelty of the proposed method can be considered as sufficient. At the moment, there are several issues that can be addressed during the rebuttal. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The article received very positive reviews from all reviewers. There is clear technical novelty and experimental results back-up the novelty as well. I would like to raise two concerns for the authors. First is the large discrepancy between the results provided in the comparative study of Baur et al. (cited as [2]) and here. Can authors please explain this discrepancy? Second, can having an explicit dependence on coordinates create an adverse effect for other anatomies? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback Regarding hyper-parameters, pre-processing and AS post-processing, we used the validation set described in our submission to tune hyper-parameters, including the number of bins for intensities (we evaluated 7, 10 and 15), image smoothing, post-processing of Anomaly Scores (AS). In 3D-IF, using mode-pool kernels of size 3 produced slightly better result in the validation set (Kernel of size 3 increased [DICE] by ~0.015 vs size 2 and ~0.035 vs no mode-pooling). We used the same post-processing pipeline of AS in the baselines and in our method, (min-pooling + average pooling as proposed by authors of [6]), tuning as hyper-parameter the kernel-size of the average pooling layer. With regards encoding function, we do not expect performance to decrease significantly without it although we did not run the ablation. We included the encoding function relying on the empirical results shown in https://arxiv.org/abs/2003.08934. Authors justify the encoding function using the following statement “This is consistent with recent work by Rahaman et al. (2018), which shows that deep networks are biased towards learning lower frequency functions. They additionally show that mapping the inputs to a higher dimensional space using high frequency functions before passing them to the network enables better fitting of data that contains high frequency variation”. Regarding the baselines selected, based on the findings from the comparative study of Baur et al. (cited as [2]), TABLE IV (GB - Glioma dataset), it seems that VAE-based approaches outperform GAN-based ones in our task. This is why we included only the former in our experiments. Using DICE as metric, [2] results were as follows: VAE-restoration 0.435 (top-performing), VAE 0.374, f-AnoGAN 0.379 and Context VAE 0.333. Additionally, we included the baseline method [6] that proposed a different restoration method but was not included in the comparative study [2]. Baseline AS are as proposed by original authors and consequently do not include intensity bins. In future work, we intend to expand our comparisons by including experiments with IF trained to reconstruct continuous intensity values and VAE trained to reconstruct intensity bins. We expect that intensity bins / cross-entropy as Anomaly Scores will improve performance in VAEs compared to the standard L1/L2 distance, specially in anomalies with intensities near to the intensities of normal tissues. We assume that when using L1/L2 between image and reconstruction as Anomaly Score, only anomalies with very different intensities compared to normal tissues are identified. Using intensity bins + cross-entropy as AS will alleviate this issue. In our implementation of VAE baselines, we adapted the VQ-VAE architecture that authors of [6] made publicly available. As a result, our VAE is deeper than the one used in [2], used residual connections, batch-normalization and different activation functions. We also performed hyper-parameter tuning for the VAE baseline methods. The latent size performing best was only 10 ([2] used 128) and performance quickly degraded when increasing latent size (VAEs with larger latent sizes reconstructed anomalies). Our VAE with a more expressive architecture and a smaller latent space achieved 0.447 in our dataset (vs 0.374 in [2]). Additionally, when using the restoration approach to generate Anomaly Scores (AS), we could not replicate the findings from [2] and VAE-restoration underperformed the VAE reconstruction loss as AS (0.390 in our experiments vs 0.435 in [2]). As indicated in the last paragraph in Section 3, the network architecture differences could be limiting the effectivity of the restoration method (we hypothesize that residual connections or batch-normalization could be affecting the gradients w.r.t pixel intensities). We agree with the Reviewers on the need for additional experiments. In the future, we intend to test our approach with MS anomalies as proposed in [2] and different image modalities. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Naval Marimont, Sergio,Tarroni, Giacomo" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Implicit field learning for unsupervised anomaly detection in medical images</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Naval Marimont, Sergio"
+        class="post-tags">
+        Naval Marimont, Sergio
+      </a> |  
+      
+      <a href="kittywong/tags#Tarroni, Giacomo"
+        class="post-tags">
+        Tarroni, Giacomo
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Sergio Naval Marimont, Giacomo Tarroni
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>We propose a novel unsupervised out-of-distribution detection method for medical images based on implicit fields image representations. In our approach, an auto-decoder feed-forward neural network learns the distribution of healthy images in the form of a mapping between spatial coordinates and probabilities over a proxy for tissue types. At inference time, the learnt distribution is used to retrieve, from a given test image, a restoration, i.e. an image maximally consistent with the input one but belonging to the healthy distribution. Anomalies are localized using the voxel-wise probability predicted by our model for the restored image. We tested our approach in the task of unsupervised localization of gliomas on brain MR images, and compared it to several others VAE-based anomaly detection methods. Results show that the proposed technique substantially outperforms them (average DICE 0.640 vs 0.518 for the best performing VAE-based alternative) while also requiring considerably less computing time.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_18">https://doi.org/10.1007/978-3-030-87196-3_18</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/snavalm/ifl_unsup_anom_det
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents an anomaly detection method that relies on an implicit field learning mechanism. An auto-decoder is used to learn the latent distribution of intensity-encoded images and maps spatial coordinates to intensity cluster probabilities. In inference time, these probabilities are then used to compute a voxel-wise anomaly score.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Proposed adaptations for implicit field networiks are interesting.</li>
+        <li>With an auto-decoder based model, restored images are expected to be maximally faithful to the input image while complying with the healthy distribution.</li>
+        <li>The implicit field mechanism, which learns voxel-wise mappings, decouple the trained model from the input image resolution and effectively increase the training size (results reported are based on trained models without data augmentation).</li>
+        <li>Comparative results with VAE-based methods are convincing.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The paper lacks justifications of design choices such as the need for coordinate encoding and the benefits of the auto-decoder versus auto-encoder (given the compute time discussions in the results section).</li>
+        <li>The proposed intensity encoding ignores spatial correlations, and relies on a subsequent denoising (mode-pooling).</li>
+        <li>No discussion about how hyperparameters were select, e.g. number of clusters for intensity encoding.</li>
+        <li>The paper does not report comparisons with GAN-based methods.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>Authors made code and data available.</li>
+        <li>The paper contains enough technical details for a reader to reproduce the method.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>How are hyperparameters selected?</li>
+        <li>What is the rationale behind the coordinate encoding function? Is using the coordinate values without encoding expected to have poor performance?</li>
+        <li>Why are different mode-pooling filter sizes used for training and testing/validation sets?</li>
+        <li>Is the proposed method expected to outperform GAN-based methods (e.g., AnoGAN, which rely on optimized latents)? Why or why not?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper presents an interesting adaptation to the implicit field networks for the anamoly detection task. Results and comparison with VAE-based methods are convincing. However, the paper needs to be revised to further expand on the justification of different design choices, the selection of hyperparameters, and comparisons with GAN-based methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes to use implicit representations for localized anomaly detection, which to the best of my knowledge is a novel approach to the problem. A distribution over healthy samples is learned via an auto-decoder. At test time, pixel-wise anomaly scores are constructed as negative log-likelihoods of the predicted intensity class probabilities (the authors bin intensities with k-means). Training on HCP and testing on BraTS 2018, the authors report impressive results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The methodology is novel and the results are very good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Some design decisions appear a bit arbitrary and it is not entirely clear, how much of the performance increase over baselines is due to the methodology and how much due to simpler steps like the post-processing. The method is only demonstrated on a single dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors state that “Implementation, trained models and test sets are made publicly available” (although I don’t understand how the authors want to make BraTS data available without appropriate rights, and the data is available by request anyway)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I think your paper would benefit most from testing on more datasets.
+I trust that all baselines are tested on the binned intensities as well? What happens if you don’t do this binning, it’s not like your method is incapable of working with continuous values. The AS would be different, so I’m getting the feeling that results wouldn’t have been as impressive? Would be interesting to at least see results with a much larger number of classes.
+Why do you sample K random points instead of using the entire image for the latent codes (especially at test time)?
+Some processing steps seem somewhat ad-hoc, leaving me with the impression that they were only added to improve your model relative to the baselines. I’m specifically referring to the mode-pooling and the post-processing. Would be great to see ablations
+Baselines in 3D would make the paper even stronger, is there really nothing out there that you could have compared yourselves with?</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Novel method with very good results, presented clearly. More datasets would move this towards a clearer accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper introduces VAE anomaly detection methods based on Implicit field learning on 3D medical photographs. Experiments are conducted on brain MR images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The paper is mostly well-written and clear.</li>
+        <li>The proposed methods explore the use of implicit field learning in 3D medical images.</li>
+        <li>The method achieves good performance in terms of AUC, although lacks some baselines(See comments below).</li>
+        <li>Most of the aspects are described in sufficient detail to enable the reproduction of results.</li>
+        <li>Anomaly detection based on voxels.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>An ablation between original implicit field learning and the proposed one could better demonstrate the contributions of the paper.</li>
+        <li>The paper shows the SOTA results when compared with VAEs. However,  it lacks most important baselines in the table, such as anogan [ref1], f-anogan [ref2] , ADGAN [ref3] or Zimmerer et al. [ref4].</li>
+        <li>More detailed ablation studies would better clarify the contribution of different component.</li>
+      </ol>
+
+      <p>Reference:</p>
+
+      <p>ref1: Schlegl, Thomas, et al. “Unsupervised anomaly detection with generative adversarial networks to guide marker discovery.” International conference on information processing in medical imaging. Springer, Cham, 2017.</p>
+
+      <p>ref2: Schlegl, T., Seeböck, P., Waldstein, S.M., Langs, G. and Schmidt-Erfurth, U., 2019. f-AnoGAN: Fast unsupervised anomaly detection with generative adversarial networks. Medical image analysis, 54, pp.30-44.</p>
+
+      <p>ref3: Liu, Y., Tian, Y., Maicas, G., Pu, L.Z.C.T., Singh, R., Verjans, J.W. and Carneiro, G., 2020, April. Photoshopping colonoscopy video frames. In 2020 IEEE 17th International Symposium on Biomedical Imaging (ISBI) (pp. 1-5). IEEE.</p>
+
+      <p>ref4: Zimmerer, D., Kohl, S.A., Petersen, J., Isensee, F. and Maier-Hein, K.H., 2018. Context-encoding variational autoencoder for unsupervised anomaly detection. arXiv preprint arXiv:1812.05941.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The author claim to make sure the reproducibility of this work.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper is well writtee and clear to understand. However, I have some concern about the experiments.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Overall, the technical novelty of the proposed method can be considered as sufficient. At the moment, there are several issues that can be addressed during the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The article received very positive reviews from all reviewers. 
+There is clear technical novelty and experimental results back-up the novelty as well. 
+I would like to raise two concerns for the authors. 
+First is the large discrepancy between the results provided in the comparative study of Baur et al. (cited as [2]) and here. Can authors please explain this discrepancy? 
+Second, can having an explicit dependence on coordinates create an adverse effect for other anatomies?</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Regarding hyper-parameters, pre-processing and AS post-processing, we used the validation set described in our submission to tune hyper-parameters, including the number of bins for intensities (we evaluated 7, 10 and 15), image smoothing, post-processing of Anomaly Scores (AS). In 3D-IF, using mode-pool kernels of size 3 produced slightly better result in the validation set (Kernel of size 3 increased [DICE] by ~0.015 vs size 2 and ~0.035 vs no mode-pooling). We used the same post-processing pipeline of AS in the baselines and in our method, (min-pooling + average pooling as proposed by authors of [6]), tuning as hyper-parameter the kernel-size of the average pooling layer.</p>
+
+  <p>With regards encoding function, we do not expect performance to decrease significantly without it although we did not run the ablation. We included the encoding function relying on the empirical results shown in https://arxiv.org/abs/2003.08934. Authors justify the encoding function using the following statement “This is consistent with recent work by Rahaman et al. (2018), which shows that deep networks are biased towards learning lower frequency functions. They additionally show that mapping the inputs to a higher dimensional space using high frequency functions before passing them to the network enables better fitting of data that contains high frequency variation”.</p>
+
+  <p>Regarding the baselines selected, based on the findings from the comparative study of Baur et al. (cited as [2]), TABLE IV (GB - Glioma dataset), it seems that VAE-based approaches outperform GAN-based ones in our task. This is why we included only the former in our experiments. Using DICE as metric, [2] results were as follows: VAE-restoration 0.435 (top-performing), VAE 0.374, f-AnoGAN 0.379 and Context VAE 0.333. Additionally, we included the baseline method [6] that proposed a different restoration method but was not included in the comparative study [2].</p>
+
+  <p>Baseline AS are as proposed by original authors and consequently do not include intensity bins. In future work, we intend to expand our comparisons by including experiments with IF trained to reconstruct continuous intensity values and VAE trained to reconstruct intensity bins. We expect that intensity bins / cross-entropy as Anomaly Scores will improve performance in VAEs compared to the standard L1/L2 distance, specially in anomalies with intensities near to the intensities of normal tissues. We assume that when using L1/L2 between image and reconstruction as Anomaly Score, only anomalies with very different intensities compared to normal tissues are identified. Using intensity bins + cross-entropy as AS will alleviate this issue.</p>
+
+  <p>In our implementation of VAE baselines, we adapted the VQ-VAE architecture that authors of [6] made publicly available. As a result, our VAE is deeper than the one used in [2], used residual connections, batch-normalization and different activation functions. We also performed hyper-parameter tuning for the VAE baseline methods. The latent size performing best was only 10 ([2] used 128) and performance quickly degraded when increasing latent size (VAEs with larger latent sizes reconstructed anomalies). Our VAE with a more expressive architecture and a smaller latent space achieved 0.447 in our dataset (vs 0.374 in [2]). Additionally, when using the restoration approach to generate Anomaly Scores (AS), we could not replicate the findings from [2] and VAE-restoration underperformed the VAE reconstruction loss as AS (0.390 in our experiments vs 0.435 in [2]). As indicated in the last paragraph in Section 3, the network architecture differences could be limiting the effectivity of the restoration method (we hypothesize that residual connections or batch-normalization could be affecting the gradients w.r.t pixel intensities).</p>
+
+  <p>We agree with the Reviewers on the need for additional experiments. In the future, we intend to test our approach with MS anomalies as proposed in [2] and different image modalities.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0217-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0218-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Naval Marimont, Sergio"
+        class="post-category">
+        Naval Marimont, Sergio
+      </a> |  
+      
+      <a href="kittywong/tags#Tarroni, Giacomo"
+        class="post-category">
+        Tarroni, Giacomo
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0218/12/31/Paper1210">
+          Dual-Consistency Semi-Supervised Learning with Uncertainty Quantification for COVID-19 Lesion Segmentation from CT Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0216/12/31/Paper1110">
+          One-Shot Medical Landmark Detection
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Semi-supervised Meta-learning with Disentanglement for Domain-generalised Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Semi-supervised Meta-learning with Disentanglement for Domain-generalised Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiao Liu, Spyridon Thermos, Alison O’Neil, Sotirios A. Tsaftaris Abstract Generalising deep models to new data from new centres (termed here domains) remains a challenge. This is largely attributed to shifts in data statistics (domain shifts) across source and unseen domains. Recently, gradient-based meta-learning approaches where the training data are split into meta-train and meta-test sets to simulate and handle the domain shifts during training have shown improved generalisation performance. However, the current fully supervised meta-learning approaches are not scalable for medical image segmentation, where large effort is required to create pixel-wise annotations. Meanwhile, in a low data regime, the simulated domain shifts may not approximate the true domain shifts well across source and unseen domains. To address this problem, we propose a novel semi-supervised meta-learning framework with disentanglement. We explicitly model the representations related to domain shifts. Disentangling the representations and combining them to reconstruct the input image allows unlabeled data to be used to better approximate the true domain shifts for meta-learning. Hence, the model can achieve better generalisation performance, especially when there is a limited amount of labeled data. Experiments show that the proposed method is robust on different segmentation tasks and achieves state-of-the-art generalisation performance on two public benchmarks. Code will be made publicly available. Link to paper https://doi.org/10.1007/978-3-030-87196-3_29 Link to the code repository https://github.com/vios-s/DGNet Link to the dataset(s) https://www.ub.edu/mnms/ http://niftyweb.cs.ucl.ac.uk/challenge/index.php Reviews Review #1 Please describe the contribution of the paper This paper proposes a gradient-based meta learning approach for domain generalization which incorporates disentanglement. The authors propose to disentangle domain specific from common features using an unsupervised model (i.e. reconstructing the original image via an autoencoder, and incorporating a domain discriminator), enabling the use of unlabeled data to simulate domain shifts during training. The proposed segmentation network is composed of two main parts: a feature extraction network which learns domain independent anatomical features z, and a task network which takes these features and predicts segmentation masks. These networks are trained following a gradient-based meta-learning approach with different meta-train and meta-test objective functions, both of which incorporate a segmentation quality term (Dice) and extra terms focusing on improving feature disentanglement. The proposed method is evaluated using 2 mutli-centric datasets of cardiac and spinal cord images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To the best of my knowledge, combining feature disentanglement with meta-learning in the context of domain generalization for medical image segmentation is a novel contribution. The fact that the proposed framework enables the use of unlabelled images from multi-centric databases is especially interesting in the context of medical imaging, since this tends to be a common scenario in real clinical settings. The method is benchmarked against other state-of-the-art methods showing systematic improvement. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The results do not include the model performance when trained with annotated data from the target domain. This could serve as an upper bound in performance, useful to better highlight the improvements obtained by the proposed domain generalization framework. Only Dice was used as a metric for evaluation. In medical image segmentation it is important to complement this metric with contour-based indices like Hausdorff Distance. Even though the authors are reporting mean and standard deviation for the quantitative results shown in the tables, they do not perform statistical tests to ensure statistical significance of the differences between the mean Dice of their proposal and the other methods. Since the standard deviation in some cases is considerably big, I would suggest checking the statistical significance of the results, especially since they have marked in the reproducibility checklist “An analysis of statistical significance of reported differences in performance between methods”. I couldn’t find such analysis. The proposed framework has many components (feature extraction network, task network, disentanglement network, meta-learning training, many extra loss terms to improve feature disentanglement, among others), but the ablation study to understand the importance of every component is rather limited. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors are planning to release the code, which is important for reproducibility, especially in a meta-learning framework like the one proposed in this paper which has several components to be trained following a particular schedule. The authors marked “An analysis of statistical significance of reported differences in performance between methods” in the reproducibility checklist, but I couldn’t find such analysis. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear to me what the authors mean by ‘spatial features’ in page 2, when they say “We use spatial features as a representation of anatomy (z) and two vectors (s,d) to encode common or domain specific imaging characteristics”. Do they use the term ‘spatial features’ to refer to the fact that it is not a global vectorized representation, but instead a localized feature representation which still retains the grid-like structure of the input image and can be spatially mapped back to the original resolution? Please clarify this point. If the number of data-samples per center is enough, it would be nice to see the results obtained when training the backbone network including samples from the target domain. This should be an upper-bound in performance that would help to see how much extra improvement could be achieved. Moreover, if the method turns out to achieve even higher results than those obtained when training with samples from the target domain, this would show the importance of semi-supervised learning in leveraging unlabelled data. In equation 3, the authors state that “Note that all the losses do need ground-truth masks”. Did they mean “do NOT need”? Since I do not come from the meta-learning community, I’m not sure I completely understood how the training procedure for meta learning (described in section 2.1) is organized. In particular, for the meta-test step, could you clarify the sentence “Lmeta−test is computed using the updated parameters (ψ′,θ′), whilst the gradients are computed towards the original parameters (ψ,θ). “ ? How is this implemented in practice? In page 5, why by forcing the rank of Z to be the number of the segmentation classes, we encourage it to encode only globally-shared information? Maybe this is obvious for the authors, but I am not seeing it, so I think it would be important to clarify the rationale behind this idea in the manuscript. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, I like the idea of integrating disentanglement via reconstruction with meta-learning for domain generalization, and to the best of my knowledge, this is novel at least in the context of medical imaging. My main concerns with this work are the lack of important metrics like Hausdorff distance, lack of significance tests, missing an upper bound in performance by training with data from the target domain and a rather limited ablation study. The first three points could be easily included in the final manuscript if accepted. As for the last one, I understand that the page limit is a restriction to include a better ablation study. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors propose a semi-supervised meta-learning framework for domain generalisation in the low data regime. The proposed method consists of a disentalgement component which separates common and domain specific information. The proposed method achieves state-of-the-art performance on two public datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -The proposed method is well motivated by real-world medical image analysis problems. The proposed method is technically sound, and the technical details are described clearly. -The paper is well written and decently easy to follow. The background and the new method transitioned smoothly. -The experimental results look promising. The proposed method shows clear advantage over the existing methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -While we do not expect a MICCAI paper to cite all relevant machine learning papers on domain generalisation, it would be better to cover as many important works as possible. For example, the following two works [1][2] are also highly cited in domain generalisation. [1]Li, Ya, et al. “Deep domain generalization via conditional invariant adversarial networks.” Proceedings of the European Conference on Computer Vision (ECCV). 2018. [2]Carlucci, Fabio M., et al. “Domain generalization by solving jigsaw puzzles.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019. -In equation (3), the overall loss function consists of 6 terms, which makes it extremely hard to tune the hyperparameters. I am surprised that the hyperparameter can be taken from previous papers, because the whole objective is different. It would be better to perform some sensitiveness analysis. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance details are clear for reproducing the results Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html see weakness Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Well motivated work with good technical novelty and quality. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a semi-supervised meta-learning method to address the domain generalization problem in medical image segmentation, which improves over meta-learning by utilizing both labeled and unlabeled data from multiple source domains to better capture the realistic domain shifts. The proposed method is evaluated on two medical image segmentation tasks, and the experimental results demonstrate its effectiveness. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem of semi-supervised domain generalization in well motivated. The proposed method is rational and clearly elaborated. Appropriate evaluations and comparisons over SOTA are provided to validate the proposed method. Experiments are conducted on a strong baseline, i.e., nnUnet. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Only using Dice score is insufficient to provide comprehensive analysis for the segmentation results. Additional evaluation metrics such as average surface distance could be added. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors claim to release the code, and the datasets used in this paper are publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I didn’t spot typos in the paper. The figure 1 could be polished to improve its presentation. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of domain generalization by incorporating unlabeled data is well motivated and the proposed method is reasonable. Therefore, I recommend borderline accept for this paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There exists a consensus among reviewers that the proposed method to allow domain-generalization in medical image segmentation is interesting and novel. In general, reviewers believe that the proposed method is technically sound, well-motivated and the experiments showcase the higher performance of the proposed approach compared to the literature. Nevertheless, reviewers also highlight several limitations of the current work, mostly related to insufficient experiments. In particular, R1 points to a lack of an important ablation study on the different elements of the proposed approach in order to assess the impact of each of them and include an upper bound in the empirical evaluation, as well as to clarify several details in the methodology. This concern is also shared by R2 (sensitivity to weighting values in eq 3). Furthermore, R1 and R3 suggest to include other non-regional metrics to evaluate the performance of the proposed approach. Last, R2 suggests several relevant papers that might be included in prior works. Furthermore, this AC believes that authors should stress the main methodological differences wrt [17], as well as to include this method in the experimental results, as both works are very similar. I believe that despite the weaknesses highlighted by the reviewers this work can be accepted at MICCAI. I encourage the authors, however, to take these comments into consideration for the camera ready version as much as possible, particularly methodological differences with prior work and concerns on the experimental results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers and the meta-reviewer for their valuable comments regarding our novelty, technical contribution, and state-of-the-art performance. Responses to reviewers’ (R1, R2, and R3) and meta-reviewer’s (MR) critical comments follow, while straightforward comments will be nevertheless addressed in the camera-ready version: MR: Regarding the similarities of the work presented by Khandelwal et al. [17] with our approach, we acknowledge that both methods adopt meta-learning training strategy to learn a robust model for domain generalization, focusing on medical image segmentation. However, we report that there are major differences between the two methods. Contrary to the 3D UNet backbone used in [17], we use a content-style disentanglement model, and leverage meta-learning to encode generalizable disentangled representations. Additionally, while [17] presents a fully supervised setting, we propose a semi-supervised one to improve the robustness of the learnt representations by using unlabeled data from source domains. Apart from the differences between [17] and our method, we believe that SAML [25] – which extends [19] and [17] - is the state-of-the-art in medical image segmentation using a meta-learning approach, hence we compare our model with SAML in our experiments. Nevertheless, we plan to augment the manuscript with a more detailed discussion about the methodological similarities and differences between [17] and our method. R1: We agree with R1 about the upper-bound model (trained also with data from target domain) and statistical tests to demonstrate the statistical significance of our results. We plan to include both in the camera-ready version. Regarding the “spatial features”, we adopt the concept of content-style disentanglement, where the content is spatial (grid-like) to preserve the spatial correlations of the input image. About the low-rank loss, we adopt the conclusion about globally shared information is from previous studies, e.g. [22]. We plan to update this part of the manuscript, offering the required clarifications. In terms of model design, training setting, and losses, we build upon the literature and extensive early ablation experiments. Nevertheless, we will include a more comprehensive analysis of the components of the method, which may not be completely covered in the current version of the paper. R1 &amp; R2: Regarding the hyperparameters selection, we performed an extensive ablation study in our early experiments, and incorporated knowledge and feedback from our previous work (unfortunately the detailed analysis was not included due to the page limitation). However, we welcome the suggestion of the reviewers to provide at least the logic of the hyperparameter selection and we plan to add a relevant discussion in the camera-ready version. R1 &amp; R3: We agree with the suggestion of the reviewers for additional metrics that will complement DICE score in the segmentation task. We plan to augment our experiments section with the Hausdorff Distance results in the updated version. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiao Liu, Spyridon Thermos, Alison O’Neil, Sotirios A. Tsaftaris Abstract Generalising deep models to new data from new centres (termed here domains) remains a challenge. This is largely attributed to shifts in data statistics (domain shifts) across source and unseen domains. Recently, gradient-based meta-learning approaches where the training data are split into meta-train and meta-test sets to simulate and handle the domain shifts during training have shown improved generalisation performance. However, the current fully supervised meta-learning approaches are not scalable for medical image segmentation, where large effort is required to create pixel-wise annotations. Meanwhile, in a low data regime, the simulated domain shifts may not approximate the true domain shifts well across source and unseen domains. To address this problem, we propose a novel semi-supervised meta-learning framework with disentanglement. We explicitly model the representations related to domain shifts. Disentangling the representations and combining them to reconstruct the input image allows unlabeled data to be used to better approximate the true domain shifts for meta-learning. Hence, the model can achieve better generalisation performance, especially when there is a limited amount of labeled data. Experiments show that the proposed method is robust on different segmentation tasks and achieves state-of-the-art generalisation performance on two public benchmarks. Code will be made publicly available. Link to paper https://doi.org/10.1007/978-3-030-87196-3_29 Link to the code repository https://github.com/vios-s/DGNet Link to the dataset(s) https://www.ub.edu/mnms/ http://niftyweb.cs.ucl.ac.uk/challenge/index.php Reviews Review #1 Please describe the contribution of the paper This paper proposes a gradient-based meta learning approach for domain generalization which incorporates disentanglement. The authors propose to disentangle domain specific from common features using an unsupervised model (i.e. reconstructing the original image via an autoencoder, and incorporating a domain discriminator), enabling the use of unlabeled data to simulate domain shifts during training. The proposed segmentation network is composed of two main parts: a feature extraction network which learns domain independent anatomical features z, and a task network which takes these features and predicts segmentation masks. These networks are trained following a gradient-based meta-learning approach with different meta-train and meta-test objective functions, both of which incorporate a segmentation quality term (Dice) and extra terms focusing on improving feature disentanglement. The proposed method is evaluated using 2 mutli-centric datasets of cardiac and spinal cord images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To the best of my knowledge, combining feature disentanglement with meta-learning in the context of domain generalization for medical image segmentation is a novel contribution. The fact that the proposed framework enables the use of unlabelled images from multi-centric databases is especially interesting in the context of medical imaging, since this tends to be a common scenario in real clinical settings. The method is benchmarked against other state-of-the-art methods showing systematic improvement. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The results do not include the model performance when trained with annotated data from the target domain. This could serve as an upper bound in performance, useful to better highlight the improvements obtained by the proposed domain generalization framework. Only Dice was used as a metric for evaluation. In medical image segmentation it is important to complement this metric with contour-based indices like Hausdorff Distance. Even though the authors are reporting mean and standard deviation for the quantitative results shown in the tables, they do not perform statistical tests to ensure statistical significance of the differences between the mean Dice of their proposal and the other methods. Since the standard deviation in some cases is considerably big, I would suggest checking the statistical significance of the results, especially since they have marked in the reproducibility checklist “An analysis of statistical significance of reported differences in performance between methods”. I couldn’t find such analysis. The proposed framework has many components (feature extraction network, task network, disentanglement network, meta-learning training, many extra loss terms to improve feature disentanglement, among others), but the ablation study to understand the importance of every component is rather limited. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors are planning to release the code, which is important for reproducibility, especially in a meta-learning framework like the one proposed in this paper which has several components to be trained following a particular schedule. The authors marked “An analysis of statistical significance of reported differences in performance between methods” in the reproducibility checklist, but I couldn’t find such analysis. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear to me what the authors mean by ‘spatial features’ in page 2, when they say “We use spatial features as a representation of anatomy (z) and two vectors (s,d) to encode common or domain specific imaging characteristics”. Do they use the term ‘spatial features’ to refer to the fact that it is not a global vectorized representation, but instead a localized feature representation which still retains the grid-like structure of the input image and can be spatially mapped back to the original resolution? Please clarify this point. If the number of data-samples per center is enough, it would be nice to see the results obtained when training the backbone network including samples from the target domain. This should be an upper-bound in performance that would help to see how much extra improvement could be achieved. Moreover, if the method turns out to achieve even higher results than those obtained when training with samples from the target domain, this would show the importance of semi-supervised learning in leveraging unlabelled data. In equation 3, the authors state that “Note that all the losses do need ground-truth masks”. Did they mean “do NOT need”? Since I do not come from the meta-learning community, I’m not sure I completely understood how the training procedure for meta learning (described in section 2.1) is organized. In particular, for the meta-test step, could you clarify the sentence “Lmeta−test is computed using the updated parameters (ψ′,θ′), whilst the gradients are computed towards the original parameters (ψ,θ). “ ? How is this implemented in practice? In page 5, why by forcing the rank of Z to be the number of the segmentation classes, we encourage it to encode only globally-shared information? Maybe this is obvious for the authors, but I am not seeing it, so I think it would be important to clarify the rationale behind this idea in the manuscript. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, I like the idea of integrating disentanglement via reconstruction with meta-learning for domain generalization, and to the best of my knowledge, this is novel at least in the context of medical imaging. My main concerns with this work are the lack of important metrics like Hausdorff distance, lack of significance tests, missing an upper bound in performance by training with data from the target domain and a rather limited ablation study. The first three points could be easily included in the final manuscript if accepted. As for the last one, I understand that the page limit is a restriction to include a better ablation study. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors propose a semi-supervised meta-learning framework for domain generalisation in the low data regime. The proposed method consists of a disentalgement component which separates common and domain specific information. The proposed method achieves state-of-the-art performance on two public datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -The proposed method is well motivated by real-world medical image analysis problems. The proposed method is technically sound, and the technical details are described clearly. -The paper is well written and decently easy to follow. The background and the new method transitioned smoothly. -The experimental results look promising. The proposed method shows clear advantage over the existing methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -While we do not expect a MICCAI paper to cite all relevant machine learning papers on domain generalisation, it would be better to cover as many important works as possible. For example, the following two works [1][2] are also highly cited in domain generalisation. [1]Li, Ya, et al. “Deep domain generalization via conditional invariant adversarial networks.” Proceedings of the European Conference on Computer Vision (ECCV). 2018. [2]Carlucci, Fabio M., et al. “Domain generalization by solving jigsaw puzzles.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019. -In equation (3), the overall loss function consists of 6 terms, which makes it extremely hard to tune the hyperparameters. I am surprised that the hyperparameter can be taken from previous papers, because the whole objective is different. It would be better to perform some sensitiveness analysis. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance details are clear for reproducing the results Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html see weakness Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Well motivated work with good technical novelty and quality. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a semi-supervised meta-learning method to address the domain generalization problem in medical image segmentation, which improves over meta-learning by utilizing both labeled and unlabeled data from multiple source domains to better capture the realistic domain shifts. The proposed method is evaluated on two medical image segmentation tasks, and the experimental results demonstrate its effectiveness. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem of semi-supervised domain generalization in well motivated. The proposed method is rational and clearly elaborated. Appropriate evaluations and comparisons over SOTA are provided to validate the proposed method. Experiments are conducted on a strong baseline, i.e., nnUnet. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Only using Dice score is insufficient to provide comprehensive analysis for the segmentation results. Additional evaluation metrics such as average surface distance could be added. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors claim to release the code, and the datasets used in this paper are publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I didn’t spot typos in the paper. The figure 1 could be polished to improve its presentation. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of domain generalization by incorporating unlabeled data is well motivated and the proposed method is reasonable. Therefore, I recommend borderline accept for this paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There exists a consensus among reviewers that the proposed method to allow domain-generalization in medical image segmentation is interesting and novel. In general, reviewers believe that the proposed method is technically sound, well-motivated and the experiments showcase the higher performance of the proposed approach compared to the literature. Nevertheless, reviewers also highlight several limitations of the current work, mostly related to insufficient experiments. In particular, R1 points to a lack of an important ablation study on the different elements of the proposed approach in order to assess the impact of each of them and include an upper bound in the empirical evaluation, as well as to clarify several details in the methodology. This concern is also shared by R2 (sensitivity to weighting values in eq 3). Furthermore, R1 and R3 suggest to include other non-regional metrics to evaluate the performance of the proposed approach. Last, R2 suggests several relevant papers that might be included in prior works. Furthermore, this AC believes that authors should stress the main methodological differences wrt [17], as well as to include this method in the experimental results, as both works are very similar. I believe that despite the weaknesses highlighted by the reviewers this work can be accepted at MICCAI. I encourage the authors, however, to take these comments into consideration for the camera ready version as much as possible, particularly methodological differences with prior work and concerns on the experimental results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers and the meta-reviewer for their valuable comments regarding our novelty, technical contribution, and state-of-the-art performance. Responses to reviewers’ (R1, R2, and R3) and meta-reviewer’s (MR) critical comments follow, while straightforward comments will be nevertheless addressed in the camera-ready version: MR: Regarding the similarities of the work presented by Khandelwal et al. [17] with our approach, we acknowledge that both methods adopt meta-learning training strategy to learn a robust model for domain generalization, focusing on medical image segmentation. However, we report that there are major differences between the two methods. Contrary to the 3D UNet backbone used in [17], we use a content-style disentanglement model, and leverage meta-learning to encode generalizable disentangled representations. Additionally, while [17] presents a fully supervised setting, we propose a semi-supervised one to improve the robustness of the learnt representations by using unlabeled data from source domains. Apart from the differences between [17] and our method, we believe that SAML [25] – which extends [19] and [17] - is the state-of-the-art in medical image segmentation using a meta-learning approach, hence we compare our model with SAML in our experiments. Nevertheless, we plan to augment the manuscript with a more detailed discussion about the methodological similarities and differences between [17] and our method. R1: We agree with R1 about the upper-bound model (trained also with data from target domain) and statistical tests to demonstrate the statistical significance of our results. We plan to include both in the camera-ready version. Regarding the “spatial features”, we adopt the concept of content-style disentanglement, where the content is spatial (grid-like) to preserve the spatial correlations of the input image. About the low-rank loss, we adopt the conclusion about globally shared information is from previous studies, e.g. [22]. We plan to update this part of the manuscript, offering the required clarifications. In terms of model design, training setting, and losses, we build upon the literature and extensive early ablation experiments. Nevertheless, we will include a more comprehensive analysis of the components of the method, which may not be completely covered in the current version of the paper. R1 &amp; R2: Regarding the hyperparameters selection, we performed an extensive ablation study in our early experiments, and incorporated knowledge and feedback from our previous work (unfortunately the detailed analysis was not included due to the page limitation). However, we welcome the suggestion of the reviewers to provide at least the logic of the hyperparameter selection and we plan to add a relevant discussion in the camera-ready version. R1 &amp; R3: We agree with the suggestion of the reviewers for additional metrics that will complement DICE score in the segmentation task. We plan to augment our experiments section with the Hausdorff Distance results in the updated version. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0228/12/31/Paper0081" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0228/12/31/Paper0081" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0228-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Semi-supervised Meta-learning with Disentanglement for Domain-generalised Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0228/12/31/Paper0081"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0228/12/31/Paper0081","headline":"Semi-supervised Meta-learning with Disentanglement for Domain-generalised Medical Image Segmentation","dateModified":"0229-01-01T00:00:00-05:17","datePublished":"0228-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Xiao Liu, Spyridon Thermos, Alison O’Neil, Sotirios A. Tsaftaris Abstract Generalising deep models to new data from new centres (termed here domains) remains a challenge. This is largely attributed to shifts in data statistics (domain shifts) across source and unseen domains. Recently, gradient-based meta-learning approaches where the training data are split into meta-train and meta-test sets to simulate and handle the domain shifts during training have shown improved generalisation performance. However, the current fully supervised meta-learning approaches are not scalable for medical image segmentation, where large effort is required to create pixel-wise annotations. Meanwhile, in a low data regime, the simulated domain shifts may not approximate the true domain shifts well across source and unseen domains. To address this problem, we propose a novel semi-supervised meta-learning framework with disentanglement. We explicitly model the representations related to domain shifts. Disentangling the representations and combining them to reconstruct the input image allows unlabeled data to be used to better approximate the true domain shifts for meta-learning. Hence, the model can achieve better generalisation performance, especially when there is a limited amount of labeled data. Experiments show that the proposed method is robust on different segmentation tasks and achieves state-of-the-art generalisation performance on two public benchmarks. Code will be made publicly available. Link to paper https://doi.org/10.1007/978-3-030-87196-3_29 Link to the code repository https://github.com/vios-s/DGNet Link to the dataset(s) https://www.ub.edu/mnms/ http://niftyweb.cs.ucl.ac.uk/challenge/index.php Reviews Review #1 Please describe the contribution of the paper This paper proposes a gradient-based meta learning approach for domain generalization which incorporates disentanglement. The authors propose to disentangle domain specific from common features using an unsupervised model (i.e. reconstructing the original image via an autoencoder, and incorporating a domain discriminator), enabling the use of unlabeled data to simulate domain shifts during training. The proposed segmentation network is composed of two main parts: a feature extraction network which learns domain independent anatomical features z, and a task network which takes these features and predicts segmentation masks. These networks are trained following a gradient-based meta-learning approach with different meta-train and meta-test objective functions, both of which incorporate a segmentation quality term (Dice) and extra terms focusing on improving feature disentanglement. The proposed method is evaluated using 2 mutli-centric datasets of cardiac and spinal cord images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To the best of my knowledge, combining feature disentanglement with meta-learning in the context of domain generalization for medical image segmentation is a novel contribution. The fact that the proposed framework enables the use of unlabelled images from multi-centric databases is especially interesting in the context of medical imaging, since this tends to be a common scenario in real clinical settings. The method is benchmarked against other state-of-the-art methods showing systematic improvement. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The results do not include the model performance when trained with annotated data from the target domain. This could serve as an upper bound in performance, useful to better highlight the improvements obtained by the proposed domain generalization framework. Only Dice was used as a metric for evaluation. In medical image segmentation it is important to complement this metric with contour-based indices like Hausdorff Distance. Even though the authors are reporting mean and standard deviation for the quantitative results shown in the tables, they do not perform statistical tests to ensure statistical significance of the differences between the mean Dice of their proposal and the other methods. Since the standard deviation in some cases is considerably big, I would suggest checking the statistical significance of the results, especially since they have marked in the reproducibility checklist “An analysis of statistical significance of reported differences in performance between methods”. I couldn’t find such analysis. The proposed framework has many components (feature extraction network, task network, disentanglement network, meta-learning training, many extra loss terms to improve feature disentanglement, among others), but the ablation study to understand the importance of every component is rather limited. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors are planning to release the code, which is important for reproducibility, especially in a meta-learning framework like the one proposed in this paper which has several components to be trained following a particular schedule. The authors marked “An analysis of statistical significance of reported differences in performance between methods” in the reproducibility checklist, but I couldn’t find such analysis. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear to me what the authors mean by ‘spatial features’ in page 2, when they say “We use spatial features as a representation of anatomy (z) and two vectors (s,d) to encode common or domain specific imaging characteristics”. Do they use the term ‘spatial features’ to refer to the fact that it is not a global vectorized representation, but instead a localized feature representation which still retains the grid-like structure of the input image and can be spatially mapped back to the original resolution? Please clarify this point. If the number of data-samples per center is enough, it would be nice to see the results obtained when training the backbone network including samples from the target domain. This should be an upper-bound in performance that would help to see how much extra improvement could be achieved. Moreover, if the method turns out to achieve even higher results than those obtained when training with samples from the target domain, this would show the importance of semi-supervised learning in leveraging unlabelled data. In equation 3, the authors state that “Note that all the losses do need ground-truth masks”. Did they mean “do NOT need”? Since I do not come from the meta-learning community, I’m not sure I completely understood how the training procedure for meta learning (described in section 2.1) is organized. In particular, for the meta-test step, could you clarify the sentence “Lmeta−test is computed using the updated parameters (ψ′,θ′), whilst the gradients are computed towards the original parameters (ψ,θ). “ ? How is this implemented in practice? In page 5, why by forcing the rank of Z to be the number of the segmentation classes, we encourage it to encode only globally-shared information? Maybe this is obvious for the authors, but I am not seeing it, so I think it would be important to clarify the rationale behind this idea in the manuscript. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, I like the idea of integrating disentanglement via reconstruction with meta-learning for domain generalization, and to the best of my knowledge, this is novel at least in the context of medical imaging. My main concerns with this work are the lack of important metrics like Hausdorff distance, lack of significance tests, missing an upper bound in performance by training with data from the target domain and a rather limited ablation study. The first three points could be easily included in the final manuscript if accepted. As for the last one, I understand that the page limit is a restriction to include a better ablation study. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors propose a semi-supervised meta-learning framework for domain generalisation in the low data regime. The proposed method consists of a disentalgement component which separates common and domain specific information. The proposed method achieves state-of-the-art performance on two public datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -The proposed method is well motivated by real-world medical image analysis problems. The proposed method is technically sound, and the technical details are described clearly. -The paper is well written and decently easy to follow. The background and the new method transitioned smoothly. -The experimental results look promising. The proposed method shows clear advantage over the existing methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -While we do not expect a MICCAI paper to cite all relevant machine learning papers on domain generalisation, it would be better to cover as many important works as possible. For example, the following two works [1][2] are also highly cited in domain generalisation. [1]Li, Ya, et al. “Deep domain generalization via conditional invariant adversarial networks.” Proceedings of the European Conference on Computer Vision (ECCV). 2018. [2]Carlucci, Fabio M., et al. “Domain generalization by solving jigsaw puzzles.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019. -In equation (3), the overall loss function consists of 6 terms, which makes it extremely hard to tune the hyperparameters. I am surprised that the hyperparameter can be taken from previous papers, because the whole objective is different. It would be better to perform some sensitiveness analysis. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance details are clear for reproducing the results Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html see weakness Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Well motivated work with good technical novelty and quality. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a semi-supervised meta-learning method to address the domain generalization problem in medical image segmentation, which improves over meta-learning by utilizing both labeled and unlabeled data from multiple source domains to better capture the realistic domain shifts. The proposed method is evaluated on two medical image segmentation tasks, and the experimental results demonstrate its effectiveness. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem of semi-supervised domain generalization in well motivated. The proposed method is rational and clearly elaborated. Appropriate evaluations and comparisons over SOTA are provided to validate the proposed method. Experiments are conducted on a strong baseline, i.e., nnUnet. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Only using Dice score is insufficient to provide comprehensive analysis for the segmentation results. Additional evaluation metrics such as average surface distance could be added. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors claim to release the code, and the datasets used in this paper are publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I didn’t spot typos in the paper. The figure 1 could be polished to improve its presentation. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of domain generalization by incorporating unlabeled data is well motivated and the proposed method is reasonable. Therefore, I recommend borderline accept for this paper. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There exists a consensus among reviewers that the proposed method to allow domain-generalization in medical image segmentation is interesting and novel. In general, reviewers believe that the proposed method is technically sound, well-motivated and the experiments showcase the higher performance of the proposed approach compared to the literature. Nevertheless, reviewers also highlight several limitations of the current work, mostly related to insufficient experiments. In particular, R1 points to a lack of an important ablation study on the different elements of the proposed approach in order to assess the impact of each of them and include an upper bound in the empirical evaluation, as well as to clarify several details in the methodology. This concern is also shared by R2 (sensitivity to weighting values in eq 3). Furthermore, R1 and R3 suggest to include other non-regional metrics to evaluate the performance of the proposed approach. Last, R2 suggests several relevant papers that might be included in prior works. Furthermore, this AC believes that authors should stress the main methodological differences wrt [17], as well as to include this method in the experimental results, as both works are very similar. I believe that despite the weaknesses highlighted by the reviewers this work can be accepted at MICCAI. I encourage the authors, however, to take these comments into consideration for the camera ready version as much as possible, particularly methodological differences with prior work and concerns on the experimental results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers and the meta-reviewer for their valuable comments regarding our novelty, technical contribution, and state-of-the-art performance. Responses to reviewers’ (R1, R2, and R3) and meta-reviewer’s (MR) critical comments follow, while straightforward comments will be nevertheless addressed in the camera-ready version: MR: Regarding the similarities of the work presented by Khandelwal et al. [17] with our approach, we acknowledge that both methods adopt meta-learning training strategy to learn a robust model for domain generalization, focusing on medical image segmentation. However, we report that there are major differences between the two methods. Contrary to the 3D UNet backbone used in [17], we use a content-style disentanglement model, and leverage meta-learning to encode generalizable disentangled representations. Additionally, while [17] presents a fully supervised setting, we propose a semi-supervised one to improve the robustness of the learnt representations by using unlabeled data from source domains. Apart from the differences between [17] and our method, we believe that SAML [25] – which extends [19] and [17] - is the state-of-the-art in medical image segmentation using a meta-learning approach, hence we compare our model with SAML in our experiments. Nevertheless, we plan to augment the manuscript with a more detailed discussion about the methodological similarities and differences between [17] and our method. R1: We agree with R1 about the upper-bound model (trained also with data from target domain) and statistical tests to demonstrate the statistical significance of our results. We plan to include both in the camera-ready version. Regarding the “spatial features”, we adopt the concept of content-style disentanglement, where the content is spatial (grid-like) to preserve the spatial correlations of the input image. About the low-rank loss, we adopt the conclusion about globally shared information is from previous studies, e.g. [22]. We plan to update this part of the manuscript, offering the required clarifications. In terms of model design, training setting, and losses, we build upon the literature and extensive early ablation experiments. Nevertheless, we will include a more comprehensive analysis of the components of the method, which may not be completely covered in the current version of the paper. R1 &amp; R2: Regarding the hyperparameters selection, we performed an extensive ablation study in our early experiments, and incorporated knowledge and feedback from our previous work (unfortunately the detailed analysis was not included due to the page limitation). However, we welcome the suggestion of the reviewers to provide at least the logic of the hyperparameter selection and we plan to add a relevant discussion in the camera-ready version. R1 &amp; R3: We agree with the suggestion of the reviewers for additional metrics that will complement DICE score in the segmentation task. We plan to augment our experiments section with the Hausdorff Distance results in the updated version. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Liu, Xiao,Thermos, Spyridon,O'Neil, Alison,Tsaftaris, Sotirios A." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Semi-supervised Meta-learning with Disentanglement for Domain-generalised Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Liu, Xiao"
+        class="post-tags">
+        Liu, Xiao
+      </a> |  
+      
+      <a href="kittywong/tags#Thermos, Spyridon"
+        class="post-tags">
+        Thermos, Spyridon
+      </a> |  
+      
+      <a href="kittywong/tags#O'Neil, Alison"
+        class="post-tags">
+        O'Neil, Alison
+      </a> |  
+      
+      <a href="kittywong/tags#Tsaftaris, Sotirios A."
+        class="post-tags">
+        Tsaftaris, Sotirios A.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Xiao Liu, Spyridon Thermos, Alison O’Neil, Sotirios A. Tsaftaris
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Generalising deep models to new data from new centres (termed here domains) remains a challenge. This is largely attributed to shifts in data statistics (domain shifts) across source and unseen domains. Recently, gradient-based meta-learning approaches where the training data are split into meta-train and meta-test sets to simulate and handle the domain shifts during training have shown improved generalisation performance. However, the current fully supervised meta-learning approaches are not scalable for medical image segmentation, where large effort is required to create pixel-wise annotations. Meanwhile, in a low data regime, the simulated domain shifts may not approximate the true domain shifts well across source and unseen domains. To address this problem, we propose a novel semi-supervised meta-learning framework with disentanglement. We explicitly model the representations related to domain shifts. Disentangling the representations and combining them to reconstruct the input image allows unlabeled data to be used to better approximate the true domain shifts for meta-learning. Hence, the model can achieve better generalisation performance, especially when there is a limited amount of labeled data. Experiments show that the proposed method is robust on different segmentation tasks and achieves state-of-the-art generalisation performance on two public benchmarks. Code will be made publicly available.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_29">https://doi.org/10.1007/978-3-030-87196-3_29</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/vios-s/DGNet
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.ub.edu/mnms/
+http://niftyweb.cs.ucl.ac.uk/challenge/index.php
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a gradient-based meta learning approach for domain generalization which incorporates disentanglement. The authors propose to disentangle domain specific from common features using an unsupervised model (i.e. reconstructing the original image via an autoencoder, and incorporating a domain discriminator), enabling the use of unlabeled data to simulate domain shifts during training. The proposed segmentation network is composed of two main parts: a feature extraction network which learns domain independent anatomical features z, and a task network which takes these features and predicts segmentation masks. These networks are trained following a gradient-based meta-learning approach with different meta-train and meta-test objective functions, both of which incorporate a segmentation quality term (Dice) and extra terms focusing on improving feature disentanglement. The proposed method is evaluated using 2 mutli-centric datasets of cardiac and spinal cord images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>To the best of my knowledge, combining feature disentanglement with meta-learning in the context of domain generalization for medical image segmentation is a novel contribution.</p>
+        </li>
+        <li>
+          <p>The fact that the proposed framework enables the use of unlabelled images from multi-centric databases is especially interesting in the context of medical imaging, since this tends to be a common scenario in real clinical settings.</p>
+        </li>
+        <li>
+          <p>The method is benchmarked against other state-of-the-art methods showing systematic improvement.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The results do not include the model performance when trained with annotated data from the target domain. This could serve as an upper bound in performance, useful to better highlight the improvements obtained by the proposed domain generalization framework.</p>
+        </li>
+        <li>
+          <p>Only Dice was used as a metric for evaluation. In medical image segmentation it is important to complement this metric with contour-based indices like Hausdorff Distance.</p>
+        </li>
+        <li>
+          <p>Even though the authors are reporting mean and standard deviation for the quantitative results shown in the tables, they do not perform statistical tests to ensure statistical significance of the differences between the mean Dice of their proposal and the other methods. Since the standard deviation in some cases is considerably big, I would suggest checking the statistical significance of the results, especially since they have marked in the reproducibility checklist “An analysis of statistical significance of reported differences in performance between methods”. I couldn’t find such analysis.</p>
+        </li>
+        <li>
+          <p>The proposed framework has many components (feature extraction network, task network, disentanglement network, meta-learning training, many extra loss terms to improve feature disentanglement, among others), but the ablation study to understand the importance of every component is rather limited.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The authors are planning to release the code, which is important for reproducibility, especially in a meta-learning framework like the one proposed in this paper which has several components to be trained following a particular schedule.</p>
+        </li>
+        <li>
+          <p>The authors marked  “An analysis of statistical significance of reported differences in performance between methods” in the reproducibility checklist, but I couldn’t find such analysis.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>It is not clear to me what the authors mean by ‘spatial features’ in page 2, when they say “We use spatial features as a representation of anatomy (z) and two vectors (s,d) to encode common or domain specific imaging characteristics”. Do they use the term ‘spatial features’ to refer to the fact that it is not a global vectorized representation, but instead a localized feature representation which still retains the grid-like structure of the input image and can be spatially mapped back to the original resolution? Please clarify this point.</p>
+        </li>
+        <li>
+          <p>If the number of data-samples per center is enough, it would be nice to see the results obtained when training the backbone network including samples from the target domain. This should be an upper-bound in performance that would help to see how much extra improvement could be achieved. Moreover, if the method turns out to achieve even higher results than those obtained when training with samples from the target domain, this would show the importance of semi-supervised learning in leveraging unlabelled data.</p>
+        </li>
+        <li>
+          <p>In equation 3, the authors state that “Note that all the losses do need ground-truth masks”. Did they mean “do NOT need”?</p>
+        </li>
+        <li>
+          <p>Since I do not come from the meta-learning community, I’m not sure I completely understood how the training procedure for meta learning (described in section 2.1) is organized. In particular, for the meta-test step, could you clarify the sentence “Lmeta−test is computed using the updated parameters (ψ′,θ′), whilst the gradients are computed towards the original parameters (ψ,θ). “ ? How is this implemented in practice?</p>
+        </li>
+        <li>
+          <p>In page 5, why by forcing the rank of Z to be the number of the segmentation classes, we encourage it to encode only globally-shared information? Maybe this is obvious for the authors, but I am not seeing it, so I think it would be important to clarify the rationale behind this idea in the manuscript.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Overall, I like the idea of integrating disentanglement via reconstruction with meta-learning for domain generalization, and to the best of my knowledge, this is novel at least in the context of medical imaging. My main concerns with this work are the lack of important metrics like Hausdorff distance, lack of significance tests, missing an upper bound in performance by training with data from the target domain and a rather limited ablation study. The first three points could be easily included in the final manuscript if accepted. As for the last one, I understand that the page limit is a restriction to include a better ablation study.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the authors propose a semi-supervised meta-learning framework for domain generalisation in the low data regime. The proposed method consists of a disentalgement component which separates common and domain specific information. The proposed method achieves state-of-the-art performance on two public datasets.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>-The proposed method is well motivated by real-world medical image analysis problems. The proposed method is technically sound, and the technical details are described clearly.</p>
+
+      <p>-The paper is well written and decently easy to follow. The background and the new method transitioned smoothly.</p>
+
+      <p>-The experimental results look promising. The proposed method shows clear advantage over the existing methods.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>-While we do not expect a MICCAI paper to cite all relevant machine learning papers on domain generalisation, it would be better to cover as many important works as possible. For example, the following two works [1][2] are also highly cited in domain generalisation. 
+[1]Li, Ya, et al. “Deep domain generalization via conditional invariant adversarial networks.” Proceedings of the European Conference on Computer Vision (ECCV). 2018.
+[2]Carlucci, Fabio M., et al. “Domain generalization by solving jigsaw puzzles.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019.
+-In equation (3), the overall loss function consists of 6 terms, which makes it extremely hard to tune the hyperparameters. I am surprised that the hyperparameter can be taken from previous papers, because the whole objective is different. It would be better to perform some sensitiveness analysis.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>details are clear for reproducing the results</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>see weakness</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Well motivated work with good technical novelty and quality.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a semi-supervised meta-learning method to address the domain generalization problem in medical image segmentation, which improves over meta-learning by utilizing both labeled and unlabeled data from multiple source domains to better capture the realistic domain shifts. The proposed method is evaluated on two medical image segmentation tasks, and the experimental results demonstrate its effectiveness.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The problem of semi-supervised domain generalization in well motivated.</li>
+        <li>The proposed method is rational and clearly elaborated.</li>
+        <li>Appropriate evaluations and comparisons over SOTA are provided to validate the proposed method.</li>
+        <li>Experiments are conducted on a strong baseline, i.e., nnUnet.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>Only using Dice score is insufficient to provide comprehensive analysis for the segmentation results. Additional evaluation metrics such as average surface distance could be added.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors claim to release the code, and the datasets used in this paper are publicly available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>I didn’t spot typos in the paper.</li>
+        <li>The figure 1 could be polished to improve its presentation.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The problem of domain generalization by incorporating unlabeled data is well motivated and the proposed method is reasonable. Therefore, I recommend borderline accept for this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>There exists a consensus among reviewers that the proposed method to allow domain-generalization in medical image segmentation is interesting and novel. In general, reviewers believe that the proposed method is technically sound, well-motivated and the experiments showcase the higher performance of the proposed approach compared to the literature. Nevertheless, reviewers also highlight several limitations of the current work, mostly related to insufficient experiments. In particular, R1 points to a lack of an important ablation study on the different elements of the proposed approach in order to assess the impact of each of them and include an upper bound in the empirical evaluation, as well as to clarify several details in the methodology. This concern is also shared by R2 (sensitivity to weighting values in eq 3). Furthermore, R1 and R3 suggest to include other non-regional metrics to evaluate the performance of the proposed approach. Last, R2 suggests several relevant papers that might be included in prior works. Furthermore, this AC believes that authors should stress the main methodological differences wrt [17], as well as to include this method in the experimental results, as both works are very similar. I believe that despite the weaknesses highlighted by the reviewers this work can be accepted at MICCAI. I encourage the authors, however, to take these comments into consideration for the camera ready version as much as possible, particularly methodological differences with prior work and concerns on the experimental results.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers and the meta-reviewer for their valuable comments regarding our novelty, technical contribution, and state-of-the-art performance. Responses to reviewers’ (R1, R2, and R3) and meta-reviewer’s (MR) critical comments follow, while straightforward comments will be nevertheless addressed in the camera-ready version:</p>
+
+  <p>MR: Regarding the similarities of the work presented by Khandelwal et al. [17] with our approach, we acknowledge that both methods adopt meta-learning training strategy to learn a robust model for domain generalization, focusing on medical image segmentation. However, we report that there are major differences between the two methods. Contrary to the 3D UNet backbone used in [17], we use a content-style disentanglement model, and leverage meta-learning to encode generalizable disentangled representations. Additionally, while [17] presents a fully supervised setting, we propose a semi-supervised one to improve the robustness of the learnt representations by using unlabeled data from source domains. Apart from the differences between [17] and our method, we believe that SAML [25] – which extends [19] and [17] - is the state-of-the-art in medical image segmentation using a meta-learning approach, hence we compare our model with SAML in our experiments. Nevertheless, we plan to augment the manuscript with a more detailed discussion about the methodological similarities and differences between [17] and our method.</p>
+
+  <p>R1: We agree with R1 about the upper-bound model (trained also with data from target domain) and statistical tests to demonstrate the statistical significance of our results. We plan to include both in the camera-ready version. Regarding the “spatial features”, we adopt the concept of content-style disentanglement, where the content is spatial (grid-like) to preserve the spatial correlations of the input image. About the low-rank loss, we adopt the conclusion about globally shared information is from previous studies, e.g. [22]. We plan to update this part of the manuscript, offering the required clarifications. In terms of model design, training setting, and losses, we build upon the literature and extensive early ablation experiments. Nevertheless, we will include a more comprehensive analysis of the components of the method, which may not be completely covered in the current version of the paper.</p>
+
+  <p>R1 &amp; R2: Regarding the hyperparameters selection, we performed an extensive ablation study in our early experiments, and incorporated knowledge and feedback from our previous work (unfortunately the detailed analysis was not included due to the page limitation). However, we welcome the suggestion of the reviewers to provide at least the logic of the hyperparameter selection and we plan to add a relevant discussion in the camera-ready version.</p>
+
+  <p>R1 &amp; R3: We agree with the suggestion of the reviewers for additional metrics that will complement DICE score in the segmentation task. We plan to augment our experiments section with the Hausdorff Distance results in the updated version.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0228-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0229-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Liu, Xiao"
+        class="post-category">
+        Liu, Xiao
+      </a> |  
+      
+      <a href="kittywong/tags#Thermos, Spyridon"
+        class="post-category">
+        Thermos, Spyridon
+      </a> |  
+      
+      <a href="kittywong/tags#O'Neil, Alison"
+        class="post-category">
+        O'Neil, Alison
+      </a> |  
+      
+      <a href="kittywong/tags#Tsaftaris, Sotirios A."
+        class="post-category">
+        Tsaftaris, Sotirios A.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0229/12/31/Paper0084">
+          Efficient Semi-Supervised Gross Target Volume of Nasopharyngeal Carcinoma Segmentation via Uncertainty Rectified Pyramid Consistency
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0227/12/31/Paper0025">
+          Semi-supervised Left Atrium Segmentation with Mutual Consistency Training
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Personalized Respiratory Motion Model Using Conditional Generative Networks for MR-Guided Radiotherapy | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Personalized Respiratory Motion Model Using Conditional Generative Networks for MR-Guided Radiotherapy" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Liset Vázquez Romaguera, Tal Mezheritsky, Samuel Kadoury Abstract MRI-guided radiotherapy systems enable real-time 2D cine acquisitions for target monitoring, but cannot provide volumetric information due to spatio-temporal constraints. Hence, respiratory motion models coupled with a temporal predictive mechanism are a suitable solution to enable ahead-of-time 3D tumor and anatomy tracking in combination with real-time online plan adaptation. We propose a novel subject-specific probabilistic model to enable 3D+t predictions from image-based surrogates during radiotherapy treatments. The model is trained end-to-end to simultaneously capture and learn a distribution of realistic motion fields over a population dataset. Furthermore, the distribution is conditioned on a sequence of partial observations, which can be extrapolated in time using a seq2seq-inspired mechanism allowing for scalable predictive horizon. Based on the generative properties of conditional variational autoencoders, it integrates anatomical features and temporal information to construct an interpretable latent space with respiratory phase discrimination. The choice of a probabilistic framework allows improving uncertainty estimation during the volume generation phase. Experimental validation on 25 subjects demonstrates the potential of the proposed model, which achieves a mean landmark error of 1.4 (1.1) mm, yielding statistically significant improvements over state-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_23 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper propses a deep learning-based method for intra-interventional 3D respiratory motion estimation in MR-guided radiation therapy using population-based as well as patient-specific information. The method is capable of producing dense 3D motion estimates for the treatment region based on single 2D slices acquired in realtime during the treatment. To do so, the authors use a conditional variational autoencoder that acts as a motion model and they, furthermore, couple this model with a predictive network to overcome latencies between slice acquistion and beam adaptation. The framework is evaluated on spatio-temporal MRI liver sequences of 25 healthy subjects and is shown to outperform competing approaches in terms of geometric motion prediction/estimation accuracy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper tackles a clinically important problem (3D motion estimation in MR-guided RT + prediction to overcome latencies) New framework Relatively large database for evaluation (25 subjects with 20 minutes of motion) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incremental work Many unsubstantiated claims Paper is hard to understand Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Image data acquisition process is described Parameters used to to train the network are given. However, I would have liked to see an exact definition of all network architectures in the suppl. material. Code is not available Image data is not available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I see two major problems with the paper, which prevent me from recommending its acceptance: 1) Incremental work/Lack of novelty + unsubstantiated claims While I appreciate the authors’ idea to combine motion estimation and prediction in a single framework, I believe that the approach presented here is highly incremental. It consists of well-known, standard deep learning approaches (conditional VAE + seq2seq-based temporal prediction mechanism) and while the authors’ state that they ‘introduce a novel conditional model’, they do not really provide evidence for this claim. Three examples: How does this model, for example, compare to other deep learning-based motion models that include temporal information like A, which also uses a cVAE? The authors claim that ‘a probabilistic framework allows improving uncertainty estimation during the volume generation phase’. I agree with this general statement, but as far as I can see, the model’s potential probabilistic capabilities are never really utilized in the paper. The authors also claim that ‘a latent space capable to discriminate and visualize respiratory phases and the ability to provide uncertainty measures over the model’s predictions […] make the results more interpretable for clinical procedures’. Where can this be seen in the paper? Both of those claims would indeed be valuable (and potentially novel) contributions but I fail to see them being presented in a convincing manner in the paper. 2) The paper is hard to understand The paper contains a lot of details and information, but in my mind it fails to really explain how the whole model framework is actually being built and trained. From the descriptions in Sec. 2, I find it extremely hard to understand what information is actually being used (1) to train the population-based model, (2) to perform the personalization prior to treatment, (3) to do the intra-interventional estimation/prediction. This information may all be in there, but as there is no real differentiation between the different phases of model training &amp; application in Sec. 2, it is hard to see what is being done at what stage. I especially fail to see how the personalization of the pre-trained population model is done, which is according to the authors a major feature of their approach. Additional comments: How reliable are the results? While it is being shown that the new approach significantly outperforms all baseline approaches, the differences, for example, between the more traditional PCA approach and the proposed framework are rather small, especially when taking the large spacing of the image data being used here into account (accuracies reported: 1-2 mm; spacing ~3 mm). This should be discussed in the paper. Furthermore, it seems as the landmark-based evaluation was only performed on a rather small part of the 20 minute data (last minute). Implications of this should also be discussed. Based on the description being provided, I fail to fully understand the variability really modeled by the cVAE. Is the model able to disentangle inter-subject anatomical differences from motion differences? If so, how is that being done if all data is only rigidly aligned prior to training? If not, wouldn’t that invalidate any uncertainty assessments based on the cVAE’s distribution as it always contains a mixture of both sources of variability? To allow for better comparison to other approaches, it would have been nice to see some results on publicly available data like [B,C]. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my mind, this paper presents incremental work and the paper is written in a way that is not up to MICCAI standards, which makes it really hard to find out what the authors really do/propose. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a novel automatic pipeline for respiratory motion modeling for MR-guided radiotherapy. The method is based on a conditional VAE formulation. The network architecture integrates multiple steps for registration (using voxelmorph), motion field modeling (using [25]), and temporal prediction (using [27]). As such, it is a novel combination of known components to deal with an important clinical problem. A custom dataset of 25 volunteers is created on a clinical MRI scanner. The method is evaluated using leave-one-out cross validation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel integration of multiple deep learning technologies to tackle the clinical problem of MR-guided radiotherapy. Demonstrats its feasibility! Fast runtime during inference would make clinical application feasible Clinical Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Small dataset of only healthy volunteers and single dataset. Clinical translation will pose multiple additional challenges, e.g. transferal to patients with liver disease (cancer, cirrhosis, etc.) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Clear description of algorithm and model (through references to used work) Custom dataset which is not released, but clear description of the collection process and parameters Code is not released, not based on open code. Framework is mentioned, but not version o Not all hyperparameters are listed, has to be assumed that it is used as in the original papers Hyperparameter sensitivity not analyzed No clear description of training of the baseline methods on this dataset Number of training and evaluation runs not specified Computing infrastructure for training is missing (memory footprint, runtime, …) +Computing infrastructure for inference is included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html P.2: It is unclear what the kind of interpretability is required for this motion modeling and why. P.3: “we work with deformations between pairs of volumes over a population dataset”. This statement is unclear to me. Is the registration done also between volumes of different patients? I understood it differently in the rest of the paper. P.4: I would expect the loss function L_sim to be specified here, not in the experimental setup. P.5: Highlight in 2.3 that this is the “condi-net” P.6: Please explain how the rigid alignment that is assumed in the alignment step was ensured for the volunteer dataset P.6: the resolution of the 4d dataset is very low. Would this be suitable for radiotherapy planning? Or is there another registration required of the actual planning data to V_ref? Please explain this step. P.7: unclear annotation of the ground truth for the vessel annotations. Which vessels were annotated and how? Did the expert only select the vessels or were they involved in the annotation? P.7: To me it is unclear what the experiment “without using patient-data during training” means. First, there are only volunteers, no patients. Second, which data is not used during training? Do you mean that the network is trained only with fine-tuning on its own data without population-based model? Please clarify. P.7: Comparing the registration results of the model with the results of Elastix is valid. However, difference could be caused by prediction errors of the model or by differences between voxelmorph and Elastix. In my opinion, voxelmorph should be used as a reference here, potentially in additio nto Elastix. P.8: The mean errors (up to 1.8mm) is substantially lower than the image resolution (3.4 mm). Can you give an explanation how why this happens? P.8: please specify the actual memory requirements of the method. Does it need all 64 GB? Information about hardware requirements for training is also missing (runtime, memory) P. 8: Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel learning-based patient-specific model with a useful integration of population data Good results in a thorough evaluation Minor weaknesses stop me from giving an even higher score Reproducibility and possiblity to translate clinically are not ensured yet. The dataset is limited, and algorithm requirements are not clear (in particular training, which has to be done for each patient in the fine-tuning step) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper In the presented work, the authors use a variational autoencoder to predict respiratory motion during MR-guided radiotherapy in real-time. The algorithm uses a static 3D MR scan and several recently acquired 2D cine MR scans as input. It outputs a deformable vector field that is used to transform a static 3D MR scan and thereby predict the patient anatomy either 450 ms, 900 ms or 1350 ms into the future. By repeatedly sampling from the network, one is able to extract a measure of uncertainty of the deformation. A dataset of 25 longitudinal 3D MR acquisitions is used to train and evaluate the motion model via leave-one-out cross validation. The proposed method is shown to slightly outperform three other motion models quantified by comparing the predicted and manually labelled positions of five anatomical landmarks. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work addresses a clear clinical need of generating an anatomical representation during radiotherapy. While thoracic patient models in radiotherapy have been research before, deep learning methods have just started to enter this space. The proposed method is fundamentally sound, the authors present a clear clinical use-case in which their method could be used and the unique dataset of longitudinal 3D MR scans lends itself ideally to model this scenario and evaluate the performance of the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I am concerned whether the conducted comparison with the other baseline methods is fair. The authors explicitly distinguish between population-based and patient-specific models in the introduction. They argue that their work combines the benefits of both groups of models. However, the only feature distinguishing the proposed method from a population-based model is the fine-tuning on five minutes of subject-specific data. I believe a similar approach could also be adapted for the other benchmarks. For example, the PCA-based method could be re-trained including - or even only based on - subject-specific data. The authors also show that their motion model performs better when being conditioned on coronal instead of sagittal 2D images. It is unclear whether the baseline algorithms were also tested with both image orientations as input signal. Additionally, I found that parts of the paper were difficult to understand. Despite being familiar with adaptive radiotherapy, statistical motion modelling and deep learning, it took me several reads of the paper to fully grasp the method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance While the authors are able to convey the main concepts behind the used algorithm, some ambiguities remain (e.g. exact neural network dimensions or hyperparameter tuning), potentially inhibiting an equivalent implementation by the reader. Additionally, it is not clear how the baseline methods were tuned (see above). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In the introduction the authors write that “[methods relying on 2D-3D deformable image registration] are limited to local motion modelling”. What is meant by local motion modelling? The literature review focuses mostly on motion 3D motion modelling for radiotherapy. Predicting the deformation vector field from partial observations has also been explored in 2D (Romaguera et al. (2020), “Prediction of in-plane organ deformation during free-breathing radiotherapy via discriminative spatial transformer networks”, Medical image analysis, 64, 101754) or for other types of motion, such as cardiac motion (Qin et al. (2018), ”Joint learning of motion estimation and segmentation for cardiac MR image sequences”, In International Conference on Medical Image Computing and Computer-Assisted Intervention, pp. 472-480). Such related works should be briefly discussed in the introduction. The authors should ensure that the comparison of the proposed method and baselines is fair. As listed above, I believe this involves investigating whether the baseline methods benefit from finetuning on the first part of each individual’s imaging data or from using coronal instead of sagittal 2D cine MR images. Please provide additional information on the vessel annotations that were used to quantify performance. Describing the vessel positions would help comparing the reported results to other studies as the method’s accuracy may be governed by the landmark distance to the conditioning 2D cine image. The authors should briefly mention how the hyperparameters were tuned during cross-validation I suggest editing figure 1 to make clear which parts are used only during training and which ones are used during both training and inference. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that using deep learning to predict anatomical changes during radiotherapy is a topic of interest to the scientific community. The proposed neural network architecture and evaluation procedure is designed smartly incorporating domain-specific knowledge. However, ambiguities regarding the used methodology keep me from scoring the paper higher. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There is a large variance in the scores of this paper making it a clear candidate for a rebuttal. R2 comments positively on the novelty, R3 does not seem to have issues with a lack of novelty, however, R1 states the incremental nature of the paper as one of their main concerns. R1 specifically mentions a paper by Krebs et al. which is not referenced in this submission, with potentially overlapping contributions. In the rebuttal, please focus on this submission’s novelty over the Krebs et al. paper, as well as, the general novelty of the individual method components as well as their combination, and in the context of RT. A common concern appears to be the clarity of the manuscript. R1 and R3 rate it poorly, while R2 rates it positively, but suggest many minor unclarities. Please address how the manuscript can be improved in that respect. Lastly, there were common concerns about the small effect sizes of the results and unfair baselines (for example using coronal data only for proposed method). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal largely addresses the major points raised in the review. Only reviewer 1 was suggesting rejection. Their main point was a lack in clarity and a lack of novelty of a reference by Krebs et al. The authors outline very specific and credible changes to improve clarity and also provide a detailed list of novelties w.r.t. Krebs et al. Upon my own reading of both papers, I tend to agree with the authors. Krebs et al. is very different in motivation and technical challenges. The fact that both are based on a cVAE doesn’t make them identical. The issue of small effect sizes is also credibly addressed in the rebuttal, and it should be emphasized that statistical significance tests were used. The issue with baselines not using coronal data appears to have been a misunderstanding, although I had difficulty verifying this based on the text, and perhaps it could be clarified in Table 1 for the final submission. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a motion model for real time MRI-guided radiotherapy, based on conditional autoencoders. The paper seems to bring valuable ideas for the MICCAI community, by proposing a framework that trains a model on a population but then using patient specific information during inference to make it patient specific. I think the initial meta -review sumarises very well the main concerns raised by the reviewers, and particularly reviewer #1 who is most critical. The criticisms are mainly lack of clarity and only incremental novelty, mainly comparing to a recent paper. Authors have rebutted well the lack of novelty with respect to the aforementioned paper, so I am not concerned about this item any more. Although lack of clarity was a concern shared by multiple reviewers, authors have dedicated substantially less efforts in the rebuttal to this aspect. They do indicate some change they will do to the text to improve clarity, but I am not totally convinced that the clarity of the paper will actually improve. That said, even with minor clarity issues I think the paper is still useful for the community and recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I do not think the rebuttal addressed the two issues in small and limited data set (25 heathy-only subjects) and small improvement - i believe it is related to the clinical relevance due to such a difference. For a debatable novelty contributed from the work, these clinical / application level significance is important. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 19 Author Feedback We thank the reviewers and the AC for their comments regarding our work. 1) Novelty over A While our work has similar objectives to A, there are important and significant differences with several unaddressed challenges from A, specifically when applied in the context of image-guided radiotherapy (IGRT), which are addressed by the proposed framework: First, the approach in A is only applicable to 2D inputs and outputs, while our work is in 3D to address out-of-plane motion. The novelty of our proposal lies in the association of partial observations (surrogate 2D images) with high-dimensional motion information (3D+t displacement vector fields). Our model features this possibility in part due to its novel design, which uses separate branches to manage inputs and outputs with different information and dimensionality (2D pixel-wise and 3D motion vectors). Moreover, our model can be used with different modalities, such as ultrasound or MRI. During radiotherapy treatments, it is imperative to be able to relate surrogate signals with high-dimensional deformations acting as feedback variables for dose delivery. Second, while in A the transformation between input 2D frames was parameterized implicitly by a 2D encoder, we propose to estimate the 3D displacement fields with a block designed specifically for such a task. Therefore, we used the 3D autoencoder exclusively to capture the main motion factors with explicit low-dimensional motion representations. Third, A used a non-causal mechanism with TCN depending both on past and future frames, meaning no system latency is considered. However, anticipating how motion will evolve in future frames is imperative in IGRT workflows. Therefore, we introduce a new (causal) temporal prediction architecture able to regress future embeddings from raw real-time images. Lastly, A has the ability to complete missing frames only in an average cycle. While this may be sufficient for cardiac 2D images (application used in A), in the respiratory motion modeling field, it would encounter difficulties since there is a non-negligible inter-cycle variability. In the presence of irregular patterns, which deviate from an average breathing cycle, an explicit temporal prediction mechanism is needed, such as the one we presented. In summary, our work represents a novel formulation to tackle an important clinical problem, where each component brings an off-the-beaten-path solution. For instance: (1) a scalable temporal mechanism allowing 3D+t predictions in one shot, (2) explicit motion quantification and encoding and, (3) integration of anatomical features into the latent space. As the CAI community continues to leverage the success achieved by deep models, which is particularly difficult for temporal volumetric prediction tasks, we believe our work advances the knowledge in the intra-interventional respiratory motion modeling field. 2) Clarity To improve clarity, we will present in the very first subsection of the methods, the inputs/outputs used during training/personalization/application. We will also edit Fig. 1 to clarify which parts are used only during training and which ones are used during both training and inference, by dividing the workflow in two boxes. 3) Small effect sizes and comparison to baseline We would like to clarify that the reported effect sizes were 0.95, 1.02 and 0.70 for PCA, ME and FM, respectively. According to B, these values correspond to large (&gt; 0.8) and medium (&gt; 0.5) effect sizes. Regarding the comparison to other approaches, we will clarify that they were tested using the same coronal orientation to ensure fairness between methods. A Krebs et al. (2019) Probabilistic motion modeling from medical image sequences: application to cardiac cine-MRI. STACOM Workshop (pp. 176-185) Springer, Cham B Sullivan et al. (2012) Using effect size—or why the P value is not enough. Journal of graduate medical education, 4(3), 279 back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Liset Vázquez Romaguera, Tal Mezheritsky, Samuel Kadoury Abstract MRI-guided radiotherapy systems enable real-time 2D cine acquisitions for target monitoring, but cannot provide volumetric information due to spatio-temporal constraints. Hence, respiratory motion models coupled with a temporal predictive mechanism are a suitable solution to enable ahead-of-time 3D tumor and anatomy tracking in combination with real-time online plan adaptation. We propose a novel subject-specific probabilistic model to enable 3D+t predictions from image-based surrogates during radiotherapy treatments. The model is trained end-to-end to simultaneously capture and learn a distribution of realistic motion fields over a population dataset. Furthermore, the distribution is conditioned on a sequence of partial observations, which can be extrapolated in time using a seq2seq-inspired mechanism allowing for scalable predictive horizon. Based on the generative properties of conditional variational autoencoders, it integrates anatomical features and temporal information to construct an interpretable latent space with respiratory phase discrimination. The choice of a probabilistic framework allows improving uncertainty estimation during the volume generation phase. Experimental validation on 25 subjects demonstrates the potential of the proposed model, which achieves a mean landmark error of 1.4 (1.1) mm, yielding statistically significant improvements over state-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_23 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper propses a deep learning-based method for intra-interventional 3D respiratory motion estimation in MR-guided radiation therapy using population-based as well as patient-specific information. The method is capable of producing dense 3D motion estimates for the treatment region based on single 2D slices acquired in realtime during the treatment. To do so, the authors use a conditional variational autoencoder that acts as a motion model and they, furthermore, couple this model with a predictive network to overcome latencies between slice acquistion and beam adaptation. The framework is evaluated on spatio-temporal MRI liver sequences of 25 healthy subjects and is shown to outperform competing approaches in terms of geometric motion prediction/estimation accuracy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper tackles a clinically important problem (3D motion estimation in MR-guided RT + prediction to overcome latencies) New framework Relatively large database for evaluation (25 subjects with 20 minutes of motion) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incremental work Many unsubstantiated claims Paper is hard to understand Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Image data acquisition process is described Parameters used to to train the network are given. However, I would have liked to see an exact definition of all network architectures in the suppl. material. Code is not available Image data is not available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I see two major problems with the paper, which prevent me from recommending its acceptance: 1) Incremental work/Lack of novelty + unsubstantiated claims While I appreciate the authors’ idea to combine motion estimation and prediction in a single framework, I believe that the approach presented here is highly incremental. It consists of well-known, standard deep learning approaches (conditional VAE + seq2seq-based temporal prediction mechanism) and while the authors’ state that they ‘introduce a novel conditional model’, they do not really provide evidence for this claim. Three examples: How does this model, for example, compare to other deep learning-based motion models that include temporal information like A, which also uses a cVAE? The authors claim that ‘a probabilistic framework allows improving uncertainty estimation during the volume generation phase’. I agree with this general statement, but as far as I can see, the model’s potential probabilistic capabilities are never really utilized in the paper. The authors also claim that ‘a latent space capable to discriminate and visualize respiratory phases and the ability to provide uncertainty measures over the model’s predictions […] make the results more interpretable for clinical procedures’. Where can this be seen in the paper? Both of those claims would indeed be valuable (and potentially novel) contributions but I fail to see them being presented in a convincing manner in the paper. 2) The paper is hard to understand The paper contains a lot of details and information, but in my mind it fails to really explain how the whole model framework is actually being built and trained. From the descriptions in Sec. 2, I find it extremely hard to understand what information is actually being used (1) to train the population-based model, (2) to perform the personalization prior to treatment, (3) to do the intra-interventional estimation/prediction. This information may all be in there, but as there is no real differentiation between the different phases of model training &amp; application in Sec. 2, it is hard to see what is being done at what stage. I especially fail to see how the personalization of the pre-trained population model is done, which is according to the authors a major feature of their approach. Additional comments: How reliable are the results? While it is being shown that the new approach significantly outperforms all baseline approaches, the differences, for example, between the more traditional PCA approach and the proposed framework are rather small, especially when taking the large spacing of the image data being used here into account (accuracies reported: 1-2 mm; spacing ~3 mm). This should be discussed in the paper. Furthermore, it seems as the landmark-based evaluation was only performed on a rather small part of the 20 minute data (last minute). Implications of this should also be discussed. Based on the description being provided, I fail to fully understand the variability really modeled by the cVAE. Is the model able to disentangle inter-subject anatomical differences from motion differences? If so, how is that being done if all data is only rigidly aligned prior to training? If not, wouldn’t that invalidate any uncertainty assessments based on the cVAE’s distribution as it always contains a mixture of both sources of variability? To allow for better comparison to other approaches, it would have been nice to see some results on publicly available data like [B,C]. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my mind, this paper presents incremental work and the paper is written in a way that is not up to MICCAI standards, which makes it really hard to find out what the authors really do/propose. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a novel automatic pipeline for respiratory motion modeling for MR-guided radiotherapy. The method is based on a conditional VAE formulation. The network architecture integrates multiple steps for registration (using voxelmorph), motion field modeling (using [25]), and temporal prediction (using [27]). As such, it is a novel combination of known components to deal with an important clinical problem. A custom dataset of 25 volunteers is created on a clinical MRI scanner. The method is evaluated using leave-one-out cross validation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel integration of multiple deep learning technologies to tackle the clinical problem of MR-guided radiotherapy. Demonstrats its feasibility! Fast runtime during inference would make clinical application feasible Clinical Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Small dataset of only healthy volunteers and single dataset. Clinical translation will pose multiple additional challenges, e.g. transferal to patients with liver disease (cancer, cirrhosis, etc.) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Clear description of algorithm and model (through references to used work) Custom dataset which is not released, but clear description of the collection process and parameters Code is not released, not based on open code. Framework is mentioned, but not version o Not all hyperparameters are listed, has to be assumed that it is used as in the original papers Hyperparameter sensitivity not analyzed No clear description of training of the baseline methods on this dataset Number of training and evaluation runs not specified Computing infrastructure for training is missing (memory footprint, runtime, …) +Computing infrastructure for inference is included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html P.2: It is unclear what the kind of interpretability is required for this motion modeling and why. P.3: “we work with deformations between pairs of volumes over a population dataset”. This statement is unclear to me. Is the registration done also between volumes of different patients? I understood it differently in the rest of the paper. P.4: I would expect the loss function L_sim to be specified here, not in the experimental setup. P.5: Highlight in 2.3 that this is the “condi-net” P.6: Please explain how the rigid alignment that is assumed in the alignment step was ensured for the volunteer dataset P.6: the resolution of the 4d dataset is very low. Would this be suitable for radiotherapy planning? Or is there another registration required of the actual planning data to V_ref? Please explain this step. P.7: unclear annotation of the ground truth for the vessel annotations. Which vessels were annotated and how? Did the expert only select the vessels or were they involved in the annotation? P.7: To me it is unclear what the experiment “without using patient-data during training” means. First, there are only volunteers, no patients. Second, which data is not used during training? Do you mean that the network is trained only with fine-tuning on its own data without population-based model? Please clarify. P.7: Comparing the registration results of the model with the results of Elastix is valid. However, difference could be caused by prediction errors of the model or by differences between voxelmorph and Elastix. In my opinion, voxelmorph should be used as a reference here, potentially in additio nto Elastix. P.8: The mean errors (up to 1.8mm) is substantially lower than the image resolution (3.4 mm). Can you give an explanation how why this happens? P.8: please specify the actual memory requirements of the method. Does it need all 64 GB? Information about hardware requirements for training is also missing (runtime, memory) P. 8: Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel learning-based patient-specific model with a useful integration of population data Good results in a thorough evaluation Minor weaknesses stop me from giving an even higher score Reproducibility and possiblity to translate clinically are not ensured yet. The dataset is limited, and algorithm requirements are not clear (in particular training, which has to be done for each patient in the fine-tuning step) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper In the presented work, the authors use a variational autoencoder to predict respiratory motion during MR-guided radiotherapy in real-time. The algorithm uses a static 3D MR scan and several recently acquired 2D cine MR scans as input. It outputs a deformable vector field that is used to transform a static 3D MR scan and thereby predict the patient anatomy either 450 ms, 900 ms or 1350 ms into the future. By repeatedly sampling from the network, one is able to extract a measure of uncertainty of the deformation. A dataset of 25 longitudinal 3D MR acquisitions is used to train and evaluate the motion model via leave-one-out cross validation. The proposed method is shown to slightly outperform three other motion models quantified by comparing the predicted and manually labelled positions of five anatomical landmarks. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work addresses a clear clinical need of generating an anatomical representation during radiotherapy. While thoracic patient models in radiotherapy have been research before, deep learning methods have just started to enter this space. The proposed method is fundamentally sound, the authors present a clear clinical use-case in which their method could be used and the unique dataset of longitudinal 3D MR scans lends itself ideally to model this scenario and evaluate the performance of the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I am concerned whether the conducted comparison with the other baseline methods is fair. The authors explicitly distinguish between population-based and patient-specific models in the introduction. They argue that their work combines the benefits of both groups of models. However, the only feature distinguishing the proposed method from a population-based model is the fine-tuning on five minutes of subject-specific data. I believe a similar approach could also be adapted for the other benchmarks. For example, the PCA-based method could be re-trained including - or even only based on - subject-specific data. The authors also show that their motion model performs better when being conditioned on coronal instead of sagittal 2D images. It is unclear whether the baseline algorithms were also tested with both image orientations as input signal. Additionally, I found that parts of the paper were difficult to understand. Despite being familiar with adaptive radiotherapy, statistical motion modelling and deep learning, it took me several reads of the paper to fully grasp the method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance While the authors are able to convey the main concepts behind the used algorithm, some ambiguities remain (e.g. exact neural network dimensions or hyperparameter tuning), potentially inhibiting an equivalent implementation by the reader. Additionally, it is not clear how the baseline methods were tuned (see above). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In the introduction the authors write that “[methods relying on 2D-3D deformable image registration] are limited to local motion modelling”. What is meant by local motion modelling? The literature review focuses mostly on motion 3D motion modelling for radiotherapy. Predicting the deformation vector field from partial observations has also been explored in 2D (Romaguera et al. (2020), “Prediction of in-plane organ deformation during free-breathing radiotherapy via discriminative spatial transformer networks”, Medical image analysis, 64, 101754) or for other types of motion, such as cardiac motion (Qin et al. (2018), ”Joint learning of motion estimation and segmentation for cardiac MR image sequences”, In International Conference on Medical Image Computing and Computer-Assisted Intervention, pp. 472-480). Such related works should be briefly discussed in the introduction. The authors should ensure that the comparison of the proposed method and baselines is fair. As listed above, I believe this involves investigating whether the baseline methods benefit from finetuning on the first part of each individual’s imaging data or from using coronal instead of sagittal 2D cine MR images. Please provide additional information on the vessel annotations that were used to quantify performance. Describing the vessel positions would help comparing the reported results to other studies as the method’s accuracy may be governed by the landmark distance to the conditioning 2D cine image. The authors should briefly mention how the hyperparameters were tuned during cross-validation I suggest editing figure 1 to make clear which parts are used only during training and which ones are used during both training and inference. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that using deep learning to predict anatomical changes during radiotherapy is a topic of interest to the scientific community. The proposed neural network architecture and evaluation procedure is designed smartly incorporating domain-specific knowledge. However, ambiguities regarding the used methodology keep me from scoring the paper higher. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There is a large variance in the scores of this paper making it a clear candidate for a rebuttal. R2 comments positively on the novelty, R3 does not seem to have issues with a lack of novelty, however, R1 states the incremental nature of the paper as one of their main concerns. R1 specifically mentions a paper by Krebs et al. which is not referenced in this submission, with potentially overlapping contributions. In the rebuttal, please focus on this submission’s novelty over the Krebs et al. paper, as well as, the general novelty of the individual method components as well as their combination, and in the context of RT. A common concern appears to be the clarity of the manuscript. R1 and R3 rate it poorly, while R2 rates it positively, but suggest many minor unclarities. Please address how the manuscript can be improved in that respect. Lastly, there were common concerns about the small effect sizes of the results and unfair baselines (for example using coronal data only for proposed method). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal largely addresses the major points raised in the review. Only reviewer 1 was suggesting rejection. Their main point was a lack in clarity and a lack of novelty of a reference by Krebs et al. The authors outline very specific and credible changes to improve clarity and also provide a detailed list of novelties w.r.t. Krebs et al. Upon my own reading of both papers, I tend to agree with the authors. Krebs et al. is very different in motivation and technical challenges. The fact that both are based on a cVAE doesn’t make them identical. The issue of small effect sizes is also credibly addressed in the rebuttal, and it should be emphasized that statistical significance tests were used. The issue with baselines not using coronal data appears to have been a misunderstanding, although I had difficulty verifying this based on the text, and perhaps it could be clarified in Table 1 for the final submission. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a motion model for real time MRI-guided radiotherapy, based on conditional autoencoders. The paper seems to bring valuable ideas for the MICCAI community, by proposing a framework that trains a model on a population but then using patient specific information during inference to make it patient specific. I think the initial meta -review sumarises very well the main concerns raised by the reviewers, and particularly reviewer #1 who is most critical. The criticisms are mainly lack of clarity and only incremental novelty, mainly comparing to a recent paper. Authors have rebutted well the lack of novelty with respect to the aforementioned paper, so I am not concerned about this item any more. Although lack of clarity was a concern shared by multiple reviewers, authors have dedicated substantially less efforts in the rebuttal to this aspect. They do indicate some change they will do to the text to improve clarity, but I am not totally convinced that the clarity of the paper will actually improve. That said, even with minor clarity issues I think the paper is still useful for the community and recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I do not think the rebuttal addressed the two issues in small and limited data set (25 heathy-only subjects) and small improvement - i believe it is related to the clinical relevance due to such a difference. For a debatable novelty contributed from the work, these clinical / application level significance is important. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 19 Author Feedback We thank the reviewers and the AC for their comments regarding our work. 1) Novelty over A While our work has similar objectives to A, there are important and significant differences with several unaddressed challenges from A, specifically when applied in the context of image-guided radiotherapy (IGRT), which are addressed by the proposed framework: First, the approach in A is only applicable to 2D inputs and outputs, while our work is in 3D to address out-of-plane motion. The novelty of our proposal lies in the association of partial observations (surrogate 2D images) with high-dimensional motion information (3D+t displacement vector fields). Our model features this possibility in part due to its novel design, which uses separate branches to manage inputs and outputs with different information and dimensionality (2D pixel-wise and 3D motion vectors). Moreover, our model can be used with different modalities, such as ultrasound or MRI. During radiotherapy treatments, it is imperative to be able to relate surrogate signals with high-dimensional deformations acting as feedback variables for dose delivery. Second, while in A the transformation between input 2D frames was parameterized implicitly by a 2D encoder, we propose to estimate the 3D displacement fields with a block designed specifically for such a task. Therefore, we used the 3D autoencoder exclusively to capture the main motion factors with explicit low-dimensional motion representations. Third, A used a non-causal mechanism with TCN depending both on past and future frames, meaning no system latency is considered. However, anticipating how motion will evolve in future frames is imperative in IGRT workflows. Therefore, we introduce a new (causal) temporal prediction architecture able to regress future embeddings from raw real-time images. Lastly, A has the ability to complete missing frames only in an average cycle. While this may be sufficient for cardiac 2D images (application used in A), in the respiratory motion modeling field, it would encounter difficulties since there is a non-negligible inter-cycle variability. In the presence of irregular patterns, which deviate from an average breathing cycle, an explicit temporal prediction mechanism is needed, such as the one we presented. In summary, our work represents a novel formulation to tackle an important clinical problem, where each component brings an off-the-beaten-path solution. For instance: (1) a scalable temporal mechanism allowing 3D+t predictions in one shot, (2) explicit motion quantification and encoding and, (3) integration of anatomical features into the latent space. As the CAI community continues to leverage the success achieved by deep models, which is particularly difficult for temporal volumetric prediction tasks, we believe our work advances the knowledge in the intra-interventional respiratory motion modeling field. 2) Clarity To improve clarity, we will present in the very first subsection of the methods, the inputs/outputs used during training/personalization/application. We will also edit Fig. 1 to clarify which parts are used only during training and which ones are used during both training and inference, by dividing the workflow in two boxes. 3) Small effect sizes and comparison to baseline We would like to clarify that the reported effect sizes were 0.95, 1.02 and 0.70 for PCA, ME and FM, respectively. According to B, these values correspond to large (&gt; 0.8) and medium (&gt; 0.5) effect sizes. Regarding the comparison to other approaches, we will clarify that they were tested using the same coronal orientation to ensure fairness between methods. A Krebs et al. (2019) Probabilistic motion modeling from medical image sequences: application to cardiac cine-MRI. STACOM Workshop (pp. 176-185) Springer, Cham B Sullivan et al. (2012) Using effect size—or why the P value is not enough. Journal of graduate medical education, 4(3), 279 back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0422/12/31/Paper0291" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0422/12/31/Paper0291" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0422-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Personalized Respiratory Motion Model Using Conditional Generative Networks for MR-Guided Radiotherapy" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0422/12/31/Paper0291"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0422/12/31/Paper0291","headline":"Personalized Respiratory Motion Model Using Conditional Generative Networks for MR-Guided Radiotherapy","dateModified":"0423-01-02T00:00:00-05:17","datePublished":"0422-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Liset Vázquez Romaguera, Tal Mezheritsky, Samuel Kadoury Abstract MRI-guided radiotherapy systems enable real-time 2D cine acquisitions for target monitoring, but cannot provide volumetric information due to spatio-temporal constraints. Hence, respiratory motion models coupled with a temporal predictive mechanism are a suitable solution to enable ahead-of-time 3D tumor and anatomy tracking in combination with real-time online plan adaptation. We propose a novel subject-specific probabilistic model to enable 3D+t predictions from image-based surrogates during radiotherapy treatments. The model is trained end-to-end to simultaneously capture and learn a distribution of realistic motion fields over a population dataset. Furthermore, the distribution is conditioned on a sequence of partial observations, which can be extrapolated in time using a seq2seq-inspired mechanism allowing for scalable predictive horizon. Based on the generative properties of conditional variational autoencoders, it integrates anatomical features and temporal information to construct an interpretable latent space with respiratory phase discrimination. The choice of a probabilistic framework allows improving uncertainty estimation during the volume generation phase. Experimental validation on 25 subjects demonstrates the potential of the proposed model, which achieves a mean landmark error of 1.4 (1.1) mm, yielding statistically significant improvements over state-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_23 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper propses a deep learning-based method for intra-interventional 3D respiratory motion estimation in MR-guided radiation therapy using population-based as well as patient-specific information. The method is capable of producing dense 3D motion estimates for the treatment region based on single 2D slices acquired in realtime during the treatment. To do so, the authors use a conditional variational autoencoder that acts as a motion model and they, furthermore, couple this model with a predictive network to overcome latencies between slice acquistion and beam adaptation. The framework is evaluated on spatio-temporal MRI liver sequences of 25 healthy subjects and is shown to outperform competing approaches in terms of geometric motion prediction/estimation accuracy. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper tackles a clinically important problem (3D motion estimation in MR-guided RT + prediction to overcome latencies) New framework Relatively large database for evaluation (25 subjects with 20 minutes of motion) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incremental work Many unsubstantiated claims Paper is hard to understand Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Image data acquisition process is described Parameters used to to train the network are given. However, I would have liked to see an exact definition of all network architectures in the suppl. material. Code is not available Image data is not available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I see two major problems with the paper, which prevent me from recommending its acceptance: 1) Incremental work/Lack of novelty + unsubstantiated claims While I appreciate the authors’ idea to combine motion estimation and prediction in a single framework, I believe that the approach presented here is highly incremental. It consists of well-known, standard deep learning approaches (conditional VAE + seq2seq-based temporal prediction mechanism) and while the authors’ state that they ‘introduce a novel conditional model’, they do not really provide evidence for this claim. Three examples: How does this model, for example, compare to other deep learning-based motion models that include temporal information like A, which also uses a cVAE? The authors claim that ‘a probabilistic framework allows improving uncertainty estimation during the volume generation phase’. I agree with this general statement, but as far as I can see, the model’s potential probabilistic capabilities are never really utilized in the paper. The authors also claim that ‘a latent space capable to discriminate and visualize respiratory phases and the ability to provide uncertainty measures over the model’s predictions […] make the results more interpretable for clinical procedures’. Where can this be seen in the paper? Both of those claims would indeed be valuable (and potentially novel) contributions but I fail to see them being presented in a convincing manner in the paper. 2) The paper is hard to understand The paper contains a lot of details and information, but in my mind it fails to really explain how the whole model framework is actually being built and trained. From the descriptions in Sec. 2, I find it extremely hard to understand what information is actually being used (1) to train the population-based model, (2) to perform the personalization prior to treatment, (3) to do the intra-interventional estimation/prediction. This information may all be in there, but as there is no real differentiation between the different phases of model training &amp; application in Sec. 2, it is hard to see what is being done at what stage. I especially fail to see how the personalization of the pre-trained population model is done, which is according to the authors a major feature of their approach. Additional comments: How reliable are the results? While it is being shown that the new approach significantly outperforms all baseline approaches, the differences, for example, between the more traditional PCA approach and the proposed framework are rather small, especially when taking the large spacing of the image data being used here into account (accuracies reported: 1-2 mm; spacing ~3 mm). This should be discussed in the paper. Furthermore, it seems as the landmark-based evaluation was only performed on a rather small part of the 20 minute data (last minute). Implications of this should also be discussed. Based on the description being provided, I fail to fully understand the variability really modeled by the cVAE. Is the model able to disentangle inter-subject anatomical differences from motion differences? If so, how is that being done if all data is only rigidly aligned prior to training? If not, wouldn’t that invalidate any uncertainty assessments based on the cVAE’s distribution as it always contains a mixture of both sources of variability? To allow for better comparison to other approaches, it would have been nice to see some results on publicly available data like [B,C]. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my mind, this paper presents incremental work and the paper is written in a way that is not up to MICCAI standards, which makes it really hard to find out what the authors really do/propose. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a novel automatic pipeline for respiratory motion modeling for MR-guided radiotherapy. The method is based on a conditional VAE formulation. The network architecture integrates multiple steps for registration (using voxelmorph), motion field modeling (using [25]), and temporal prediction (using [27]). As such, it is a novel combination of known components to deal with an important clinical problem. A custom dataset of 25 volunteers is created on a clinical MRI scanner. The method is evaluated using leave-one-out cross validation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel integration of multiple deep learning technologies to tackle the clinical problem of MR-guided radiotherapy. Demonstrats its feasibility! Fast runtime during inference would make clinical application feasible Clinical Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Small dataset of only healthy volunteers and single dataset. Clinical translation will pose multiple additional challenges, e.g. transferal to patients with liver disease (cancer, cirrhosis, etc.) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Clear description of algorithm and model (through references to used work) Custom dataset which is not released, but clear description of the collection process and parameters Code is not released, not based on open code. Framework is mentioned, but not version o Not all hyperparameters are listed, has to be assumed that it is used as in the original papers Hyperparameter sensitivity not analyzed No clear description of training of the baseline methods on this dataset Number of training and evaluation runs not specified Computing infrastructure for training is missing (memory footprint, runtime, …) +Computing infrastructure for inference is included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html P.2: It is unclear what the kind of interpretability is required for this motion modeling and why. P.3: “we work with deformations between pairs of volumes over a population dataset”. This statement is unclear to me. Is the registration done also between volumes of different patients? I understood it differently in the rest of the paper. P.4: I would expect the loss function L_sim to be specified here, not in the experimental setup. P.5: Highlight in 2.3 that this is the “condi-net” P.6: Please explain how the rigid alignment that is assumed in the alignment step was ensured for the volunteer dataset P.6: the resolution of the 4d dataset is very low. Would this be suitable for radiotherapy planning? Or is there another registration required of the actual planning data to V_ref? Please explain this step. P.7: unclear annotation of the ground truth for the vessel annotations. Which vessels were annotated and how? Did the expert only select the vessels or were they involved in the annotation? P.7: To me it is unclear what the experiment “without using patient-data during training” means. First, there are only volunteers, no patients. Second, which data is not used during training? Do you mean that the network is trained only with fine-tuning on its own data without population-based model? Please clarify. P.7: Comparing the registration results of the model with the results of Elastix is valid. However, difference could be caused by prediction errors of the model or by differences between voxelmorph and Elastix. In my opinion, voxelmorph should be used as a reference here, potentially in additio nto Elastix. P.8: The mean errors (up to 1.8mm) is substantially lower than the image resolution (3.4 mm). Can you give an explanation how why this happens? P.8: please specify the actual memory requirements of the method. Does it need all 64 GB? Information about hardware requirements for training is also missing (runtime, memory) P. 8: Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel learning-based patient-specific model with a useful integration of population data Good results in a thorough evaluation Minor weaknesses stop me from giving an even higher score Reproducibility and possiblity to translate clinically are not ensured yet. The dataset is limited, and algorithm requirements are not clear (in particular training, which has to be done for each patient in the fine-tuning step) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper In the presented work, the authors use a variational autoencoder to predict respiratory motion during MR-guided radiotherapy in real-time. The algorithm uses a static 3D MR scan and several recently acquired 2D cine MR scans as input. It outputs a deformable vector field that is used to transform a static 3D MR scan and thereby predict the patient anatomy either 450 ms, 900 ms or 1350 ms into the future. By repeatedly sampling from the network, one is able to extract a measure of uncertainty of the deformation. A dataset of 25 longitudinal 3D MR acquisitions is used to train and evaluate the motion model via leave-one-out cross validation. The proposed method is shown to slightly outperform three other motion models quantified by comparing the predicted and manually labelled positions of five anatomical landmarks. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work addresses a clear clinical need of generating an anatomical representation during radiotherapy. While thoracic patient models in radiotherapy have been research before, deep learning methods have just started to enter this space. The proposed method is fundamentally sound, the authors present a clear clinical use-case in which their method could be used and the unique dataset of longitudinal 3D MR scans lends itself ideally to model this scenario and evaluate the performance of the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I am concerned whether the conducted comparison with the other baseline methods is fair. The authors explicitly distinguish between population-based and patient-specific models in the introduction. They argue that their work combines the benefits of both groups of models. However, the only feature distinguishing the proposed method from a population-based model is the fine-tuning on five minutes of subject-specific data. I believe a similar approach could also be adapted for the other benchmarks. For example, the PCA-based method could be re-trained including - or even only based on - subject-specific data. The authors also show that their motion model performs better when being conditioned on coronal instead of sagittal 2D images. It is unclear whether the baseline algorithms were also tested with both image orientations as input signal. Additionally, I found that parts of the paper were difficult to understand. Despite being familiar with adaptive radiotherapy, statistical motion modelling and deep learning, it took me several reads of the paper to fully grasp the method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance While the authors are able to convey the main concepts behind the used algorithm, some ambiguities remain (e.g. exact neural network dimensions or hyperparameter tuning), potentially inhibiting an equivalent implementation by the reader. Additionally, it is not clear how the baseline methods were tuned (see above). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In the introduction the authors write that “[methods relying on 2D-3D deformable image registration] are limited to local motion modelling”. What is meant by local motion modelling? The literature review focuses mostly on motion 3D motion modelling for radiotherapy. Predicting the deformation vector field from partial observations has also been explored in 2D (Romaguera et al. (2020), “Prediction of in-plane organ deformation during free-breathing radiotherapy via discriminative spatial transformer networks”, Medical image analysis, 64, 101754) or for other types of motion, such as cardiac motion (Qin et al. (2018), ”Joint learning of motion estimation and segmentation for cardiac MR image sequences”, In International Conference on Medical Image Computing and Computer-Assisted Intervention, pp. 472-480). Such related works should be briefly discussed in the introduction. The authors should ensure that the comparison of the proposed method and baselines is fair. As listed above, I believe this involves investigating whether the baseline methods benefit from finetuning on the first part of each individual’s imaging data or from using coronal instead of sagittal 2D cine MR images. Please provide additional information on the vessel annotations that were used to quantify performance. Describing the vessel positions would help comparing the reported results to other studies as the method’s accuracy may be governed by the landmark distance to the conditioning 2D cine image. The authors should briefly mention how the hyperparameters were tuned during cross-validation I suggest editing figure 1 to make clear which parts are used only during training and which ones are used during both training and inference. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that using deep learning to predict anatomical changes during radiotherapy is a topic of interest to the scientific community. The proposed neural network architecture and evaluation procedure is designed smartly incorporating domain-specific knowledge. However, ambiguities regarding the used methodology keep me from scoring the paper higher. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. There is a large variance in the scores of this paper making it a clear candidate for a rebuttal. R2 comments positively on the novelty, R3 does not seem to have issues with a lack of novelty, however, R1 states the incremental nature of the paper as one of their main concerns. R1 specifically mentions a paper by Krebs et al. which is not referenced in this submission, with potentially overlapping contributions. In the rebuttal, please focus on this submission’s novelty over the Krebs et al. paper, as well as, the general novelty of the individual method components as well as their combination, and in the context of RT. A common concern appears to be the clarity of the manuscript. R1 and R3 rate it poorly, while R2 rates it positively, but suggest many minor unclarities. Please address how the manuscript can be improved in that respect. Lastly, there were common concerns about the small effect sizes of the results and unfair baselines (for example using coronal data only for proposed method). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal largely addresses the major points raised in the review. Only reviewer 1 was suggesting rejection. Their main point was a lack in clarity and a lack of novelty of a reference by Krebs et al. The authors outline very specific and credible changes to improve clarity and also provide a detailed list of novelties w.r.t. Krebs et al. Upon my own reading of both papers, I tend to agree with the authors. Krebs et al. is very different in motivation and technical challenges. The fact that both are based on a cVAE doesn’t make them identical. The issue of small effect sizes is also credibly addressed in the rebuttal, and it should be emphasized that statistical significance tests were used. The issue with baselines not using coronal data appears to have been a misunderstanding, although I had difficulty verifying this based on the text, and perhaps it could be clarified in Table 1 for the final submission. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a motion model for real time MRI-guided radiotherapy, based on conditional autoencoders. The paper seems to bring valuable ideas for the MICCAI community, by proposing a framework that trains a model on a population but then using patient specific information during inference to make it patient specific. I think the initial meta -review sumarises very well the main concerns raised by the reviewers, and particularly reviewer #1 who is most critical. The criticisms are mainly lack of clarity and only incremental novelty, mainly comparing to a recent paper. Authors have rebutted well the lack of novelty with respect to the aforementioned paper, so I am not concerned about this item any more. Although lack of clarity was a concern shared by multiple reviewers, authors have dedicated substantially less efforts in the rebuttal to this aspect. They do indicate some change they will do to the text to improve clarity, but I am not totally convinced that the clarity of the paper will actually improve. That said, even with minor clarity issues I think the paper is still useful for the community and recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I do not think the rebuttal addressed the two issues in small and limited data set (25 heathy-only subjects) and small improvement - i believe it is related to the clinical relevance due to such a difference. For a debatable novelty contributed from the work, these clinical / application level significance is important. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 19 Author Feedback We thank the reviewers and the AC for their comments regarding our work. 1) Novelty over A While our work has similar objectives to A, there are important and significant differences with several unaddressed challenges from A, specifically when applied in the context of image-guided radiotherapy (IGRT), which are addressed by the proposed framework: First, the approach in A is only applicable to 2D inputs and outputs, while our work is in 3D to address out-of-plane motion. The novelty of our proposal lies in the association of partial observations (surrogate 2D images) with high-dimensional motion information (3D+t displacement vector fields). Our model features this possibility in part due to its novel design, which uses separate branches to manage inputs and outputs with different information and dimensionality (2D pixel-wise and 3D motion vectors). Moreover, our model can be used with different modalities, such as ultrasound or MRI. During radiotherapy treatments, it is imperative to be able to relate surrogate signals with high-dimensional deformations acting as feedback variables for dose delivery. Second, while in A the transformation between input 2D frames was parameterized implicitly by a 2D encoder, we propose to estimate the 3D displacement fields with a block designed specifically for such a task. Therefore, we used the 3D autoencoder exclusively to capture the main motion factors with explicit low-dimensional motion representations. Third, A used a non-causal mechanism with TCN depending both on past and future frames, meaning no system latency is considered. However, anticipating how motion will evolve in future frames is imperative in IGRT workflows. Therefore, we introduce a new (causal) temporal prediction architecture able to regress future embeddings from raw real-time images. Lastly, A has the ability to complete missing frames only in an average cycle. While this may be sufficient for cardiac 2D images (application used in A), in the respiratory motion modeling field, it would encounter difficulties since there is a non-negligible inter-cycle variability. In the presence of irregular patterns, which deviate from an average breathing cycle, an explicit temporal prediction mechanism is needed, such as the one we presented. In summary, our work represents a novel formulation to tackle an important clinical problem, where each component brings an off-the-beaten-path solution. For instance: (1) a scalable temporal mechanism allowing 3D+t predictions in one shot, (2) explicit motion quantification and encoding and, (3) integration of anatomical features into the latent space. As the CAI community continues to leverage the success achieved by deep models, which is particularly difficult for temporal volumetric prediction tasks, we believe our work advances the knowledge in the intra-interventional respiratory motion modeling field. 2) Clarity To improve clarity, we will present in the very first subsection of the methods, the inputs/outputs used during training/personalization/application. We will also edit Fig. 1 to clarify which parts are used only during training and which ones are used during both training and inference, by dividing the workflow in two boxes. 3) Small effect sizes and comparison to baseline We would like to clarify that the reported effect sizes were 0.95, 1.02 and 0.70 for PCA, ME and FM, respectively. According to B, these values correspond to large (&gt; 0.8) and medium (&gt; 0.5) effect sizes. Regarding the comparison to other approaches, we will clarify that they were tested using the same coronal orientation to ensure fairness between methods. A Krebs et al. (2019) Probabilistic motion modeling from medical image sequences: application to cardiac cine-MRI. STACOM Workshop (pp. 176-185) Springer, Cham B Sullivan et al. (2012) Using effect size—or why the P value is not enough. Journal of graduate medical education, 4(3), 279 back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Vázquez Romaguera, Liset,Mezheritsky, Tal,Kadoury, Samuel" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Personalized Respiratory Motion Model Using Conditional Generative Networks for MR-Guided Radiotherapy</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Abdomen"
+        class="post-category">
+        Clinical applications - Abdomen
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Interventional Imaging Systems"
+        class="post-category">
+        Interventional Imaging Systems
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Vázquez Romaguera, Liset"
+        class="post-tags">
+        Vázquez Romaguera, Liset
+      </a> |  
+      
+      <a href="kittywong/tags#Mezheritsky, Tal"
+        class="post-tags">
+        Mezheritsky, Tal
+      </a> |  
+      
+      <a href="kittywong/tags#Kadoury, Samuel"
+        class="post-tags">
+        Kadoury, Samuel
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Liset Vázquez Romaguera, Tal Mezheritsky, Samuel Kadoury
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>MRI-guided radiotherapy systems enable real-time 2D cine acquisitions for target monitoring, but cannot provide volumetric information due to spatio-temporal constraints. Hence, respiratory motion models coupled with a temporal predictive mechanism are a suitable solution to enable ahead-of-time 3D tumor and anatomy tracking in combination with real-time online plan adaptation. We propose a novel subject-specific probabilistic model to enable 3D+t predictions from image-based surrogates during radiotherapy treatments. The model is trained end-to-end to simultaneously capture and learn a distribution of realistic motion fields over a population dataset. Furthermore, the distribution is conditioned on a sequence of partial observations, which can be extrapolated in time using a seq2seq-inspired mechanism allowing for scalable predictive horizon. Based on the generative properties of conditional variational autoencoders, it integrates anatomical features and temporal information to construct an interpretable latent space with respiratory phase discrimination. The choice of a probabilistic framework allows improving uncertainty estimation during the volume generation phase. Experimental validation on 25 subjects demonstrates the potential of the proposed model, which achieves a mean landmark error of 1.4 (1.1) mm, yielding statistically significant improvements over state-of-the-art methods.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_23">https://doi.org/10.1007/978-3-030-87202-1_23</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper propses a deep learning-based method for intra-interventional 3D respiratory motion estimation in MR-guided radiation therapy using population-based as well as patient-specific information. The method is capable of producing dense 3D motion estimates for the treatment region based on single 2D slices acquired in realtime during the treatment. To do so, the authors use a conditional variational autoencoder that acts as a motion model and they, furthermore, couple this model with a predictive network to overcome latencies between slice acquistion and beam adaptation. The framework is evaluated on spatio-temporal MRI liver sequences of 25 healthy subjects and is shown to outperform competing approaches in terms of geometric motion prediction/estimation accuracy.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Paper tackles a clinically important problem (3D motion estimation in MR-guided RT + prediction to overcome latencies)</li>
+        <li>New framework</li>
+        <li>Relatively large database for evaluation (25 subjects with 20 minutes of motion)</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Incremental work</li>
+        <li>Many unsubstantiated claims</li>
+        <li>Paper is hard to understand</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>Image data acquisition process is described</li>
+        <li>Parameters used to to train the network are given. However, I would have liked to see an exact definition of all network architectures in the suppl. material.</li>
+        <li>Code is not available</li>
+        <li>Image data is not available</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I see two major problems with the paper, which prevent me from recommending its acceptance:</p>
+
+      <p>1) Incremental work/Lack of novelty + unsubstantiated claims</p>
+
+      <p>While I appreciate the authors’ idea to combine motion estimation and prediction in a single framework, I believe that the approach presented here is highly incremental. It consists of well-known, standard deep learning approaches (conditional VAE + seq2seq-based temporal prediction mechanism) and while the authors’ state that they ‘introduce a novel conditional model’, they do not really provide evidence for this claim.</p>
+
+      <p>Three examples:</p>
+
+      <ul>
+        <li>
+          <p>How does this model, for example, compare to other deep learning-based motion models that include temporal information like <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a>, which also uses a cVAE?</p>
+        </li>
+        <li>
+          <p>The authors claim that ‘a probabilistic framework allows improving uncertainty estimation during the volume generation phase’. I agree with this general statement, but as far as I can see, the model’s potential probabilistic capabilities are never really utilized in the paper.</p>
+        </li>
+        <li>
+          <p>The authors also claim that ‘a latent space capable to discriminate and visualize respiratory phases and the ability to provide uncertainty measures over the model’s predictions […] make the results more interpretable for clinical procedures’. Where can this be seen in the paper? Both of those claims would indeed be valuable (and potentially novel) contributions but I fail to see them being presented in a convincing manner in the paper.</p>
+        </li>
+      </ul>
+
+      <p>2) The paper is hard to understand</p>
+
+      <p>The paper contains a lot of details and information, but in my mind it fails to really explain how the whole model framework is actually being built and trained. From the descriptions in Sec. 2, I find it extremely hard to understand what information is actually being used (1)  to train the population-based model, (2) to perform the personalization prior to treatment, (3) to do the intra-interventional estimation/prediction. This information may all be in there, but as there is no real differentiation between the different phases of model training &amp; application in Sec. 2, it is hard to see what is being done at what stage. I especially fail to see how the personalization of the pre-trained population model is done, which is according to the authors a major feature of their approach.</p>
+
+      <p>Additional comments:</p>
+
+      <ul>
+        <li>
+          <p>How reliable are the results? While it is being shown that the new approach significantly outperforms all baseline approaches, the differences, for example, between the more traditional PCA approach and the proposed framework are rather small, especially when taking the large spacing of the image data being used here into account (accuracies reported: 1-2 mm; spacing ~3 mm). This should be discussed in the paper. Furthermore, it seems as the landmark-based evaluation was only performed on a rather small part of the 20 minute data (last minute). Implications of this should also be discussed.</p>
+        </li>
+        <li>
+          <p>Based on the description being provided, I fail to fully understand the variability really modeled by the cVAE. Is the model able to disentangle inter-subject anatomical differences from motion differences? If so, how is that being done if all data is only rigidly aligned prior to training? If not, wouldn’t that invalidate any uncertainty assessments based on the cVAE’s distribution as it always contains a mixture of both sources of variability?</p>
+        </li>
+        <li>
+          <p>To allow for better comparison to other approaches, it would have been nice to see some results on publicly available data like [B,C].</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>In my mind, this paper presents incremental work and the paper is written in a way that is not up to MICCAI standards, which makes it really hard to find out what the authors really do/propose.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper describes a novel automatic pipeline for respiratory motion modeling for MR-guided radiotherapy.
+The method is based on a conditional VAE formulation. The network architecture integrates multiple steps for registration (using voxelmorph), motion field modeling (using [25]), and temporal prediction (using [27]).
+As such, it is a novel combination of known components to deal with an important clinical problem.
+A custom dataset of 25 volunteers is created on a clinical MRI scanner. The method is evaluated using leave-one-out cross validation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Novel integration of multiple deep learning technologies to tackle the clinical problem of MR-guided radiotherapy. Demonstrats its feasibility!</li>
+        <li>Fast runtime during inference would make clinical application feasible</li>
+        <li>Clinical</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Small dataset of only healthy volunteers and single dataset. Clinical translation will pose multiple additional challenges, e.g. transferal to patients with liver disease (cancer, cirrhosis, etc.)</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>Clear description of algorithm and model (through references to used work)</li>
+        <li>Custom dataset which is not released, but clear description of the collection process and parameters</li>
+        <li>Code is not released, not based on open code. Framework is mentioned, but not version
+o Not all hyperparameters are listed, has to be assumed that it is used as in the original papers</li>
+        <li>Hyperparameter sensitivity not analyzed</li>
+        <li>No clear description of training of the baseline methods on this dataset</li>
+        <li>Number of training and evaluation runs not specified</li>
+        <li>Computing infrastructure for training is missing (memory footprint, runtime, …)
++Computing infrastructure for inference is included</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>P.2: It is unclear what the kind of interpretability is required for this motion modeling and why.</li>
+        <li>P.3: “we work with deformations between pairs of volumes over a population dataset”. This statement is unclear to me. Is the registration done also between volumes of different patients? I understood it differently in the rest of the paper.</li>
+        <li>P.4: I would expect the loss function L_sim to be specified here, not in the experimental setup.</li>
+        <li>P.5: Highlight in 2.3 that this is the “condi-net”</li>
+        <li>P.6: Please explain how the rigid alignment that is assumed in the alignment step was ensured for the volunteer dataset</li>
+        <li>P.6: the resolution of the 4d dataset is very low. Would this be suitable for radiotherapy planning? Or is there another registration required of the actual planning data to V_ref? Please explain this step.</li>
+        <li>P.7: unclear annotation of the ground truth for the vessel annotations. Which vessels were annotated and how? Did the expert only select the vessels or were they involved in the annotation?</li>
+        <li>P.7: To me it is unclear what the experiment “without using patient-data during training” means. First, there are only volunteers, no patients. Second, which data is not used during training? Do you mean that the network is trained only with fine-tuning on its own data without population-based model? Please clarify.</li>
+        <li>P.7: Comparing the registration results of the model with the results of Elastix is valid. However, difference could be caused by prediction errors of the model or by differences between voxelmorph and Elastix. In my opinion, voxelmorph should be used as a reference here, potentially in additio nto Elastix.</li>
+        <li>P.8: The mean errors (up to 1.8mm) is substantially lower than the image resolution (3.4 mm). Can you give an explanation how why this happens?</li>
+        <li>P.8: please specify the actual memory requirements of the method. Does it need all 64 GB?
+Information about hardware requirements for training is also missing (runtime, memory)
+P. 8:</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ul>
+        <li>Novel learning-based patient-specific model with a useful integration of population data</li>
+        <li>Good results in a thorough evaluation</li>
+      </ul>
+
+      <p>Minor weaknesses stop me from giving an even higher score</p>
+      <ul>
+        <li>Reproducibility and possiblity to translate clinically are not ensured yet. The dataset is limited, and algorithm requirements are not clear (in particular training, which has to be done for each patient in the fine-tuning step)</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In the presented work, the authors use a variational autoencoder to predict respiratory motion during MR-guided radiotherapy in real-time. The algorithm uses a static 3D MR scan and several recently acquired 2D cine MR scans as input. It outputs a deformable vector field that is used to transform a static 3D MR scan and thereby predict the patient anatomy either 450 ms, 900 ms or 1350 ms into the future. By repeatedly sampling from the network, one is able to extract a measure of uncertainty of the deformation. A dataset of 25 longitudinal 3D MR acquisitions is used to train and evaluate the motion model via leave-one-out cross validation. The proposed method is shown to slightly outperform three other motion models quantified by comparing the predicted and manually labelled positions of five anatomical landmarks.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The work addresses a clear clinical need of generating an anatomical representation during radiotherapy. While thoracic patient models in radiotherapy have been research before, deep learning methods have just started to enter this space. The proposed method is fundamentally sound, the authors present a clear clinical use-case in which their method could be used and the unique dataset of longitudinal 3D MR scans lends itself ideally to model this scenario and evaluate the performance of the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I am concerned whether the conducted comparison with the other baseline methods is fair. The authors explicitly distinguish between population-based and patient-specific models in the introduction. They argue that their work combines the benefits of both groups of models. However, the only feature distinguishing the proposed method from a population-based model is the fine-tuning on five minutes of subject-specific data. I believe a similar approach could also be adapted for the other benchmarks. For example, the PCA-based method could be re-trained including - or even only based on - subject-specific data. The authors also show that their motion model performs better when being conditioned on coronal instead of sagittal 2D images. It is unclear whether the baseline algorithms were also tested with both image orientations as input signal.</p>
+
+      <p>Additionally, I found that parts of the paper were difficult to understand. Despite being familiar with adaptive radiotherapy, statistical motion modelling and deep learning, it took me several reads of the paper to fully grasp the method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>While the authors are able to convey the main concepts behind the used algorithm, some ambiguities remain (e.g. exact neural network dimensions or hyperparameter tuning), potentially inhibiting an equivalent implementation by the reader. Additionally, it is not clear how the baseline methods were tuned (see above).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>In the introduction the authors write that “[methods relying on 2D-3D deformable image registration] are limited to local motion modelling”. What is meant by local motion modelling?</p>
+        </li>
+        <li>
+          <p>The literature review focuses mostly on motion 3D motion modelling for radiotherapy. Predicting the deformation vector field from partial observations has also been explored in 2D (Romaguera et al. (2020), “Prediction of in-plane organ deformation during free-breathing radiotherapy via discriminative spatial transformer networks”, Medical image analysis, 64, 101754) or for other types of motion, such as cardiac motion (Qin et al. (2018), ”Joint learning of motion estimation and segmentation for cardiac MR image sequences”, In International Conference on Medical Image Computing and Computer-Assisted Intervention, pp. 472-480). Such related works should be briefly discussed in the introduction.</p>
+        </li>
+        <li>
+          <p>The authors should ensure that the comparison of the proposed method and baselines is fair. As listed above, I believe this involves investigating whether the baseline methods benefit from finetuning on the first part of each individual’s imaging data or from using coronal instead of sagittal 2D cine MR images.</p>
+        </li>
+        <li>
+          <p>Please provide additional information on the vessel annotations that were used to quantify performance. Describing the vessel positions would help comparing the reported results to other studies as the method’s accuracy may be governed by the landmark distance to the conditioning 2D cine image.</p>
+        </li>
+        <li>
+          <p>The authors should briefly mention how the hyperparameters were tuned during cross-validation</p>
+        </li>
+        <li>
+          <p>I suggest editing figure 1 to make clear which parts are used only during training and which ones are used during both training and inference.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I believe that using deep learning to predict anatomical changes during radiotherapy is a topic of interest to the scientific community. The proposed neural network architecture and evaluation procedure is designed smartly incorporating domain-specific knowledge. However, ambiguities regarding the used methodology keep me from scoring the paper higher.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>There is a large variance in the scores of this paper making it a clear candidate for a rebuttal.</p>
+
+      <p>R2 comments positively on the novelty, R3 does not seem to have issues with a lack of novelty, however, R1 states the incremental nature of the paper as one of their main concerns. R1 specifically mentions a paper by Krebs et al. which is not referenced in this submission, with potentially overlapping contributions. In the rebuttal, please focus on this submission’s novelty over the Krebs et al. paper, as well as, the general novelty of the individual method components as well as their combination, and in the context of RT.</p>
+
+      <p>A common concern appears to be the clarity of the manuscript. R1 and R3 rate it poorly, while R2 rates it positively, but suggest many minor unclarities. Please address how the manuscript can be improved in that respect.</p>
+
+      <p>Lastly, there were common concerns about the small effect sizes of the results and unfair baselines (for example using coronal data only for proposed method).</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The rebuttal largely addresses the major points raised in the review. Only reviewer 1 was suggesting rejection. Their main point was a lack in clarity and a lack of novelty of a reference by Krebs et al. The authors outline very specific and credible changes to improve clarity and also provide a detailed list of novelties w.r.t. Krebs et al. Upon my own reading of both papers, I tend to agree with the authors. Krebs et al. is very different in motivation and technical challenges. The fact that both are based on a cVAE doesn’t make them identical. The issue of small effect sizes is also credibly addressed in the rebuttal, and it should be emphasized that statistical significance tests were used. The issue with baselines not using coronal data appears to have been a misunderstanding, although I had difficulty verifying this based on the text, and perhaps it could be clarified in Table 1 for the final submission.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors propose a motion model for real time MRI-guided radiotherapy, based on conditional autoencoders.</p>
+
+      <p>The paper seems to bring valuable ideas for the MICCAI community, by proposing a framework that trains a model on a population but then using patient specific information during inference to make it patient specific.</p>
+
+      <p>I think the initial meta -review sumarises very well the main concerns raised by the reviewers, and particularly reviewer #1 who is most critical. The criticisms are mainly lack of clarity and only incremental novelty, mainly comparing to a recent paper.</p>
+
+      <p>Authors have rebutted well the lack of novelty with respect to the aforementioned paper, so I am not concerned about this item any more.</p>
+
+      <p>Although lack of clarity was a concern shared by multiple reviewers, authors have dedicated substantially less efforts in the rebuttal to this aspect. They do indicate some change they will do to the text to improve clarity, but I am not totally convinced that the clarity of the paper will actually improve.</p>
+
+      <p>That said, even with minor clarity issues I think the paper is still useful for the community and recommend acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>I do not think the rebuttal addressed the two issues in small and limited data set (25 heathy-only subjects) and small improvement - i believe it is related to the clinical relevance due to such a difference. For a debatable novelty contributed from the work, these clinical / application level significance is important.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>19</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers and the AC for their comments regarding our work.</p>
+
+  <p>1) Novelty over <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a>
+While our work has similar objectives to <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a>, there are important and significant differences with several unaddressed challenges from <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a>, specifically when applied in the context of image-guided radiotherapy (IGRT), which are addressed by the proposed framework:</p>
+  <ul>
+    <li>First, the approach in <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a> is only applicable to 2D inputs and outputs, while our work is in 3D to address out-of-plane motion. The novelty of our proposal lies in the association of partial observations (surrogate 2D images) with high-dimensional motion information (3D+t displacement vector fields). Our model features this possibility in part due to its novel design, which uses separate branches to manage inputs and outputs with different information and dimensionality (2D pixel-wise and 3D motion vectors). Moreover, our model can be used with different modalities, such as ultrasound or MRI. During radiotherapy treatments, it is imperative to be able to relate surrogate signals with high-dimensional deformations acting as feedback variables for dose delivery.</li>
+    <li>Second, while in <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a> the transformation between input 2D frames was parameterized implicitly by a 2D encoder, we propose to estimate the 3D displacement fields with a block designed specifically for such a task. Therefore, we used the 3D autoencoder exclusively to capture the main motion factors with explicit low-dimensional motion representations.</li>
+    <li>Third, <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a> used a non-causal mechanism with TCN depending both on past and future frames, meaning no system latency is considered. However, anticipating how motion will evolve in future frames is imperative in IGRT workflows. Therefore, we introduce a new (causal) temporal prediction architecture able to regress future embeddings from raw real-time images.</li>
+    <li>Lastly, <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a> has the ability to complete missing frames only in an average cycle. While this may be sufficient for cardiac 2D images (application used in <a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a>), in the respiratory motion modeling field, it would encounter difficulties since there is a non-negligible inter-cycle variability. In the presence of irregular patterns, which deviate from an average breathing cycle, an explicit temporal prediction mechanism is needed, such as the one we presented.</li>
+  </ul>
+
+  <p>In summary, our work represents a novel formulation to tackle an important clinical problem, where each component brings an off-the-beaten-path solution. For instance: (1) a scalable temporal mechanism allowing 3D+t predictions in one shot, (2) explicit motion quantification and encoding and, (3) integration of anatomical features into the latent space. As the CAI community continues to leverage the success achieved by deep models, which is particularly difficult for temporal volumetric prediction tasks, we believe our work advances the knowledge in the intra-interventional respiratory motion modeling field.</p>
+
+  <p>2) Clarity
+To improve clarity, we will present in the very first subsection of the methods, the inputs/outputs used during training/personalization/application. We will also edit Fig. 1 to clarify which parts are used only during training and which ones are used during both training and inference, by dividing the workflow in two boxes.</p>
+
+  <p>3) Small effect sizes and comparison to baseline
+We would like to clarify that the reported effect sizes were 0.95, 1.02 and 0.70 for PCA, ME and FM, respectively. According to <a href="https://doi.org/10.5281/zenodo.55345">B</a>, these values correspond to large (&gt; 0.8) and medium (&gt; 0.5) effect sizes. Regarding the comparison to other approaches, we will clarify that they were tested using the same coronal orientation to ensure fairness between methods.</p>
+
+  <p><a href="Krebs et al., Probabilistic Motion Modeling from Medical Image Sequences: Application to Cardiac Cine-MRI, STACOM WS 2019">A</a> Krebs et al. (2019) Probabilistic motion modeling from medical image sequences: application to cardiac cine-MRI. STACOM Workshop (pp. 176-185) Springer, Cham
+<a href="https://doi.org/10.5281/zenodo.55345">B</a> Sullivan et al. (2012) Using effect size—or why the P value is not enough. Journal of graduate medical education, 4(3), 279</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0422-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0423-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Abdomen"
+        class="post-category">
+        Clinical applications - Abdomen
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Interventional Imaging Systems"
+        class="post-category">
+        Interventional Imaging Systems
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Vázquez Romaguera, Liset"
+        class="post-category">
+        Vázquez Romaguera, Liset
+      </a> |  
+      
+      <a href="kittywong/tags#Mezheritsky, Tal"
+        class="post-category">
+        Mezheritsky, Tal
+      </a> |  
+      
+      <a href="kittywong/tags#Kadoury, Samuel"
+        class="post-category">
+        Kadoury, Samuel
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0423/12/31/Paper0398">
+          Multimodal Sensing Guidewire for C-arm Navigation with Random UV Enhanced Optical Sensors using Spatio-temporal Networks
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0421/12/31/Paper0036">
+          Self-Supervised Generative Adversarial Network for Depth Estimation in Laparoscopic Images
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

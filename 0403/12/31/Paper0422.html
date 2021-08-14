@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Conditional Deformable Image Registration with Convolutional Neural Network | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Conditional Deformable Image Registration with Convolutional Neural Network" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Tony C. W. Mok, Albert C. S. Chung Abstract Recent deep learning-based methods have shown promising results and runtime advantages in deformable image registration. However, analyzing the effects of hyperparameters and searching for optimal regularization parameters prove to be too prohibitive in deep learning-based methods. This is because it involves training a substantial number of separate models with distinct hyperparameter values. In this paper, we propose a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the conditional features that are correlated with the regularization hyperparameter, we demonstrate that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. In addition, the smoothness of the resulting deformation field can be manipulated with arbitrary strength of smoothness regularization during inference. Extensive experiments on a large-scale brain MRI dataset show that our proposed method enables the precise control of the smoothness of the deformation field without sacrificing the runtime advantage or registration accuracy. Link to paper https://doi.org/10.1007/978-3-030-87202-1_4 Link to the code repository https://github.com/cwmok/Conditional_LapIRN Link to the dataset(s) https://www.oasis-brains.org/ https://www.loni.usc.edu/research/atlas_downloads Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel conditional image registration network. Instead of fixing the weight between the dissimilarity function and the smoothness regularization function and grid searching the best weight in different during, the proposed network takes the weight as the input and learns with different weight parameters in one training. Experiments have shown similar performance compared to baseline methods while having more control on the smoothness of the deformation field. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novel registration network structure avoids the time-consuming grid search step. The network can provide better flexibility compared to traditional networks, by allowing users to input different weights at test time. Authors have conducted extensive experiments to compare against baseline methods. Additionally, an ablation study also shows improvements with the proposed distributed mapping network. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I didn’t find major weaknesses but please see my comments for some minor questions/concerns. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Datasets that are used in this manuscript are publicly available (OASIS and LPBA). It might be necessary to detail the split between train/validation/test for reproducibility, if it is possible. In the manuscript it only mentions a random split, in addition to the atlases that were randomly chosen in each dataset. Training detail has been provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Thanks for the excellent work that authors have done. I enjoyed reading the manuscript. One thing I was a little confused while reading the manuscript was that in section 2.1 does figure 1(a) reflect L CNN-based registration networks? Looks to me it was only one CRN. If so how does multiple CRN work together? In section 2.3, if I understand correctly, the $\lambda_p$ is also the input parameter in each iteration correct? Maybe it would be good to make it clear. Have authors experienced any difficulties during the training. Does different weight input at each iteration affect the training stability? For example with an iteration with $\lambda_p = 0$ vs. with $\lambda_p = 10$, do authors observe significant differences? It is interesting to see the trend for MAE of Dice is not monotonous for CIR-CM and CIR-DM. Why is that the case? Also isn’t this trend contradicting the Dice coefficient boxplot? For example the MAE plot does not show a difference between $\lambda=0.1$ and $\lambda = 10$, whereas the difference is obvious in the Dice boxplot. A minor suggestion is in figure 2 to move the “Baseline” and “CIR-DM” to the left side of the images. I missed these notations at first. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I like the idea of learning the weight balance – one of most important hyperparameters in registration tasks. Not only does it avoids the grid searching of the parameter, it also expands the usage of the network at test time, as it allows different input weight balance at test time. Traditional networks can only predict what has been trained. I would recommend strong accpet. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The performance and characteristics of registration networks depend strongly on the strength of deformation regularization. This paper proposes to jointly learn image registration alongside a mapping between randomly sampled regularity weights and scalars acting on network feature maps to linearly scale and shift them (commonly referred to as featurewise linear modulation/FiLM in the literature, a form of channel attention or hypernetwork). Consequently, at test-time, a wide range of deformation regularization weights can be tried to find the value which best optimizes a desired score (e.g. Dice overlap) without having to retrain registration networks for each regularization weight. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem is well-motivated and the paper makes a useful contribution to the deep network-based image registration literature which I foresee will greatly accelerate parameter search in practice. It’s great to see that regularization-conditional linear modulation of network weights yields outputs with comparable registration accuracy (in terms of dice) and improved deformation smoothness over directly training a network at that regularization value. In general, the experiments are convincing (to the extent that I understood them as some aspects are unclear, see Q4+Q7 below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The following are the main points of discussion in my estimation, which I expand upon in detail in my response to Question 7 (among other clarifications and/or suggestions). (1) There are several claims which need to be reduced or removed. In addition, some speculations are presented as explanations which need to be properly qualified as hypotheses. (2) The paper is held-back by unclear writing and/or presentation in its methodological and experimental descriptions. While I understand the main thrust of the idea and experiments, some relevant details are rather unclear to me. (3) I would like a more in-depth analysis or discussion of the effects of conditional instance normalization on registration networks regarding the potential for featurewise linear modulation (FiLM) to overfit the training data (which is quite common) and the need for instance normalization prior to FiLM (which dramatically increases memory use in 3D and is typically not required for FiLM to work). (4) This is not a weakness, but a very similar idea (same exact goal, similar-ish approach) was just accepted by IPMI and was posted on arXiv on January 4th 2021 before the MICCAI deadline [Hoopes21]. To reiterate, this is not a weakness at all as the work was contemporaneous, but the final version of this paper should include a paragraph discussing when/where users would prefer one method over the other. References [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are outstanding questions (see below) regarding how some technical and experimental aspects were implemented. However, once clarified, I do not foresee any major hurdles in reimplementation which should be rather straightforward. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major Comments/Questions (1) The paper repeatedly claims that it learns disentangled representations because of its use of an MLP for conditional modulation. To my knowledge and familiarity with the relevant literature, conditional modulation has nothing to do directly with disentangled representations outside of very specific situations with outside supervision [Charsias20]. In Section 2.2., it is alluded to that this follows from the same rationale as the StyleGAN mapping network [Karras19]. However, StyleGAN was a very different problem with a very different training strategy and I don’t see how the arguments for disentanglement in [Karras19] extend here. Perhaps the paper would be better served by contextualizing its place in the vast literature for featurewise transformations [Dumoulin18] and removing claims of disentanglement. In case I am mistaken, I would like to see this claim quantified. Similarly, the paper claims to learn “non-linear correlation” between feature statistics and deformation smoothness penalty weights. The word “correlation” is misused. (2) Unclear method description. In Section 2.2., I am unable to understand what the distributed mapping network is. Typically, with these styles of methods we have a single network (an MLP) which takes input conditions and outputs an embedding. The embedding is then linearly projected to each layer individually. Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? This is unclear from the text. If I interpreted it correctly, several methods do indeed use separate MLPs for every layer [see Perez19] so I’m not sure that this is a contribution. (3) The ablation study seems invalid. The StyleGAN mapping network used here as an ablation is significantly overparameterized (it was originally for large-scale high-resolution GAN training) and needs to be adjusted to the size of this problem and reduced in depth and width. (4) Unclear data splits. I could have missed something obvious, but I am currently unable to understand what “we randomly select 3 and 2 test images as atlases for OASIS and LPBA40, …., there are 441 and 16 combinations of test cans (sic) from OASIS and LPBA40” mean and how the number of combinations were arrived at. Please streamline this description for easier readability. (5) The so-called “trivial” approach of input condition-concatenation used as a benchmark is actually equivalent to conditional shifting (one half of the proposed approach) at the input layer [Dumoulin18]. Additionally, in practice, conditioning the first layer alone often yields similar results to conditioning all layers [Perez19]. I suggest that this language be clarified. (6) One of the downsides of conditional linear channel modulation is that it can overfit very easily on several kinds of visual tasks [Perez19], which is typically counteracted by some form of regularization (e.g. weight decay on the MLP). Did the authors encounter this phenomenon? For example, how would test-time performance look for lambda = 11 if the training lambdas were in [0, 10] and would it match traditional training? On a similar note, it is stated that the network was trained on lambdas uniformly sampled from [0, 10]. Were the 7 test case lambda’s ([0.1, 0.5, 1, 2, 4, 8, 10]) included in the training samples? If so, it would be nice to see the generalization capabilities of this conditioning mechanism on a registration problem. (7) Prior to conditional scaling and shifting, the instance normalization (IN) used in this paper is not actually needed to obtain the desired conditioning effect. Indeed, pioneering work on conditionally-modulated networks [Perez18] showed that normalization is not necessary for conditioning. As the proposed paper references StyleGAN [Karras19], perhaps it is best exemplified by Section 2.2 of StyleGAN2 [Karras20] where the authors state that you don’t need IN in general and that they only need it for a specific application (style-mixing) which is not relevant here. The reason I bring this up is that IN typically consumes significant GPU-memory for 3D networks and can have a host of other problems [Brock21a, Brock21b] associated with its use. It would be good to consider/discuss whether it is truly necessary here. (8) Page 8, paragraph 2, the sentence “the reason for that phenomenon…” describing the performance of their methods is speculation presented as explanation. There is no immediately obvious connection between prior knowledge from other weights and smoother solutions, please see Sections 3.1 and 3.2 of [Lipton18]. Other comments/Questions (1) [Hoopes21] (to be presented at IPMI 2021) concurrently approaches the same exact problem. Instead of learning lambda-conditional scales and shifts for the channels of a registration network, they use an MLP to directly learn the registration-network weights and biases from input lambdas. In general, as the presented approach learns scalars corresponding to conditional scales and shifts it would likely be more parameter-efficient than [Hoopes20], but I would like to see this discussed. The final-version of the paper would likely benefit from a few sentences or a paragraph discussing the similarities and differences between the two methods. (2) Did the baseline method (LapIRN [Mok20]) also use instance normalization? I tried searching [Mok20], but could not find these details. If the proposed methods use (conditional) instance normalization and the baseline does not, this would be a problem as instance normalization is a confounder and the experiments would need to be revisited. (3) Fig. 3: what is MAE of Dice coefficient and MAE of standard deviation of Jacobian determinant? The Dice and Jacobian-det have established interpretations, I do not know what MAE of these quantities refers to. (4) I suggest changing all instances of “Conditional Registration” with “Smoothness-Conditional Registration” or something similarly more descriptive to indicate that the conditioning is more specific than the conventional interpretation of the term. (5) Figures 2-4 in the supplementary material should provide deformation norms and/or smoothness evaluations to better interpret the fields. Perhaps these scalars could be provided as insets on the top-right of each displacement field? References [Perez18] Perez, et al. “FiLM: Visual reasoning with a general conditioning layer.” AAAI 2018. [Dumoulin18] Dumoulin, et al. “Feature-wise transformations.” Distill 3.7 (2018): e11. [Lipton18] Lipton and Steinhardt. “Troubling trends in machine learning scholarship.” arXiv preprint arXiv:1807.03341 (2018). [Perez19] Perez, et al. NeurIPS ML Retrospectives Workshop https://ml-retrospectives.github.io/neurips2019/accepted_retrospectives/2019/film/ [Karras19] Karras, et al. “A style-based generator architecture for generative adversarial networks.” CVPR. 2019. [Mok20] Mok, et al. “Large Deformation Diffeomorphic Image Registration with Laplacian Pyramid Networks.” MICCAI 2020. [Karras20] Karras, et al. “Analyzing and improving the image quality of stylegan.” CVPR. 2020. [Chartsias20] Chartsias, et al. “Disentangle, align and fuse for multimodal and semi-supervised image segmentation.” IEEE transactions on medical imaging 2020. [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. [Brock21a] Brock, et al. “Characterizing signal propagation to close the performance gap in unnormalized resnets.” ICLR, 2021. [Brock21b] Brock, et al. “High-Performance Large-Scale Image Recognition Without Normalization” arXiv, 2021. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper makes a valuable contribution to the registration literature. However, I think the presentation of technical details, claims, etc. needs non-trivial improvement or clarifications. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This manuscript proposed a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the disentangle features that correlated with the regularization hyperparameter, it demonstrates that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. hyperparameters Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. λp is sampled uniformly, which may not be the best. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Please open the source code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The reason for choosing the fixed hyparameter λ, why choose [0.1,0.5,1,2,4,8,10]? Please give a comparison of state-of-the-art registration methods. If possible, please give some other registration results, e.g., distance. In section 3, I find that you have obtained different anatomical structures. Please show some registration results of different anatomical structures. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? hyperparameters of regularization have an important influence on deformation smoothness, and it is hard to obtain an balance between accurate registration and smooth deformation. the author give an good choice to choose regularizeres. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers and myself all appreciated the main idea of the paper. Congratulations for the solid work! There are several requests and concerns from the reviewers that need to be addressed in the camera ready. For example, reviewer 2, whom offers very constructive feedback, highlights several papers which suggest that more context is needed for the motivation – an improved discussion (with fewer bold claims) about disentangling (please remove these claims or indeed show analysis on the disentanglement); improving the ablation (or more likely discussing it); removing other claims for reasons of phenomena without proper validation of those claims; and a discussion about the concurrent (recent) published method tackling the same method. All of these important aspects will improve the paper, especially by improving clarify, discussion, and citations. Please carefully review the constructive reviews. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank all reviewers for their thoughtful comments and suggestions. We categorize the major concerns(C) followed by responses(R) in the following paragraphs. Reviewer 1 C1: How does multiple CRN work together? Is the $\lambda_p$ is also the input in each iteration? R: We follow LapIRN and utilize three CRNs to mimic the conventional multi-resolution optimization strategy in the literature. A normalized $\lambda_p$ is included in each iteration for all the conditional image registration modules. C2: Does different weight input at each iteration affect the training stability? R: We did not observe any training instability during the experiments. Please also refer to the response in C9. C3: The MAE of Dice is not monotonous but is similar in the average Dice coefficient boxplot for CIR-CM and CIR-DM. Is it a contradiction? R: It is not a contradiction. We use a different scale of the Y-axis for the MAE figure and Dice boxplot to highlight the differences. Moreover, the MAE of mean Dice is computed by comparing the mean Dice score of each test scan to the mean Dice score of the corresponding scan achieved by the baseline method. C4: In figure 2, please move the “Baseline” and “CIR-DM” to the left side of the images. R: Thanks for the suggestion. We have revised it accordingly. Reviewer 2 C5: Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? R: The proposed distributed mapping technique (figure 1b) encourages sharing a mapping network within each conditional image registration module. It achieves a more diverse feature representation of the hyperparameter to layers with different depth in CRN than the centralized approach, while consumes less memory than the dense mapping networks for each layer. C6: The StyleGAN mapping network used here as an ablation is significantly overparameterized. R: We tried a small scale StyleGAN mapping network, i.e. 4-layer MLP with latent space and number of nodes for each layer 64. The performance (except runtime) of the small-scale mapping network is slightly inferior to the original design. Thus, we report the result with the original design. C7: Unclear data splits. R: We randomly select 3 and 2 MR scans from the test sets as atlases (section 3) and register all scans in test sets to the selected atlases. As such, there are (150-3)3 = 441 and (10-2)2 = 16 combinations of test scan. C8: Generalization capabilities of this conditioning mechanism on a registration problem, i.e. \lambda = 11 R: Thanks for the suggestion. For $\lambda=12$, the differences of CIR-DM compare to baseline are -0.5% in mean Dice and -2.2% in std($|J_\phi|$) in OASIS. We will extend and evaluate our self-supervised training scheme to cover the whole range of hyperparameter value, similar to [Hoopes21]. C9: Instance normalization (IN) consumes significant GPU memory and may not necessary here. R: The intention of including IN is to stabilize the training as the modulation may amplify certain feature maps by order of magnitude. We leave an in-depth analysis of IN in modulation, i.e., demodulation ability and computational cost, for future work. C10: Remove bold claims/clarify “trivial” approach/discuss the similarities and differences with the concurrent method/deformation norms in figures R: Thanks for the suggestions. We have revised the paper based on these suggestions. Reviewer 3 C11: The reason for choosing the fixed hyperparameter λ = [0.1,0.5,1,2,4,8,10]? R: We set the fixed hyperparameter λ (for evaluation) empirically such that the optimal deformation fields generated by LapIRN with maximum λ are diffeomorphic, i.e. smooth and invertible, in most cases. C12: Please give a comparison of state-of-the-art registration methods and additional measurements to quantify the registration performance. R: Thanks for the suggestion. We leave an in-depth analysis of this method for future work. C13: Please open the source code. R: We will publish the source code. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Tony C. W. Mok, Albert C. S. Chung Abstract Recent deep learning-based methods have shown promising results and runtime advantages in deformable image registration. However, analyzing the effects of hyperparameters and searching for optimal regularization parameters prove to be too prohibitive in deep learning-based methods. This is because it involves training a substantial number of separate models with distinct hyperparameter values. In this paper, we propose a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the conditional features that are correlated with the regularization hyperparameter, we demonstrate that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. In addition, the smoothness of the resulting deformation field can be manipulated with arbitrary strength of smoothness regularization during inference. Extensive experiments on a large-scale brain MRI dataset show that our proposed method enables the precise control of the smoothness of the deformation field without sacrificing the runtime advantage or registration accuracy. Link to paper https://doi.org/10.1007/978-3-030-87202-1_4 Link to the code repository https://github.com/cwmok/Conditional_LapIRN Link to the dataset(s) https://www.oasis-brains.org/ https://www.loni.usc.edu/research/atlas_downloads Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel conditional image registration network. Instead of fixing the weight between the dissimilarity function and the smoothness regularization function and grid searching the best weight in different during, the proposed network takes the weight as the input and learns with different weight parameters in one training. Experiments have shown similar performance compared to baseline methods while having more control on the smoothness of the deformation field. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novel registration network structure avoids the time-consuming grid search step. The network can provide better flexibility compared to traditional networks, by allowing users to input different weights at test time. Authors have conducted extensive experiments to compare against baseline methods. Additionally, an ablation study also shows improvements with the proposed distributed mapping network. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I didn’t find major weaknesses but please see my comments for some minor questions/concerns. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Datasets that are used in this manuscript are publicly available (OASIS and LPBA). It might be necessary to detail the split between train/validation/test for reproducibility, if it is possible. In the manuscript it only mentions a random split, in addition to the atlases that were randomly chosen in each dataset. Training detail has been provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Thanks for the excellent work that authors have done. I enjoyed reading the manuscript. One thing I was a little confused while reading the manuscript was that in section 2.1 does figure 1(a) reflect L CNN-based registration networks? Looks to me it was only one CRN. If so how does multiple CRN work together? In section 2.3, if I understand correctly, the $\lambda_p$ is also the input parameter in each iteration correct? Maybe it would be good to make it clear. Have authors experienced any difficulties during the training. Does different weight input at each iteration affect the training stability? For example with an iteration with $\lambda_p = 0$ vs. with $\lambda_p = 10$, do authors observe significant differences? It is interesting to see the trend for MAE of Dice is not monotonous for CIR-CM and CIR-DM. Why is that the case? Also isn’t this trend contradicting the Dice coefficient boxplot? For example the MAE plot does not show a difference between $\lambda=0.1$ and $\lambda = 10$, whereas the difference is obvious in the Dice boxplot. A minor suggestion is in figure 2 to move the “Baseline” and “CIR-DM” to the left side of the images. I missed these notations at first. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I like the idea of learning the weight balance – one of most important hyperparameters in registration tasks. Not only does it avoids the grid searching of the parameter, it also expands the usage of the network at test time, as it allows different input weight balance at test time. Traditional networks can only predict what has been trained. I would recommend strong accpet. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The performance and characteristics of registration networks depend strongly on the strength of deformation regularization. This paper proposes to jointly learn image registration alongside a mapping between randomly sampled regularity weights and scalars acting on network feature maps to linearly scale and shift them (commonly referred to as featurewise linear modulation/FiLM in the literature, a form of channel attention or hypernetwork). Consequently, at test-time, a wide range of deformation regularization weights can be tried to find the value which best optimizes a desired score (e.g. Dice overlap) without having to retrain registration networks for each regularization weight. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem is well-motivated and the paper makes a useful contribution to the deep network-based image registration literature which I foresee will greatly accelerate parameter search in practice. It’s great to see that regularization-conditional linear modulation of network weights yields outputs with comparable registration accuracy (in terms of dice) and improved deformation smoothness over directly training a network at that regularization value. In general, the experiments are convincing (to the extent that I understood them as some aspects are unclear, see Q4+Q7 below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The following are the main points of discussion in my estimation, which I expand upon in detail in my response to Question 7 (among other clarifications and/or suggestions). (1) There are several claims which need to be reduced or removed. In addition, some speculations are presented as explanations which need to be properly qualified as hypotheses. (2) The paper is held-back by unclear writing and/or presentation in its methodological and experimental descriptions. While I understand the main thrust of the idea and experiments, some relevant details are rather unclear to me. (3) I would like a more in-depth analysis or discussion of the effects of conditional instance normalization on registration networks regarding the potential for featurewise linear modulation (FiLM) to overfit the training data (which is quite common) and the need for instance normalization prior to FiLM (which dramatically increases memory use in 3D and is typically not required for FiLM to work). (4) This is not a weakness, but a very similar idea (same exact goal, similar-ish approach) was just accepted by IPMI and was posted on arXiv on January 4th 2021 before the MICCAI deadline [Hoopes21]. To reiterate, this is not a weakness at all as the work was contemporaneous, but the final version of this paper should include a paragraph discussing when/where users would prefer one method over the other. References [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are outstanding questions (see below) regarding how some technical and experimental aspects were implemented. However, once clarified, I do not foresee any major hurdles in reimplementation which should be rather straightforward. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major Comments/Questions (1) The paper repeatedly claims that it learns disentangled representations because of its use of an MLP for conditional modulation. To my knowledge and familiarity with the relevant literature, conditional modulation has nothing to do directly with disentangled representations outside of very specific situations with outside supervision [Charsias20]. In Section 2.2., it is alluded to that this follows from the same rationale as the StyleGAN mapping network [Karras19]. However, StyleGAN was a very different problem with a very different training strategy and I don’t see how the arguments for disentanglement in [Karras19] extend here. Perhaps the paper would be better served by contextualizing its place in the vast literature for featurewise transformations [Dumoulin18] and removing claims of disentanglement. In case I am mistaken, I would like to see this claim quantified. Similarly, the paper claims to learn “non-linear correlation” between feature statistics and deformation smoothness penalty weights. The word “correlation” is misused. (2) Unclear method description. In Section 2.2., I am unable to understand what the distributed mapping network is. Typically, with these styles of methods we have a single network (an MLP) which takes input conditions and outputs an embedding. The embedding is then linearly projected to each layer individually. Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? This is unclear from the text. If I interpreted it correctly, several methods do indeed use separate MLPs for every layer [see Perez19] so I’m not sure that this is a contribution. (3) The ablation study seems invalid. The StyleGAN mapping network used here as an ablation is significantly overparameterized (it was originally for large-scale high-resolution GAN training) and needs to be adjusted to the size of this problem and reduced in depth and width. (4) Unclear data splits. I could have missed something obvious, but I am currently unable to understand what “we randomly select 3 and 2 test images as atlases for OASIS and LPBA40, …., there are 441 and 16 combinations of test cans (sic) from OASIS and LPBA40” mean and how the number of combinations were arrived at. Please streamline this description for easier readability. (5) The so-called “trivial” approach of input condition-concatenation used as a benchmark is actually equivalent to conditional shifting (one half of the proposed approach) at the input layer [Dumoulin18]. Additionally, in practice, conditioning the first layer alone often yields similar results to conditioning all layers [Perez19]. I suggest that this language be clarified. (6) One of the downsides of conditional linear channel modulation is that it can overfit very easily on several kinds of visual tasks [Perez19], which is typically counteracted by some form of regularization (e.g. weight decay on the MLP). Did the authors encounter this phenomenon? For example, how would test-time performance look for lambda = 11 if the training lambdas were in [0, 10] and would it match traditional training? On a similar note, it is stated that the network was trained on lambdas uniformly sampled from [0, 10]. Were the 7 test case lambda’s ([0.1, 0.5, 1, 2, 4, 8, 10]) included in the training samples? If so, it would be nice to see the generalization capabilities of this conditioning mechanism on a registration problem. (7) Prior to conditional scaling and shifting, the instance normalization (IN) used in this paper is not actually needed to obtain the desired conditioning effect. Indeed, pioneering work on conditionally-modulated networks [Perez18] showed that normalization is not necessary for conditioning. As the proposed paper references StyleGAN [Karras19], perhaps it is best exemplified by Section 2.2 of StyleGAN2 [Karras20] where the authors state that you don’t need IN in general and that they only need it for a specific application (style-mixing) which is not relevant here. The reason I bring this up is that IN typically consumes significant GPU-memory for 3D networks and can have a host of other problems [Brock21a, Brock21b] associated with its use. It would be good to consider/discuss whether it is truly necessary here. (8) Page 8, paragraph 2, the sentence “the reason for that phenomenon…” describing the performance of their methods is speculation presented as explanation. There is no immediately obvious connection between prior knowledge from other weights and smoother solutions, please see Sections 3.1 and 3.2 of [Lipton18]. Other comments/Questions (1) [Hoopes21] (to be presented at IPMI 2021) concurrently approaches the same exact problem. Instead of learning lambda-conditional scales and shifts for the channels of a registration network, they use an MLP to directly learn the registration-network weights and biases from input lambdas. In general, as the presented approach learns scalars corresponding to conditional scales and shifts it would likely be more parameter-efficient than [Hoopes20], but I would like to see this discussed. The final-version of the paper would likely benefit from a few sentences or a paragraph discussing the similarities and differences between the two methods. (2) Did the baseline method (LapIRN [Mok20]) also use instance normalization? I tried searching [Mok20], but could not find these details. If the proposed methods use (conditional) instance normalization and the baseline does not, this would be a problem as instance normalization is a confounder and the experiments would need to be revisited. (3) Fig. 3: what is MAE of Dice coefficient and MAE of standard deviation of Jacobian determinant? The Dice and Jacobian-det have established interpretations, I do not know what MAE of these quantities refers to. (4) I suggest changing all instances of “Conditional Registration” with “Smoothness-Conditional Registration” or something similarly more descriptive to indicate that the conditioning is more specific than the conventional interpretation of the term. (5) Figures 2-4 in the supplementary material should provide deformation norms and/or smoothness evaluations to better interpret the fields. Perhaps these scalars could be provided as insets on the top-right of each displacement field? References [Perez18] Perez, et al. “FiLM: Visual reasoning with a general conditioning layer.” AAAI 2018. [Dumoulin18] Dumoulin, et al. “Feature-wise transformations.” Distill 3.7 (2018): e11. [Lipton18] Lipton and Steinhardt. “Troubling trends in machine learning scholarship.” arXiv preprint arXiv:1807.03341 (2018). [Perez19] Perez, et al. NeurIPS ML Retrospectives Workshop https://ml-retrospectives.github.io/neurips2019/accepted_retrospectives/2019/film/ [Karras19] Karras, et al. “A style-based generator architecture for generative adversarial networks.” CVPR. 2019. [Mok20] Mok, et al. “Large Deformation Diffeomorphic Image Registration with Laplacian Pyramid Networks.” MICCAI 2020. [Karras20] Karras, et al. “Analyzing and improving the image quality of stylegan.” CVPR. 2020. [Chartsias20] Chartsias, et al. “Disentangle, align and fuse for multimodal and semi-supervised image segmentation.” IEEE transactions on medical imaging 2020. [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. [Brock21a] Brock, et al. “Characterizing signal propagation to close the performance gap in unnormalized resnets.” ICLR, 2021. [Brock21b] Brock, et al. “High-Performance Large-Scale Image Recognition Without Normalization” arXiv, 2021. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper makes a valuable contribution to the registration literature. However, I think the presentation of technical details, claims, etc. needs non-trivial improvement or clarifications. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This manuscript proposed a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the disentangle features that correlated with the regularization hyperparameter, it demonstrates that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. hyperparameters Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. λp is sampled uniformly, which may not be the best. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Please open the source code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The reason for choosing the fixed hyparameter λ, why choose [0.1,0.5,1,2,4,8,10]? Please give a comparison of state-of-the-art registration methods. If possible, please give some other registration results, e.g., distance. In section 3, I find that you have obtained different anatomical structures. Please show some registration results of different anatomical structures. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? hyperparameters of regularization have an important influence on deformation smoothness, and it is hard to obtain an balance between accurate registration and smooth deformation. the author give an good choice to choose regularizeres. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers and myself all appreciated the main idea of the paper. Congratulations for the solid work! There are several requests and concerns from the reviewers that need to be addressed in the camera ready. For example, reviewer 2, whom offers very constructive feedback, highlights several papers which suggest that more context is needed for the motivation – an improved discussion (with fewer bold claims) about disentangling (please remove these claims or indeed show analysis on the disentanglement); improving the ablation (or more likely discussing it); removing other claims for reasons of phenomena without proper validation of those claims; and a discussion about the concurrent (recent) published method tackling the same method. All of these important aspects will improve the paper, especially by improving clarify, discussion, and citations. Please carefully review the constructive reviews. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank all reviewers for their thoughtful comments and suggestions. We categorize the major concerns(C) followed by responses(R) in the following paragraphs. Reviewer 1 C1: How does multiple CRN work together? Is the $\lambda_p$ is also the input in each iteration? R: We follow LapIRN and utilize three CRNs to mimic the conventional multi-resolution optimization strategy in the literature. A normalized $\lambda_p$ is included in each iteration for all the conditional image registration modules. C2: Does different weight input at each iteration affect the training stability? R: We did not observe any training instability during the experiments. Please also refer to the response in C9. C3: The MAE of Dice is not monotonous but is similar in the average Dice coefficient boxplot for CIR-CM and CIR-DM. Is it a contradiction? R: It is not a contradiction. We use a different scale of the Y-axis for the MAE figure and Dice boxplot to highlight the differences. Moreover, the MAE of mean Dice is computed by comparing the mean Dice score of each test scan to the mean Dice score of the corresponding scan achieved by the baseline method. C4: In figure 2, please move the “Baseline” and “CIR-DM” to the left side of the images. R: Thanks for the suggestion. We have revised it accordingly. Reviewer 2 C5: Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? R: The proposed distributed mapping technique (figure 1b) encourages sharing a mapping network within each conditional image registration module. It achieves a more diverse feature representation of the hyperparameter to layers with different depth in CRN than the centralized approach, while consumes less memory than the dense mapping networks for each layer. C6: The StyleGAN mapping network used here as an ablation is significantly overparameterized. R: We tried a small scale StyleGAN mapping network, i.e. 4-layer MLP with latent space and number of nodes for each layer 64. The performance (except runtime) of the small-scale mapping network is slightly inferior to the original design. Thus, we report the result with the original design. C7: Unclear data splits. R: We randomly select 3 and 2 MR scans from the test sets as atlases (section 3) and register all scans in test sets to the selected atlases. As such, there are (150-3)3 = 441 and (10-2)2 = 16 combinations of test scan. C8: Generalization capabilities of this conditioning mechanism on a registration problem, i.e. \lambda = 11 R: Thanks for the suggestion. For $\lambda=12$, the differences of CIR-DM compare to baseline are -0.5% in mean Dice and -2.2% in std($|J_\phi|$) in OASIS. We will extend and evaluate our self-supervised training scheme to cover the whole range of hyperparameter value, similar to [Hoopes21]. C9: Instance normalization (IN) consumes significant GPU memory and may not necessary here. R: The intention of including IN is to stabilize the training as the modulation may amplify certain feature maps by order of magnitude. We leave an in-depth analysis of IN in modulation, i.e., demodulation ability and computational cost, for future work. C10: Remove bold claims/clarify “trivial” approach/discuss the similarities and differences with the concurrent method/deformation norms in figures R: Thanks for the suggestions. We have revised the paper based on these suggestions. Reviewer 3 C11: The reason for choosing the fixed hyperparameter λ = [0.1,0.5,1,2,4,8,10]? R: We set the fixed hyperparameter λ (for evaluation) empirically such that the optimal deformation fields generated by LapIRN with maximum λ are diffeomorphic, i.e. smooth and invertible, in most cases. C12: Please give a comparison of state-of-the-art registration methods and additional measurements to quantify the registration performance. R: Thanks for the suggestion. We leave an in-depth analysis of this method for future work. C13: Please open the source code. R: We will publish the source code. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0403/12/31/Paper0422" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0403/12/31/Paper0422" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0403-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Conditional Deformable Image Registration with Convolutional Neural Network" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0403/12/31/Paper0422"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0403/12/31/Paper0422","headline":"Conditional Deformable Image Registration with Convolutional Neural Network","dateModified":"0404-01-02T00:00:00-05:17","datePublished":"0403-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Tony C. W. Mok, Albert C. S. Chung Abstract Recent deep learning-based methods have shown promising results and runtime advantages in deformable image registration. However, analyzing the effects of hyperparameters and searching for optimal regularization parameters prove to be too prohibitive in deep learning-based methods. This is because it involves training a substantial number of separate models with distinct hyperparameter values. In this paper, we propose a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the conditional features that are correlated with the regularization hyperparameter, we demonstrate that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. In addition, the smoothness of the resulting deformation field can be manipulated with arbitrary strength of smoothness regularization during inference. Extensive experiments on a large-scale brain MRI dataset show that our proposed method enables the precise control of the smoothness of the deformation field without sacrificing the runtime advantage or registration accuracy. Link to paper https://doi.org/10.1007/978-3-030-87202-1_4 Link to the code repository https://github.com/cwmok/Conditional_LapIRN Link to the dataset(s) https://www.oasis-brains.org/ https://www.loni.usc.edu/research/atlas_downloads Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel conditional image registration network. Instead of fixing the weight between the dissimilarity function and the smoothness regularization function and grid searching the best weight in different during, the proposed network takes the weight as the input and learns with different weight parameters in one training. Experiments have shown similar performance compared to baseline methods while having more control on the smoothness of the deformation field. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novel registration network structure avoids the time-consuming grid search step. The network can provide better flexibility compared to traditional networks, by allowing users to input different weights at test time. Authors have conducted extensive experiments to compare against baseline methods. Additionally, an ablation study also shows improvements with the proposed distributed mapping network. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I didn’t find major weaknesses but please see my comments for some minor questions/concerns. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Datasets that are used in this manuscript are publicly available (OASIS and LPBA). It might be necessary to detail the split between train/validation/test for reproducibility, if it is possible. In the manuscript it only mentions a random split, in addition to the atlases that were randomly chosen in each dataset. Training detail has been provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Thanks for the excellent work that authors have done. I enjoyed reading the manuscript. One thing I was a little confused while reading the manuscript was that in section 2.1 does figure 1(a) reflect L CNN-based registration networks? Looks to me it was only one CRN. If so how does multiple CRN work together? In section 2.3, if I understand correctly, the $\\lambda_p$ is also the input parameter in each iteration correct? Maybe it would be good to make it clear. Have authors experienced any difficulties during the training. Does different weight input at each iteration affect the training stability? For example with an iteration with $\\lambda_p = 0$ vs. with $\\lambda_p = 10$, do authors observe significant differences? It is interesting to see the trend for MAE of Dice is not monotonous for CIR-CM and CIR-DM. Why is that the case? Also isn’t this trend contradicting the Dice coefficient boxplot? For example the MAE plot does not show a difference between $\\lambda=0.1$ and $\\lambda = 10$, whereas the difference is obvious in the Dice boxplot. A minor suggestion is in figure 2 to move the “Baseline” and “CIR-DM” to the left side of the images. I missed these notations at first. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I like the idea of learning the weight balance – one of most important hyperparameters in registration tasks. Not only does it avoids the grid searching of the parameter, it also expands the usage of the network at test time, as it allows different input weight balance at test time. Traditional networks can only predict what has been trained. I would recommend strong accpet. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The performance and characteristics of registration networks depend strongly on the strength of deformation regularization. This paper proposes to jointly learn image registration alongside a mapping between randomly sampled regularity weights and scalars acting on network feature maps to linearly scale and shift them (commonly referred to as featurewise linear modulation/FiLM in the literature, a form of channel attention or hypernetwork). Consequently, at test-time, a wide range of deformation regularization weights can be tried to find the value which best optimizes a desired score (e.g. Dice overlap) without having to retrain registration networks for each regularization weight. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem is well-motivated and the paper makes a useful contribution to the deep network-based image registration literature which I foresee will greatly accelerate parameter search in practice. It’s great to see that regularization-conditional linear modulation of network weights yields outputs with comparable registration accuracy (in terms of dice) and improved deformation smoothness over directly training a network at that regularization value. In general, the experiments are convincing (to the extent that I understood them as some aspects are unclear, see Q4+Q7 below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The following are the main points of discussion in my estimation, which I expand upon in detail in my response to Question 7 (among other clarifications and/or suggestions). (1) There are several claims which need to be reduced or removed. In addition, some speculations are presented as explanations which need to be properly qualified as hypotheses. (2) The paper is held-back by unclear writing and/or presentation in its methodological and experimental descriptions. While I understand the main thrust of the idea and experiments, some relevant details are rather unclear to me. (3) I would like a more in-depth analysis or discussion of the effects of conditional instance normalization on registration networks regarding the potential for featurewise linear modulation (FiLM) to overfit the training data (which is quite common) and the need for instance normalization prior to FiLM (which dramatically increases memory use in 3D and is typically not required for FiLM to work). (4) This is not a weakness, but a very similar idea (same exact goal, similar-ish approach) was just accepted by IPMI and was posted on arXiv on January 4th 2021 before the MICCAI deadline [Hoopes21]. To reiterate, this is not a weakness at all as the work was contemporaneous, but the final version of this paper should include a paragraph discussing when/where users would prefer one method over the other. References [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are outstanding questions (see below) regarding how some technical and experimental aspects were implemented. However, once clarified, I do not foresee any major hurdles in reimplementation which should be rather straightforward. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major Comments/Questions (1) The paper repeatedly claims that it learns disentangled representations because of its use of an MLP for conditional modulation. To my knowledge and familiarity with the relevant literature, conditional modulation has nothing to do directly with disentangled representations outside of very specific situations with outside supervision [Charsias20]. In Section 2.2., it is alluded to that this follows from the same rationale as the StyleGAN mapping network [Karras19]. However, StyleGAN was a very different problem with a very different training strategy and I don’t see how the arguments for disentanglement in [Karras19] extend here. Perhaps the paper would be better served by contextualizing its place in the vast literature for featurewise transformations [Dumoulin18] and removing claims of disentanglement. In case I am mistaken, I would like to see this claim quantified. Similarly, the paper claims to learn “non-linear correlation” between feature statistics and deformation smoothness penalty weights. The word “correlation” is misused. (2) Unclear method description. In Section 2.2., I am unable to understand what the distributed mapping network is. Typically, with these styles of methods we have a single network (an MLP) which takes input conditions and outputs an embedding. The embedding is then linearly projected to each layer individually. Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? This is unclear from the text. If I interpreted it correctly, several methods do indeed use separate MLPs for every layer [see Perez19] so I’m not sure that this is a contribution. (3) The ablation study seems invalid. The StyleGAN mapping network used here as an ablation is significantly overparameterized (it was originally for large-scale high-resolution GAN training) and needs to be adjusted to the size of this problem and reduced in depth and width. (4) Unclear data splits. I could have missed something obvious, but I am currently unable to understand what “we randomly select 3 and 2 test images as atlases for OASIS and LPBA40, …., there are 441 and 16 combinations of test cans (sic) from OASIS and LPBA40” mean and how the number of combinations were arrived at. Please streamline this description for easier readability. (5) The so-called “trivial” approach of input condition-concatenation used as a benchmark is actually equivalent to conditional shifting (one half of the proposed approach) at the input layer [Dumoulin18]. Additionally, in practice, conditioning the first layer alone often yields similar results to conditioning all layers [Perez19]. I suggest that this language be clarified. (6) One of the downsides of conditional linear channel modulation is that it can overfit very easily on several kinds of visual tasks [Perez19], which is typically counteracted by some form of regularization (e.g. weight decay on the MLP). Did the authors encounter this phenomenon? For example, how would test-time performance look for lambda = 11 if the training lambdas were in [0, 10] and would it match traditional training? On a similar note, it is stated that the network was trained on lambdas uniformly sampled from [0, 10]. Were the 7 test case lambda’s ([0.1, 0.5, 1, 2, 4, 8, 10]) included in the training samples? If so, it would be nice to see the generalization capabilities of this conditioning mechanism on a registration problem. (7) Prior to conditional scaling and shifting, the instance normalization (IN) used in this paper is not actually needed to obtain the desired conditioning effect. Indeed, pioneering work on conditionally-modulated networks [Perez18] showed that normalization is not necessary for conditioning. As the proposed paper references StyleGAN [Karras19], perhaps it is best exemplified by Section 2.2 of StyleGAN2 [Karras20] where the authors state that you don’t need IN in general and that they only need it for a specific application (style-mixing) which is not relevant here. The reason I bring this up is that IN typically consumes significant GPU-memory for 3D networks and can have a host of other problems [Brock21a, Brock21b] associated with its use. It would be good to consider/discuss whether it is truly necessary here. (8) Page 8, paragraph 2, the sentence “the reason for that phenomenon…” describing the performance of their methods is speculation presented as explanation. There is no immediately obvious connection between prior knowledge from other weights and smoother solutions, please see Sections 3.1 and 3.2 of [Lipton18]. Other comments/Questions (1) [Hoopes21] (to be presented at IPMI 2021) concurrently approaches the same exact problem. Instead of learning lambda-conditional scales and shifts for the channels of a registration network, they use an MLP to directly learn the registration-network weights and biases from input lambdas. In general, as the presented approach learns scalars corresponding to conditional scales and shifts it would likely be more parameter-efficient than [Hoopes20], but I would like to see this discussed. The final-version of the paper would likely benefit from a few sentences or a paragraph discussing the similarities and differences between the two methods. (2) Did the baseline method (LapIRN [Mok20]) also use instance normalization? I tried searching [Mok20], but could not find these details. If the proposed methods use (conditional) instance normalization and the baseline does not, this would be a problem as instance normalization is a confounder and the experiments would need to be revisited. (3) Fig. 3: what is MAE of Dice coefficient and MAE of standard deviation of Jacobian determinant? The Dice and Jacobian-det have established interpretations, I do not know what MAE of these quantities refers to. (4) I suggest changing all instances of “Conditional Registration” with “Smoothness-Conditional Registration” or something similarly more descriptive to indicate that the conditioning is more specific than the conventional interpretation of the term. (5) Figures 2-4 in the supplementary material should provide deformation norms and/or smoothness evaluations to better interpret the fields. Perhaps these scalars could be provided as insets on the top-right of each displacement field? References [Perez18] Perez, et al. “FiLM: Visual reasoning with a general conditioning layer.” AAAI 2018. [Dumoulin18] Dumoulin, et al. “Feature-wise transformations.” Distill 3.7 (2018): e11. [Lipton18] Lipton and Steinhardt. “Troubling trends in machine learning scholarship.” arXiv preprint arXiv:1807.03341 (2018). [Perez19] Perez, et al. NeurIPS ML Retrospectives Workshop https://ml-retrospectives.github.io/neurips2019/accepted_retrospectives/2019/film/ [Karras19] Karras, et al. “A style-based generator architecture for generative adversarial networks.” CVPR. 2019. [Mok20] Mok, et al. “Large Deformation Diffeomorphic Image Registration with Laplacian Pyramid Networks.” MICCAI 2020. [Karras20] Karras, et al. “Analyzing and improving the image quality of stylegan.” CVPR. 2020. [Chartsias20] Chartsias, et al. “Disentangle, align and fuse for multimodal and semi-supervised image segmentation.” IEEE transactions on medical imaging 2020. [Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021. [Brock21a] Brock, et al. “Characterizing signal propagation to close the performance gap in unnormalized resnets.” ICLR, 2021. [Brock21b] Brock, et al. “High-Performance Large-Scale Image Recognition Without Normalization” arXiv, 2021. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper makes a valuable contribution to the registration literature. However, I think the presentation of technical details, claims, etc. needs non-trivial improvement or clarifications. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This manuscript proposed a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the disentangle features that correlated with the regularization hyperparameter, it demonstrates that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. hyperparameters Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. λp is sampled uniformly, which may not be the best. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Please open the source code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The reason for choosing the fixed hyparameter λ, why choose [0.1,0.5,1,2,4,8,10]? Please give a comparison of state-of-the-art registration methods. If possible, please give some other registration results, e.g., distance. In section 3, I find that you have obtained different anatomical structures. Please show some registration results of different anatomical structures. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? hyperparameters of regularization have an important influence on deformation smoothness, and it is hard to obtain an balance between accurate registration and smooth deformation. the author give an good choice to choose regularizeres. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers and myself all appreciated the main idea of the paper. Congratulations for the solid work! There are several requests and concerns from the reviewers that need to be addressed in the camera ready. For example, reviewer 2, whom offers very constructive feedback, highlights several papers which suggest that more context is needed for the motivation – an improved discussion (with fewer bold claims) about disentangling (please remove these claims or indeed show analysis on the disentanglement); improving the ablation (or more likely discussing it); removing other claims for reasons of phenomena without proper validation of those claims; and a discussion about the concurrent (recent) published method tackling the same method. All of these important aspects will improve the paper, especially by improving clarify, discussion, and citations. Please carefully review the constructive reviews. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank all reviewers for their thoughtful comments and suggestions. We categorize the major concerns(C) followed by responses(R) in the following paragraphs. Reviewer 1 C1: How does multiple CRN work together? Is the $\\lambda_p$ is also the input in each iteration? R: We follow LapIRN and utilize three CRNs to mimic the conventional multi-resolution optimization strategy in the literature. A normalized $\\lambda_p$ is included in each iteration for all the conditional image registration modules. C2: Does different weight input at each iteration affect the training stability? R: We did not observe any training instability during the experiments. Please also refer to the response in C9. C3: The MAE of Dice is not monotonous but is similar in the average Dice coefficient boxplot for CIR-CM and CIR-DM. Is it a contradiction? R: It is not a contradiction. We use a different scale of the Y-axis for the MAE figure and Dice boxplot to highlight the differences. Moreover, the MAE of mean Dice is computed by comparing the mean Dice score of each test scan to the mean Dice score of the corresponding scan achieved by the baseline method. C4: In figure 2, please move the “Baseline” and “CIR-DM” to the left side of the images. R: Thanks for the suggestion. We have revised it accordingly. Reviewer 2 C5: Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? R: The proposed distributed mapping technique (figure 1b) encourages sharing a mapping network within each conditional image registration module. It achieves a more diverse feature representation of the hyperparameter to layers with different depth in CRN than the centralized approach, while consumes less memory than the dense mapping networks for each layer. C6: The StyleGAN mapping network used here as an ablation is significantly overparameterized. R: We tried a small scale StyleGAN mapping network, i.e. 4-layer MLP with latent space and number of nodes for each layer 64. The performance (except runtime) of the small-scale mapping network is slightly inferior to the original design. Thus, we report the result with the original design. C7: Unclear data splits. R: We randomly select 3 and 2 MR scans from the test sets as atlases (section 3) and register all scans in test sets to the selected atlases. As such, there are (150-3)3 = 441 and (10-2)2 = 16 combinations of test scan. C8: Generalization capabilities of this conditioning mechanism on a registration problem, i.e. \\lambda = 11 R: Thanks for the suggestion. For $\\lambda=12$, the differences of CIR-DM compare to baseline are -0.5% in mean Dice and -2.2% in std($|J_\\phi|$) in OASIS. We will extend and evaluate our self-supervised training scheme to cover the whole range of hyperparameter value, similar to [Hoopes21]. C9: Instance normalization (IN) consumes significant GPU memory and may not necessary here. R: The intention of including IN is to stabilize the training as the modulation may amplify certain feature maps by order of magnitude. We leave an in-depth analysis of IN in modulation, i.e., demodulation ability and computational cost, for future work. C10: Remove bold claims/clarify “trivial” approach/discuss the similarities and differences with the concurrent method/deformation norms in figures R: Thanks for the suggestions. We have revised the paper based on these suggestions. Reviewer 3 C11: The reason for choosing the fixed hyperparameter λ = [0.1,0.5,1,2,4,8,10]? R: We set the fixed hyperparameter λ (for evaluation) empirically such that the optimal deformation fields generated by LapIRN with maximum λ are diffeomorphic, i.e. smooth and invertible, in most cases. C12: Please give a comparison of state-of-the-art registration methods and additional measurements to quantify the registration performance. R: Thanks for the suggestion. We leave an in-depth analysis of this method for future work. C13: Please open the source code. R: We will publish the source code. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Mok, Tony C. W.,Chung, Albert C. S." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Conditional Deformable Image Registration with Convolutional Neural Network</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Mok, Tony C. W."
+        class="post-tags">
+        Mok, Tony C. W.
+      </a> |  
+      
+      <a href="kittywong/tags#Chung, Albert C. S."
+        class="post-tags">
+        Chung, Albert C. S.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Tony C. W. Mok, Albert C. S. Chung
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Recent deep learning-based methods have shown promising results and runtime advantages in deformable image registration. However, analyzing the effects of hyperparameters and searching for optimal regularization parameters prove to be too prohibitive in deep learning-based methods. This is because it involves training a substantial number of separate models with distinct hyperparameter values. In this paper, we propose a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the conditional features that are correlated with the regularization hyperparameter, we demonstrate that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network. In addition, the smoothness of the resulting deformation field can be manipulated with arbitrary strength of smoothness regularization during inference. Extensive experiments on a large-scale brain MRI dataset show that our proposed method enables the precise control of the smoothness of the deformation field without sacrificing the runtime advantage or registration accuracy.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_4">https://doi.org/10.1007/978-3-030-87202-1_4</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/cwmok/Conditional_LapIRN
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.oasis-brains.org/
+https://www.loni.usc.edu/research/atlas_downloads
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel conditional image registration network. Instead of fixing the weight between the dissimilarity function and the smoothness regularization function and grid searching the best weight in different during, the proposed network takes the weight as the input and learns with different weight parameters in one training. Experiments have shown similar performance compared to baseline methods while having more control on the smoothness of the deformation field.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The novel registration network structure avoids the time-consuming grid search step. The network can provide better flexibility compared to traditional networks, by allowing users to input different weights at test time.</li>
+        <li>Authors have conducted extensive experiments to compare against baseline methods. Additionally, an ablation study also shows improvements with the proposed distributed mapping network.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I didn’t find major weaknesses but please see my comments for some minor questions/concerns.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Datasets that are used in this manuscript are publicly available (OASIS and LPBA). It might be necessary to detail the split between train/validation/test for reproducibility, if it is possible. In the manuscript it only mentions a random split, in addition to the atlases that were randomly chosen in each dataset. Training detail has been provided.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Thanks for the excellent work that authors have done. I enjoyed reading the manuscript.</p>
+      <ol>
+        <li>One thing I was a little confused while reading the manuscript was that in section 2.1 does figure 1(a) reflect L CNN-based registration networks? Looks to me it was only one CRN. If so how does multiple CRN work together?</li>
+        <li>In section 2.3, if I understand correctly, the $\lambda_p$ is also the input parameter in each iteration correct? Maybe it would be good to make it clear.</li>
+        <li>Have authors experienced any difficulties during the training. Does different weight input at each iteration affect the training stability? For example with an iteration with $\lambda_p = 0$ vs. with $\lambda_p = 10$, do authors observe significant differences?</li>
+        <li>It is interesting to see the trend for MAE of Dice is not monotonous for CIR-CM and CIR-DM. Why is that the case? Also isn’t this trend contradicting the Dice coefficient boxplot? For example the MAE plot does not show a difference between $\lambda=0.1$ and $\lambda = 10$, whereas the difference is obvious in the Dice boxplot.</li>
+        <li>A minor suggestion is in figure 2 to move the “Baseline” and “CIR-DM” to the left side of the images. I missed these notations at first.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I like the idea of learning the weight balance – one of most important hyperparameters in registration tasks. Not only does it avoids the grid searching of the parameter, it also expands the usage of the network at test time, as it allows different input weight balance at test time. Traditional networks can only predict what has been trained. I would recommend strong accpet.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The performance and characteristics of registration networks depend strongly on the strength of deformation regularization. This paper proposes to jointly learn image registration alongside a mapping between randomly sampled regularity weights and scalars acting on network feature maps to linearly scale and shift them (commonly referred to as featurewise linear modulation/FiLM in the literature, a form of channel attention or hypernetwork).</p>
+
+      <p>Consequently, at test-time, a wide range of deformation regularization weights can be tried to find the value which best optimizes a desired score (e.g. Dice overlap) without having to retrain registration networks for each regularization weight.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The problem is well-motivated and the paper makes a useful contribution to the deep network-based image registration literature which I foresee will greatly accelerate parameter search in practice.</p>
+        </li>
+        <li>
+          <p>It’s great to see that regularization-conditional linear modulation of network weights yields outputs with comparable registration accuracy (in terms of dice) and improved deformation smoothness over directly training a network at that regularization value.</p>
+        </li>
+        <li>
+          <p>In general, the experiments are convincing (to the extent that I understood them as some aspects are unclear, see Q4+Q7 below).</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The following are the main points of discussion in my estimation, which I expand upon in detail in my response to Question 7 (among other clarifications and/or suggestions).</p>
+
+      <p>(1) There are several claims which need to be reduced or removed. In addition, some speculations are presented as explanations which need to be properly qualified as hypotheses.</p>
+
+      <p>(2) The paper is held-back by unclear writing and/or presentation in its methodological and experimental descriptions. While I understand the main thrust of the idea and experiments, some relevant details are rather unclear to me.</p>
+
+      <p>(3) I would like a more in-depth analysis or discussion of the effects of conditional instance normalization on registration networks regarding the potential for featurewise linear modulation (FiLM) to overfit the training data (which is quite common) and the need for instance normalization prior to FiLM (which dramatically increases memory use in 3D and is typically not required for FiLM to work).</p>
+
+      <p>(4) This is not a weakness, but a very similar idea (same exact goal, similar-ish approach) was just accepted by IPMI and was posted on arXiv on January 4th 2021 before the MICCAI deadline [Hoopes21]. To reiterate, this is not a weakness at all as the work was contemporaneous, but the final version of this paper should include a paragraph discussing when/where users would prefer one method over the other.</p>
+
+      <h2 id="references">References</h2>
+      <p>[Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There are outstanding questions (see below) regarding how some technical and experimental aspects were implemented. However, once clarified, I do not foresee any major hurdles in reimplementation which should be rather straightforward.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <h2 id="major-commentsquestions">Major Comments/Questions</h2>
+
+      <p>(1) The paper repeatedly claims that it learns disentangled representations because of its use of an MLP for conditional modulation. To my knowledge and familiarity with the relevant literature, conditional modulation has nothing to do directly with disentangled representations outside of very specific situations with outside supervision [Charsias20]. In Section 2.2., it is alluded to that this follows from the same rationale as the StyleGAN mapping network [Karras19]. However, StyleGAN was a very different problem with a very different training strategy and I don’t see how the arguments for disentanglement in [Karras19] extend here.</p>
+
+      <p>Perhaps the paper would be better served by contextualizing its place in the vast literature for featurewise transformations [Dumoulin18] and removing claims of disentanglement. In case I am mistaken, I would like to see this claim quantified. Similarly, the paper claims to learn “non-linear correlation” between feature statistics and deformation smoothness penalty weights. The word “correlation” is misused.</p>
+
+      <p>(2) Unclear method description. In Section 2.2., I am unable to understand what the distributed mapping network is. Typically, with these styles of methods we have a single network (an MLP) which takes input conditions and outputs an embedding. The embedding is then linearly projected to each layer individually. Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? This is unclear from the text. If I interpreted it correctly, several methods do indeed use separate MLPs for every layer [see Perez19] so I’m not sure that this is a contribution.</p>
+
+      <p>(3) The ablation study seems invalid. The StyleGAN mapping network used here as an ablation is significantly overparameterized (it was originally for large-scale high-resolution GAN training) and needs to be adjusted to the size of this problem and reduced in depth and width.</p>
+
+      <p>(4) Unclear data splits. I could have missed something obvious, but I am currently unable to understand what “we randomly select 3 and 2 test images as atlases for OASIS and LPBA40, …., there are 441 and 16 combinations of test cans (sic) from OASIS and LPBA40” mean and how the number of combinations were arrived at. Please streamline this description for easier readability.</p>
+
+      <p>(5) The so-called “trivial” approach of input condition-concatenation used as a benchmark is actually equivalent to conditional shifting (one half of the proposed approach) at the input layer [Dumoulin18]. Additionally, in practice, conditioning the first layer alone often yields similar results to conditioning all layers [Perez19]. I suggest that this language be clarified.</p>
+
+      <p>(6) One of the downsides of conditional linear channel modulation is that it can overfit very easily on several kinds of visual tasks [Perez19], which is typically counteracted by some form of regularization (e.g. weight decay on the MLP). Did the authors encounter this phenomenon? For example, how would test-time performance look for lambda = 11 if the training lambdas were in [0, 10] and would it match traditional training?</p>
+
+      <p>On a similar note, it is stated that the network was trained on lambdas uniformly sampled from [0, 10]. Were the 7 test case lambda’s ([0.1, 0.5, 1, 2, 4, 8, 10]) included in the training samples? If so, it would be nice to see the generalization capabilities of this conditioning mechanism on a registration problem.</p>
+
+      <p>(7) Prior to conditional scaling and shifting, the instance normalization (IN) used in this paper is not actually needed to obtain the desired conditioning effect. Indeed, pioneering work on conditionally-modulated networks [Perez18] showed that normalization is not necessary for conditioning. As the proposed paper references StyleGAN [Karras19], perhaps it is best exemplified by Section 2.2 of StyleGAN2 [Karras20] where the authors state that you don’t need IN in general and that they only need it for a specific application (style-mixing) which is not relevant here.</p>
+
+      <p>The reason I bring this up is that IN typically consumes significant GPU-memory for 3D networks and can have a host of other problems [Brock21a, Brock21b] associated with its use. It would be good to consider/discuss whether it is truly necessary here.</p>
+
+      <p>(8) Page 8, paragraph 2, the sentence “the reason for that phenomenon…” describing the performance of their methods is speculation presented as explanation. There is no immediately obvious connection between prior knowledge from other weights and smoother solutions, please see Sections 3.1 and 3.2 of [Lipton18].</p>
+
+      <h2 id="other-commentsquestions">Other comments/Questions</h2>
+
+      <p>(1) [Hoopes21] (to be presented at IPMI 2021) concurrently approaches the same exact problem. Instead of learning lambda-conditional scales and shifts for the channels of a registration network, they use an MLP to directly learn the registration-network weights and biases from input lambdas. In general, as the presented approach learns scalars corresponding to conditional scales and shifts it would likely be more parameter-efficient than [Hoopes20], but I would like to see this discussed. The final-version of the paper would likely benefit from a few sentences or a paragraph discussing the similarities and differences between the two methods.</p>
+
+      <p>(2) Did the baseline method (LapIRN [Mok20]) also use instance normalization? I tried searching  [Mok20], but could not find these details. If the proposed methods use (conditional) instance normalization and the baseline does not, this would be a problem as instance normalization is a confounder and the experiments would need to be revisited.</p>
+
+      <p>(3) Fig. 3: what is MAE of Dice coefficient and MAE of standard deviation of Jacobian determinant? The Dice and Jacobian-det have established interpretations, I do not know what MAE of these quantities refers to.</p>
+
+      <p>(4) I suggest changing all instances of “Conditional Registration” with “Smoothness-Conditional Registration” or something similarly more descriptive to indicate that the conditioning is more specific than the conventional interpretation of the term.</p>
+
+      <p>(5) Figures 2-4 in the supplementary material should provide deformation norms and/or smoothness evaluations to better interpret the fields. Perhaps these scalars could be provided as insets on the top-right of each displacement field?</p>
+
+      <h2 id="references-1">References</h2>
+      <p>[Perez18] Perez, et al. “FiLM: Visual reasoning with a general conditioning layer.” AAAI 2018.
+[Dumoulin18] Dumoulin, et al. “Feature-wise transformations.” Distill 3.7 (2018): e11.
+[Lipton18] Lipton and Steinhardt. “Troubling trends in machine learning scholarship.” arXiv preprint arXiv:1807.03341 (2018).
+[Perez19] Perez, et al.  NeurIPS ML Retrospectives Workshop https://ml-retrospectives.github.io/neurips2019/accepted_retrospectives/2019/film/
+[Karras19] Karras, et al. “A style-based generator architecture for generative adversarial networks.” CVPR. 2019.
+[Mok20] Mok, et al. “Large Deformation Diffeomorphic Image Registration with Laplacian Pyramid Networks.” MICCAI 2020.
+[Karras20] Karras, et al. “Analyzing and improving the image quality of stylegan.” CVPR. 2020.
+[Chartsias20] Chartsias, et al. “Disentangle, align and fuse for multimodal and semi-supervised image segmentation.” IEEE transactions on medical imaging 2020.
+[Hoopes21] Hoopes, et al. “HyperMorph: Amortized Hyperparameter Learning for Image Registration.” IPMI 2021.
+[Brock21a] Brock, et al. “Characterizing signal propagation to close the performance gap in unnormalized resnets.” ICLR, 2021.
+[Brock21b] Brock, et al. “High-Performance Large-Scale Image Recognition Without Normalization” arXiv, 2021.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper makes a valuable contribution to the registration literature. However, I think the presentation of technical details, claims, etc. needs non-trivial improvement or clarifications.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This manuscript proposed a conditional image registration method and a new self-supervised learning paradigm for deep deformable image registration. By learning the disentangle features that correlated with the regularization hyperparameter, it demonstrates that optimal solutions with arbitrary hyperparameters can be captured by a single deep convolutional neural network.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>hyperparameters</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>λp is sampled uniformly, which may not be the best.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Please open the source code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The reason for choosing the fixed hyparameter λ, why choose [0.1,0.5,1,2,4,8,10]?
+Please give a comparison of state-of-the-art registration methods.
+If possible, please give some other registration results, e.g., distance.
+In section 3, I find that you have obtained different anatomical structures. Please show some registration results of different anatomical structures.
+</code></pre></div>      </div>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>hyperparameters of regularization have an important influence on deformation smoothness, and it is hard to obtain an balance between accurate registration and smooth deformation. the author give an good choice to choose regularizeres.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The reviewers and myself all appreciated the main idea of the paper. Congratulations for the solid work!</p>
+
+      <p>There are several requests and concerns from the reviewers that need to be addressed in the camera ready. For example, reviewer 2, whom offers very constructive feedback, highlights several papers which suggest that more context is needed for the motivation – an improved discussion (with fewer bold claims) about disentangling (please remove these claims or indeed show analysis on the disentanglement); improving the ablation (or more likely discussing it); removing other claims for reasons of phenomena without proper validation of those claims; and a discussion about the concurrent (recent) published method tackling the same method.</p>
+
+      <p>All of these important aspects will improve the paper, especially by improving clarify, discussion, and citations. Please carefully review the constructive reviews.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank all reviewers for their thoughtful comments and suggestions. We categorize the major concerns(C) followed by responses(R) in the following paragraphs.</p>
+
+  <p>Reviewer 1
+C1: How does multiple CRN work together? Is the $\lambda_p$ is also the input in each iteration?
+R: We follow LapIRN and utilize three CRNs to mimic the conventional multi-resolution optimization strategy in the literature. A normalized $\lambda_p$ is included in each iteration for all the conditional image registration modules.</p>
+
+  <p>C2: Does different weight input at each iteration affect the training stability?
+R: We did not observe any training instability during the experiments. Please also refer to the response in C9.</p>
+
+  <p>C3: The MAE of Dice is not monotonous but is similar in the average Dice coefficient boxplot for CIR-CM and CIR-DM. Is it a contradiction?
+R: It is not a contradiction. We use a different scale of the Y-axis for the MAE figure and Dice boxplot to highlight the differences. Moreover, the MAE of mean Dice is computed by comparing the mean Dice score of each test scan to the mean Dice score of the corresponding scan achieved by the baseline method.</p>
+
+  <p>C4: In figure 2, please move the “Baseline” and “CIR-DM” to the left side of the images.
+R: Thanks for the suggestion. We have revised it accordingly.</p>
+
+  <p>Reviewer 2
+C5: Is the “distributed-mapping” contribution here that a separate MLP was used for every layer? 
+R: The proposed distributed mapping technique (figure 1b) encourages sharing a mapping network within each conditional image registration module. It achieves a more diverse feature representation of the hyperparameter to layers with different depth in CRN than the centralized approach, while consumes less memory than the dense mapping networks for each layer.</p>
+
+  <p>C6: The StyleGAN mapping network used here as an ablation is significantly overparameterized.
+R: We tried a small scale StyleGAN mapping network, i.e. 4-layer MLP with latent space and number of nodes for each layer 64. The performance (except runtime) of the small-scale mapping network is slightly inferior to the original design. Thus, we report the result with the original design.</p>
+
+  <p>C7: Unclear data splits. 
+R:  We randomly select 3 and 2 MR scans from the test sets as atlases (section 3) and register all scans in test sets to the selected atlases. As such, there are (150-3)<em>3 = 441 and (10-2)</em>2 = 16 combinations of test scan.</p>
+
+  <p>C8: Generalization capabilities of this conditioning mechanism on a registration problem, i.e. \lambda = 11
+R: Thanks for the suggestion. For $\lambda=12$, the differences of CIR-DM compare to baseline are -0.5% in mean Dice and -2.2% in std($|J_\phi|$) in OASIS. We will extend and evaluate our self-supervised training scheme to cover the whole range of hyperparameter value, similar to [Hoopes21].</p>
+
+  <p>C9: Instance normalization (IN) consumes significant GPU memory and may not necessary here.
+R: The intention of including IN is to stabilize the training as the modulation may amplify certain feature maps by order of magnitude. We leave an in-depth analysis of IN in modulation, i.e., demodulation ability and computational cost, for future work.</p>
+
+  <p>C10: Remove bold claims/clarify “trivial” approach/discuss the similarities and differences with the concurrent method/deformation norms in figures
+R: Thanks for the suggestions. We have revised the paper based on these suggestions.</p>
+
+  <p>Reviewer 3
+C11: The reason for choosing the fixed hyperparameter λ = [0.1,0.5,1,2,4,8,10]?
+R: We set the fixed hyperparameter λ (for evaluation) empirically such that the optimal deformation fields generated by LapIRN with maximum λ are diffeomorphic, i.e. smooth and invertible, in most cases.</p>
+
+  <p>C12: Please give a comparison of state-of-the-art registration methods and additional measurements to quantify the registration performance.
+R: Thanks for the suggestion. We leave an in-depth analysis of this method for future work.</p>
+
+  <p>C13: Please open the source code.
+R: We will publish the source code.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0403-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0404-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Mok, Tony C. W."
+        class="post-category">
+        Mok, Tony C. W.
+      </a> |  
+      
+      <a href="kittywong/tags#Chung, Albert C. S."
+        class="post-category">
+        Chung, Albert C. S.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0404/12/31/Paper0479">
+          A Deep Discontinuity-Preserving Image Registration Network
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0402/12/31/Paper0337">
+          Learning Unsupervised Parameter-specific Affine Transformation for Medical Images Registration
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

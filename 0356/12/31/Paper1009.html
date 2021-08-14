@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Learning to Predict Error for MRI Reconstruction | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Learning to Predict Error for MRI Reconstruction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Shi Hu, Nicola Pezzotti, Max Welling Abstract In healthcare applications, predictive uncertainty has been used to assess predictive accuracy. In this paper, we demonstrate that predictive uncertainty estimated by the current methods does not highly correlate with prediction error by decomposing the latter into random and systematic errors, and showing that the former is equivalent to the variance of the random error. In addition, we observe that current methods unnecessarily compromise performance by modifying the model and training loss to estimate the target and uncertainty jointly. We show that estimating them separately without modifications improves performance. Following this, we propose a novel method that estimates the target labels and magnitude of the prediction error in two steps. We demonstrate this method on a large-scale MRI reconstruction task, and achieve significantly better results than the state-of-the-art uncertainty estimation methods. Link to paper https://doi.org/10.1007/978-3-030-87199-4_57 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a two-step approach for estimating the target error and the magnitude of the prediction error, by first training only on the target error, and then computing the squared error e^2(x), as an unbiased estimator of its expectation, E[e^2(x)]. Following this the same model is once more trained from scratch to estimate e^2(x) directly. This is applied to ta retina imaging superresolution task, and the FAIR MR knee multi-coil reconstruction challenge task (https://fastmri.org/leaderboards/challenge/), with some good results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. two-stage approach to estimate uncertainty baseline comparison with three predictive uncertainty quantification methods code sharing and use of public data sets Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is quite difficult to understand in parts, due to using ambiguous semantics. E.g. already in the abstract, the sentence: “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error by decomposing the latter into random and systematic errors” could mean one of two things: “by decomposing the prediction error into random and systematic errors, we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error” (which I believe is what you mean; also, do you really mean “cannot” or “does not”?) “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error, which is calculated by decomposition into random and systematic errors” (which is what you actually say) Similarly, the next sentence is also not well written: “we observe current methods unnecessarily compromise the performance by modifying the model and training loss to estimate target and uncertainty jointly” - this could either mean: “by modifying the model and training loss to estimate target and uncertainty jointly, we observe that current methods unnecessarily compromise the performance” (which I believe is what you mean to say) “we observe that current methods, that modify the model and training loss to estimate target and uncertainty jointly, unnecessarily compromise the performance” (which is what you actually say) I lack a more clear description and categorization of different types of uncertainty. The work starts with the six sources of uncertainty (data noise, input variability, model structure and parameters, optimization, and interpolation), and then only focuses on prediction error, mentioning systematic error, as well as random errors, and only later aleatoric uncertainty (and do not mention epistemic uncertainty at all). While the two-step approach shows an improvement over the baseline methods, it does not perform as well as Adaptive-CS-Net (which has been extended here in the two-step approach) or in fact any other methods in the challenge board for these data, which all have better PSNRs. NMESs and SSIMS for both 4-coil and 8-coil data - these methods and results should have been the actual baseline for a more objective assessment Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code and data are provided, though I haven’t inspected these more closely Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The focus on predicting uncertainty is nice, but the overall value of this work is a bit less clear given that the FAIR challenge leaderboard methods greatly outperform this work. Predicting uncertainty is limited to the target error, but is not really fully disentangled from different sources of uncertainty. There are a number of probabilistic uncertainty methods in deep learning which have not been tested or compared with here, e.g. the work by Tanno et al. (MICCAI 2017 or NeuroImage 2020). The paper lacks a bit in clarity in parts (see my comment on semantic ambiguity already in the abstract), and a more detailed method description (e.g. graphical illustration of two-stage network architecture). While code is provided, algorithmic/methodological concepts should be included and explained in the paper. Please state your overall opinion of the paper strong reject (2) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work is promising but quite preliminary, both in terms of uncertainty estimation which is limited, and performance compared to the state-of-the-art. Clarity of writing could be improved which would make this work a bit more accessible. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors present a method of producing estimates for the uncertainty in medical imaging tasks. They decompose uncertainty into 3 distinct error terms: 1 systematic and 2 random. In particular, the authors show that by learning to predict the squared prediction error, the variance of the random error terms can be obtained with the systemic error term to form a total prediction error. The authors also show that current uncertainty decompositions only decompose the random error terms leaving current methods with an underestimated and uncorrelated prediction error. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors show a very clear decomposition of the prediction error that is common to most (if not all) of deep learning. Novel and clearly presented uncertainty decomposition that highlights the weakness in current approaches and subsequently shows where the novelty of their proposed method lies. In particular, they show that a systematic error term is included in their new uncertainty prediction method which leads to better estimated uncertainty estimates. The authors show the limitation in current approaches that estimate aleatoric error with the negative Gaussian log-likelihood and even how such approaches can be optimised using early stopping. The authors show the advantage of two-step estimation in optimising the target prediction whilst also obtaining better error estimates. The fact that the optimisation landscape is unchanged with their proposed two-step estimation presents a clear advantage over other uncertainty methods in that it doesn’t change current, accepted work in the community. Therefore, this proposed method is highly feasible in most (if not all) cases. The authors highlight some very specific medical image issues with evaluating their method with the fastMRI dataset regarding the unknown noise due to a variety of factors such as scanner variability. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is a lack of figures depicting the uncertainty prediction with the author’s proposed method. In general, the experiments section could have been written more clearly. In section 6.2 (super-resolution experiment), how is the corruption level \sigma(x) computed when creating the training targets and how big is the mean absolute error MAE with respect to this corruption level? Furthermore, aside from Figure 1, which is not stated to necessarily be from the author’s proposed method, there are no figures of the uncertainty estimates produced. This raises doubts as to whether the author’s proposed method produces results that are indeed appropriately correlated with the true prediction error. I would have thought due to the author’s claim that the MC dropout estimate being uncorrelated with the true prediction error, a nice figure would indeed have been the MC-dropout error prediction vs. the author’s proposed method (for total error, e-squared). The author mentions that expectations are calculated over 4 random seeds - this confused me a little. As a result, it is unclear to me why they do this. E[\hat{h}(x)] = E_{s}[\hat{h}(x; s, M, D, O] but if this expectation “over the seed” refers to the expectation of the function \hat{h} given a set of functions \hat{H} that form the posterior distribution p(\hat{h} data) or if it refers to the expectation over the possible seeds in which they are used as a proxy to modify the noise distribution (and weight initialisation, training data shuffle, etc) and if the latter is the case, then why does the author want to do this - Is it a way of accessing the posterior distribution? Whilst the previous point seems irrelevant, the sigma estimate can only be know from e squared if Var(\hat{h}) and the systematic error term is known. The systematic error terms require the expectation E(\hat{h}) to be known. In section 6.2, they report the error in the sigma estimate but it’s unclear how the sigma estimate is obtained. Since the Var(\hat{h}) and E(\hat{h}) must be known either the posterior must be accessible or a good estimate of these quantities with their Monte Carlo proposal must be obtainable. Following on the previous point, this raises the point of whether using 4 random seeds to calculate the expectation is enough for a good estimate. Maybe it would be appropriate to indicate what is a good number of estimators to use in such methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear how the corruption level is chosen in section 6.2 and it is also unclear how sigma is calculated. As a result, this particular experiment isn’t reproducible. However, the idea is simple and hence would associate this study with one of high reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Make it clear how the sigma estimate is produced which may also help bring to light how this method actually works. Although only a arXiv paper, it is highly recommended that the citation of https://arxiv.org/pdf/1811.05910.pdf is included. It provides a detailed mathematical analysis of the method proposed in the study (which is called “Deep Direct Estimation” in the link study by Jonas Adler and Ozan Oktem). Include figures of the error estimates produced by your method and other methods. In particular, show that correlation between the true prediction error with the estimated error is high. Better explanation for the use of 4 random seeds as it is still not clear to the reviewer why this is used “This suggests the second random error in Eq. 1 is very small, which makes sense since we use 50 samples for evaluation.” - This comment was not quite understood and a little elaboration would help. In passing, the comment almost suggests that random error scales with the number of samples which isn’t the case. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The decomposition of the prediction error term brings a lot of light to the medical imaging community. Up until the experiments section, the reviewer believes the paper to be presented in a very sensible and clear manner The use of two different types of experiment (super-resolution and accelerated MRI) was interesting and were very relevant use cases for uncertainty. The reviewer did not rate more highly due to concerns of how the sigma estimate was calculated and additionally how the posterior was accessed for the calculation of the Var(\hat{h}) and E(\hat{h}). The lack of images showing the result of the uncertainty estimate was a concern. The lack of the Adler citation is a concern of the reviewer but the paper was not penalised for this in accordance with MICCAI reviewer guidelines. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A theoretically grounded paper showing the limitations of the current uncertainty estimation methods. The paper also proposes how to overcome these limitations for a regression task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper reading was a pleasure as all concepts were written clearly with good explanations. Theoretical analysis of how current uncertainty estimate methods does not capture systematic error was insightful. Experiments on two different datasets is commendable. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the paper, it is argued that a major limitation of current methods [1] is the necessity of extra output for estimating uncertainty. While the same is used for the proposed method as mentioned in para-2 of sec:6.2 The end of sec:6.2 concludes that the proposed two-headed method outperformance the original method. I am not sure if I am missing some things as Table:1 and all plots in Fig:2 show that the original method outperformance the two-headed methods. Comparison against a recent uncertainty estimation method [2] which doesn’t require learning an extra parameter for uncertainty estimation would make the paper stronger. [1] Kendall, A., Gal, Y.: What uncertainties do we need in bayesian deep learning for computer vision? NIPS (2017) [2] Kwon, Y., Won, J.H., Kim, B.J. and Paik, M.C., 2020. Uncertainty quantification using Bayesian neural networks in classification: Application to biomedical image segmentation. Computational Statistics &amp; Data Analysis, 142, p.106816. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be reproducible as it uses the publicly available dataset and the code is provided as supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A rationale behind using log scale in the last two plots of Fig:2 First row is missing. The last line of Sec:6.3 mentions that “calibration improves all baseline”. A table showing this either in the main paper or in the appendix would be helpful. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper gives a good explation of the drawbacks of the existing methods, provides a simple solution, and backs it up with experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work is about uncertainty estimation. In particular, using a two step approach to prediction error in MR reconstruction. Reviewers had widely different reactions to this work. During a rebuttal reviewer concerns should be addressed as widely as possible with a particular emphasis on the following aspects: 1) R1 points out that the proposed approach is significantly worse than existing methods in the FAIR challenge leaderboard; if this is the case what is the main value of the approach and why were these approaches not used as a baseline? 2) A more clear description and categorization of the different types of uncertainty should be provided. 3) Besides Fig. 1 there is no figure illustrating the results of the uncertainty estimation. Based on R2’s review comment, does the method indeed produce estimates which are appropriately correlated with the true prediction error? 4) It should be clarified how the sigma estimate is computed. 5) The terminology “original” for Tab. 1 should also be clarified in contrast to the two-head models. Does original mean training two separate models here? In general there are significant concerns regarding the overall clarity of the paper, which should be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposed an approach to predict MR reconstruction error. There were some concerns with respect to comparison to other methods as well as with respect to some of the estimation procedures. The rebuttal addressed some of the comparison concerns (i.e., that the goal is uncertainty quantification and not MR reconstruction performance; though some other relevant comparisons were not performed due to hardware constraints), but at least to this AC the answer to the estimation question (from R2) for sigma is still not clear after the rebuttal. Given that R1 also was concerned about clarity of writing the work would likely benefit from better presentation and improved experiments / visualizations. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript provides a fresh perspective on a relevant and general problem. R1 had some concerns about ambiguous sentences, but I expect that these could be clarified in the camera-ready version. There were also concerns about the experimental results falling short of the state of the art, but the authors provide several reasons for this in their rebuttal, and I’m willing to follow their argument that this is somewhat beside the main point of their paper. Overall, I am with the two reviewers who would like to see this paper at MICCAI, but I would ask the authors to carefully consider the references that have been pointed out by the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper gives a very nice theoretical analysis that helps better understand prediction errors. Although the under performance on the challenge dataset, as also acknowledged in the rebuttal, still brings questions on how practical the analysis and the proposed method are, the issue raised by the paper is important and not well addressed in the existing work. Overall, I think this work can intrigue broader discussion. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank all reviewers for the helpful feedback and will cite the recommended papers. Here we clarify each reviewer’s points. R1. Our goal is to compare different uncertainty estimation methods for a given model, rather than improving the state-of-the-art reconstruction accuracy. An advantage of our method is adaptability: we do not modify the model structure or training loss, so the target prediction accuracy remains the same. In comparison, we show the baseline methods reduce the accuracy as they do make such modifications. The target prediction results in Tab. 2 are worse than the leaderboard results due to: i) We did not perform ACSNet’s fine-tuning step due to hardware constraints (page 7), which reduces the accuracy. ii) The leaderboard results are evaluated on the challenge set, which is hidden from the public; in contrast, we treat part of the validation set as the test set and use it for evaluation (page 4). ACSNet and a few other models perform worse on the validation set than the challenge set, e.g., i-RIM’s (Putzky et al. [21]) 4x SSIMs on the two sets are 0.916 and 0.925. Further, we are aware of Tanno et al., but unfortunately could not compare with it due to GPU memory constraints, as it simultaneously optimizes two separate models. However, its loss &amp; estimated uncertainties are the same as Kendall &amp; Gal 17, which we use as a baseline. There are 2 main approaches to categorize the uncertainty: i) aleatoric (irreducible) or epistemic (reducible), ii) it belongs to one of the 6 sources listed by Kennedy &amp; O’Hagan 01. We take the second approach. Further, all 6 sources affect the prediction error, where the uncertainties in the data noise and model parameters induce the random error, while the uncertainties in the model structure and optimization induce the systematic error. We did not encounter the uncertainty in the input variability or interpolation: the former arises when some aspects of the inputs (e.g. dimensions) are not exactly as designed, while the latter arises when the inputs have missing values and they are filled using interpolation. Lastly, our goal is not to disentangle the 4 remaining sources of uncertainty, but to show that it is more beneficial to estimate the expected squared error than the predictive uncertainty, which does not include the systematic error. R2. For the super-resolution task, recall that h(x) is the true target and \sigma^2(x) is the variance of the pixel-wise Gaussian noise; in addition, the two-head model adds a second branch to the ESPCN model to estimate h(x) and \sigma(x) jointly with the NLL loss (page 5). Our method uses 2 separate ESPCN models (without modifications): The 1st model estimates h(x) with its original MSE loss (page 5), and outputs \hat{h}(x). Then, the 2nd model estimates \sigma(x) with the NLL loss (the \hat{h}(x) in this loss is produced by the 1st model, whose weights are fixed), and outputs \hat{\sigma}(x). We evaluate the \sigma(x) prediction results using MAE, which is |\hat{\sigma}(x) - \sigma(x)| over all pixels of all test images, and the ground truth \sigma(x) is 0, 25 or 50. Fig. 2 and Tab. 1 show the two-head model is less accurate in predicting h(x) and \sigma(x) than our 1st and 2nd original model respectively. Further, our error prediction plots indeed correlate better with the true error plots. We will add these plots to the paper. In Tab. 1, the random seed affects the label noise, data shuffling and weight initialization in each run, and 4 seeds are used to show statistical significance of the results. Lastly, we argue that the second random error for MC dropout is small, as \hat{h}(x) is the mean of 50 MC predictions. R3. Please see our response to R2 regarding the super-resolution task. In addition, in Fig. 2, 2 log-log plots are used since our best results are achieved within 10 epochs, but the total epochs is 1000. Further, we will show the uncalibrated baseline results. All. We will improve clarity in the final manuscript. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Shi Hu, Nicola Pezzotti, Max Welling Abstract In healthcare applications, predictive uncertainty has been used to assess predictive accuracy. In this paper, we demonstrate that predictive uncertainty estimated by the current methods does not highly correlate with prediction error by decomposing the latter into random and systematic errors, and showing that the former is equivalent to the variance of the random error. In addition, we observe that current methods unnecessarily compromise performance by modifying the model and training loss to estimate the target and uncertainty jointly. We show that estimating them separately without modifications improves performance. Following this, we propose a novel method that estimates the target labels and magnitude of the prediction error in two steps. We demonstrate this method on a large-scale MRI reconstruction task, and achieve significantly better results than the state-of-the-art uncertainty estimation methods. Link to paper https://doi.org/10.1007/978-3-030-87199-4_57 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a two-step approach for estimating the target error and the magnitude of the prediction error, by first training only on the target error, and then computing the squared error e^2(x), as an unbiased estimator of its expectation, E[e^2(x)]. Following this the same model is once more trained from scratch to estimate e^2(x) directly. This is applied to ta retina imaging superresolution task, and the FAIR MR knee multi-coil reconstruction challenge task (https://fastmri.org/leaderboards/challenge/), with some good results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. two-stage approach to estimate uncertainty baseline comparison with three predictive uncertainty quantification methods code sharing and use of public data sets Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is quite difficult to understand in parts, due to using ambiguous semantics. E.g. already in the abstract, the sentence: “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error by decomposing the latter into random and systematic errors” could mean one of two things: “by decomposing the prediction error into random and systematic errors, we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error” (which I believe is what you mean; also, do you really mean “cannot” or “does not”?) “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error, which is calculated by decomposition into random and systematic errors” (which is what you actually say) Similarly, the next sentence is also not well written: “we observe current methods unnecessarily compromise the performance by modifying the model and training loss to estimate target and uncertainty jointly” - this could either mean: “by modifying the model and training loss to estimate target and uncertainty jointly, we observe that current methods unnecessarily compromise the performance” (which I believe is what you mean to say) “we observe that current methods, that modify the model and training loss to estimate target and uncertainty jointly, unnecessarily compromise the performance” (which is what you actually say) I lack a more clear description and categorization of different types of uncertainty. The work starts with the six sources of uncertainty (data noise, input variability, model structure and parameters, optimization, and interpolation), and then only focuses on prediction error, mentioning systematic error, as well as random errors, and only later aleatoric uncertainty (and do not mention epistemic uncertainty at all). While the two-step approach shows an improvement over the baseline methods, it does not perform as well as Adaptive-CS-Net (which has been extended here in the two-step approach) or in fact any other methods in the challenge board for these data, which all have better PSNRs. NMESs and SSIMS for both 4-coil and 8-coil data - these methods and results should have been the actual baseline for a more objective assessment Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code and data are provided, though I haven’t inspected these more closely Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The focus on predicting uncertainty is nice, but the overall value of this work is a bit less clear given that the FAIR challenge leaderboard methods greatly outperform this work. Predicting uncertainty is limited to the target error, but is not really fully disentangled from different sources of uncertainty. There are a number of probabilistic uncertainty methods in deep learning which have not been tested or compared with here, e.g. the work by Tanno et al. (MICCAI 2017 or NeuroImage 2020). The paper lacks a bit in clarity in parts (see my comment on semantic ambiguity already in the abstract), and a more detailed method description (e.g. graphical illustration of two-stage network architecture). While code is provided, algorithmic/methodological concepts should be included and explained in the paper. Please state your overall opinion of the paper strong reject (2) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work is promising but quite preliminary, both in terms of uncertainty estimation which is limited, and performance compared to the state-of-the-art. Clarity of writing could be improved which would make this work a bit more accessible. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors present a method of producing estimates for the uncertainty in medical imaging tasks. They decompose uncertainty into 3 distinct error terms: 1 systematic and 2 random. In particular, the authors show that by learning to predict the squared prediction error, the variance of the random error terms can be obtained with the systemic error term to form a total prediction error. The authors also show that current uncertainty decompositions only decompose the random error terms leaving current methods with an underestimated and uncorrelated prediction error. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors show a very clear decomposition of the prediction error that is common to most (if not all) of deep learning. Novel and clearly presented uncertainty decomposition that highlights the weakness in current approaches and subsequently shows where the novelty of their proposed method lies. In particular, they show that a systematic error term is included in their new uncertainty prediction method which leads to better estimated uncertainty estimates. The authors show the limitation in current approaches that estimate aleatoric error with the negative Gaussian log-likelihood and even how such approaches can be optimised using early stopping. The authors show the advantage of two-step estimation in optimising the target prediction whilst also obtaining better error estimates. The fact that the optimisation landscape is unchanged with their proposed two-step estimation presents a clear advantage over other uncertainty methods in that it doesn’t change current, accepted work in the community. Therefore, this proposed method is highly feasible in most (if not all) cases. The authors highlight some very specific medical image issues with evaluating their method with the fastMRI dataset regarding the unknown noise due to a variety of factors such as scanner variability. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is a lack of figures depicting the uncertainty prediction with the author’s proposed method. In general, the experiments section could have been written more clearly. In section 6.2 (super-resolution experiment), how is the corruption level \sigma(x) computed when creating the training targets and how big is the mean absolute error MAE with respect to this corruption level? Furthermore, aside from Figure 1, which is not stated to necessarily be from the author’s proposed method, there are no figures of the uncertainty estimates produced. This raises doubts as to whether the author’s proposed method produces results that are indeed appropriately correlated with the true prediction error. I would have thought due to the author’s claim that the MC dropout estimate being uncorrelated with the true prediction error, a nice figure would indeed have been the MC-dropout error prediction vs. the author’s proposed method (for total error, e-squared). The author mentions that expectations are calculated over 4 random seeds - this confused me a little. As a result, it is unclear to me why they do this. E[\hat{h}(x)] = E_{s}[\hat{h}(x; s, M, D, O] but if this expectation “over the seed” refers to the expectation of the function \hat{h} given a set of functions \hat{H} that form the posterior distribution p(\hat{h} data) or if it refers to the expectation over the possible seeds in which they are used as a proxy to modify the noise distribution (and weight initialisation, training data shuffle, etc) and if the latter is the case, then why does the author want to do this - Is it a way of accessing the posterior distribution? Whilst the previous point seems irrelevant, the sigma estimate can only be know from e squared if Var(\hat{h}) and the systematic error term is known. The systematic error terms require the expectation E(\hat{h}) to be known. In section 6.2, they report the error in the sigma estimate but it’s unclear how the sigma estimate is obtained. Since the Var(\hat{h}) and E(\hat{h}) must be known either the posterior must be accessible or a good estimate of these quantities with their Monte Carlo proposal must be obtainable. Following on the previous point, this raises the point of whether using 4 random seeds to calculate the expectation is enough for a good estimate. Maybe it would be appropriate to indicate what is a good number of estimators to use in such methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear how the corruption level is chosen in section 6.2 and it is also unclear how sigma is calculated. As a result, this particular experiment isn’t reproducible. However, the idea is simple and hence would associate this study with one of high reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Make it clear how the sigma estimate is produced which may also help bring to light how this method actually works. Although only a arXiv paper, it is highly recommended that the citation of https://arxiv.org/pdf/1811.05910.pdf is included. It provides a detailed mathematical analysis of the method proposed in the study (which is called “Deep Direct Estimation” in the link study by Jonas Adler and Ozan Oktem). Include figures of the error estimates produced by your method and other methods. In particular, show that correlation between the true prediction error with the estimated error is high. Better explanation for the use of 4 random seeds as it is still not clear to the reviewer why this is used “This suggests the second random error in Eq. 1 is very small, which makes sense since we use 50 samples for evaluation.” - This comment was not quite understood and a little elaboration would help. In passing, the comment almost suggests that random error scales with the number of samples which isn’t the case. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The decomposition of the prediction error term brings a lot of light to the medical imaging community. Up until the experiments section, the reviewer believes the paper to be presented in a very sensible and clear manner The use of two different types of experiment (super-resolution and accelerated MRI) was interesting and were very relevant use cases for uncertainty. The reviewer did not rate more highly due to concerns of how the sigma estimate was calculated and additionally how the posterior was accessed for the calculation of the Var(\hat{h}) and E(\hat{h}). The lack of images showing the result of the uncertainty estimate was a concern. The lack of the Adler citation is a concern of the reviewer but the paper was not penalised for this in accordance with MICCAI reviewer guidelines. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A theoretically grounded paper showing the limitations of the current uncertainty estimation methods. The paper also proposes how to overcome these limitations for a regression task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper reading was a pleasure as all concepts were written clearly with good explanations. Theoretical analysis of how current uncertainty estimate methods does not capture systematic error was insightful. Experiments on two different datasets is commendable. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the paper, it is argued that a major limitation of current methods [1] is the necessity of extra output for estimating uncertainty. While the same is used for the proposed method as mentioned in para-2 of sec:6.2 The end of sec:6.2 concludes that the proposed two-headed method outperformance the original method. I am not sure if I am missing some things as Table:1 and all plots in Fig:2 show that the original method outperformance the two-headed methods. Comparison against a recent uncertainty estimation method [2] which doesn’t require learning an extra parameter for uncertainty estimation would make the paper stronger. [1] Kendall, A., Gal, Y.: What uncertainties do we need in bayesian deep learning for computer vision? NIPS (2017) [2] Kwon, Y., Won, J.H., Kim, B.J. and Paik, M.C., 2020. Uncertainty quantification using Bayesian neural networks in classification: Application to biomedical image segmentation. Computational Statistics &amp; Data Analysis, 142, p.106816. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be reproducible as it uses the publicly available dataset and the code is provided as supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A rationale behind using log scale in the last two plots of Fig:2 First row is missing. The last line of Sec:6.3 mentions that “calibration improves all baseline”. A table showing this either in the main paper or in the appendix would be helpful. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper gives a good explation of the drawbacks of the existing methods, provides a simple solution, and backs it up with experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work is about uncertainty estimation. In particular, using a two step approach to prediction error in MR reconstruction. Reviewers had widely different reactions to this work. During a rebuttal reviewer concerns should be addressed as widely as possible with a particular emphasis on the following aspects: 1) R1 points out that the proposed approach is significantly worse than existing methods in the FAIR challenge leaderboard; if this is the case what is the main value of the approach and why were these approaches not used as a baseline? 2) A more clear description and categorization of the different types of uncertainty should be provided. 3) Besides Fig. 1 there is no figure illustrating the results of the uncertainty estimation. Based on R2’s review comment, does the method indeed produce estimates which are appropriately correlated with the true prediction error? 4) It should be clarified how the sigma estimate is computed. 5) The terminology “original” for Tab. 1 should also be clarified in contrast to the two-head models. Does original mean training two separate models here? In general there are significant concerns regarding the overall clarity of the paper, which should be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposed an approach to predict MR reconstruction error. There were some concerns with respect to comparison to other methods as well as with respect to some of the estimation procedures. The rebuttal addressed some of the comparison concerns (i.e., that the goal is uncertainty quantification and not MR reconstruction performance; though some other relevant comparisons were not performed due to hardware constraints), but at least to this AC the answer to the estimation question (from R2) for sigma is still not clear after the rebuttal. Given that R1 also was concerned about clarity of writing the work would likely benefit from better presentation and improved experiments / visualizations. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript provides a fresh perspective on a relevant and general problem. R1 had some concerns about ambiguous sentences, but I expect that these could be clarified in the camera-ready version. There were also concerns about the experimental results falling short of the state of the art, but the authors provide several reasons for this in their rebuttal, and I’m willing to follow their argument that this is somewhat beside the main point of their paper. Overall, I am with the two reviewers who would like to see this paper at MICCAI, but I would ask the authors to carefully consider the references that have been pointed out by the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper gives a very nice theoretical analysis that helps better understand prediction errors. Although the under performance on the challenge dataset, as also acknowledged in the rebuttal, still brings questions on how practical the analysis and the proposed method are, the issue raised by the paper is important and not well addressed in the existing work. Overall, I think this work can intrigue broader discussion. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank all reviewers for the helpful feedback and will cite the recommended papers. Here we clarify each reviewer’s points. R1. Our goal is to compare different uncertainty estimation methods for a given model, rather than improving the state-of-the-art reconstruction accuracy. An advantage of our method is adaptability: we do not modify the model structure or training loss, so the target prediction accuracy remains the same. In comparison, we show the baseline methods reduce the accuracy as they do make such modifications. The target prediction results in Tab. 2 are worse than the leaderboard results due to: i) We did not perform ACSNet’s fine-tuning step due to hardware constraints (page 7), which reduces the accuracy. ii) The leaderboard results are evaluated on the challenge set, which is hidden from the public; in contrast, we treat part of the validation set as the test set and use it for evaluation (page 4). ACSNet and a few other models perform worse on the validation set than the challenge set, e.g., i-RIM’s (Putzky et al. [21]) 4x SSIMs on the two sets are 0.916 and 0.925. Further, we are aware of Tanno et al., but unfortunately could not compare with it due to GPU memory constraints, as it simultaneously optimizes two separate models. However, its loss &amp; estimated uncertainties are the same as Kendall &amp; Gal 17, which we use as a baseline. There are 2 main approaches to categorize the uncertainty: i) aleatoric (irreducible) or epistemic (reducible), ii) it belongs to one of the 6 sources listed by Kennedy &amp; O’Hagan 01. We take the second approach. Further, all 6 sources affect the prediction error, where the uncertainties in the data noise and model parameters induce the random error, while the uncertainties in the model structure and optimization induce the systematic error. We did not encounter the uncertainty in the input variability or interpolation: the former arises when some aspects of the inputs (e.g. dimensions) are not exactly as designed, while the latter arises when the inputs have missing values and they are filled using interpolation. Lastly, our goal is not to disentangle the 4 remaining sources of uncertainty, but to show that it is more beneficial to estimate the expected squared error than the predictive uncertainty, which does not include the systematic error. R2. For the super-resolution task, recall that h(x) is the true target and \sigma^2(x) is the variance of the pixel-wise Gaussian noise; in addition, the two-head model adds a second branch to the ESPCN model to estimate h(x) and \sigma(x) jointly with the NLL loss (page 5). Our method uses 2 separate ESPCN models (without modifications): The 1st model estimates h(x) with its original MSE loss (page 5), and outputs \hat{h}(x). Then, the 2nd model estimates \sigma(x) with the NLL loss (the \hat{h}(x) in this loss is produced by the 1st model, whose weights are fixed), and outputs \hat{\sigma}(x). We evaluate the \sigma(x) prediction results using MAE, which is |\hat{\sigma}(x) - \sigma(x)| over all pixels of all test images, and the ground truth \sigma(x) is 0, 25 or 50. Fig. 2 and Tab. 1 show the two-head model is less accurate in predicting h(x) and \sigma(x) than our 1st and 2nd original model respectively. Further, our error prediction plots indeed correlate better with the true error plots. We will add these plots to the paper. In Tab. 1, the random seed affects the label noise, data shuffling and weight initialization in each run, and 4 seeds are used to show statistical significance of the results. Lastly, we argue that the second random error for MC dropout is small, as \hat{h}(x) is the mean of 50 MC predictions. R3. Please see our response to R2 regarding the super-resolution task. In addition, in Fig. 2, 2 log-log plots are used since our best results are achieved within 10 epochs, but the total epochs is 1000. Further, we will show the uncalibrated baseline results. All. We will improve clarity in the final manuscript. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0356/12/31/Paper1009" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0356/12/31/Paper1009" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0356-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Learning to Predict Error for MRI Reconstruction" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0356/12/31/Paper1009"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0356/12/31/Paper1009","headline":"Learning to Predict Error for MRI Reconstruction","dateModified":"0357-01-02T00:00:00-05:17","datePublished":"0356-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Shi Hu, Nicola Pezzotti, Max Welling Abstract In healthcare applications, predictive uncertainty has been used to assess predictive accuracy. In this paper, we demonstrate that predictive uncertainty estimated by the current methods does not highly correlate with prediction error by decomposing the latter into random and systematic errors, and showing that the former is equivalent to the variance of the random error. In addition, we observe that current methods unnecessarily compromise performance by modifying the model and training loss to estimate the target and uncertainty jointly. We show that estimating them separately without modifications improves performance. Following this, we propose a novel method that estimates the target labels and magnitude of the prediction error in two steps. We demonstrate this method on a large-scale MRI reconstruction task, and achieve significantly better results than the state-of-the-art uncertainty estimation methods. Link to paper https://doi.org/10.1007/978-3-030-87199-4_57 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a two-step approach for estimating the target error and the magnitude of the prediction error, by first training only on the target error, and then computing the squared error e^2(x), as an unbiased estimator of its expectation, E[e^2(x)]. Following this the same model is once more trained from scratch to estimate e^2(x) directly. This is applied to ta retina imaging superresolution task, and the FAIR MR knee multi-coil reconstruction challenge task (https://fastmri.org/leaderboards/challenge/), with some good results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. two-stage approach to estimate uncertainty baseline comparison with three predictive uncertainty quantification methods code sharing and use of public data sets Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is quite difficult to understand in parts, due to using ambiguous semantics. E.g. already in the abstract, the sentence: “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error by decomposing the latter into random and systematic errors” could mean one of two things: “by decomposing the prediction error into random and systematic errors, we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error” (which I believe is what you mean; also, do you really mean “cannot” or “does not”?) “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error, which is calculated by decomposition into random and systematic errors” (which is what you actually say) Similarly, the next sentence is also not well written: “we observe current methods unnecessarily compromise the performance by modifying the model and training loss to estimate target and uncertainty jointly” - this could either mean: “by modifying the model and training loss to estimate target and uncertainty jointly, we observe that current methods unnecessarily compromise the performance” (which I believe is what you mean to say) “we observe that current methods, that modify the model and training loss to estimate target and uncertainty jointly, unnecessarily compromise the performance” (which is what you actually say) I lack a more clear description and categorization of different types of uncertainty. The work starts with the six sources of uncertainty (data noise, input variability, model structure and parameters, optimization, and interpolation), and then only focuses on prediction error, mentioning systematic error, as well as random errors, and only later aleatoric uncertainty (and do not mention epistemic uncertainty at all). While the two-step approach shows an improvement over the baseline methods, it does not perform as well as Adaptive-CS-Net (which has been extended here in the two-step approach) or in fact any other methods in the challenge board for these data, which all have better PSNRs. NMESs and SSIMS for both 4-coil and 8-coil data - these methods and results should have been the actual baseline for a more objective assessment Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code and data are provided, though I haven’t inspected these more closely Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The focus on predicting uncertainty is nice, but the overall value of this work is a bit less clear given that the FAIR challenge leaderboard methods greatly outperform this work. Predicting uncertainty is limited to the target error, but is not really fully disentangled from different sources of uncertainty. There are a number of probabilistic uncertainty methods in deep learning which have not been tested or compared with here, e.g. the work by Tanno et al. (MICCAI 2017 or NeuroImage 2020). The paper lacks a bit in clarity in parts (see my comment on semantic ambiguity already in the abstract), and a more detailed method description (e.g. graphical illustration of two-stage network architecture). While code is provided, algorithmic/methodological concepts should be included and explained in the paper. Please state your overall opinion of the paper strong reject (2) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work is promising but quite preliminary, both in terms of uncertainty estimation which is limited, and performance compared to the state-of-the-art. Clarity of writing could be improved which would make this work a bit more accessible. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors present a method of producing estimates for the uncertainty in medical imaging tasks. They decompose uncertainty into 3 distinct error terms: 1 systematic and 2 random. In particular, the authors show that by learning to predict the squared prediction error, the variance of the random error terms can be obtained with the systemic error term to form a total prediction error. The authors also show that current uncertainty decompositions only decompose the random error terms leaving current methods with an underestimated and uncorrelated prediction error. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors show a very clear decomposition of the prediction error that is common to most (if not all) of deep learning. Novel and clearly presented uncertainty decomposition that highlights the weakness in current approaches and subsequently shows where the novelty of their proposed method lies. In particular, they show that a systematic error term is included in their new uncertainty prediction method which leads to better estimated uncertainty estimates. The authors show the limitation in current approaches that estimate aleatoric error with the negative Gaussian log-likelihood and even how such approaches can be optimised using early stopping. The authors show the advantage of two-step estimation in optimising the target prediction whilst also obtaining better error estimates. The fact that the optimisation landscape is unchanged with their proposed two-step estimation presents a clear advantage over other uncertainty methods in that it doesn’t change current, accepted work in the community. Therefore, this proposed method is highly feasible in most (if not all) cases. The authors highlight some very specific medical image issues with evaluating their method with the fastMRI dataset regarding the unknown noise due to a variety of factors such as scanner variability. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is a lack of figures depicting the uncertainty prediction with the author’s proposed method. In general, the experiments section could have been written more clearly. In section 6.2 (super-resolution experiment), how is the corruption level \\sigma(x) computed when creating the training targets and how big is the mean absolute error MAE with respect to this corruption level? Furthermore, aside from Figure 1, which is not stated to necessarily be from the author’s proposed method, there are no figures of the uncertainty estimates produced. This raises doubts as to whether the author’s proposed method produces results that are indeed appropriately correlated with the true prediction error. I would have thought due to the author’s claim that the MC dropout estimate being uncorrelated with the true prediction error, a nice figure would indeed have been the MC-dropout error prediction vs. the author’s proposed method (for total error, e-squared). The author mentions that expectations are calculated over 4 random seeds - this confused me a little. As a result, it is unclear to me why they do this. E[\\hat{h}(x)] = E_{s}[\\hat{h}(x; s, M, D, O] but if this expectation “over the seed” refers to the expectation of the function \\hat{h} given a set of functions \\hat{H} that form the posterior distribution p(\\hat{h} data) or if it refers to the expectation over the possible seeds in which they are used as a proxy to modify the noise distribution (and weight initialisation, training data shuffle, etc) and if the latter is the case, then why does the author want to do this - Is it a way of accessing the posterior distribution? Whilst the previous point seems irrelevant, the sigma estimate can only be know from e squared if Var(\\hat{h}) and the systematic error term is known. The systematic error terms require the expectation E(\\hat{h}) to be known. In section 6.2, they report the error in the sigma estimate but it’s unclear how the sigma estimate is obtained. Since the Var(\\hat{h}) and E(\\hat{h}) must be known either the posterior must be accessible or a good estimate of these quantities with their Monte Carlo proposal must be obtainable. Following on the previous point, this raises the point of whether using 4 random seeds to calculate the expectation is enough for a good estimate. Maybe it would be appropriate to indicate what is a good number of estimators to use in such methods. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear how the corruption level is chosen in section 6.2 and it is also unclear how sigma is calculated. As a result, this particular experiment isn’t reproducible. However, the idea is simple and hence would associate this study with one of high reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Make it clear how the sigma estimate is produced which may also help bring to light how this method actually works. Although only a arXiv paper, it is highly recommended that the citation of https://arxiv.org/pdf/1811.05910.pdf is included. It provides a detailed mathematical analysis of the method proposed in the study (which is called “Deep Direct Estimation” in the link study by Jonas Adler and Ozan Oktem). Include figures of the error estimates produced by your method and other methods. In particular, show that correlation between the true prediction error with the estimated error is high. Better explanation for the use of 4 random seeds as it is still not clear to the reviewer why this is used “This suggests the second random error in Eq. 1 is very small, which makes sense since we use 50 samples for evaluation.” - This comment was not quite understood and a little elaboration would help. In passing, the comment almost suggests that random error scales with the number of samples which isn’t the case. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The decomposition of the prediction error term brings a lot of light to the medical imaging community. Up until the experiments section, the reviewer believes the paper to be presented in a very sensible and clear manner The use of two different types of experiment (super-resolution and accelerated MRI) was interesting and were very relevant use cases for uncertainty. The reviewer did not rate more highly due to concerns of how the sigma estimate was calculated and additionally how the posterior was accessed for the calculation of the Var(\\hat{h}) and E(\\hat{h}). The lack of images showing the result of the uncertainty estimate was a concern. The lack of the Adler citation is a concern of the reviewer but the paper was not penalised for this in accordance with MICCAI reviewer guidelines. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A theoretically grounded paper showing the limitations of the current uncertainty estimation methods. The paper also proposes how to overcome these limitations for a regression task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Paper reading was a pleasure as all concepts were written clearly with good explanations. Theoretical analysis of how current uncertainty estimate methods does not capture systematic error was insightful. Experiments on two different datasets is commendable. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the paper, it is argued that a major limitation of current methods [1] is the necessity of extra output for estimating uncertainty. While the same is used for the proposed method as mentioned in para-2 of sec:6.2 The end of sec:6.2 concludes that the proposed two-headed method outperformance the original method. I am not sure if I am missing some things as Table:1 and all plots in Fig:2 show that the original method outperformance the two-headed methods. Comparison against a recent uncertainty estimation method [2] which doesn’t require learning an extra parameter for uncertainty estimation would make the paper stronger. [1] Kendall, A., Gal, Y.: What uncertainties do we need in bayesian deep learning for computer vision? NIPS (2017) [2] Kwon, Y., Won, J.H., Kim, B.J. and Paik, M.C., 2020. Uncertainty quantification using Bayesian neural networks in classification: Application to biomedical image segmentation. Computational Statistics &amp; Data Analysis, 142, p.106816. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be reproducible as it uses the publicly available dataset and the code is provided as supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A rationale behind using log scale in the last two plots of Fig:2 First row is missing. The last line of Sec:6.3 mentions that “calibration improves all baseline”. A table showing this either in the main paper or in the appendix would be helpful. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper gives a good explation of the drawbacks of the existing methods, provides a simple solution, and backs it up with experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work is about uncertainty estimation. In particular, using a two step approach to prediction error in MR reconstruction. Reviewers had widely different reactions to this work. During a rebuttal reviewer concerns should be addressed as widely as possible with a particular emphasis on the following aspects: 1) R1 points out that the proposed approach is significantly worse than existing methods in the FAIR challenge leaderboard; if this is the case what is the main value of the approach and why were these approaches not used as a baseline? 2) A more clear description and categorization of the different types of uncertainty should be provided. 3) Besides Fig. 1 there is no figure illustrating the results of the uncertainty estimation. Based on R2’s review comment, does the method indeed produce estimates which are appropriately correlated with the true prediction error? 4) It should be clarified how the sigma estimate is computed. 5) The terminology “original” for Tab. 1 should also be clarified in contrast to the two-head models. Does original mean training two separate models here? In general there are significant concerns regarding the overall clarity of the paper, which should be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposed an approach to predict MR reconstruction error. There were some concerns with respect to comparison to other methods as well as with respect to some of the estimation procedures. The rebuttal addressed some of the comparison concerns (i.e., that the goal is uncertainty quantification and not MR reconstruction performance; though some other relevant comparisons were not performed due to hardware constraints), but at least to this AC the answer to the estimation question (from R2) for sigma is still not clear after the rebuttal. Given that R1 also was concerned about clarity of writing the work would likely benefit from better presentation and improved experiments / visualizations. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript provides a fresh perspective on a relevant and general problem. R1 had some concerns about ambiguous sentences, but I expect that these could be clarified in the camera-ready version. There were also concerns about the experimental results falling short of the state of the art, but the authors provide several reasons for this in their rebuttal, and I’m willing to follow their argument that this is somewhat beside the main point of their paper. Overall, I am with the two reviewers who would like to see this paper at MICCAI, but I would ask the authors to carefully consider the references that have been pointed out by the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper gives a very nice theoretical analysis that helps better understand prediction errors. Although the under performance on the challenge dataset, as also acknowledged in the rebuttal, still brings questions on how practical the analysis and the proposed method are, the issue raised by the paper is important and not well addressed in the existing work. Overall, I think this work can intrigue broader discussion. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank all reviewers for the helpful feedback and will cite the recommended papers. Here we clarify each reviewer’s points. R1. Our goal is to compare different uncertainty estimation methods for a given model, rather than improving the state-of-the-art reconstruction accuracy. An advantage of our method is adaptability: we do not modify the model structure or training loss, so the target prediction accuracy remains the same. In comparison, we show the baseline methods reduce the accuracy as they do make such modifications. The target prediction results in Tab. 2 are worse than the leaderboard results due to: i) We did not perform ACSNet’s fine-tuning step due to hardware constraints (page 7), which reduces the accuracy. ii) The leaderboard results are evaluated on the challenge set, which is hidden from the public; in contrast, we treat part of the validation set as the test set and use it for evaluation (page 4). ACSNet and a few other models perform worse on the validation set than the challenge set, e.g., i-RIM’s (Putzky et al. [21]) 4x SSIMs on the two sets are 0.916 and 0.925. Further, we are aware of Tanno et al., but unfortunately could not compare with it due to GPU memory constraints, as it simultaneously optimizes two separate models. However, its loss &amp; estimated uncertainties are the same as Kendall &amp; Gal 17, which we use as a baseline. There are 2 main approaches to categorize the uncertainty: i) aleatoric (irreducible) or epistemic (reducible), ii) it belongs to one of the 6 sources listed by Kennedy &amp; O’Hagan 01. We take the second approach. Further, all 6 sources affect the prediction error, where the uncertainties in the data noise and model parameters induce the random error, while the uncertainties in the model structure and optimization induce the systematic error. We did not encounter the uncertainty in the input variability or interpolation: the former arises when some aspects of the inputs (e.g. dimensions) are not exactly as designed, while the latter arises when the inputs have missing values and they are filled using interpolation. Lastly, our goal is not to disentangle the 4 remaining sources of uncertainty, but to show that it is more beneficial to estimate the expected squared error than the predictive uncertainty, which does not include the systematic error. R2. For the super-resolution task, recall that h(x) is the true target and \\sigma^2(x) is the variance of the pixel-wise Gaussian noise; in addition, the two-head model adds a second branch to the ESPCN model to estimate h(x) and \\sigma(x) jointly with the NLL loss (page 5). Our method uses 2 separate ESPCN models (without modifications): The 1st model estimates h(x) with its original MSE loss (page 5), and outputs \\hat{h}(x). Then, the 2nd model estimates \\sigma(x) with the NLL loss (the \\hat{h}(x) in this loss is produced by the 1st model, whose weights are fixed), and outputs \\hat{\\sigma}(x). We evaluate the \\sigma(x) prediction results using MAE, which is |\\hat{\\sigma}(x) - \\sigma(x)| over all pixels of all test images, and the ground truth \\sigma(x) is 0, 25 or 50. Fig. 2 and Tab. 1 show the two-head model is less accurate in predicting h(x) and \\sigma(x) than our 1st and 2nd original model respectively. Further, our error prediction plots indeed correlate better with the true error plots. We will add these plots to the paper. In Tab. 1, the random seed affects the label noise, data shuffling and weight initialization in each run, and 4 seeds are used to show statistical significance of the results. Lastly, we argue that the second random error for MC dropout is small, as \\hat{h}(x) is the mean of 50 MC predictions. R3. Please see our response to R2 regarding the super-resolution task. In addition, in Fig. 2, 2 log-log plots are used since our best results are achieved within 10 epochs, but the total epochs is 1000. Further, we will show the uncalibrated baseline results. All. We will improve clarity in the final manuscript. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Hu, Shi,Pezzotti, Nicola,Welling, Max" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Learning to Predict Error for MRI Reconstruction</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Hu, Shi"
+        class="post-tags">
+        Hu, Shi
+      </a> |  
+      
+      <a href="kittywong/tags#Pezzotti, Nicola"
+        class="post-tags">
+        Pezzotti, Nicola
+      </a> |  
+      
+      <a href="kittywong/tags#Welling, Max"
+        class="post-tags">
+        Welling, Max
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Shi Hu, Nicola Pezzotti, Max Welling
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>In healthcare applications, predictive uncertainty has been used to assess predictive accuracy. In this paper, we demonstrate that predictive uncertainty estimated by the current methods does not highly correlate with prediction error by decomposing the latter into random and systematic errors, and showing that the former is equivalent to the variance of the random error. In addition, we observe that current methods unnecessarily compromise performance by modifying the model and training loss to estimate the target and uncertainty jointly. We show that estimating them separately without modifications improves performance. Following this, we propose a novel method that estimates the target labels and magnitude of the prediction error in two steps. We demonstrate this method on a large-scale MRI reconstruction task, and achieve significantly better results than the state-of-the-art uncertainty estimation methods.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_57">https://doi.org/10.1007/978-3-030-87199-4_57</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents  a two-step approach for estimating the target error and the magnitude of the prediction error, by first training only on the target error, and then computing the squared error e^2(x), as an unbiased estimator of its expectation, E[e^2(x)]. Following this the same model is once more trained from scratch to estimate e^2(x) directly. This is applied to ta retina imaging superresolution task, and the FAIR MR knee multi-coil reconstruction challenge task (https://fastmri.org/leaderboards/challenge/), with some good results</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>two-stage approach to estimate uncertainty</li>
+        <li>baseline comparison with three predictive uncertainty quantification methods</li>
+        <li>code sharing and use of public data sets</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The paper is quite difficult to understand in parts, due to using ambiguous semantics. E.g. already in the abstract, the sentence: “we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error by decomposing the latter into random and systematic errors” could mean one of two things:
+          <ol>
+            <li>“by decomposing the prediction error into random and systematic errors, we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error” (which I believe is what you mean; also, do you really mean “cannot” or “does not”?)</li>
+            <li>“we demonstrate that the predictive uncertainty estimated by the current methods cannot highly correlate with prediction error, which is calculated by decomposition into random and systematic errors” (which is what you actually say)
+Similarly, the next sentence is also not well written: “we observe current methods unnecessarily compromise the performance by modifying the model and training loss to estimate target and uncertainty jointly” - this could either mean:</li>
+            <li>“by modifying the model and training loss to estimate target and uncertainty jointly, we observe that current methods unnecessarily compromise the performance” (which I believe is what you mean to say)</li>
+            <li>“we observe that current methods, that modify the model and training loss to estimate target and uncertainty jointly, unnecessarily compromise the performance” (which is what you actually say)</li>
+          </ol>
+        </li>
+        <li>
+          <p>I lack a more clear description and categorization of different types of uncertainty. The work starts with the six sources of uncertainty (data noise, input variability, model structure and parameters, optimization, and interpolation), and then only focuses on prediction error, mentioning systematic error, as well as random errors, and only later aleatoric uncertainty (and do not mention epistemic uncertainty at all).</p>
+        </li>
+        <li>While the two-step approach shows an improvement over the baseline methods, it does not perform as well as Adaptive-CS-Net (which has been extended here in the two-step approach) or in fact any other methods in the challenge board for these data, which all have better PSNRs. NMESs and SSIMS for both 4-coil and 8-coil data - these methods and results should have been the actual baseline for a more objective assessment</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Code and data are provided, though I haven’t inspected these more closely</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The focus on predicting uncertainty is nice, but the overall value of this work is a bit less clear given that the FAIR challenge leaderboard methods greatly outperform this work. Predicting uncertainty is limited to the target error, but is not really fully disentangled from different sources of uncertainty. There are a number of probabilistic uncertainty methods in deep learning which have not been tested or compared with here, e.g. the work by Tanno et al. (MICCAI 2017 or NeuroImage 2020). The paper lacks a bit in clarity in parts (see my comment on semantic ambiguity already in the abstract), and a more detailed method description (e.g. graphical illustration of two-stage network architecture). While code is provided, algorithmic/methodological concepts should be included and explained in the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong reject (2)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This work is promising but quite preliminary, both in terms of uncertainty estimation which is limited, and performance compared to the state-of-the-art. Clarity of writing could be improved which would make this work a bit more accessible.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors present a method of producing estimates for the uncertainty in medical imaging tasks. They decompose uncertainty into 3 distinct error terms: 1 systematic and 2 random. In particular, the authors show that by learning to predict the squared prediction error, the variance of the random error terms can be obtained with the systemic error term to form a total prediction error. The authors also show that current uncertainty decompositions only decompose the random error terms leaving current methods with an underestimated and uncorrelated prediction error.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The authors show a very clear decomposition of the prediction error that is common to most (if not all) of deep learning.</li>
+        <li>Novel and clearly presented uncertainty decomposition that highlights the weakness in current approaches and subsequently shows where the novelty of their proposed method lies. In particular, they show that a systematic error term is included in their new uncertainty prediction method which leads to better estimated uncertainty estimates.</li>
+        <li>The authors show the limitation in current approaches that estimate aleatoric error with the negative Gaussian log-likelihood and even how such approaches can be optimised using early stopping.</li>
+        <li>The authors show the advantage of two-step estimation in optimising the target prediction whilst also obtaining better error estimates. The fact that the optimisation landscape is unchanged with their proposed two-step estimation presents a clear advantage over other uncertainty methods in that it doesn’t change current, accepted work in the community. Therefore, this proposed method is highly feasible in most (if not all) cases.</li>
+        <li>The authors highlight some very specific medical image issues with evaluating their method with the fastMRI dataset regarding the unknown noise due to a variety of factors such as scanner variability.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>There is a lack of figures depicting the uncertainty prediction with the author’s proposed method.</li>
+        <li>In general, the experiments section could have been written more clearly. In section 6.2 (super-resolution experiment), how is the corruption level \sigma(x) computed when creating the training targets and how big is the mean absolute error MAE with respect to this corruption level?</li>
+        <li>Furthermore, aside from Figure 1, which is not stated to necessarily be from the author’s proposed method, there are no figures of the uncertainty estimates produced. This raises doubts as to whether the author’s proposed method produces results that are indeed appropriately correlated with the true prediction error. I would have thought due to the author’s claim that the MC dropout estimate being uncorrelated with the true prediction error, a nice figure would indeed have been the MC-dropout error prediction vs. the author’s proposed method (for total error, e-squared).</li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The author mentions that expectations are calculated over 4 random seeds - this confused me a little. As a result, it is unclear to me why they do this. E[\hat{h}(x)] = E_{s}[\hat{h}(x; s, M, D, O] but if this expectation “over the seed” refers to the expectation of the function \hat{h} given a set of functions \hat{H} that form the posterior distribution p(\hat{h}</td>
+                <td>data) or if it refers to the expectation over the possible seeds in which they are used as a proxy to modify the noise distribution (and weight initialisation, training data shuffle, etc) and if the latter is the case, then why does the author want to do this - Is it a way of accessing the posterior distribution?</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>Whilst the previous point seems irrelevant, the sigma estimate can only be know from e squared if Var(\hat{h}) and the systematic error term is known. The systematic error terms require the expectation E(\hat{h}) to be known. In section 6.2, they report the error in the sigma estimate but it’s unclear how the sigma estimate is obtained. Since the Var(\hat{h}) and E(\hat{h}) must be known either the posterior must be accessible or a good estimate of these quantities with their Monte Carlo proposal must be obtainable.</li>
+        <li>Following on the previous point, this raises the point of whether using 4 random seeds to calculate the expectation is enough for a good estimate. Maybe it would be appropriate to indicate what is a good number of estimators to use in such methods.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It is unclear how the corruption level is chosen in section 6.2 and it is also unclear how sigma is calculated. As a result, this particular experiment isn’t reproducible. 
+However, the idea is simple and hence would associate this study with one of high reproducibility.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Make it clear how the sigma estimate is produced which may also help bring to light how this method actually works.</li>
+        <li>Although only a arXiv paper, it is highly recommended that the citation of https://arxiv.org/pdf/1811.05910.pdf is included. It provides a detailed mathematical analysis of the method proposed in the study (which is called “Deep Direct Estimation” in the link study by Jonas Adler and Ozan Oktem).</li>
+        <li>Include figures of the error estimates produced by your method and other methods. In particular, show that correlation between the true prediction error with the estimated error is high.</li>
+        <li>Better explanation for the use of 4 random seeds as it is still not clear to the reviewer why this is used</li>
+        <li>“This suggests the second random error in Eq. 1 is very small, which makes sense since we use 50 samples for evaluation.” - This comment was not quite understood and a little elaboration would help. In passing, the comment almost suggests that random error scales with the number of samples which isn’t the case.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ul>
+        <li>The decomposition of the prediction error term brings a lot of light to the medical imaging community. Up until the experiments section, the reviewer believes the paper to be presented in a very sensible and clear manner</li>
+        <li>The use of two different types of experiment (super-resolution and accelerated MRI) was interesting and were very relevant use cases for uncertainty.</li>
+        <li>The reviewer did not rate more highly due to concerns of how the sigma estimate was calculated and additionally how the posterior was accessed for the calculation of the Var(\hat{h}) and E(\hat{h}).</li>
+        <li>The lack of images showing the result of the uncertainty estimate was a concern.</li>
+        <li>The lack of the Adler citation is a concern of the reviewer but the paper was not penalised for this in accordance with MICCAI reviewer guidelines.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>A theoretically grounded paper showing the limitations of the current uncertainty estimation methods. The paper also proposes how to overcome these limitations for a regression task.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Paper reading was a pleasure as all concepts were written clearly with good explanations.</p>
+        </li>
+        <li>
+          <p>Theoretical analysis of how current uncertainty estimate methods does not capture systematic error was insightful.</p>
+        </li>
+        <li>
+          <p>Experiments on two different datasets is commendable.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>In the paper, it is argued that a major limitation of current methods [1] is the necessity of extra output for estimating uncertainty. While the same is used for the proposed method as mentioned in para-2 of sec:6.2</p>
+        </li>
+        <li>
+          <p>The end of sec:6.2 concludes that the proposed two-headed method outperformance the original method. I am not sure if I am missing some things as Table:1 and all plots in Fig:2 show that the original method outperformance the two-headed methods.</p>
+        </li>
+        <li>
+          <p>Comparison against a recent uncertainty estimation method [2] which doesn’t require learning an extra parameter for uncertainty estimation would make the paper stronger.</p>
+        </li>
+      </ul>
+
+      <p>[1] Kendall, A., Gal, Y.: What uncertainties do we need in bayesian deep learning for computer vision? NIPS (2017)</p>
+
+      <p>[2] Kwon, Y., Won, J.H., Kim, B.J. and Paik, M.C., 2020. Uncertainty quantification using Bayesian neural networks in classification: Application to biomedical image segmentation. Computational Statistics &amp; Data Analysis, 142, p.106816.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper should be reproducible as it uses the publicly available dataset and the code is provided as supplementary material.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>A rationale behind using log scale in the last two plots of Fig:2 First row is missing.</p>
+        </li>
+        <li>
+          <p>The last line of Sec:6.3 mentions that “calibration improves all baseline”. A table showing this either in the main paper or in the appendix would be helpful.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper gives a good explation of the drawbacks of the existing methods, provides a simple solution, and backs it up with experiments.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work is about uncertainty estimation. In particular, using a two step approach to prediction error in MR reconstruction. Reviewers had widely different reactions to this work. During a rebuttal reviewer concerns should be addressed as widely as possible with a particular emphasis on the following aspects: 1) R1 points out that the proposed approach is significantly worse than existing methods in the FAIR challenge leaderboard; if this is the case what is the main value of the approach and why were these approaches not used as a baseline? 2) A more clear description and categorization of the different types of uncertainty should be provided. 3) Besides Fig. 1 there is no figure illustrating the results of the uncertainty estimation. Based on R2’s review comment,  does the method indeed produce estimates which are appropriately correlated with the true prediction error? 4) It should be clarified how the sigma estimate is computed. 5) The terminology “original” for Tab. 1 should also be clarified in contrast to the two-head models. Does original mean training two separate models here? In general there are significant concerns regarding the overall clarity of the paper, which should be improved.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work proposed an approach to predict MR reconstruction error. There were some concerns with respect to comparison to other methods as well as with respect to some of the estimation procedures. The rebuttal addressed some of the comparison concerns (i.e., that the goal is uncertainty quantification and not MR reconstruction performance; though some other relevant comparisons were not performed due to hardware constraints), but at least to this AC the answer to the estimation question (from R2) for sigma is still not clear after the rebuttal. Given that R1 also was concerned about clarity of writing the work would likely benefit from better presentation and improved experiments / visualizations.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>15</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This manuscript provides a fresh perspective on a relevant and general problem. R1 had some concerns about ambiguous sentences, but I expect that these could be clarified in the camera-ready version. There were also concerns about the experimental results falling short of the state of the art, but the authors provide several reasons for this in their rebuttal, and I’m willing to follow their argument that this is somewhat beside the main point of their paper. Overall, I am with the two reviewers who would like to see this paper at MICCAI, but I would ask the authors to carefully consider the references that have been pointed out by the reviewers.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper gives a very nice theoretical analysis that helps better understand prediction errors. Although the under performance on the challenge dataset, as also acknowledged in the rebuttal, still brings questions on how practical the analysis and the proposed method are, the issue raised by the paper is important and not well addressed in the existing work. Overall, I think this work can intrigue broader discussion.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank all reviewers for the helpful feedback and will cite the recommended papers. Here we clarify each reviewer’s points.</p>
+
+  <p>R1. Our goal is to compare different uncertainty estimation methods for a given model, rather than improving the state-of-the-art reconstruction accuracy. An advantage of our method is adaptability: we do not modify the model structure or training loss, so the target prediction accuracy remains the same. In comparison, we show the baseline methods reduce the accuracy as they do make such modifications. The target prediction results in Tab. 2 are worse than the leaderboard results due to: i) We did not perform ACSNet’s fine-tuning step due to hardware constraints (page 7), which reduces the accuracy. ii) The leaderboard results are evaluated on the challenge set, which is hidden from the public; in contrast, we treat part of the validation set as the test set and use it for evaluation (page 4). ACSNet and a few other models perform worse on the validation set than the challenge set, e.g., i-RIM’s (Putzky et al. [21]) 4x SSIMs on the two sets are 0.916 and 0.925. Further, we are aware of Tanno et al., but unfortunately could not compare with it due to GPU memory constraints, as it simultaneously optimizes two separate models. However, its loss &amp; estimated uncertainties are the same as Kendall &amp; Gal 17, which we use as a baseline.
+There are 2 main approaches to categorize the uncertainty: i) aleatoric (irreducible) or epistemic (reducible), ii) it belongs to one of the 6 sources listed by Kennedy &amp; O’Hagan 01. We take the second approach. Further, all 6 sources affect the prediction error, where the uncertainties in the data noise and model parameters induce the random error, while the uncertainties in the model structure and optimization induce the systematic error. We did not encounter the uncertainty in the input variability or interpolation: the former arises when some aspects of the inputs (e.g. dimensions) are not exactly as designed, while the latter arises when the inputs have missing values and they are filled using interpolation. Lastly, our goal is not to disentangle the 4 remaining sources of uncertainty, but to show that it is more beneficial to estimate the expected squared error than the predictive uncertainty, which does not include the systematic error.</p>
+
+  <p>R2. For the super-resolution task, recall that h(x) is the true target and \sigma^2(x) is the variance of the pixel-wise Gaussian noise; in addition, the two-head model adds a second branch to the ESPCN model to estimate h(x) and \sigma(x) jointly with the NLL loss (page 5). Our method uses 2 separate ESPCN models (without modifications): The 1st model estimates h(x) with its original MSE loss (page 5), and outputs \hat{h}(x). Then, the 2nd model estimates \sigma(x) with the NLL loss (the \hat{h}(x) in this loss is produced by the 1st model, whose weights are fixed), and outputs \hat{\sigma}(x). We evaluate the \sigma(x) prediction results using MAE, which is |\hat{\sigma}(x) - \sigma(x)| over all pixels of all test images, and the ground truth \sigma(x) is 0, 25 or 50.
+Fig. 2 and Tab. 1 show the two-head model is less accurate in predicting h(x) and \sigma(x) than our 1st and 2nd original model respectively. Further, our error prediction plots indeed correlate better with the true error plots. We will add these plots to the paper. In Tab. 1, the random seed affects the label noise, data shuffling and weight initialization in each run, and 4 seeds are used to show statistical significance of the results. Lastly, we argue that the second random error for MC dropout is small, as \hat{h}(x) is the mean of 50 MC predictions.</p>
+
+  <p>R3. Please see our response to R2 regarding the super-resolution task. In addition, in Fig. 2, 2 log-log plots are used since our best results are achieved within 10 epochs, but the total epochs is 1000. Further, we will show the uncalibrated baseline results.</p>
+
+  <p>All. We will improve clarity in the final manuscript.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0356-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0357-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Hu, Shi"
+        class="post-category">
+        Hu, Shi
+      </a> |  
+      
+      <a href="kittywong/tags#Pezzotti, Nicola"
+        class="post-category">
+        Pezzotti, Nicola
+      </a> |  
+      
+      <a href="kittywong/tags#Welling, Max"
+        class="post-category">
+        Welling, Max
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0357/12/31/Paper1353">
+          Uncertainty-Guided Progressive GANs for Medical Image Translation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0355/12/31/Paper0969">
+          Orthogonal Ensemble Networks for Biomedical Image Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

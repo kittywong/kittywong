@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>TEDS-Net: Enforcing Diffeomorphisms in Spatial Transformers to Guarantee Topology Preservation in Segmentations | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="TEDS-Net: Enforcing Diffeomorphisms in Spatial Transformers to Guarantee Topology Preservation in Segmentations" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Madeleine K. Wyburd, Nicola K. Dinsdale, Ana I. L. Namburete, Mark Jenkinson Abstract Accurate topology is key when performing meaningful anatomical segmentations, however, it is often overlooked in traditional deep learning methods. In this work we propose TEDS-Net: a novel segmentation method that guarantees accurate topology. Our method is built upon a continuous diffeomorphic framework, which enforces topology preservation. However, in practice, diffeomorphic fields are represented using a finite number of parameters and sampled using methods such as linear interpolation, violating the theoretical guarantees. We therefore introduce additional modifications to more strictly enforce it. Our network learns how to warp a binary prior, with the desired topological characteristics, to complete the segmentation task. We tested our method on myocardium segmentation from an open-source 2D heart dataset. TEDS-Net preserved topology in 100% of the cases, compared to 90% from the U-Net, without sacrificing on Hausdorff Distance or Dice performance. Code will be made available at: www.github.com/mwyburd/TEDS-Net. Link to paper https://doi.org/10.1007/978-3-030-87193-2_24 Link to the code repository https://github.com/mwyburd/TEDS-Net Link to the dataset(s) https://www.creatis.insa-lyon.fr/Challenge/acdc/ Reviews Review #1 Please describe the contribution of the paper In learned diffeomorphic registration, theoretical topology preservation guarantees may not hold in practice due to discrete representations, sampling, etc. The authors propose a number of small architectural changes to a common registration architecture (VoxelMorph), namely a split into a bulk and a fine field, gaussian smoothing between integration layers, and additional upsampling to the learned fields before they are applied. Experiments were for image segmentation via deformation of a prior shape, as applied to ventricular myocardium segmentation (in which a ring prior should be warped with no gaps). The proposed network had zero images with topological errors in 100 held-out test images, vs. 10-12 errors for two baselines (U-Net and vanilla VoxelMorph). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Aiming to enforce diffeomorphisms more accurately is an excellent goal, and would be valuable to many in the community. Empirical results (with excellent ablation studies) show strong improvements in topology preservation for the proposed method, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written paper, including an excellent description of the specific contributions made and the experimental results (including setup, hyperparameter tuning, ablation studies, etc). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Contributions sometimes read as a list of engineering changes, as opposed to something more thoretically grounded. I would have appreciated more description of the justifications behind each of the changes made (this was good for the proposed split into bulk/fine transformations, but less clear for the gaussian smoothing and super-upsampling.) Changes do not provide theoretical guarantees on the resulting diffeomorphisms (to be clear, the authors are upfront about this). For example, the method does break down for ventricular myocardium segmentation when the prior shape is too thin (Fig 4b, prior radius = 10). Experimental results show that the proposed method improves diffeomorphisms when deforming a small continuous ring (representing the ventricular myocardium). It is unclear whether the same improvements will occur for other applications, e.g., if small gaps in a discontiuous prior are to be preserved. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code made available. I’d encourage the authors to contact the VoxelMorph developers as they do integrate contributions from others, and the changes described here could be very useful for the wider community. Description of experimental results (part 3 of the reproducibility checklist) in particular is very well done. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Consider carefully proof-reading the paper for the difference between displacement and velocity fields. Justification for the super-upsampling is unclear, as it should not fix any problems in the original grid but instead add interpolated vectors between them. Unclear why MaxPooling is used as the final downsampler when creating the final prediction Y-hat. Is this closing small holes? Would this still be valid if you wanted to maintain small holes in the prior? Did you try anything else (e.g., AvgPooling)? Definition of the field regularisation loss (after eqn. 2): i,j should go from 1,1 to N_i, N_j. How did you tune the field regularisation weight parameter in VoxelMorph? Can you weight the field regularisation loss higher in order to have fewer incorrect topologies? Perhaps these parameters need to be tuned differently for VoxelMorph vs. the proposed TEDS-Net (since there are two field regularisation losses in TEDS-Net but only one for VoxelMorph). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper provides some changes to a commonly-used architecture for learned diffeomorphic registration networks that are easy to implement and appear to yield significantly better topological preservation. I believe that others could benefit from trying these changes in their own implementations. However, my enthusiasm for the paper is dampened by the lack of theoretical justifications, and by the fact that the experiments focus on only one type of topological preservation (preventing gaps, as opposed to maintaining gaps in the prior). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an image registration model which warps a 2D binary mask of a ring (corresponding to a left ventricle myocardium segmentation template) to short-axis cine-MR images with the goal of segmenting the LV myocardium. Several components are proposed to enforce a diffeomorphic transformation (specifically to reduce the prevalence of negative Jacobians in the displacement fields and to reduce incorrect topologies after warping), including a tanh activation on predicted velocity fields, Gaussian smoothing of intermediate outputs of the scaling-and-squaring integration steps, and a ‘super upsample’ where displacement fields are linearly interpolated to twice the resolution of the input image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the authors perform a thorough analysis of their method by comparing to a baseline segmentation model (U-net) and registration model (VoxelMorph), as well as performing an ablation study to determine the impact of different model components on metrics including Dice score, Hausdorff distance, percentage of negative Jacobian determinants (% J &lt;0), and topological errors. They also provide a quantitative assessment of the effect of number of intergation layers and radius of the binary prior. The authors illustrate that with the inclusion of the proposed Gaussian smoothing of intermediate integration outputs, a registration model which uses segmentations to drive the loss which would normally produce high % J &lt;0 (consistent with results in [3] (Balakrishnan et al., 2019)), reduces % J &lt;0 to zero, as well as reducing the number of incorrect topologies at test time to zero. Additionally, the proposed super-upsample appears to provide slight improvements in terms of Hausdorff distance. The paper is motivated as a means to segment a target geometry, in this case the LV myocardium, using a diffeomorphic registration of a template binary labelmap. The results demonstrate that TEDS-Net indeed improves performance over a U-Net and VoxelMorph in terms of % J &lt;0, HD, and correct topologies, while only performing slightly worse in terms of Dice score compared to the U-net. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is promising that introducing gaussing smoothing of intermediate integration outputs can reduce incorrect topologies and % J &lt;0, but it is unclear whether this may violate the invertibility of the transformation, which is also a theoretical guarantee of diffeomorphisms. Furthermore, by introducing gaussian smoothing between each integration layer, would this not result in increasingly smooth fields used to update the displacement with larger numbers of integration steps? This seems to go against the idea that larger deformations can be more accurately modeled by using more (smaller) integration steps, as discussed in [2]. The authors motivate their work by the observation that guarantees of diffeomorphic formulations can break down in discrete settings especially involving large deformations. This is due to steps including computing displacements from velocity fields at discrete pixel locations via scaling-and-squaring, and sampling/deforming images based on these computed fields. The proposed step of Gaussian smoothing of the integration intermediate outputs in combination with a commonly used deformation gradient regularizer (L_grad) seems to greatly reduce % J &lt;0. However, this is demonstrated for a particular setting in the paper where no image loss terms are used, and instead loss terms involve training data with only hard binary labelmaps, which have naturally sharp boundaries that are difficult to model with a diffeomorphic transformation. As shown in Tables I and IV in reference [3], using image loss terms generally results in very low % J &lt;0, (&lt;1% in Table I in [3]), while using only binary segmentations in the loss will naturally lead to significant increases in % J &lt;0 (~10% in Table IV in [3] for 3D brain image data registartion). The impact of using only binary labelmaps and not images on the resulting % J &lt;0 is understated in the paper. The comparison to VoxelMorph is not sufficiently clearly explained, raising questions about the results (see Major Comments). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance images from the ACDC Dataset are used. However, only ‘5 slices’ from each image were used, presumably mid-ventricle slices where the topology is always a ring (as opposed to the base or apex where crescent and circle topologies, respectively, are more common.) code is not provided, making it difficult to understand the comparison with VoxelMorph, the implementation of which is not clearly explained. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Comments: A brief description or reference for Betti number to classify incorrect topology would help readers understand the measure. In Table 1, (A3) has gaussian smoothing and super-upsample but not L_grad, while (A1) has none of these, and (A1) produces about half as many test segmentations with incorrect topologies. This seems to suggest that Gaussian smoothing and/or super-upsample without L_grad results in worse topologies than if they weren’t used at all. This indicates the importance of L_grad, which is overlooked in the discussion. The authors do not acknowledge previous methods that have been published where separate decoder branches are used to estimate ‘bulk’ and ‘fine-tune’ transformations, such as in Stergios et al., “Linear and Deformable Image Reigstration with 3D Convoliotnal Neural Networks” (MICCAI RAMBO/BIA/TIA Worksop 2018). In that case, the ‘bulk’ transformation is modeled as a 12 parameter affine matrix, and composed with a non-rigid displacement field to obtain the final transformation. The authors refer to the field ‘u’ as a displacement field, e.g. in Section 2 Method, CNN.: “bulk-displacement, u_bulk”, Section 2 Method, Diffeomorphic Layers. “… to enforce that the displacements were between …”. However, scaling-and-squaring is used for integration of a velocity field to obtain displacements. Velocity fields are not mentioned in the paper, and yet scaling-and-squaring is used. Please clarify. Major Comments: The comparison to VoxelMorph is not clearly described, and the results comparing the methods are therefore difficult to interpret for the following reasons: The proposed model TEDS-Net passes only a single input to the CNN, i.e. the target image X, and deforms a template P to segment the LV myocardium. The authors perform a comparison with VoxelMorph in Table 1. VoxelMorph however requires two inputs to the CNN. How was the use of VoxelMorph formulated in this case? The authors state in Section 2.1 that VoxelMorph “was modified for segmentations by including our activation function, Equation 1”. It is unclear how applying this activation function allows VoxelMorph to be “modified for segmentations”. As described in [3] (Balakrishnan, 2019), VoxelMorph can be used for segmentation simply by propagating the segmentation of a moving image to a fixed image. Why is the activation function in Equation 1 required? The VoxelMorph method appears to produce a significant % J &lt;0 in Table 1 (24.5%), as well as incorrect topologies in 12/100 test cases based on Betti numbers. Without seeing the instances where VoxelMorph produces an incorrect topology, and without knowing how VoxelMorph is being used to create a segmentation in the first place, it is very difficult to assess the validity of this comparison. The VoxelMorph TMI paper [3] does demonstrate that without using an image loss term and learning registration exclusively from segmentation labels in an auxilliary loss, % J &lt;0 increases to about 10% (Table IV in [3]). It is understandable that this could increase for the current setting of large deformations; but the high number of incorrect topologies is surprising, and a visualiation of such cases would be helpful. Gaussian smoothing is proposed for the intermediate outputs of integration as a way to reduce % J &lt;0 in the resulting displacement fields. The motivation for this is to avoid the violation of theoretical guarantees of diffeomorphic transformations, which would risk topological preservation. Another important theoretical guarantee of a diffeomorphism is that it is invertible. Does the Gaussian smoothing of intermediate outputs during scaling-and-squaring allow this invertibility to be preserved? As shown in Fig. 4, with a larger number of integration steps, Gaussian smoothing is shown to worsen registration performance. Theoretically, without gaussian smoothing, accuracy should increase with more steps [2] (the authors state however “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields [2]”, where is this explained in [2]?). This requires further elaboration. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper introduces a method to greatly reduce negative Jacobian determinants in diffeomorphic displacement fields in the setting of image registration, where binary labels are used to guide the loss. The paper is clearly presented and the method would be of interest to the scientific community. The comparison to VoxelMorph however is insufficiently described, and the setting that the registration is driven by labelmaps and not image data needs to be made clear as a cause of the observed large percentage of negative Jacobian determinants observed. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposes a novel Topology Enforcing Diffeomorphic Segmentation Network (TEDS-Net), which is claimed the first deep learning technique to achieve 100% topology accuracy. Also, this paper combines spatial transformer networks (STN) and diffeomorphic displacement fields to complete a segmentation as the primary task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper addresses a critical problem in medical image segmentation, which is to preserve the topology of the segmentations besides the pixel accuracy. Though the diffeomorphism method has been used in image registration [6,7], the way the authors adopt it in medical image segmentation is nice and elegant. Also, it somehow provides theoretical guarantee to topology preserving during image segmentation in the method part. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From the method part, this paper seems to be a general method to learn to segment with correct topology, while the dataset validated in the experiment part is very specific. The ground truth of the dataset seems to have a single loop. More qualitative and quantitative are needed to support the effectiveness of the proposed method. An ablation study of the weight parameter beta will be interesting and helpful to understand the method. I am also curious how this method is generalized to other (medical) image segmentation tasks, and if it works compared with other existing topology-preserving methods [5,9,13]. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html None Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper addresses a critical problem in medical image segmentation and the method is nice and elegant. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Summary: Proposes a number of architectural changes to VoxelMorph to better preserve topology by decomposing into a bulk and fine field, with Gaussian smoothing between layers and additional up-sampling to the learned fields before they are applied. The diffeomorphic warps were applied as part of a segmentation model to assess behaviour when applied to ventricular myocardium segmentation. Positives: Enforcing diffeomorphisms is a useful goal that should have many applications. Empirical results show strong improvements in topology preservation, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written, including a good description of the specific contributions and the experimental results. Negatives: The work consists of a set of ad hoc changes, which are not necessarily theoretically justified. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We would like to thank all the reviewers for their comments and suggestions. VoxelMorph Implementation: In this work, we compared TEDS-Net performance to the VoxelMorph (VM) registration framework. Unlike TEDS-Net, VM requires two inputs, so for our adapted implementation of VM we used the shape prior as the second input channel. We were previously integrating our novel activation function into VM’s methods as without this term we were finding the segmentation performance to be extremely poor. However, this has now been remedied by better regulating the loss regularisation term, resulting in a much smaller percentage of folding Jacobians whilst the segmentation performance remained consistent, matching that reported in the original VM application [3]. Theoretical justification for Gaussian smoothing and super-upsampling (R1 and MR): Gaussian smoothing and super-upsampling terms are used in TEDS-Net to encourage true diffeomorphism. Both these modifications are used to limit “the numerical inaccuracies brought about by the discrete composition of two diffeomorphic fields” as stated in section 3. Discrete sampling can cause numerical instabilities between voxels, these two additional terms were therefore used as additional smoothing terms to smooth between neighbouring voxels, minimising any extreme differences in local deformations. Gaussian Smoothing and Invertibility (RI and R2): R1 and R2 commented on the invertibility of the transformation after applying Gaussian smoothing between the composition layers. Invertibility is a theoretical guarantee of diffeomorphisms. However, in this work our main focus was topology preservation by encouraging one-to-one mapping of our transformations, which we achieved as shown by all-positive Jacobian determinants. However, in future work the effect that Gaussian smoothing has on the invertibility of the generated fields will be fully investigated. Applications to other Topologies (R3): R3 discussed whether TEDS-Net was generalisable to other topologies. The theory behind TEDS-Net should work across all topologies, with the only restriction being that the topology of the desired anatomy must be known. Due to page restrictions, we were limited to validating our methods on a single dataset. In future work, this will be expanded to different topologies over a range of medical datasets. Clarifications: R2 questioned the statement: “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields”. This statement is misleading and should have read: “Although theoretically accuracy should increase with the number of composition layers, this requires performing more compositions that can each bring about small violations, due to the discrete nature of the fields.”. This statement will be clarified in the camera-ready version. In the camera-ready version, a clarification on the field regularisation term; inclusion of the Betti number reference; and the distinction between velocity and displacement fields will be included or corrected. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Madeleine K. Wyburd, Nicola K. Dinsdale, Ana I. L. Namburete, Mark Jenkinson Abstract Accurate topology is key when performing meaningful anatomical segmentations, however, it is often overlooked in traditional deep learning methods. In this work we propose TEDS-Net: a novel segmentation method that guarantees accurate topology. Our method is built upon a continuous diffeomorphic framework, which enforces topology preservation. However, in practice, diffeomorphic fields are represented using a finite number of parameters and sampled using methods such as linear interpolation, violating the theoretical guarantees. We therefore introduce additional modifications to more strictly enforce it. Our network learns how to warp a binary prior, with the desired topological characteristics, to complete the segmentation task. We tested our method on myocardium segmentation from an open-source 2D heart dataset. TEDS-Net preserved topology in 100% of the cases, compared to 90% from the U-Net, without sacrificing on Hausdorff Distance or Dice performance. Code will be made available at: www.github.com/mwyburd/TEDS-Net. Link to paper https://doi.org/10.1007/978-3-030-87193-2_24 Link to the code repository https://github.com/mwyburd/TEDS-Net Link to the dataset(s) https://www.creatis.insa-lyon.fr/Challenge/acdc/ Reviews Review #1 Please describe the contribution of the paper In learned diffeomorphic registration, theoretical topology preservation guarantees may not hold in practice due to discrete representations, sampling, etc. The authors propose a number of small architectural changes to a common registration architecture (VoxelMorph), namely a split into a bulk and a fine field, gaussian smoothing between integration layers, and additional upsampling to the learned fields before they are applied. Experiments were for image segmentation via deformation of a prior shape, as applied to ventricular myocardium segmentation (in which a ring prior should be warped with no gaps). The proposed network had zero images with topological errors in 100 held-out test images, vs. 10-12 errors for two baselines (U-Net and vanilla VoxelMorph). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Aiming to enforce diffeomorphisms more accurately is an excellent goal, and would be valuable to many in the community. Empirical results (with excellent ablation studies) show strong improvements in topology preservation for the proposed method, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written paper, including an excellent description of the specific contributions made and the experimental results (including setup, hyperparameter tuning, ablation studies, etc). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Contributions sometimes read as a list of engineering changes, as opposed to something more thoretically grounded. I would have appreciated more description of the justifications behind each of the changes made (this was good for the proposed split into bulk/fine transformations, but less clear for the gaussian smoothing and super-upsampling.) Changes do not provide theoretical guarantees on the resulting diffeomorphisms (to be clear, the authors are upfront about this). For example, the method does break down for ventricular myocardium segmentation when the prior shape is too thin (Fig 4b, prior radius = 10). Experimental results show that the proposed method improves diffeomorphisms when deforming a small continuous ring (representing the ventricular myocardium). It is unclear whether the same improvements will occur for other applications, e.g., if small gaps in a discontiuous prior are to be preserved. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code made available. I’d encourage the authors to contact the VoxelMorph developers as they do integrate contributions from others, and the changes described here could be very useful for the wider community. Description of experimental results (part 3 of the reproducibility checklist) in particular is very well done. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Consider carefully proof-reading the paper for the difference between displacement and velocity fields. Justification for the super-upsampling is unclear, as it should not fix any problems in the original grid but instead add interpolated vectors between them. Unclear why MaxPooling is used as the final downsampler when creating the final prediction Y-hat. Is this closing small holes? Would this still be valid if you wanted to maintain small holes in the prior? Did you try anything else (e.g., AvgPooling)? Definition of the field regularisation loss (after eqn. 2): i,j should go from 1,1 to N_i, N_j. How did you tune the field regularisation weight parameter in VoxelMorph? Can you weight the field regularisation loss higher in order to have fewer incorrect topologies? Perhaps these parameters need to be tuned differently for VoxelMorph vs. the proposed TEDS-Net (since there are two field regularisation losses in TEDS-Net but only one for VoxelMorph). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper provides some changes to a commonly-used architecture for learned diffeomorphic registration networks that are easy to implement and appear to yield significantly better topological preservation. I believe that others could benefit from trying these changes in their own implementations. However, my enthusiasm for the paper is dampened by the lack of theoretical justifications, and by the fact that the experiments focus on only one type of topological preservation (preventing gaps, as opposed to maintaining gaps in the prior). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an image registration model which warps a 2D binary mask of a ring (corresponding to a left ventricle myocardium segmentation template) to short-axis cine-MR images with the goal of segmenting the LV myocardium. Several components are proposed to enforce a diffeomorphic transformation (specifically to reduce the prevalence of negative Jacobians in the displacement fields and to reduce incorrect topologies after warping), including a tanh activation on predicted velocity fields, Gaussian smoothing of intermediate outputs of the scaling-and-squaring integration steps, and a ‘super upsample’ where displacement fields are linearly interpolated to twice the resolution of the input image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the authors perform a thorough analysis of their method by comparing to a baseline segmentation model (U-net) and registration model (VoxelMorph), as well as performing an ablation study to determine the impact of different model components on metrics including Dice score, Hausdorff distance, percentage of negative Jacobian determinants (% J &lt;0), and topological errors. They also provide a quantitative assessment of the effect of number of intergation layers and radius of the binary prior. The authors illustrate that with the inclusion of the proposed Gaussian smoothing of intermediate integration outputs, a registration model which uses segmentations to drive the loss which would normally produce high % J &lt;0 (consistent with results in [3] (Balakrishnan et al., 2019)), reduces % J &lt;0 to zero, as well as reducing the number of incorrect topologies at test time to zero. Additionally, the proposed super-upsample appears to provide slight improvements in terms of Hausdorff distance. The paper is motivated as a means to segment a target geometry, in this case the LV myocardium, using a diffeomorphic registration of a template binary labelmap. The results demonstrate that TEDS-Net indeed improves performance over a U-Net and VoxelMorph in terms of % J &lt;0, HD, and correct topologies, while only performing slightly worse in terms of Dice score compared to the U-net. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is promising that introducing gaussing smoothing of intermediate integration outputs can reduce incorrect topologies and % J &lt;0, but it is unclear whether this may violate the invertibility of the transformation, which is also a theoretical guarantee of diffeomorphisms. Furthermore, by introducing gaussian smoothing between each integration layer, would this not result in increasingly smooth fields used to update the displacement with larger numbers of integration steps? This seems to go against the idea that larger deformations can be more accurately modeled by using more (smaller) integration steps, as discussed in [2]. The authors motivate their work by the observation that guarantees of diffeomorphic formulations can break down in discrete settings especially involving large deformations. This is due to steps including computing displacements from velocity fields at discrete pixel locations via scaling-and-squaring, and sampling/deforming images based on these computed fields. The proposed step of Gaussian smoothing of the integration intermediate outputs in combination with a commonly used deformation gradient regularizer (L_grad) seems to greatly reduce % J &lt;0. However, this is demonstrated for a particular setting in the paper where no image loss terms are used, and instead loss terms involve training data with only hard binary labelmaps, which have naturally sharp boundaries that are difficult to model with a diffeomorphic transformation. As shown in Tables I and IV in reference [3], using image loss terms generally results in very low % J &lt;0, (&lt;1% in Table I in [3]), while using only binary segmentations in the loss will naturally lead to significant increases in % J &lt;0 (~10% in Table IV in [3] for 3D brain image data registartion). The impact of using only binary labelmaps and not images on the resulting % J &lt;0 is understated in the paper. The comparison to VoxelMorph is not sufficiently clearly explained, raising questions about the results (see Major Comments). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance images from the ACDC Dataset are used. However, only ‘5 slices’ from each image were used, presumably mid-ventricle slices where the topology is always a ring (as opposed to the base or apex where crescent and circle topologies, respectively, are more common.) code is not provided, making it difficult to understand the comparison with VoxelMorph, the implementation of which is not clearly explained. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Comments: A brief description or reference for Betti number to classify incorrect topology would help readers understand the measure. In Table 1, (A3) has gaussian smoothing and super-upsample but not L_grad, while (A1) has none of these, and (A1) produces about half as many test segmentations with incorrect topologies. This seems to suggest that Gaussian smoothing and/or super-upsample without L_grad results in worse topologies than if they weren’t used at all. This indicates the importance of L_grad, which is overlooked in the discussion. The authors do not acknowledge previous methods that have been published where separate decoder branches are used to estimate ‘bulk’ and ‘fine-tune’ transformations, such as in Stergios et al., “Linear and Deformable Image Reigstration with 3D Convoliotnal Neural Networks” (MICCAI RAMBO/BIA/TIA Worksop 2018). In that case, the ‘bulk’ transformation is modeled as a 12 parameter affine matrix, and composed with a non-rigid displacement field to obtain the final transformation. The authors refer to the field ‘u’ as a displacement field, e.g. in Section 2 Method, CNN.: “bulk-displacement, u_bulk”, Section 2 Method, Diffeomorphic Layers. “… to enforce that the displacements were between …”. However, scaling-and-squaring is used for integration of a velocity field to obtain displacements. Velocity fields are not mentioned in the paper, and yet scaling-and-squaring is used. Please clarify. Major Comments: The comparison to VoxelMorph is not clearly described, and the results comparing the methods are therefore difficult to interpret for the following reasons: The proposed model TEDS-Net passes only a single input to the CNN, i.e. the target image X, and deforms a template P to segment the LV myocardium. The authors perform a comparison with VoxelMorph in Table 1. VoxelMorph however requires two inputs to the CNN. How was the use of VoxelMorph formulated in this case? The authors state in Section 2.1 that VoxelMorph “was modified for segmentations by including our activation function, Equation 1”. It is unclear how applying this activation function allows VoxelMorph to be “modified for segmentations”. As described in [3] (Balakrishnan, 2019), VoxelMorph can be used for segmentation simply by propagating the segmentation of a moving image to a fixed image. Why is the activation function in Equation 1 required? The VoxelMorph method appears to produce a significant % J &lt;0 in Table 1 (24.5%), as well as incorrect topologies in 12/100 test cases based on Betti numbers. Without seeing the instances where VoxelMorph produces an incorrect topology, and without knowing how VoxelMorph is being used to create a segmentation in the first place, it is very difficult to assess the validity of this comparison. The VoxelMorph TMI paper [3] does demonstrate that without using an image loss term and learning registration exclusively from segmentation labels in an auxilliary loss, % J &lt;0 increases to about 10% (Table IV in [3]). It is understandable that this could increase for the current setting of large deformations; but the high number of incorrect topologies is surprising, and a visualiation of such cases would be helpful. Gaussian smoothing is proposed for the intermediate outputs of integration as a way to reduce % J &lt;0 in the resulting displacement fields. The motivation for this is to avoid the violation of theoretical guarantees of diffeomorphic transformations, which would risk topological preservation. Another important theoretical guarantee of a diffeomorphism is that it is invertible. Does the Gaussian smoothing of intermediate outputs during scaling-and-squaring allow this invertibility to be preserved? As shown in Fig. 4, with a larger number of integration steps, Gaussian smoothing is shown to worsen registration performance. Theoretically, without gaussian smoothing, accuracy should increase with more steps [2] (the authors state however “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields [2]”, where is this explained in [2]?). This requires further elaboration. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper introduces a method to greatly reduce negative Jacobian determinants in diffeomorphic displacement fields in the setting of image registration, where binary labels are used to guide the loss. The paper is clearly presented and the method would be of interest to the scientific community. The comparison to VoxelMorph however is insufficiently described, and the setting that the registration is driven by labelmaps and not image data needs to be made clear as a cause of the observed large percentage of negative Jacobian determinants observed. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposes a novel Topology Enforcing Diffeomorphic Segmentation Network (TEDS-Net), which is claimed the first deep learning technique to achieve 100% topology accuracy. Also, this paper combines spatial transformer networks (STN) and diffeomorphic displacement fields to complete a segmentation as the primary task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper addresses a critical problem in medical image segmentation, which is to preserve the topology of the segmentations besides the pixel accuracy. Though the diffeomorphism method has been used in image registration [6,7], the way the authors adopt it in medical image segmentation is nice and elegant. Also, it somehow provides theoretical guarantee to topology preserving during image segmentation in the method part. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From the method part, this paper seems to be a general method to learn to segment with correct topology, while the dataset validated in the experiment part is very specific. The ground truth of the dataset seems to have a single loop. More qualitative and quantitative are needed to support the effectiveness of the proposed method. An ablation study of the weight parameter beta will be interesting and helpful to understand the method. I am also curious how this method is generalized to other (medical) image segmentation tasks, and if it works compared with other existing topology-preserving methods [5,9,13]. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html None Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper addresses a critical problem in medical image segmentation and the method is nice and elegant. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Summary: Proposes a number of architectural changes to VoxelMorph to better preserve topology by decomposing into a bulk and fine field, with Gaussian smoothing between layers and additional up-sampling to the learned fields before they are applied. The diffeomorphic warps were applied as part of a segmentation model to assess behaviour when applied to ventricular myocardium segmentation. Positives: Enforcing diffeomorphisms is a useful goal that should have many applications. Empirical results show strong improvements in topology preservation, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written, including a good description of the specific contributions and the experimental results. Negatives: The work consists of a set of ad hoc changes, which are not necessarily theoretically justified. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We would like to thank all the reviewers for their comments and suggestions. VoxelMorph Implementation: In this work, we compared TEDS-Net performance to the VoxelMorph (VM) registration framework. Unlike TEDS-Net, VM requires two inputs, so for our adapted implementation of VM we used the shape prior as the second input channel. We were previously integrating our novel activation function into VM’s methods as without this term we were finding the segmentation performance to be extremely poor. However, this has now been remedied by better regulating the loss regularisation term, resulting in a much smaller percentage of folding Jacobians whilst the segmentation performance remained consistent, matching that reported in the original VM application [3]. Theoretical justification for Gaussian smoothing and super-upsampling (R1 and MR): Gaussian smoothing and super-upsampling terms are used in TEDS-Net to encourage true diffeomorphism. Both these modifications are used to limit “the numerical inaccuracies brought about by the discrete composition of two diffeomorphic fields” as stated in section 3. Discrete sampling can cause numerical instabilities between voxels, these two additional terms were therefore used as additional smoothing terms to smooth between neighbouring voxels, minimising any extreme differences in local deformations. Gaussian Smoothing and Invertibility (RI and R2): R1 and R2 commented on the invertibility of the transformation after applying Gaussian smoothing between the composition layers. Invertibility is a theoretical guarantee of diffeomorphisms. However, in this work our main focus was topology preservation by encouraging one-to-one mapping of our transformations, which we achieved as shown by all-positive Jacobian determinants. However, in future work the effect that Gaussian smoothing has on the invertibility of the generated fields will be fully investigated. Applications to other Topologies (R3): R3 discussed whether TEDS-Net was generalisable to other topologies. The theory behind TEDS-Net should work across all topologies, with the only restriction being that the topology of the desired anatomy must be known. Due to page restrictions, we were limited to validating our methods on a single dataset. In future work, this will be expanded to different topologies over a range of medical datasets. Clarifications: R2 questioned the statement: “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields”. This statement is misleading and should have read: “Although theoretically accuracy should increase with the number of composition layers, this requires performing more compositions that can each bring about small violations, due to the discrete nature of the fields.”. This statement will be clarified in the camera-ready version. In the camera-ready version, a clarification on the field regularisation term; inclusion of the Betti number reference; and the distinction between velocity and displacement fields will be included or corrected. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0123/12/31/Paper0524" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0123/12/31/Paper0524" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0123-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TEDS-Net: Enforcing Diffeomorphisms in Spatial Transformers to Guarantee Topology Preservation in Segmentations" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0123/12/31/Paper0524"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0123/12/31/Paper0524","headline":"TEDS-Net: Enforcing Diffeomorphisms in Spatial Transformers to Guarantee Topology Preservation in Segmentations","dateModified":"0123-12-31T00:00:00-05:17","datePublished":"0123-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Madeleine K. Wyburd, Nicola K. Dinsdale, Ana I. L. Namburete, Mark Jenkinson Abstract Accurate topology is key when performing meaningful anatomical segmentations, however, it is often overlooked in traditional deep learning methods. In this work we propose TEDS-Net: a novel segmentation method that guarantees accurate topology. Our method is built upon a continuous diffeomorphic framework, which enforces topology preservation. However, in practice, diffeomorphic fields are represented using a finite number of parameters and sampled using methods such as linear interpolation, violating the theoretical guarantees. We therefore introduce additional modifications to more strictly enforce it. Our network learns how to warp a binary prior, with the desired topological characteristics, to complete the segmentation task. We tested our method on myocardium segmentation from an open-source 2D heart dataset. TEDS-Net preserved topology in 100% of the cases, compared to 90% from the U-Net, without sacrificing on Hausdorff Distance or Dice performance. Code will be made available at: www.github.com/mwyburd/TEDS-Net. Link to paper https://doi.org/10.1007/978-3-030-87193-2_24 Link to the code repository https://github.com/mwyburd/TEDS-Net Link to the dataset(s) https://www.creatis.insa-lyon.fr/Challenge/acdc/ Reviews Review #1 Please describe the contribution of the paper In learned diffeomorphic registration, theoretical topology preservation guarantees may not hold in practice due to discrete representations, sampling, etc. The authors propose a number of small architectural changes to a common registration architecture (VoxelMorph), namely a split into a bulk and a fine field, gaussian smoothing between integration layers, and additional upsampling to the learned fields before they are applied. Experiments were for image segmentation via deformation of a prior shape, as applied to ventricular myocardium segmentation (in which a ring prior should be warped with no gaps). The proposed network had zero images with topological errors in 100 held-out test images, vs. 10-12 errors for two baselines (U-Net and vanilla VoxelMorph). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Aiming to enforce diffeomorphisms more accurately is an excellent goal, and would be valuable to many in the community. Empirical results (with excellent ablation studies) show strong improvements in topology preservation for the proposed method, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written paper, including an excellent description of the specific contributions made and the experimental results (including setup, hyperparameter tuning, ablation studies, etc). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Contributions sometimes read as a list of engineering changes, as opposed to something more thoretically grounded. I would have appreciated more description of the justifications behind each of the changes made (this was good for the proposed split into bulk/fine transformations, but less clear for the gaussian smoothing and super-upsampling.) Changes do not provide theoretical guarantees on the resulting diffeomorphisms (to be clear, the authors are upfront about this). For example, the method does break down for ventricular myocardium segmentation when the prior shape is too thin (Fig 4b, prior radius = 10). Experimental results show that the proposed method improves diffeomorphisms when deforming a small continuous ring (representing the ventricular myocardium). It is unclear whether the same improvements will occur for other applications, e.g., if small gaps in a discontiuous prior are to be preserved. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code made available. I’d encourage the authors to contact the VoxelMorph developers as they do integrate contributions from others, and the changes described here could be very useful for the wider community. Description of experimental results (part 3 of the reproducibility checklist) in particular is very well done. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Consider carefully proof-reading the paper for the difference between displacement and velocity fields. Justification for the super-upsampling is unclear, as it should not fix any problems in the original grid but instead add interpolated vectors between them. Unclear why MaxPooling is used as the final downsampler when creating the final prediction Y-hat. Is this closing small holes? Would this still be valid if you wanted to maintain small holes in the prior? Did you try anything else (e.g., AvgPooling)? Definition of the field regularisation loss (after eqn. 2): i,j should go from 1,1 to N_i, N_j. How did you tune the field regularisation weight parameter in VoxelMorph? Can you weight the field regularisation loss higher in order to have fewer incorrect topologies? Perhaps these parameters need to be tuned differently for VoxelMorph vs. the proposed TEDS-Net (since there are two field regularisation losses in TEDS-Net but only one for VoxelMorph). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper provides some changes to a commonly-used architecture for learned diffeomorphic registration networks that are easy to implement and appear to yield significantly better topological preservation. I believe that others could benefit from trying these changes in their own implementations. However, my enthusiasm for the paper is dampened by the lack of theoretical justifications, and by the fact that the experiments focus on only one type of topological preservation (preventing gaps, as opposed to maintaining gaps in the prior). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an image registration model which warps a 2D binary mask of a ring (corresponding to a left ventricle myocardium segmentation template) to short-axis cine-MR images with the goal of segmenting the LV myocardium. Several components are proposed to enforce a diffeomorphic transformation (specifically to reduce the prevalence of negative Jacobians in the displacement fields and to reduce incorrect topologies after warping), including a tanh activation on predicted velocity fields, Gaussian smoothing of intermediate outputs of the scaling-and-squaring integration steps, and a ‘super upsample’ where displacement fields are linearly interpolated to twice the resolution of the input image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the authors perform a thorough analysis of their method by comparing to a baseline segmentation model (U-net) and registration model (VoxelMorph), as well as performing an ablation study to determine the impact of different model components on metrics including Dice score, Hausdorff distance, percentage of negative Jacobian determinants (% J &lt;0), and topological errors. They also provide a quantitative assessment of the effect of number of intergation layers and radius of the binary prior. The authors illustrate that with the inclusion of the proposed Gaussian smoothing of intermediate integration outputs, a registration model which uses segmentations to drive the loss which would normally produce high % J &lt;0 (consistent with results in [3] (Balakrishnan et al., 2019)), reduces % J &lt;0 to zero, as well as reducing the number of incorrect topologies at test time to zero. Additionally, the proposed super-upsample appears to provide slight improvements in terms of Hausdorff distance. The paper is motivated as a means to segment a target geometry, in this case the LV myocardium, using a diffeomorphic registration of a template binary labelmap. The results demonstrate that TEDS-Net indeed improves performance over a U-Net and VoxelMorph in terms of % J &lt;0, HD, and correct topologies, while only performing slightly worse in terms of Dice score compared to the U-net. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is promising that introducing gaussing smoothing of intermediate integration outputs can reduce incorrect topologies and % J &lt;0, but it is unclear whether this may violate the invertibility of the transformation, which is also a theoretical guarantee of diffeomorphisms. Furthermore, by introducing gaussian smoothing between each integration layer, would this not result in increasingly smooth fields used to update the displacement with larger numbers of integration steps? This seems to go against the idea that larger deformations can be more accurately modeled by using more (smaller) integration steps, as discussed in [2]. The authors motivate their work by the observation that guarantees of diffeomorphic formulations can break down in discrete settings especially involving large deformations. This is due to steps including computing displacements from velocity fields at discrete pixel locations via scaling-and-squaring, and sampling/deforming images based on these computed fields. The proposed step of Gaussian smoothing of the integration intermediate outputs in combination with a commonly used deformation gradient regularizer (L_grad) seems to greatly reduce % J &lt;0. However, this is demonstrated for a particular setting in the paper where no image loss terms are used, and instead loss terms involve training data with only hard binary labelmaps, which have naturally sharp boundaries that are difficult to model with a diffeomorphic transformation. As shown in Tables I and IV in reference [3], using image loss terms generally results in very low % J &lt;0, (&lt;1% in Table I in [3]), while using only binary segmentations in the loss will naturally lead to significant increases in % J &lt;0 (~10% in Table IV in [3] for 3D brain image data registartion). The impact of using only binary labelmaps and not images on the resulting % J &lt;0 is understated in the paper. The comparison to VoxelMorph is not sufficiently clearly explained, raising questions about the results (see Major Comments). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance images from the ACDC Dataset are used. However, only ‘5 slices’ from each image were used, presumably mid-ventricle slices where the topology is always a ring (as opposed to the base or apex where crescent and circle topologies, respectively, are more common.) code is not provided, making it difficult to understand the comparison with VoxelMorph, the implementation of which is not clearly explained. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Comments: A brief description or reference for Betti number to classify incorrect topology would help readers understand the measure. In Table 1, (A3) has gaussian smoothing and super-upsample but not L_grad, while (A1) has none of these, and (A1) produces about half as many test segmentations with incorrect topologies. This seems to suggest that Gaussian smoothing and/or super-upsample without L_grad results in worse topologies than if they weren’t used at all. This indicates the importance of L_grad, which is overlooked in the discussion. The authors do not acknowledge previous methods that have been published where separate decoder branches are used to estimate ‘bulk’ and ‘fine-tune’ transformations, such as in Stergios et al., “Linear and Deformable Image Reigstration with 3D Convoliotnal Neural Networks” (MICCAI RAMBO/BIA/TIA Worksop 2018). In that case, the ‘bulk’ transformation is modeled as a 12 parameter affine matrix, and composed with a non-rigid displacement field to obtain the final transformation. The authors refer to the field ‘u’ as a displacement field, e.g. in Section 2 Method, CNN.: “bulk-displacement, u_bulk”, Section 2 Method, Diffeomorphic Layers. “… to enforce that the displacements were between …”. However, scaling-and-squaring is used for integration of a velocity field to obtain displacements. Velocity fields are not mentioned in the paper, and yet scaling-and-squaring is used. Please clarify. Major Comments: The comparison to VoxelMorph is not clearly described, and the results comparing the methods are therefore difficult to interpret for the following reasons: The proposed model TEDS-Net passes only a single input to the CNN, i.e. the target image X, and deforms a template P to segment the LV myocardium. The authors perform a comparison with VoxelMorph in Table 1. VoxelMorph however requires two inputs to the CNN. How was the use of VoxelMorph formulated in this case? The authors state in Section 2.1 that VoxelMorph “was modified for segmentations by including our activation function, Equation 1”. It is unclear how applying this activation function allows VoxelMorph to be “modified for segmentations”. As described in [3] (Balakrishnan, 2019), VoxelMorph can be used for segmentation simply by propagating the segmentation of a moving image to a fixed image. Why is the activation function in Equation 1 required? The VoxelMorph method appears to produce a significant % J &lt;0 in Table 1 (24.5%), as well as incorrect topologies in 12/100 test cases based on Betti numbers. Without seeing the instances where VoxelMorph produces an incorrect topology, and without knowing how VoxelMorph is being used to create a segmentation in the first place, it is very difficult to assess the validity of this comparison. The VoxelMorph TMI paper [3] does demonstrate that without using an image loss term and learning registration exclusively from segmentation labels in an auxilliary loss, % J &lt;0 increases to about 10% (Table IV in [3]). It is understandable that this could increase for the current setting of large deformations; but the high number of incorrect topologies is surprising, and a visualiation of such cases would be helpful. Gaussian smoothing is proposed for the intermediate outputs of integration as a way to reduce % J &lt;0 in the resulting displacement fields. The motivation for this is to avoid the violation of theoretical guarantees of diffeomorphic transformations, which would risk topological preservation. Another important theoretical guarantee of a diffeomorphism is that it is invertible. Does the Gaussian smoothing of intermediate outputs during scaling-and-squaring allow this invertibility to be preserved? As shown in Fig. 4, with a larger number of integration steps, Gaussian smoothing is shown to worsen registration performance. Theoretically, without gaussian smoothing, accuracy should increase with more steps [2] (the authors state however “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields [2]”, where is this explained in [2]?). This requires further elaboration. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper introduces a method to greatly reduce negative Jacobian determinants in diffeomorphic displacement fields in the setting of image registration, where binary labels are used to guide the loss. The paper is clearly presented and the method would be of interest to the scientific community. The comparison to VoxelMorph however is insufficiently described, and the setting that the registration is driven by labelmaps and not image data needs to be made clear as a cause of the observed large percentage of negative Jacobian determinants observed. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposes a novel Topology Enforcing Diffeomorphic Segmentation Network (TEDS-Net), which is claimed the first deep learning technique to achieve 100% topology accuracy. Also, this paper combines spatial transformer networks (STN) and diffeomorphic displacement fields to complete a segmentation as the primary task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper addresses a critical problem in medical image segmentation, which is to preserve the topology of the segmentations besides the pixel accuracy. Though the diffeomorphism method has been used in image registration [6,7], the way the authors adopt it in medical image segmentation is nice and elegant. Also, it somehow provides theoretical guarantee to topology preserving during image segmentation in the method part. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From the method part, this paper seems to be a general method to learn to segment with correct topology, while the dataset validated in the experiment part is very specific. The ground truth of the dataset seems to have a single loop. More qualitative and quantitative are needed to support the effectiveness of the proposed method. An ablation study of the weight parameter beta will be interesting and helpful to understand the method. I am also curious how this method is generalized to other (medical) image segmentation tasks, and if it works compared with other existing topology-preserving methods [5,9,13]. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html None Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper addresses a critical problem in medical image segmentation and the method is nice and elegant. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Summary: Proposes a number of architectural changes to VoxelMorph to better preserve topology by decomposing into a bulk and fine field, with Gaussian smoothing between layers and additional up-sampling to the learned fields before they are applied. The diffeomorphic warps were applied as part of a segmentation model to assess behaviour when applied to ventricular myocardium segmentation. Positives: Enforcing diffeomorphisms is a useful goal that should have many applications. Empirical results show strong improvements in topology preservation, compared to two sensible and widely-used baselines (U-Net and VoxelMorph). Clear and well-written, including a good description of the specific contributions and the experimental results. Negatives: The work consists of a set of ad hoc changes, which are not necessarily theoretically justified. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We would like to thank all the reviewers for their comments and suggestions. VoxelMorph Implementation: In this work, we compared TEDS-Net performance to the VoxelMorph (VM) registration framework. Unlike TEDS-Net, VM requires two inputs, so for our adapted implementation of VM we used the shape prior as the second input channel. We were previously integrating our novel activation function into VM’s methods as without this term we were finding the segmentation performance to be extremely poor. However, this has now been remedied by better regulating the loss regularisation term, resulting in a much smaller percentage of folding Jacobians whilst the segmentation performance remained consistent, matching that reported in the original VM application [3]. Theoretical justification for Gaussian smoothing and super-upsampling (R1 and MR): Gaussian smoothing and super-upsampling terms are used in TEDS-Net to encourage true diffeomorphism. Both these modifications are used to limit “the numerical inaccuracies brought about by the discrete composition of two diffeomorphic fields” as stated in section 3. Discrete sampling can cause numerical instabilities between voxels, these two additional terms were therefore used as additional smoothing terms to smooth between neighbouring voxels, minimising any extreme differences in local deformations. Gaussian Smoothing and Invertibility (RI and R2): R1 and R2 commented on the invertibility of the transformation after applying Gaussian smoothing between the composition layers. Invertibility is a theoretical guarantee of diffeomorphisms. However, in this work our main focus was topology preservation by encouraging one-to-one mapping of our transformations, which we achieved as shown by all-positive Jacobian determinants. However, in future work the effect that Gaussian smoothing has on the invertibility of the generated fields will be fully investigated. Applications to other Topologies (R3): R3 discussed whether TEDS-Net was generalisable to other topologies. The theory behind TEDS-Net should work across all topologies, with the only restriction being that the topology of the desired anatomy must be known. Due to page restrictions, we were limited to validating our methods on a single dataset. In future work, this will be expanded to different topologies over a range of medical datasets. Clarifications: R2 questioned the statement: “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields”. This statement is misleading and should have read: “Although theoretically accuracy should increase with the number of composition layers, this requires performing more compositions that can each bring about small violations, due to the discrete nature of the fields.”. This statement will be clarified in the camera-ready version. In the camera-ready version, a clarification on the field regularisation term; inclusion of the Betti number reference; and the distinction between velocity and displacement fields will be included or corrected. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wyburd, Madeleine K.,Dinsdale, Nicola K.,Namburete, Ana I. L.,Jenkinson, Mark " />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>TEDS-Net: Enforcing Diffeomorphisms in Spatial Transformers to Guarantee Topology Preservation in Segmentations</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Cardiac"
+        class="post-category">
+        Clinical applications - Cardiac
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wyburd, Madeleine K."
+        class="post-tags">
+        Wyburd, Madeleine K.
+      </a> |  
+      
+      <a href="kittywong/tags#Dinsdale, Nicola K."
+        class="post-tags">
+        Dinsdale, Nicola K.
+      </a> |  
+      
+      <a href="kittywong/tags#Namburete, Ana I. L."
+        class="post-tags">
+        Namburete, Ana I. L.
+      </a> |  
+      
+      <a href="kittywong/tags#Jenkinson, Mark "
+        class="post-tags">
+        Jenkinson, Mark 
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Madeleine K. Wyburd, Nicola K. Dinsdale, Ana I. L. Namburete, Mark  Jenkinson
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Accurate topology is key when performing meaningful anatomical segmentations, however, it is often overlooked in traditional deep learning methods. In this work we propose TEDS-Net: a novel segmentation method that guarantees accurate topology. Our method is built upon a continuous diffeomorphic framework, which enforces topology preservation. However, in practice, diffeomorphic fields are represented using a finite number of parameters and sampled using methods such as linear interpolation, violating the theoretical guarantees. We therefore introduce additional modifications to more strictly enforce it. Our network learns how to warp a binary prior, with the desired topological characteristics, to complete the segmentation task. We tested our method on myocardium segmentation from an open-source 2D heart dataset. TEDS-Net preserved topology in 100% of the cases, compared to 90% from the U-Net, without sacrificing on Hausdorff Distance or Dice performance. Code will be made available at: www.github.com/mwyburd/TEDS-Net.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_24">https://doi.org/10.1007/978-3-030-87193-2_24</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/mwyburd/TEDS-Net
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.creatis.insa-lyon.fr/Challenge/acdc/
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In learned diffeomorphic registration, theoretical topology preservation guarantees may not hold in practice due to discrete representations, sampling, etc. The authors propose a number of small architectural changes to a common registration architecture (VoxelMorph), namely a split into a bulk and a fine field, gaussian smoothing between integration layers, and additional upsampling to the learned fields before they are applied. Experiments were for image segmentation via deformation of a prior shape, as applied to ventricular myocardium segmentation (in which a ring prior should be warped with no gaps). The proposed network had zero images with topological errors in 100 held-out test images, vs. 10-12 errors for two baselines (U-Net and vanilla VoxelMorph).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Aiming to enforce diffeomorphisms more accurately is an excellent goal, and would be valuable to many in the community.</p>
+        </li>
+        <li>
+          <p>Empirical results (with excellent ablation studies) show strong improvements in topology preservation for the proposed method, compared to two sensible and widely-used baselines (U-Net and VoxelMorph).</p>
+        </li>
+        <li>
+          <p>Clear and well-written paper, including an excellent description of the specific contributions made and the experimental results (including setup, hyperparameter tuning, ablation studies, etc).</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Contributions sometimes read as a list of engineering changes, as opposed to something more thoretically grounded. I would have appreciated more description of the justifications behind each of the changes made (this was good for the proposed split into bulk/fine transformations, but less clear for the gaussian smoothing and super-upsampling.)</p>
+        </li>
+        <li>
+          <p>Changes do not provide theoretical guarantees on the resulting diffeomorphisms (to be clear, the authors are upfront about this). For example, the method does break down for ventricular myocardium segmentation when the prior shape is too thin (Fig 4b, prior radius = 10).</p>
+        </li>
+        <li>
+          <p>Experimental results show that the proposed method improves diffeomorphisms when deforming a small continuous ring (representing the ventricular myocardium). It is unclear whether the same improvements will occur for other applications, e.g., if small gaps in a discontiuous prior are to be preserved.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>No code made available. I’d encourage the authors to contact the VoxelMorph developers as they do integrate contributions from others, and the changes described here could be very useful for the wider community.</li>
+        <li>Description of experimental results (part 3 of the reproducibility checklist) in particular is very well done.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Consider carefully proof-reading the paper for the difference between displacement and velocity fields.</li>
+        <li>Justification for the super-upsampling is unclear, as it should not fix any problems in the original grid but instead add interpolated vectors between them.</li>
+        <li>Unclear why MaxPooling is used as the final downsampler when creating the final prediction Y-hat. Is this closing small holes? Would this still be valid if you wanted to maintain small holes in the prior? Did you try anything else (e.g., AvgPooling)?</li>
+        <li>Definition of the field regularisation loss (after eqn. 2): i,j should go from 1,1 to N_i, N_j.</li>
+        <li>How did you tune the field regularisation weight parameter in VoxelMorph? Can you weight the field regularisation loss higher in order to have fewer incorrect topologies? Perhaps these parameters need to be tuned differently for VoxelMorph vs. the proposed TEDS-Net (since there are two field regularisation losses in TEDS-Net but only one for VoxelMorph).</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This paper provides some changes to a commonly-used architecture for learned diffeomorphic registration networks that are easy to implement and appear to yield significantly better topological preservation. I believe that others could benefit from trying these changes in their own implementations. However, my enthusiasm for the paper is dampened by the lack of theoretical justifications, and by the fact that the experiments focus on only one type of topological preservation (preventing gaps, as opposed to maintaining gaps in the prior).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an image registration model which warps a 2D binary mask of a ring (corresponding to a left ventricle myocardium segmentation template) to short-axis cine-MR images with the goal of segmenting the LV myocardium. Several components are proposed to enforce a diffeomorphic transformation (specifically to reduce the prevalence of negative Jacobians in the displacement fields and to reduce incorrect topologies after warping), including a tanh activation on predicted velocity fields, Gaussian smoothing of intermediate outputs of the scaling-and-squaring integration steps, and a ‘super upsample’ where displacement fields are linearly interpolated to twice the resolution of the input image.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The paper is well written and the authors perform a thorough analysis of their method by comparing to a baseline segmentation model (U-net) and registration model (VoxelMorph), as well as performing an ablation study to determine the impact of different model components on metrics including Dice score, Hausdorff distance, percentage of negative Jacobian determinants (%</td>
+                <td>J</td>
+                <td>&lt;0), and topological errors. They also provide a quantitative assessment of the effect of number of intergation layers and radius of the binary prior.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The authors illustrate that with the inclusion of the proposed Gaussian smoothing of intermediate integration outputs, a registration model which uses segmentations to drive the loss which would normally produce high %</td>
+                <td>J</td>
+                <td>&lt;0 (consistent with results in [3] (Balakrishnan et al., 2019)), reduces %</td>
+                <td>J</td>
+                <td>&lt;0 to zero, as well as reducing the number of incorrect topologies at test time to zero. Additionally, the proposed super-upsample appears to provide slight improvements in terms of Hausdorff distance.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The paper is motivated as a means to segment a target geometry, in this case the LV myocardium, using a diffeomorphic registration of a template binary labelmap. The results demonstrate that TEDS-Net indeed improves performance over a U-Net and VoxelMorph in terms of %</td>
+                <td>J</td>
+                <td>&lt;0, HD, and correct topologies, while only performing slightly worse in terms of Dice score compared to the U-net.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>It is promising that introducing gaussing smoothing of intermediate integration outputs can reduce incorrect topologies and %</td>
+                <td>J</td>
+                <td>&lt;0, but it is unclear whether this may violate the invertibility of the transformation, which is also a theoretical guarantee of diffeomorphisms. Furthermore, by introducing gaussian smoothing between each integration layer, would this not result in increasingly smooth fields used to update the displacement with larger numbers of integration steps? This seems to go against the idea that larger deformations can be more accurately modeled by using more (smaller) integration steps, as discussed in [2].</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The authors motivate their work by the observation that guarantees of diffeomorphic formulations can break down in discrete settings especially involving large deformations. This is due to steps including computing displacements from velocity fields at discrete pixel locations via scaling-and-squaring, and sampling/deforming images based on these computed fields. The proposed step of Gaussian smoothing of the integration intermediate outputs in combination with a commonly used deformation gradient regularizer (L_grad) seems to greatly reduce %</td>
+                <td>J</td>
+                <td>&lt;0. However, this is demonstrated for a particular setting in the paper where no image loss terms are used, and instead loss terms involve training data with only hard binary labelmaps, which have naturally sharp boundaries that are difficult to model with a diffeomorphic transformation. As shown in Tables I and IV in reference [3], using image loss terms generally results in very low  %</td>
+                <td>J</td>
+                <td>&lt;0, (&lt;1% in Table I in [3]), while using only binary segmentations in the loss will naturally lead to significant increases in %</td>
+                <td>J</td>
+                <td>&lt;0 (~10% in Table IV in [3] for 3D brain image data registartion). The impact of using only binary labelmaps and not images on the resulting %</td>
+                <td>J</td>
+                <td>&lt;0 is understated in the paper.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>The comparison to VoxelMorph is not sufficiently clearly explained, raising questions about the results (see Major Comments).</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>images from the ACDC Dataset are used. However, only ‘5 slices’ from each image were used, presumably mid-ventricle slices where the topology is always a ring (as opposed to the base or apex where crescent and circle topologies, respectively, are more common.)</p>
+        </li>
+        <li>
+          <p>code is not provided, making it difficult to understand the comparison with VoxelMorph, the implementation of which is not clearly explained.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Minor Comments:</p>
+      <ul>
+        <li>
+          <p>A brief description or reference for Betti number to classify incorrect topology would help readers understand the measure.</p>
+        </li>
+        <li>
+          <p>In Table 1, (A3) has gaussian smoothing and super-upsample but not L_grad, while (A1) has none of these, and (A1) produces about half as many test segmentations with incorrect topologies. This seems to suggest that Gaussian smoothing and/or super-upsample without L_grad results in worse topologies than if they weren’t used at all. This indicates the importance of L_grad, which is overlooked in the discussion.</p>
+        </li>
+        <li>
+          <p>The authors do not acknowledge previous methods that have been published where separate decoder branches are used to estimate ‘bulk’ and ‘fine-tune’ transformations, such as in Stergios et al., “Linear and Deformable Image Reigstration with 3D Convoliotnal Neural Networks” (MICCAI RAMBO/BIA/TIA Worksop 2018). In that case, the ‘bulk’ transformation is modeled as a 12 parameter affine matrix, and composed with a non-rigid displacement field to obtain the final transformation.</p>
+        </li>
+        <li>
+          <p>The authors refer to the field ‘u’ as a displacement field, e.g. in Section 2 Method, CNN.: “bulk-displacement, u_bulk”, Section 2 Method, Diffeomorphic Layers. “… to enforce that the displacements were between …”. However, scaling-and-squaring is used for integration of a velocity field to obtain displacements. Velocity fields are not mentioned in the paper, and yet scaling-and-squaring is used. Please clarify.</p>
+        </li>
+      </ul>
+
+      <p>Major Comments:</p>
+      <ul>
+        <li>The comparison to VoxelMorph is not clearly described, and the results comparing the methods are therefore difficult to interpret for the following reasons:</li>
+      </ul>
+
+      <ol>
+        <li>
+          <p>The proposed model TEDS-Net passes only a single input to the CNN, i.e. the target image X, and deforms a template P to segment the LV myocardium. The authors perform a comparison with VoxelMorph in Table 1. VoxelMorph however requires two inputs to the CNN. How was the use of VoxelMorph formulated in this case?</p>
+        </li>
+        <li>
+          <p>The authors state in Section 2.1 that VoxelMorph “was modified for segmentations by including our activation function, Equation 1”. It is unclear how applying this activation function allows VoxelMorph to be “modified for segmentations”. As described in [3] (Balakrishnan, 2019), VoxelMorph can be used for segmentation simply by propagating the segmentation of a moving image to a fixed image. Why is the activation function in Equation 1 required?</p>
+        </li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>The VoxelMorph method appears to produce a significant %</td>
+                <td>J</td>
+                <td>&lt;0 in Table 1 (24.5%), as well as incorrect topologies in 12/100 test cases based on Betti numbers. Without seeing the instances where VoxelMorph produces an incorrect topology, and without knowing how VoxelMorph is being used to create a segmentation in the first place, it is very difficult to assess the validity of this comparison. The VoxelMorph TMI paper [3] does demonstrate that without using an image loss term and learning registration exclusively from segmentation labels in an auxilliary loss, %</td>
+                <td>J</td>
+                <td>&lt;0 increases to about 10% (Table IV in [3]). It is understandable that this could increase for the current setting of large deformations; but the high number of incorrect topologies is surprising, and a visualiation of such cases would be helpful.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+      </ol>
+
+      <ul>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>Gaussian smoothing is proposed for the intermediate outputs of integration as a way to reduce %</td>
+                <td>J</td>
+                <td>&lt;0 in the resulting displacement fields. The motivation for this is to avoid the violation of theoretical guarantees of diffeomorphic transformations, which would risk topological preservation. Another important theoretical guarantee of a diffeomorphism is that it is invertible. Does the Gaussian smoothing of intermediate outputs during scaling-and-squaring allow this invertibility to be preserved?</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>As shown in Fig. 4, with a larger number of integration steps, Gaussian smoothing is shown to worsen registration performance. Theoretically, without gaussian smoothing, accuracy should increase with more steps [2] (the authors state however “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields [2]”, where is this explained in [2]?). This requires further elaboration.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper introduces a method to greatly reduce negative Jacobian determinants in diffeomorphic displacement fields in the setting of image registration, where binary labels are used to guide the loss. The paper is clearly presented and the method would be of interest to the scientific community. 
+The comparison to VoxelMorph however is insufficiently described, and the setting that the registration is driven by labelmaps and not image data needs to be made clear as a cause of the observed large percentage of negative Jacobian determinants observed.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel Topology Enforcing Diffeomorphic Segmentation Network (TEDS-Net), which is claimed the first deep learning technique to achieve 100% topology accuracy. Also, this paper combines spatial transformer networks (STN) and diffeomorphic displacement fields to complete a segmentation as the primary task.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>This paper addresses a critical problem in medical image segmentation, which is to preserve the topology of the segmentations besides the pixel accuracy.</li>
+        <li>Though the diffeomorphism method has been used in image registration [6,7], the way the authors adopt it in medical image segmentation is nice and elegant. Also, it somehow provides theoretical guarantee to topology preserving during image segmentation in the method part.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>From the method part, this paper seems to be a general method to learn to segment with correct topology, while the dataset validated in the experiment part is very specific. The ground truth of the dataset seems to have a single loop. More qualitative and quantitative are needed to support the effectiveness of the proposed method.</li>
+        <li>An ablation study of the weight parameter beta will be interesting and helpful to understand the method.</li>
+        <li>I am also curious how this method is generalized to other (medical) image segmentation tasks, and if it works compared with other existing topology-preserving methods [5,9,13].</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Reproducible</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>None</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This paper addresses a critical problem in medical image segmentation and the method is nice and elegant.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Summary:
+Proposes a number of architectural changes to VoxelMorph to better preserve topology by decomposing into a bulk and fine field, with Gaussian smoothing between layers and additional up-sampling to the learned fields before they are applied. The diffeomorphic warps were applied as part of a segmentation model to assess behaviour when applied to ventricular myocardium segmentation.</p>
+
+      <p>Positives:</p>
+      <ul>
+        <li>Enforcing diffeomorphisms is a useful goal that should have many applications.</li>
+        <li>Empirical results show strong improvements in topology preservation, compared to two sensible and widely-used baselines (U-Net and VoxelMorph).</li>
+        <li>Clear and well-written, including a good description of the specific contributions and the experimental results.</li>
+      </ul>
+
+      <p>Negatives:</p>
+      <ul>
+        <li>The work consists of a set of ad hoc changes, which are not necessarily theoretically justified.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We would like to thank all the reviewers for their comments and suggestions.</p>
+
+  <ol>
+    <li>VoxelMorph Implementation:</li>
+  </ol>
+
+  <p>In this work, we compared TEDS-Net performance to the VoxelMorph (VM) registration framework. Unlike TEDS-Net, VM requires two inputs, so for our adapted implementation of VM we used the shape prior as the second input channel. We were previously integrating our novel activation function into VM’s methods as without this term we were finding the segmentation performance to be extremely poor. However, this has now been remedied by better regulating the loss regularisation term, resulting in a much smaller percentage of folding Jacobians whilst the segmentation performance remained consistent, matching that reported in the original VM application [3].</p>
+
+  <ol>
+    <li>Theoretical justification for Gaussian smoothing and super-upsampling (R1 and MR):</li>
+  </ol>
+
+  <p>Gaussian smoothing and super-upsampling terms are used in TEDS-Net to encourage true diffeomorphism.  Both these modifications are used to limit “the numerical inaccuracies brought about by the discrete composition of two diffeomorphic fields” as stated in section 3. Discrete sampling can cause numerical instabilities between voxels, these two additional terms were therefore used as additional smoothing terms to smooth between neighbouring voxels, minimising any extreme differences in local deformations.</p>
+
+  <ol>
+    <li>Gaussian Smoothing and Invertibility (RI and R2):</li>
+  </ol>
+
+  <p>R1 and R2 commented on the invertibility of the transformation after applying Gaussian smoothing between the composition layers. Invertibility is a theoretical guarantee of diffeomorphisms. However, in this work our main focus was topology preservation by encouraging one-to-one mapping of our transformations, which we achieved as shown by all-positive Jacobian determinants. However, in future work the effect that Gaussian smoothing has on the invertibility of the generated fields will be fully investigated.</p>
+
+  <ol>
+    <li>Applications to other Topologies (R3):</li>
+  </ol>
+
+  <p>R3 discussed whether TEDS-Net was generalisable to other topologies. The theory behind TEDS-Net should work across all topologies, with the only restriction being that the topology of the desired anatomy must be known. Due to page restrictions, we were limited to validating our methods on a single dataset. In future work, this will be expanded to different topologies over a range of medical datasets.</p>
+
+  <ol>
+    <li>Clarifications:</li>
+  </ol>
+
+  <p>R2 questioned the statement: “it is known that increasing the number of composition layers amplifies instabilities within the discrete diffeomorphic fields”. This statement is misleading and should have read: “Although theoretically accuracy should increase with the number of composition layers, this requires performing more compositions that can each bring about small violations, due to the discrete nature of the fields.”. This statement will be clarified in the camera-ready version.</p>
+
+  <p>In the camera-ready version, a clarification on the field regularisation term; inclusion of the Betti number reference; and the distinction between velocity and displacement fields will be included or corrected.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0123-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0124-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Cardiac"
+        class="post-category">
+        Clinical applications - Cardiac
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wyburd, Madeleine K."
+        class="post-category">
+        Wyburd, Madeleine K.
+      </a> |  
+      
+      <a href="kittywong/tags#Dinsdale, Nicola K."
+        class="post-category">
+        Dinsdale, Nicola K.
+      </a> |  
+      
+      <a href="kittywong/tags#Namburete, Ana I. L."
+        class="post-category">
+        Namburete, Ana I. L.
+      </a> |  
+      
+      <a href="kittywong/tags#Jenkinson, Mark "
+        class="post-category">
+        Jenkinson, Mark 
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0124/12/31/Paper0601">
+          Learning Consistency- and Discrepancy-Context for 2D Organ Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0122/12/31/Paper0521">
+          Multi-Task, Multi-Domain Deep Segmentation with Shared Representations and Contrastive Regularization for Sparse Pediatric Datasets
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>C-arm positioning for spinal standard projections in different intra-operative settings | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="C-arm positioning for spinal standard projections in different intra-operative settings" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Lisa Kausch, Sarina Thomas, Holger Kunze, Tobias Norajitra, André Klein, Jan Siad El Barbari, Maxim Privalov, Sven Vetter, Andreas Mahnken, Lena Maier-Hein, Klaus H. Maier-Hein Abstract Trauma and orthopedic surgeries that involve fluoroscopic guidance crucially depend on the acquisition of correct anatomy-specific standard projections for monitoring and evaluating the surgical result. This implies repeated acquisitions or even continuous fluoroscopy. To reduce radiation exposure and time, we propose to automate this procedure and estimate the C-arm pose update directly from a first X-ray without the need for a pre-operative computed tomography scan (CT) or additional technical equipment. Our method is trained on digitally reconstructed radiographs (DRRs) which uniquely provide ground truth labels for arbitrary many training examples. The simulated images are complemented with automatically generated segmentations, landmarks, as well as a k-wire and screw simulation. To successfully achieve a transfer from simulated to real X-rays, and also to increase the interpretability of results, the pipeline was designed by closely reflecting on the actual clinical decision-making of spinal neurosurgeons. It explicitly incorporates steps like region-of-interest (ROI) localization, detection of relevant and view-independent landmarks, and subsequent pose regression. To validate the method on real X-rays, we performed a large specimen study with and without implants (i.e. k-wires and screws). The proposed procedure obtained superior C-arm positioning accuracy (p_wilcoxon«0.01), robustness, and generalization capabilities compared to the state-of-the-art direct pose regression framework. Link to paper https://doi.org/10.1007/978-3-030-87202-1_34 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper describes an approach able to automatically position a C-arm based on an incorrect starting X-ray image and Deep Learning (DL). DL approaches automatically crop the starting X-ray image to a region of interest and build a heatmap of key anatomical landmarks using U-net like architectures, which are trained on a set of realistic Digitally Reconstructed Radiographs (DRR). Targeting the specific clinical application of spine surgery, authors present a novel approach to synthetically augment the training dataset by modeling the appearance of k-wires and screws. The landmark heatmap is then used in a DL-based regression approach derived from the PoseNet method of Bui et al 2017 to ultimately estimate the pose parameters of the C-arm. The approach is evaluated on DRR produced from CT volumes and on a large dataset of X-ray images of lumbar vertebrae acquired from human specimens, in which the targeted C-arm pose is an antero-posterior (AP) X-ray image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The major strength of the paper is the data, from the perspectives of size and processing, which highlight the strong evaluation of the work and its clinical viability in case of spine surgery: at the training stage: 38 CT volumes were exploited to generate several DRRs that were synthetically augmented with a simulation of surgical implants in the specific case of spine surgery (e.g., screws). at the evaluation stage: 9 CT were used to carry out synthetic tests on DRRs, and 16 human specimens (with over 1300 X-ray images per specimen) were collected with adequate ethical approval – yielding an overall testing dataset with significant size. From a methodological viewpoint, authors propose well-known preprocessing steps (focus on regions of interest following a bone segmentation and landmarks localization) that however operate in fully automatic fashion and do bring improvements in accuracy and robustness with respect to a previous intensity-based approach. Hence, these steps remain of interest and have the advantage of not being specific to the surgical application (in contrast with the augmentation technique very specific to spine surgery) – facilitating the transfer of the methodology to other clinical applications. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Overall, the paper does not have any major weaknesses. However, my main criticism would be the evaluation of specimens with spinal implants. In fact, in order to fully appreciate the impact of k-wire and screws simulation in the training augmentation stage, I would have compared the approach trained with and without the simulated augmented data applied on the specimens with spinal implants. By comparing the authors’ approach with the work of [13] in experiments in Sec. 3.3, we can only deduce that the intensity-based approach in [13] is inferior in all cases, and it is difficult to assume that this is mostly the result of the k-wire and screw simulation techniques, and not the overall approach using landmarks heatmaps instead of the image intensity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Despite authors did not share code or data, authors did the effort to detail the parameters (values, interval of variations, etc.) used at training and evaluation stages, while reporting both successes and failures in their experiments. Quantitative results provide means and variations, as well as statistical significance when required. All these elements should ease the implementation of (parts of) the methodology and increase the trust on the authors’ results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written, I found some minor errors or unclear sentences, thus I would suggest the following changes: Sec 2.2: “Ground truth pose labels were established by labeling DRRs according to their distance to the reference C-arm pose”. I did not understand the meaning of this, could the authors rewrite it or clarify it? Sec 2.4, last sentence: I would add “selected randomly in the interval [1, 10]”, as [1, 10] may be read as paper references [1] and [10]. Sec 2.5, ROI localization module: “rotating” –&gt; rotated. Sec 2.5, landmark detection module: despite it may be implicit, I would clearly write down that the landmarks are detected on the simulated X-ray images that were masked at the previous stage using ROI. I also wonder whether it does mean that the U-net based training of the landmark detection also used masked images? Or full DRRs were used for the training? Caption of Fig. 5: “(top-button)” –&gt; (top-to-bottom) Regarding my comments listed in the section related to the weaknesses of the paper, I think that it could have been interesting to collect the (subjective) appreciation of clinicians on the automatic positioning results or to get some clinical tolerance of targeted positioning in terms, e.g., of maximum tolerable of d\theta (if it does exist). This could have strengthened the current paper and put the results more in perspective. But I do not deem it as a major flaw since the experiments already support the improvement of the authors’ approach with respect to the fully yet 2-stage method of [13], and look convincing from a visual standpoint in my opinion. This clinical feedback and comparison could be included in future work. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and proposes an approach that is fully automatic and more accurate than previous studies while demanding a single starting X-ray image. Most importantly, results are supported by a large number of X-ray acquisitions acquired on collected on 16 human specimens. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The objective of the work is to automate C-arm placement through a pose estimation from a single X-ray image and deep learning. Constructing on the state of the art of deep learning the authors address the need for images including artefacts and instruments and the issue of generalization from simulated to real images. A pipeline is proposed to detect ROIs and view-independent relevant landmarks that allow computing the pose (and deducing the motion to be done to reach an optimal view). Training data come from DRRs generated from full-body CT and modified to include k-wires and screws. Although general, the approach is implemented for the anterior-posterior visualization of the L4 vertebra. It is compared to a direct pose regression network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper proposes a complex pipeline enabling to train on synthetic data with very limited user interaction and to deal with real images. The approach is very original trying to mimick the human approach (focusing on a region of interest, detecting landmarks and using them to correct the C-arm pose) The validation is performed on specimens (16) - 9 of them having k-wires or screws that may produce artefacts. The results are very convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Nothing really weak from my point of view. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many information given but reproduction may be a little tricky since some stages are not so much detailed (due to the limited space). I do not see it as a major drawback. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The approach is well motivated with respect to the requirements and literature. Methods: The process is rather complex (but mostly clearly described). Even data generation already involves several neural networks and various image processing. More information about the performances of this stage would be appreciated but clearly impossible to include in the format of a Miccai submission. Optimal images have been selected on 47 full-body CT for L4 AP view. DRR synthetized for a collection of sampled values of the 6 degrees of freedom. It is not clear to me why alpha and beta have different ranges between training and validation – is it a matter of probability distribution? Generated images are labeled according to their distance to the optimal view. More information about this label would be welcome (6 distance values for the 6 parameters ?). CT are segmented using a CNN. Landmarks were manually defined by an expert and are generated on the CTs from a manual definition on one of them and training. These data are propagated to the projections. The introduction of k-wires and screws is made using more classical image processing. Regarding the 2D image processing itself the authors propose a pipeline consisting in defining a ROI, detecting the landmarks (represented as a heat map) and determining the pose from this heat map. The validation was performed on 1364 images coming from 16 specimens (7 without metal, 5 with k-wires and 4 with screws). Experiments and results: An in-depth and multi-facet evaluation was performed. One point I do not fully understand is: where and how are handled the translational dofs ? results regard angles only as far as I understand. Although results show a significant improvement over the baseline method, it is not clear to me what are the acceptable ranges around the optimal pose? This certainly depends on the anatomical structure of interest; in other words, does a difference of 1.5° (section 3.1) make a difference on the surgical performance? The evaluation on specimens is impressive and the added-value of the addition of k-wires and screws is clear. A small additional comment/question: in practice the environment or patient themselves could make a C-arm pose impossible to reach. Is it a challenge that could be handled somewhere for a full automation of the C-arm positioning? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very interesting piece of work, sophisticated, seriously and thoroughly evaluated. Clearly presented in the allowed format. Very promising for clinical practice What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Method for estimating x-ray beam angle relative to a particular vertebrae from a single x-ray for the purpose of navigation in spine procedures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clearly presented. Clever 2 step ML method for pose regression from image by reducing the search space similar to what a physician would do. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Somewhat incremental but still relevant. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance NA Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the C-arm angulation accuracy desired by the clinicians? 2.. Spine has quite a bit of similar looking bony landmarks. Any ideas how this would affect angulation estimate, especially with smaller FOV? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good Application, sound approach, good validation. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #4 Please describe the contribution of the paper This paper presents an approach to automatically predict a C-arm pose update recommendation based on one initial X-ray image, which is trained only on simulated data (no need for a preoperative CT scan). The proposed pipeline is inspired from the current clinical decision-making process, in the sense that, first a deep-learning based approach detects relevant anatomical landmarks, then a subsequent pose regression approach is applied. Another major contribution of this paper is the proposed tool augmentation process that enables to add landmarks, k-wires and screws realistically to the simulated X-ray images. Finally, a large quantitative evaluation on a set of cadaveric experiments is presented. This evaluation on a realistic clinical setting shows that the proposed pose regression pipeline outperforms other similar intensity-based approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To my opinion, the three major strengths are: 1) an approach that includes human-like decision making process into the pipeline 2) a complete pipeline to simulate realistic X-ray data useful to train the method (without the need of a patient-specific CT) and that can even include the simulation of tools and metal in the images, 3) a quantitative ex-vivo validation on a realistic clinical scenario. The quantitative evaluation show that the DRR generalize well to real X-ray images without metal implants and that the proposed sequential pose regression outperforms other intensity-based approaches that can be found in the literature. The paper is well-structured, clear and easy to read paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Similar papers have been presented on recent MICCAI conferences and the question is, are the differences in the methodology sufficient enough for this paper to be published this year? Would it be of interest to the MICCAI community? The evaluation results show that the sequential method yields better results than the 2-stage pose regression, so this contribution is indeed important. However, the DRRs simulation with metal implants does not generalize to real X-rays with metal implants, since 2 out of the 5 cadaver experiments show limited accuracy. The training data generation process seem to be complicated since an expert defining the standard projection planes for each of the 47 CT is required. Moreover, it seems complex for this method to be applied to other projections and/or other clinical applications. This would require to retrain all the anatomy detection CNNs, re-label the data, regenerate new large sets of simulated data, etc.. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Implementation details are provided, along with network splits and training parameters. The paper should be reproducible if the training data is available. The authors also explain their computational setup and inference time. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to comment about the following points: How could this approach be generalized to other projections besides AP or other clinical applications besides the spine? How to incorporate clinical knowledge from other clinical applications? How would this approach be applied on everyday clinical practice? Would the training data be generated only once? Would it be enough to generalize to all patients? What would be needed to incorporate a robotic C-arm? Are the artifacts on the X-ray images also simulated when including metal screws? What is the impact of the initial X-ray in the performances of the approach? This would be interesting to evaluate. How is this initial first image chosen in practice? What about radiation exposure? Can this also be considered on the C-arm pose update, namely a C-arm pose also reducing radiation exposure to patient and/or clinical staff? In which cases the method fails and why ? Small typo in Figure 1: “Initial X-ray” Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The evaluation protocols are sound and well justified, and the evaluation results are well discussed and provide interesting insights. Similar papers have been published recently in Miccai, yet the contributions of this paper are clear and properly evaluated. This is a promising paper which can be of interest to the Miccai community. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Compared to the remaining papers assigned to me this paper is the most complete one in the CAI area. The methods are clearly explained and the evaluation study is extensive and includes a significant amount of data. The methods used are not novel which is the main weakness of the work. However, the authors did an excellent job in combining different methods to provide a solution to an important clinical problem. There was a unanimous agreement among the reviewers that the work is strong and should be accepted for presentation at the MICCAI meeting. Major points Clinically required accuracy should be included and briefly discussed based on the results obtained. Are the results reported in the paper under the required accuracy limits? A brief discussion about the drawbacks (failed cases) should be included. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the acknowledgment of our work and for the constructive feedback also regarding future work directions. We agree with the reviewers that the obtained results should be related to some clinical tolerance of targeted positioning and will include a brief discussion of drawbacks (failures). To show how the angle varies in manual positioning of the AP standard view, we evaluated the variability of the manually acquired AP standard views relative to a reference standard plane defined in the reconstructed volumes. Across the validation specimens, we computed a mean deviation of dθ = 6.1° ± 4.2°. This was reached by the proposed method for all specimens without metal and for 6 out of 9 with metal. Failure cases can be attributed to low tissue-to-bone contrast (resulting from low bone density or obese patients) and to projection artifacts (resulting from corpse bags or corpse decay air pockets) not present during training. A discussion will be included in the camera-ready version. To fully appreciate the impact of k-wire and screws simulation during the training augmentation stage, we applied the proposed approach trained without the simulated augmented data on the specimens with spinal implants, which does not improve upon the initial offset distribution. This indicates that the combination of the proposed approach with k-wire and screw simulation is essential to bridge the domain gap to real X-rays with spinal implants. This will be added to Section 3.3. We covered a broader angular range during training to prevent a performance drop at pose boundaries resulting from lower coverage of training samples around these poses. Generated images were labeled according to their distance to the optimal view (dα, dβ, dγ + translation). We will add this information to the manuscript. Artifacts on the X-ray images were not explicitly simulated. The landmark detection module was indeed trained on simulated DRRs after ROI localization. We will clarify this in the manuscript. The evaluation focuses on rotational parameters because only those were varied in the specimen studies. Generation of validation data for different translational offsets would require some kind of tracking system to monitor the C-arm movement since the Siemens Cios Spin® does not track translation parameters. The approach can generalize to other spinal standard projections. This requires the definition of the reference standard planes in the CTs. After training data simulation, the ROI + landmark + pose network needs to be retrained for the new view. The approach can also be applied to other anatomical regions after defining anatomy-specific ROIs and clinically relevant landmarks. We will include these points in our discussion. The pose regression framework would be trained only once before being applied in clinical practice. Incorporating a robotic C-arm would require inverse kinematics and additional path planning to avoid collisions with environmental obstacles or restrictions due to patient anatomy. This is not covered in this work but will be added to our discussion. The initial X-ray needs to be acquired within the capture range of the algorithm (α, β ∈ [-30°,30°], t ∈ [-50mm, 50mm]). Our approach aims to predict a correct standard view. The radiation exposure of this resulting single shot is currently not considered. However, the radiation dose is drastically reduced by replacing the iterative manual positioning procedure with the proposed approach requiring only a single X-ray. We will include this in the discussion. We hope we could respond to the open questions and we are looking forward to meeting you at MICCAI. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Lisa Kausch, Sarina Thomas, Holger Kunze, Tobias Norajitra, André Klein, Jan Siad El Barbari, Maxim Privalov, Sven Vetter, Andreas Mahnken, Lena Maier-Hein, Klaus H. Maier-Hein Abstract Trauma and orthopedic surgeries that involve fluoroscopic guidance crucially depend on the acquisition of correct anatomy-specific standard projections for monitoring and evaluating the surgical result. This implies repeated acquisitions or even continuous fluoroscopy. To reduce radiation exposure and time, we propose to automate this procedure and estimate the C-arm pose update directly from a first X-ray without the need for a pre-operative computed tomography scan (CT) or additional technical equipment. Our method is trained on digitally reconstructed radiographs (DRRs) which uniquely provide ground truth labels for arbitrary many training examples. The simulated images are complemented with automatically generated segmentations, landmarks, as well as a k-wire and screw simulation. To successfully achieve a transfer from simulated to real X-rays, and also to increase the interpretability of results, the pipeline was designed by closely reflecting on the actual clinical decision-making of spinal neurosurgeons. It explicitly incorporates steps like region-of-interest (ROI) localization, detection of relevant and view-independent landmarks, and subsequent pose regression. To validate the method on real X-rays, we performed a large specimen study with and without implants (i.e. k-wires and screws). The proposed procedure obtained superior C-arm positioning accuracy (p_wilcoxon«0.01), robustness, and generalization capabilities compared to the state-of-the-art direct pose regression framework. Link to paper https://doi.org/10.1007/978-3-030-87202-1_34 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper describes an approach able to automatically position a C-arm based on an incorrect starting X-ray image and Deep Learning (DL). DL approaches automatically crop the starting X-ray image to a region of interest and build a heatmap of key anatomical landmarks using U-net like architectures, which are trained on a set of realistic Digitally Reconstructed Radiographs (DRR). Targeting the specific clinical application of spine surgery, authors present a novel approach to synthetically augment the training dataset by modeling the appearance of k-wires and screws. The landmark heatmap is then used in a DL-based regression approach derived from the PoseNet method of Bui et al 2017 to ultimately estimate the pose parameters of the C-arm. The approach is evaluated on DRR produced from CT volumes and on a large dataset of X-ray images of lumbar vertebrae acquired from human specimens, in which the targeted C-arm pose is an antero-posterior (AP) X-ray image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The major strength of the paper is the data, from the perspectives of size and processing, which highlight the strong evaluation of the work and its clinical viability in case of spine surgery: at the training stage: 38 CT volumes were exploited to generate several DRRs that were synthetically augmented with a simulation of surgical implants in the specific case of spine surgery (e.g., screws). at the evaluation stage: 9 CT were used to carry out synthetic tests on DRRs, and 16 human specimens (with over 1300 X-ray images per specimen) were collected with adequate ethical approval – yielding an overall testing dataset with significant size. From a methodological viewpoint, authors propose well-known preprocessing steps (focus on regions of interest following a bone segmentation and landmarks localization) that however operate in fully automatic fashion and do bring improvements in accuracy and robustness with respect to a previous intensity-based approach. Hence, these steps remain of interest and have the advantage of not being specific to the surgical application (in contrast with the augmentation technique very specific to spine surgery) – facilitating the transfer of the methodology to other clinical applications. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Overall, the paper does not have any major weaknesses. However, my main criticism would be the evaluation of specimens with spinal implants. In fact, in order to fully appreciate the impact of k-wire and screws simulation in the training augmentation stage, I would have compared the approach trained with and without the simulated augmented data applied on the specimens with spinal implants. By comparing the authors’ approach with the work of [13] in experiments in Sec. 3.3, we can only deduce that the intensity-based approach in [13] is inferior in all cases, and it is difficult to assume that this is mostly the result of the k-wire and screw simulation techniques, and not the overall approach using landmarks heatmaps instead of the image intensity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Despite authors did not share code or data, authors did the effort to detail the parameters (values, interval of variations, etc.) used at training and evaluation stages, while reporting both successes and failures in their experiments. Quantitative results provide means and variations, as well as statistical significance when required. All these elements should ease the implementation of (parts of) the methodology and increase the trust on the authors’ results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written, I found some minor errors or unclear sentences, thus I would suggest the following changes: Sec 2.2: “Ground truth pose labels were established by labeling DRRs according to their distance to the reference C-arm pose”. I did not understand the meaning of this, could the authors rewrite it or clarify it? Sec 2.4, last sentence: I would add “selected randomly in the interval [1, 10]”, as [1, 10] may be read as paper references [1] and [10]. Sec 2.5, ROI localization module: “rotating” –&gt; rotated. Sec 2.5, landmark detection module: despite it may be implicit, I would clearly write down that the landmarks are detected on the simulated X-ray images that were masked at the previous stage using ROI. I also wonder whether it does mean that the U-net based training of the landmark detection also used masked images? Or full DRRs were used for the training? Caption of Fig. 5: “(top-button)” –&gt; (top-to-bottom) Regarding my comments listed in the section related to the weaknesses of the paper, I think that it could have been interesting to collect the (subjective) appreciation of clinicians on the automatic positioning results or to get some clinical tolerance of targeted positioning in terms, e.g., of maximum tolerable of d\theta (if it does exist). This could have strengthened the current paper and put the results more in perspective. But I do not deem it as a major flaw since the experiments already support the improvement of the authors’ approach with respect to the fully yet 2-stage method of [13], and look convincing from a visual standpoint in my opinion. This clinical feedback and comparison could be included in future work. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and proposes an approach that is fully automatic and more accurate than previous studies while demanding a single starting X-ray image. Most importantly, results are supported by a large number of X-ray acquisitions acquired on collected on 16 human specimens. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The objective of the work is to automate C-arm placement through a pose estimation from a single X-ray image and deep learning. Constructing on the state of the art of deep learning the authors address the need for images including artefacts and instruments and the issue of generalization from simulated to real images. A pipeline is proposed to detect ROIs and view-independent relevant landmarks that allow computing the pose (and deducing the motion to be done to reach an optimal view). Training data come from DRRs generated from full-body CT and modified to include k-wires and screws. Although general, the approach is implemented for the anterior-posterior visualization of the L4 vertebra. It is compared to a direct pose regression network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper proposes a complex pipeline enabling to train on synthetic data with very limited user interaction and to deal with real images. The approach is very original trying to mimick the human approach (focusing on a region of interest, detecting landmarks and using them to correct the C-arm pose) The validation is performed on specimens (16) - 9 of them having k-wires or screws that may produce artefacts. The results are very convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Nothing really weak from my point of view. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many information given but reproduction may be a little tricky since some stages are not so much detailed (due to the limited space). I do not see it as a major drawback. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The approach is well motivated with respect to the requirements and literature. Methods: The process is rather complex (but mostly clearly described). Even data generation already involves several neural networks and various image processing. More information about the performances of this stage would be appreciated but clearly impossible to include in the format of a Miccai submission. Optimal images have been selected on 47 full-body CT for L4 AP view. DRR synthetized for a collection of sampled values of the 6 degrees of freedom. It is not clear to me why alpha and beta have different ranges between training and validation – is it a matter of probability distribution? Generated images are labeled according to their distance to the optimal view. More information about this label would be welcome (6 distance values for the 6 parameters ?). CT are segmented using a CNN. Landmarks were manually defined by an expert and are generated on the CTs from a manual definition on one of them and training. These data are propagated to the projections. The introduction of k-wires and screws is made using more classical image processing. Regarding the 2D image processing itself the authors propose a pipeline consisting in defining a ROI, detecting the landmarks (represented as a heat map) and determining the pose from this heat map. The validation was performed on 1364 images coming from 16 specimens (7 without metal, 5 with k-wires and 4 with screws). Experiments and results: An in-depth and multi-facet evaluation was performed. One point I do not fully understand is: where and how are handled the translational dofs ? results regard angles only as far as I understand. Although results show a significant improvement over the baseline method, it is not clear to me what are the acceptable ranges around the optimal pose? This certainly depends on the anatomical structure of interest; in other words, does a difference of 1.5° (section 3.1) make a difference on the surgical performance? The evaluation on specimens is impressive and the added-value of the addition of k-wires and screws is clear. A small additional comment/question: in practice the environment or patient themselves could make a C-arm pose impossible to reach. Is it a challenge that could be handled somewhere for a full automation of the C-arm positioning? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very interesting piece of work, sophisticated, seriously and thoroughly evaluated. Clearly presented in the allowed format. Very promising for clinical practice What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Method for estimating x-ray beam angle relative to a particular vertebrae from a single x-ray for the purpose of navigation in spine procedures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clearly presented. Clever 2 step ML method for pose regression from image by reducing the search space similar to what a physician would do. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Somewhat incremental but still relevant. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance NA Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the C-arm angulation accuracy desired by the clinicians? 2.. Spine has quite a bit of similar looking bony landmarks. Any ideas how this would affect angulation estimate, especially with smaller FOV? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good Application, sound approach, good validation. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #4 Please describe the contribution of the paper This paper presents an approach to automatically predict a C-arm pose update recommendation based on one initial X-ray image, which is trained only on simulated data (no need for a preoperative CT scan). The proposed pipeline is inspired from the current clinical decision-making process, in the sense that, first a deep-learning based approach detects relevant anatomical landmarks, then a subsequent pose regression approach is applied. Another major contribution of this paper is the proposed tool augmentation process that enables to add landmarks, k-wires and screws realistically to the simulated X-ray images. Finally, a large quantitative evaluation on a set of cadaveric experiments is presented. This evaluation on a realistic clinical setting shows that the proposed pose regression pipeline outperforms other similar intensity-based approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To my opinion, the three major strengths are: 1) an approach that includes human-like decision making process into the pipeline 2) a complete pipeline to simulate realistic X-ray data useful to train the method (without the need of a patient-specific CT) and that can even include the simulation of tools and metal in the images, 3) a quantitative ex-vivo validation on a realistic clinical scenario. The quantitative evaluation show that the DRR generalize well to real X-ray images without metal implants and that the proposed sequential pose regression outperforms other intensity-based approaches that can be found in the literature. The paper is well-structured, clear and easy to read paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Similar papers have been presented on recent MICCAI conferences and the question is, are the differences in the methodology sufficient enough for this paper to be published this year? Would it be of interest to the MICCAI community? The evaluation results show that the sequential method yields better results than the 2-stage pose regression, so this contribution is indeed important. However, the DRRs simulation with metal implants does not generalize to real X-rays with metal implants, since 2 out of the 5 cadaver experiments show limited accuracy. The training data generation process seem to be complicated since an expert defining the standard projection planes for each of the 47 CT is required. Moreover, it seems complex for this method to be applied to other projections and/or other clinical applications. This would require to retrain all the anatomy detection CNNs, re-label the data, regenerate new large sets of simulated data, etc.. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Implementation details are provided, along with network splits and training parameters. The paper should be reproducible if the training data is available. The authors also explain their computational setup and inference time. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to comment about the following points: How could this approach be generalized to other projections besides AP or other clinical applications besides the spine? How to incorporate clinical knowledge from other clinical applications? How would this approach be applied on everyday clinical practice? Would the training data be generated only once? Would it be enough to generalize to all patients? What would be needed to incorporate a robotic C-arm? Are the artifacts on the X-ray images also simulated when including metal screws? What is the impact of the initial X-ray in the performances of the approach? This would be interesting to evaluate. How is this initial first image chosen in practice? What about radiation exposure? Can this also be considered on the C-arm pose update, namely a C-arm pose also reducing radiation exposure to patient and/or clinical staff? In which cases the method fails and why ? Small typo in Figure 1: “Initial X-ray” Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The evaluation protocols are sound and well justified, and the evaluation results are well discussed and provide interesting insights. Similar papers have been published recently in Miccai, yet the contributions of this paper are clear and properly evaluated. This is a promising paper which can be of interest to the Miccai community. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Compared to the remaining papers assigned to me this paper is the most complete one in the CAI area. The methods are clearly explained and the evaluation study is extensive and includes a significant amount of data. The methods used are not novel which is the main weakness of the work. However, the authors did an excellent job in combining different methods to provide a solution to an important clinical problem. There was a unanimous agreement among the reviewers that the work is strong and should be accepted for presentation at the MICCAI meeting. Major points Clinically required accuracy should be included and briefly discussed based on the results obtained. Are the results reported in the paper under the required accuracy limits? A brief discussion about the drawbacks (failed cases) should be included. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the acknowledgment of our work and for the constructive feedback also regarding future work directions. We agree with the reviewers that the obtained results should be related to some clinical tolerance of targeted positioning and will include a brief discussion of drawbacks (failures). To show how the angle varies in manual positioning of the AP standard view, we evaluated the variability of the manually acquired AP standard views relative to a reference standard plane defined in the reconstructed volumes. Across the validation specimens, we computed a mean deviation of dθ = 6.1° ± 4.2°. This was reached by the proposed method for all specimens without metal and for 6 out of 9 with metal. Failure cases can be attributed to low tissue-to-bone contrast (resulting from low bone density or obese patients) and to projection artifacts (resulting from corpse bags or corpse decay air pockets) not present during training. A discussion will be included in the camera-ready version. To fully appreciate the impact of k-wire and screws simulation during the training augmentation stage, we applied the proposed approach trained without the simulated augmented data on the specimens with spinal implants, which does not improve upon the initial offset distribution. This indicates that the combination of the proposed approach with k-wire and screw simulation is essential to bridge the domain gap to real X-rays with spinal implants. This will be added to Section 3.3. We covered a broader angular range during training to prevent a performance drop at pose boundaries resulting from lower coverage of training samples around these poses. Generated images were labeled according to their distance to the optimal view (dα, dβ, dγ + translation). We will add this information to the manuscript. Artifacts on the X-ray images were not explicitly simulated. The landmark detection module was indeed trained on simulated DRRs after ROI localization. We will clarify this in the manuscript. The evaluation focuses on rotational parameters because only those were varied in the specimen studies. Generation of validation data for different translational offsets would require some kind of tracking system to monitor the C-arm movement since the Siemens Cios Spin® does not track translation parameters. The approach can generalize to other spinal standard projections. This requires the definition of the reference standard planes in the CTs. After training data simulation, the ROI + landmark + pose network needs to be retrained for the new view. The approach can also be applied to other anatomical regions after defining anatomy-specific ROIs and clinically relevant landmarks. We will include these points in our discussion. The pose regression framework would be trained only once before being applied in clinical practice. Incorporating a robotic C-arm would require inverse kinematics and additional path planning to avoid collisions with environmental obstacles or restrictions due to patient anatomy. This is not covered in this work but will be added to our discussion. The initial X-ray needs to be acquired within the capture range of the algorithm (α, β ∈ [-30°,30°], t ∈ [-50mm, 50mm]). Our approach aims to predict a correct standard view. The radiation exposure of this resulting single shot is currently not considered. However, the radiation dose is drastically reduced by replacing the iterative manual positioning procedure with the proposed approach requiring only a single X-ray. We will include this in the discussion. We hope we could respond to the open questions and we are looking forward to meeting you at MICCAI. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0433/12/31/Paper2106" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0433/12/31/Paper2106" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0433-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="C-arm positioning for spinal standard projections in different intra-operative settings" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0433/12/31/Paper2106"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0433/12/31/Paper2106","headline":"C-arm positioning for spinal standard projections in different intra-operative settings","dateModified":"0434-01-02T00:00:00-05:17","datePublished":"0433-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Lisa Kausch, Sarina Thomas, Holger Kunze, Tobias Norajitra, André Klein, Jan Siad El Barbari, Maxim Privalov, Sven Vetter, Andreas Mahnken, Lena Maier-Hein, Klaus H. Maier-Hein Abstract Trauma and orthopedic surgeries that involve fluoroscopic guidance crucially depend on the acquisition of correct anatomy-specific standard projections for monitoring and evaluating the surgical result. This implies repeated acquisitions or even continuous fluoroscopy. To reduce radiation exposure and time, we propose to automate this procedure and estimate the C-arm pose update directly from a first X-ray without the need for a pre-operative computed tomography scan (CT) or additional technical equipment. Our method is trained on digitally reconstructed radiographs (DRRs) which uniquely provide ground truth labels for arbitrary many training examples. The simulated images are complemented with automatically generated segmentations, landmarks, as well as a k-wire and screw simulation. To successfully achieve a transfer from simulated to real X-rays, and also to increase the interpretability of results, the pipeline was designed by closely reflecting on the actual clinical decision-making of spinal neurosurgeons. It explicitly incorporates steps like region-of-interest (ROI) localization, detection of relevant and view-independent landmarks, and subsequent pose regression. To validate the method on real X-rays, we performed a large specimen study with and without implants (i.e. k-wires and screws). The proposed procedure obtained superior C-arm positioning accuracy (p_wilcoxon«0.01), robustness, and generalization capabilities compared to the state-of-the-art direct pose regression framework. Link to paper https://doi.org/10.1007/978-3-030-87202-1_34 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper describes an approach able to automatically position a C-arm based on an incorrect starting X-ray image and Deep Learning (DL). DL approaches automatically crop the starting X-ray image to a region of interest and build a heatmap of key anatomical landmarks using U-net like architectures, which are trained on a set of realistic Digitally Reconstructed Radiographs (DRR). Targeting the specific clinical application of spine surgery, authors present a novel approach to synthetically augment the training dataset by modeling the appearance of k-wires and screws. The landmark heatmap is then used in a DL-based regression approach derived from the PoseNet method of Bui et al 2017 to ultimately estimate the pose parameters of the C-arm. The approach is evaluated on DRR produced from CT volumes and on a large dataset of X-ray images of lumbar vertebrae acquired from human specimens, in which the targeted C-arm pose is an antero-posterior (AP) X-ray image. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The major strength of the paper is the data, from the perspectives of size and processing, which highlight the strong evaluation of the work and its clinical viability in case of spine surgery: at the training stage: 38 CT volumes were exploited to generate several DRRs that were synthetically augmented with a simulation of surgical implants in the specific case of spine surgery (e.g., screws). at the evaluation stage: 9 CT were used to carry out synthetic tests on DRRs, and 16 human specimens (with over 1300 X-ray images per specimen) were collected with adequate ethical approval – yielding an overall testing dataset with significant size. From a methodological viewpoint, authors propose well-known preprocessing steps (focus on regions of interest following a bone segmentation and landmarks localization) that however operate in fully automatic fashion and do bring improvements in accuracy and robustness with respect to a previous intensity-based approach. Hence, these steps remain of interest and have the advantage of not being specific to the surgical application (in contrast with the augmentation technique very specific to spine surgery) – facilitating the transfer of the methodology to other clinical applications. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Overall, the paper does not have any major weaknesses. However, my main criticism would be the evaluation of specimens with spinal implants. In fact, in order to fully appreciate the impact of k-wire and screws simulation in the training augmentation stage, I would have compared the approach trained with and without the simulated augmented data applied on the specimens with spinal implants. By comparing the authors’ approach with the work of [13] in experiments in Sec. 3.3, we can only deduce that the intensity-based approach in [13] is inferior in all cases, and it is difficult to assume that this is mostly the result of the k-wire and screw simulation techniques, and not the overall approach using landmarks heatmaps instead of the image intensity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Despite authors did not share code or data, authors did the effort to detail the parameters (values, interval of variations, etc.) used at training and evaluation stages, while reporting both successes and failures in their experiments. Quantitative results provide means and variations, as well as statistical significance when required. All these elements should ease the implementation of (parts of) the methodology and increase the trust on the authors’ results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written, I found some minor errors or unclear sentences, thus I would suggest the following changes: Sec 2.2: “Ground truth pose labels were established by labeling DRRs according to their distance to the reference C-arm pose”. I did not understand the meaning of this, could the authors rewrite it or clarify it? Sec 2.4, last sentence: I would add “selected randomly in the interval [1, 10]”, as [1, 10] may be read as paper references [1] and [10]. Sec 2.5, ROI localization module: “rotating” –&gt; rotated. Sec 2.5, landmark detection module: despite it may be implicit, I would clearly write down that the landmarks are detected on the simulated X-ray images that were masked at the previous stage using ROI. I also wonder whether it does mean that the U-net based training of the landmark detection also used masked images? Or full DRRs were used for the training? Caption of Fig. 5: “(top-button)” –&gt; (top-to-bottom) Regarding my comments listed in the section related to the weaknesses of the paper, I think that it could have been interesting to collect the (subjective) appreciation of clinicians on the automatic positioning results or to get some clinical tolerance of targeted positioning in terms, e.g., of maximum tolerable of d\\theta (if it does exist). This could have strengthened the current paper and put the results more in perspective. But I do not deem it as a major flaw since the experiments already support the improvement of the authors’ approach with respect to the fully yet 2-stage method of [13], and look convincing from a visual standpoint in my opinion. This clinical feedback and comparison could be included in future work. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and proposes an approach that is fully automatic and more accurate than previous studies while demanding a single starting X-ray image. Most importantly, results are supported by a large number of X-ray acquisitions acquired on collected on 16 human specimens. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The objective of the work is to automate C-arm placement through a pose estimation from a single X-ray image and deep learning. Constructing on the state of the art of deep learning the authors address the need for images including artefacts and instruments and the issue of generalization from simulated to real images. A pipeline is proposed to detect ROIs and view-independent relevant landmarks that allow computing the pose (and deducing the motion to be done to reach an optimal view). Training data come from DRRs generated from full-body CT and modified to include k-wires and screws. Although general, the approach is implemented for the anterior-posterior visualization of the L4 vertebra. It is compared to a direct pose regression network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper proposes a complex pipeline enabling to train on synthetic data with very limited user interaction and to deal with real images. The approach is very original trying to mimick the human approach (focusing on a region of interest, detecting landmarks and using them to correct the C-arm pose) The validation is performed on specimens (16) - 9 of them having k-wires or screws that may produce artefacts. The results are very convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Nothing really weak from my point of view. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many information given but reproduction may be a little tricky since some stages are not so much detailed (due to the limited space). I do not see it as a major drawback. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The approach is well motivated with respect to the requirements and literature. Methods: The process is rather complex (but mostly clearly described). Even data generation already involves several neural networks and various image processing. More information about the performances of this stage would be appreciated but clearly impossible to include in the format of a Miccai submission. Optimal images have been selected on 47 full-body CT for L4 AP view. DRR synthetized for a collection of sampled values of the 6 degrees of freedom. It is not clear to me why alpha and beta have different ranges between training and validation – is it a matter of probability distribution? Generated images are labeled according to their distance to the optimal view. More information about this label would be welcome (6 distance values for the 6 parameters ?). CT are segmented using a CNN. Landmarks were manually defined by an expert and are generated on the CTs from a manual definition on one of them and training. These data are propagated to the projections. The introduction of k-wires and screws is made using more classical image processing. Regarding the 2D image processing itself the authors propose a pipeline consisting in defining a ROI, detecting the landmarks (represented as a heat map) and determining the pose from this heat map. The validation was performed on 1364 images coming from 16 specimens (7 without metal, 5 with k-wires and 4 with screws). Experiments and results: An in-depth and multi-facet evaluation was performed. One point I do not fully understand is: where and how are handled the translational dofs ? results regard angles only as far as I understand. Although results show a significant improvement over the baseline method, it is not clear to me what are the acceptable ranges around the optimal pose? This certainly depends on the anatomical structure of interest; in other words, does a difference of 1.5° (section 3.1) make a difference on the surgical performance? The evaluation on specimens is impressive and the added-value of the addition of k-wires and screws is clear. A small additional comment/question: in practice the environment or patient themselves could make a C-arm pose impossible to reach. Is it a challenge that could be handled somewhere for a full automation of the C-arm positioning? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very interesting piece of work, sophisticated, seriously and thoroughly evaluated. Clearly presented in the allowed format. Very promising for clinical practice What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Method for estimating x-ray beam angle relative to a particular vertebrae from a single x-ray for the purpose of navigation in spine procedures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clearly presented. Clever 2 step ML method for pose regression from image by reducing the search space similar to what a physician would do. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Somewhat incremental but still relevant. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance NA Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the C-arm angulation accuracy desired by the clinicians? 2.. Spine has quite a bit of similar looking bony landmarks. Any ideas how this would affect angulation estimate, especially with smaller FOV? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good Application, sound approach, good validation. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #4 Please describe the contribution of the paper This paper presents an approach to automatically predict a C-arm pose update recommendation based on one initial X-ray image, which is trained only on simulated data (no need for a preoperative CT scan). The proposed pipeline is inspired from the current clinical decision-making process, in the sense that, first a deep-learning based approach detects relevant anatomical landmarks, then a subsequent pose regression approach is applied. Another major contribution of this paper is the proposed tool augmentation process that enables to add landmarks, k-wires and screws realistically to the simulated X-ray images. Finally, a large quantitative evaluation on a set of cadaveric experiments is presented. This evaluation on a realistic clinical setting shows that the proposed pose regression pipeline outperforms other similar intensity-based approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. To my opinion, the three major strengths are: 1) an approach that includes human-like decision making process into the pipeline 2) a complete pipeline to simulate realistic X-ray data useful to train the method (without the need of a patient-specific CT) and that can even include the simulation of tools and metal in the images, 3) a quantitative ex-vivo validation on a realistic clinical scenario. The quantitative evaluation show that the DRR generalize well to real X-ray images without metal implants and that the proposed sequential pose regression outperforms other intensity-based approaches that can be found in the literature. The paper is well-structured, clear and easy to read paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Similar papers have been presented on recent MICCAI conferences and the question is, are the differences in the methodology sufficient enough for this paper to be published this year? Would it be of interest to the MICCAI community? The evaluation results show that the sequential method yields better results than the 2-stage pose regression, so this contribution is indeed important. However, the DRRs simulation with metal implants does not generalize to real X-rays with metal implants, since 2 out of the 5 cadaver experiments show limited accuracy. The training data generation process seem to be complicated since an expert defining the standard projection planes for each of the 47 CT is required. Moreover, it seems complex for this method to be applied to other projections and/or other clinical applications. This would require to retrain all the anatomy detection CNNs, re-label the data, regenerate new large sets of simulated data, etc.. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Implementation details are provided, along with network splits and training parameters. The paper should be reproducible if the training data is available. The authors also explain their computational setup and inference time. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to comment about the following points: How could this approach be generalized to other projections besides AP or other clinical applications besides the spine? How to incorporate clinical knowledge from other clinical applications? How would this approach be applied on everyday clinical practice? Would the training data be generated only once? Would it be enough to generalize to all patients? What would be needed to incorporate a robotic C-arm? Are the artifacts on the X-ray images also simulated when including metal screws? What is the impact of the initial X-ray in the performances of the approach? This would be interesting to evaluate. How is this initial first image chosen in practice? What about radiation exposure? Can this also be considered on the C-arm pose update, namely a C-arm pose also reducing radiation exposure to patient and/or clinical staff? In which cases the method fails and why ? Small typo in Figure 1: “Initial X-ray” Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The evaluation protocols are sound and well justified, and the evaluation results are well discussed and provide interesting insights. Similar papers have been published recently in Miccai, yet the contributions of this paper are clear and properly evaluated. This is a promising paper which can be of interest to the Miccai community. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Compared to the remaining papers assigned to me this paper is the most complete one in the CAI area. The methods are clearly explained and the evaluation study is extensive and includes a significant amount of data. The methods used are not novel which is the main weakness of the work. However, the authors did an excellent job in combining different methods to provide a solution to an important clinical problem. There was a unanimous agreement among the reviewers that the work is strong and should be accepted for presentation at the MICCAI meeting. Major points Clinically required accuracy should be included and briefly discussed based on the results obtained. Are the results reported in the paper under the required accuracy limits? A brief discussion about the drawbacks (failed cases) should be included. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the acknowledgment of our work and for the constructive feedback also regarding future work directions. We agree with the reviewers that the obtained results should be related to some clinical tolerance of targeted positioning and will include a brief discussion of drawbacks (failures). To show how the angle varies in manual positioning of the AP standard view, we evaluated the variability of the manually acquired AP standard views relative to a reference standard plane defined in the reconstructed volumes. Across the validation specimens, we computed a mean deviation of dθ = 6.1° ± 4.2°. This was reached by the proposed method for all specimens without metal and for 6 out of 9 with metal. Failure cases can be attributed to low tissue-to-bone contrast (resulting from low bone density or obese patients) and to projection artifacts (resulting from corpse bags or corpse decay air pockets) not present during training. A discussion will be included in the camera-ready version. To fully appreciate the impact of k-wire and screws simulation during the training augmentation stage, we applied the proposed approach trained without the simulated augmented data on the specimens with spinal implants, which does not improve upon the initial offset distribution. This indicates that the combination of the proposed approach with k-wire and screw simulation is essential to bridge the domain gap to real X-rays with spinal implants. This will be added to Section 3.3. We covered a broader angular range during training to prevent a performance drop at pose boundaries resulting from lower coverage of training samples around these poses. Generated images were labeled according to their distance to the optimal view (dα, dβ, dγ + translation). We will add this information to the manuscript. Artifacts on the X-ray images were not explicitly simulated. The landmark detection module was indeed trained on simulated DRRs after ROI localization. We will clarify this in the manuscript. The evaluation focuses on rotational parameters because only those were varied in the specimen studies. Generation of validation data for different translational offsets would require some kind of tracking system to monitor the C-arm movement since the Siemens Cios Spin® does not track translation parameters. The approach can generalize to other spinal standard projections. This requires the definition of the reference standard planes in the CTs. After training data simulation, the ROI + landmark + pose network needs to be retrained for the new view. The approach can also be applied to other anatomical regions after defining anatomy-specific ROIs and clinically relevant landmarks. We will include these points in our discussion. The pose regression framework would be trained only once before being applied in clinical practice. Incorporating a robotic C-arm would require inverse kinematics and additional path planning to avoid collisions with environmental obstacles or restrictions due to patient anatomy. This is not covered in this work but will be added to our discussion. The initial X-ray needs to be acquired within the capture range of the algorithm (α, β ∈ [-30°,30°], t ∈ [-50mm, 50mm]). Our approach aims to predict a correct standard view. The radiation exposure of this resulting single shot is currently not considered. However, the radiation dose is drastically reduced by replacing the iterative manual positioning procedure with the proposed approach requiring only a single X-ray. We will include this in the discussion. We hope we could respond to the open questions and we are looking forward to meeting you at MICCAI. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Kausch, Lisa,Thomas, Sarina,Kunze, Holger,Norajitra, Tobias,Klein, André,El Barbari, Jan Siad,Privalov, Maxim,Vetter, Sven,Mahnken, Andreas,Maier-Hein, Lena,Maier-Hein, Klaus H." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>C-arm positioning for spinal standard projections in different intra-operative settings</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a>
+      
+      <a 
+        href="kittywong/categories#Interventional Imaging Systems"
+        class="post-category">
+        Interventional Imaging Systems
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Kausch, Lisa"
+        class="post-tags">
+        Kausch, Lisa
+      </a> |  
+      
+      <a href="kittywong/tags#Thomas, Sarina"
+        class="post-tags">
+        Thomas, Sarina
+      </a> |  
+      
+      <a href="kittywong/tags#Kunze, Holger"
+        class="post-tags">
+        Kunze, Holger
+      </a> |  
+      
+      <a href="kittywong/tags#Norajitra, Tobias"
+        class="post-tags">
+        Norajitra, Tobias
+      </a> |  
+      
+      <a href="kittywong/tags#Klein, André"
+        class="post-tags">
+        Klein, André
+      </a> |  
+      
+      <a href="kittywong/tags#El Barbari, Jan Siad"
+        class="post-tags">
+        El Barbari, Jan Siad
+      </a> |  
+      
+      <a href="kittywong/tags#Privalov, Maxim"
+        class="post-tags">
+        Privalov, Maxim
+      </a> |  
+      
+      <a href="kittywong/tags#Vetter, Sven"
+        class="post-tags">
+        Vetter, Sven
+      </a> |  
+      
+      <a href="kittywong/tags#Mahnken, Andreas"
+        class="post-tags">
+        Mahnken, Andreas
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Lena"
+        class="post-tags">
+        Maier-Hein, Lena
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Klaus H."
+        class="post-tags">
+        Maier-Hein, Klaus H.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Lisa Kausch, Sarina Thomas, Holger Kunze, Tobias Norajitra, André Klein, Jan Siad El Barbari, Maxim Privalov, Sven Vetter, Andreas Mahnken, Lena Maier-Hein, Klaus H. Maier-Hein
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Trauma and orthopedic surgeries that involve fluoroscopic guidance crucially depend on the acquisition of correct anatomy-specific standard projections for monitoring and evaluating the surgical result. This implies repeated acquisitions or even continuous fluoroscopy. To reduce radiation exposure and time, we propose to automate this procedure and estimate the C-arm pose update directly from a first X-ray without the need for a pre-operative computed tomography scan (CT) or additional technical equipment. Our method is trained on digitally reconstructed radiographs (DRRs) which uniquely provide ground truth labels for arbitrary many training examples. The simulated images are complemented with automatically generated segmentations, landmarks, as well as a k-wire and screw simulation. To successfully achieve a transfer from simulated to real X-rays, and also to increase the interpretability of results, the pipeline was designed by closely reflecting on the actual clinical decision-making of spinal neurosurgeons. It explicitly incorporates steps like region-of-interest (ROI) localization, detection of relevant and view-independent landmarks, and subsequent pose regression. To validate the method on real X-rays, we performed a large specimen study with and without implants (i.e. k-wires and screws). The proposed procedure obtained superior C-arm positioning accuracy (p_wilcoxon«0.01), robustness, and generalization capabilities compared to the state-of-the-art direct pose regression framework.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_34">https://doi.org/10.1007/978-3-030-87202-1_34</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper describes an approach able to automatically position a C-arm based on an incorrect starting X-ray image and Deep Learning (DL). DL approaches automatically crop the starting X-ray image to a region of interest and build a heatmap of key anatomical landmarks using U-net like architectures, which are trained on a set of realistic Digitally Reconstructed Radiographs (DRR). Targeting the specific clinical application of spine surgery, authors present a novel approach to synthetically augment the training dataset by modeling the appearance of k-wires and screws. The landmark heatmap is then used in a DL-based regression approach derived from the PoseNet method of Bui et al 2017 to ultimately estimate the pose parameters of the C-arm. The approach is evaluated on DRR produced from CT volumes and on a large dataset of X-ray images of lumbar vertebrae acquired from human specimens, in which the targeted C-arm pose is an antero-posterior (AP) X-ray image.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The major strength of the paper is the data, from the perspectives of size and processing, which highlight the strong evaluation of the work and its clinical viability in case of spine surgery:</p>
+      <ul>
+        <li>at the training stage: 38 CT volumes were exploited to generate several DRRs that were synthetically augmented with a simulation of surgical implants in the specific case of spine surgery (e.g., screws).</li>
+        <li>at the evaluation stage: 9 CT were used to carry out synthetic tests on DRRs, and 16 human specimens (with over 1300 X-ray images per specimen) were collected with adequate ethical approval – yielding an overall testing dataset with significant size.</li>
+      </ul>
+
+      <p>From a methodological viewpoint, authors propose well-known preprocessing steps (focus on regions of interest following a bone segmentation and landmarks localization) that however operate in fully automatic fashion and do bring improvements in accuracy and robustness with respect to a previous intensity-based approach. Hence, these steps remain of interest and have the advantage of not being specific to the surgical application (in contrast with the augmentation technique very specific to spine surgery) – facilitating the transfer of the methodology to other clinical applications.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Overall, the paper does not have any major weaknesses. However, my main criticism would be the evaluation of specimens with spinal implants. In fact, in order to fully appreciate the impact of k-wire and screws simulation in the training augmentation stage, I would have compared the approach trained with and without the simulated augmented data applied on the specimens with spinal implants. By comparing the authors’ approach with the work of [13] in experiments in Sec. 3.3, we can only deduce that the intensity-based approach in [13] is inferior in all cases, and it is difficult to assume that this is mostly the result of the k-wire and screw simulation techniques, and not the overall approach using landmarks heatmaps instead of the image intensity.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Despite authors did not share code or data, authors did the effort to detail the parameters (values, interval of variations, etc.) used at training and evaluation stages, while reporting both successes and failures in their experiments. Quantitative results provide means and variations, as well as statistical significance when required. All these elements should ease the implementation of (parts of) the methodology and increase the trust on the authors’ results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall, the paper is well written, I found some minor errors or unclear sentences, thus I would suggest the following changes:</p>
+      <ul>
+        <li>Sec 2.2: “Ground truth pose labels were established by labeling DRRs according to their distance to the reference C-arm pose”. I did not understand the meaning of this, could the authors rewrite it or clarify it?</li>
+        <li>Sec 2.4, last sentence: I would add “selected randomly in the interval [1, 10]”, as [1, 10] may be read as paper references [1] and [10].</li>
+        <li>Sec 2.5, ROI localization module: “rotating” –&gt; rotated.</li>
+        <li>Sec 2.5, landmark detection module: despite it may be implicit, I would clearly write down that the landmarks are detected on the simulated X-ray images that were <em>masked</em> at the previous stage using ROI. I also wonder whether it does mean that the U-net based training of the landmark detection also used masked images? Or full DRRs were used for the training?</li>
+        <li>Caption of Fig. 5: “(top-button)” –&gt; (top-to-bottom)</li>
+      </ul>
+
+      <p>Regarding my comments listed in the section related to the weaknesses of the paper, I think that it could have been interesting to collect the (subjective) appreciation of clinicians on the automatic positioning results or to get some clinical tolerance of targeted positioning in terms, e.g., of maximum tolerable of d\theta (if it does exist). This could have strengthened the current paper and put the results more in perspective. But I do not deem it as a major flaw since the experiments already support the improvement of the authors’ approach with respect to the fully yet 2-stage method of [13], and look convincing from a visual standpoint in my opinion. This clinical feedback and comparison could be included in future work.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper is well written and proposes an approach that is fully automatic and more accurate than previous studies while demanding a single starting X-ray image. Most importantly, results are supported by a large number of X-ray acquisitions acquired on collected on 16 human specimens.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The objective of the work is to automate C-arm placement through a pose estimation from a single X-ray image and deep learning. Constructing on the state of the art of deep learning the authors address the need for images including artefacts and instruments and the issue of generalization from simulated to real images. A pipeline is proposed to detect ROIs and view-independent relevant landmarks that allow computing the pose (and deducing the motion to be done to reach an optimal view). Training data come from DRRs generated from full-body CT and modified to include k-wires and screws. Although general, the approach is implemented for the anterior-posterior visualization of the L4 vertebra. It is compared to a direct pose regression network.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper proposes a complex pipeline enabling to train on synthetic data with very limited user interaction and to deal with real images.
+The approach is very original trying to mimick the human approach (focusing on a region of interest, detecting landmarks and using them to correct the C-arm pose)
+The validation is performed on specimens (16) - 9 of them having k-wires or screws that may produce artefacts.
+The results are very convincing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Nothing really weak from my point of view.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Many information given but reproduction may be a little tricky since some stages are not so much detailed (due to the limited space). I do not see it as a major drawback.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Introduction:</p>
+      <ul>
+        <li>The approach is well motivated with respect to the requirements and literature.
+Methods:</li>
+        <li>The process is rather complex (but mostly clearly described). Even data generation already involves several neural networks and various image processing. More information about the performances of this stage would be appreciated but clearly impossible to include in the format of a Miccai submission.</li>
+        <li>Optimal images have been selected on 47 full-body CT for L4 AP view. DRR synthetized for a collection of sampled values of the 6 degrees of freedom. It is not clear to me why alpha and beta have different ranges between training and validation – is it a matter of probability distribution? Generated images are labeled according to their distance to the optimal view. More information about this label would be welcome (6 distance values for the 6 parameters ?).</li>
+        <li>CT are segmented using a CNN. Landmarks were manually defined by an expert and are generated on the CTs from a manual definition on one of them and training. These data are propagated to the projections.</li>
+        <li>The introduction of k-wires and screws is made using more classical image processing.</li>
+        <li>Regarding the 2D image processing itself the authors propose a pipeline consisting in defining a ROI, detecting the landmarks (represented as a heat map) and determining the pose from this heat map.</li>
+        <li>The validation was performed on 1364 images coming from 16 specimens (7 without metal, 5 with k-wires and 4 with screws).
+Experiments and results:</li>
+        <li>An in-depth and multi-facet evaluation was performed.</li>
+        <li>One point I do not fully understand is: where and how are handled the translational dofs ? results regard angles only as far as I understand.</li>
+        <li>Although results show a significant improvement over the baseline method, it is not clear to me what are the acceptable ranges around the optimal pose? This certainly depends on the anatomical structure of interest; in other words, does a difference of 1.5° (section 3.1) make a difference on the surgical performance?</li>
+        <li>The evaluation on specimens is impressive and the added-value of the addition of k-wires and  screws is clear.</li>
+      </ul>
+
+      <p>A small additional comment/question: in practice the environment or patient themselves could make a C-arm pose impossible to reach. Is it a challenge that could be handled somewhere for a full automation of the C-arm positioning?</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Very interesting piece of work, sophisticated, seriously and thoroughly evaluated.
+Clearly presented in the allowed format.
+Very promising for clinical practice</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Method for estimating x-ray beam angle relative to a particular vertebrae from a single x-ray for the purpose of navigation in spine procedures.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Clearly presented. Clever 2 step ML method for pose regression from image by reducing the search space similar to what a physician would do.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Somewhat incremental but still relevant.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>NA</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>What is the C-arm angulation accuracy desired by the clinicians? 
+2.. Spine has quite a bit of similar looking bony landmarks. Any ideas how this would affect angulation estimate, especially with smaller FOV?</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Good Application, sound approach, good validation.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-4">Review #4</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents an approach to automatically predict a C-arm pose update recommendation based on one initial X-ray image, which is trained only on simulated data (no need for a preoperative CT scan). The proposed pipeline is inspired from the current clinical decision-making process, in the sense that, first a deep-learning based approach detects relevant anatomical landmarks, then a subsequent pose regression approach is applied. Another major contribution of this paper is the proposed tool augmentation process that enables to add landmarks, k-wires and screws realistically to the simulated X-ray images. Finally, a large quantitative evaluation on a set of cadaveric experiments is presented. This evaluation on a realistic clinical setting shows that the proposed pose regression pipeline outperforms other similar intensity-based approaches.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>To my opinion, the three major strengths are: 1) an approach that includes human-like decision making process into the pipeline 2) a complete pipeline to simulate realistic X-ray data useful to train the method (without the need of a patient-specific CT) and that can even include the simulation of tools and metal in the images, 3) a quantitative ex-vivo validation on a realistic clinical scenario.</p>
+
+      <p>The quantitative evaluation show that the DRR generalize well to real X-ray images without metal implants and that the proposed sequential pose regression outperforms other intensity-based approaches that can be found in the literature.</p>
+
+      <p>The paper is well-structured, clear and easy to read paper.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Similar papers have been presented on recent MICCAI conferences and the question is, are the differences in the methodology sufficient enough for this paper to be published this year? Would it be of interest to the MICCAI community? The evaluation results show that the sequential method yields better results than the 2-stage pose regression, so this contribution is indeed important. However, the DRRs simulation with metal implants does not generalize to real X-rays with metal implants, since 2 out of the 5 cadaver experiments show limited accuracy.</p>
+
+      <p>The training data generation process seem to be complicated since an expert defining the standard projection planes for each of the 47 CT is required. 
+Moreover, it seems complex for this method to be applied to other projections and/or other clinical applications. This would require to retrain all the anatomy detection CNNs, re-label the data, regenerate new large sets of simulated data, etc..</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Implementation details are provided, along with network splits and training parameters. The paper should be reproducible if the training data is available.
+The authors also explain their computational setup and inference time.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>It would be interesting to comment about the following points:</p>
+      <ul>
+        <li>How could this approach be generalized to other projections besides AP or other clinical applications besides the spine? How to incorporate clinical knowledge from other clinical applications?</li>
+        <li>How would this approach be applied on everyday clinical practice? Would the training data be generated only once? Would it be enough to generalize to all patients?</li>
+        <li>What would be needed to incorporate a robotic C-arm?</li>
+        <li>Are the artifacts on the X-ray images also simulated when including metal screws?</li>
+        <li>What is the impact of the initial X-ray in the performances of the approach? This would be interesting to evaluate. How is this initial first image chosen in practice?</li>
+        <li>What about radiation exposure? Can this also be considered on the C-arm pose update, namely a C-arm pose also reducing radiation exposure to patient and/or clinical staff?</li>
+        <li>In which cases the method fails and why ?</li>
+        <li>Small typo in Figure 1: “Initial X-ray”</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The evaluation protocols are sound and well justified, and the evaluation results are well discussed and provide interesting insights. Similar papers have been published recently in Miccai, yet the contributions of this paper are clear and properly evaluated. This is a promising paper which can be of interest to the Miccai community.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Compared to the remaining papers assigned to me this paper is the most complete one in the CAI area. The methods are clearly explained and the evaluation study is extensive and includes a significant amount of data. The methods used are not novel which is the main weakness of the work. However, the authors did an excellent job in combining different methods to provide a solution to an important clinical problem. There was a unanimous agreement among the reviewers that the work is strong and should be accepted for presentation at the MICCAI meeting.</p>
+
+      <p>Major points
+Clinically required accuracy should be included and briefly discussed based on the results obtained. Are the results reported in the paper under the required accuracy limits?
+A brief discussion about the drawbacks (failed cases) should be included.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for the acknowledgment of our work and for the constructive feedback also regarding future work directions.</p>
+
+  <p>We agree with the reviewers that the obtained results should be related to some clinical tolerance of targeted positioning and will include a brief discussion of drawbacks (failures).
+To show how the angle varies in manual positioning of the AP standard view, we evaluated the variability of the manually acquired AP standard views relative to a reference standard plane defined in the reconstructed volumes. Across the validation specimens, we computed a mean deviation of dθ = 6.1° ± 4.2°. This was reached by the proposed method for all specimens without metal and for 6 out of 9 with metal. Failure cases can be attributed to low tissue-to-bone contrast (resulting from low bone density or obese patients) and to projection artifacts (resulting from corpse bags or corpse decay air pockets) not present during training. A discussion will be included in the camera-ready version.</p>
+
+  <p>To fully appreciate the impact of k-wire and screws simulation during the training augmentation stage, we applied the proposed approach trained without the simulated augmented data on the specimens with spinal implants, which does not improve upon the initial offset distribution. This indicates that the combination of the proposed approach with k-wire and screw simulation is essential to bridge the domain gap to real X-rays with spinal implants. This will be added to Section 3.3.</p>
+
+  <p>We covered a broader angular range during training to prevent a performance drop at pose boundaries resulting from lower coverage of training samples around these poses. Generated images were labeled according to their distance to the optimal view (dα, dβ, dγ + translation).  We will add this information to the manuscript. Artifacts on the X-ray images were not explicitly simulated. The landmark detection module was indeed trained on simulated DRRs after ROI localization. We will clarify this in the manuscript. The evaluation focuses on rotational parameters because only those were varied in the specimen studies. Generation of validation data for different translational offsets would require some kind of tracking system to monitor the C-arm movement since the Siemens Cios Spin® does not track translation parameters.</p>
+
+  <p>The approach can generalize to other spinal standard projections. This requires the definition of the reference standard planes in the CTs. After training data simulation, the ROI + landmark + pose network needs to be retrained for the new view. The approach can also be applied to other anatomical regions after defining anatomy-specific ROIs and clinically relevant landmarks. We will include these points in our discussion. The pose regression framework would be trained only once before being applied in clinical practice.</p>
+
+  <p>Incorporating a robotic C-arm would require inverse kinematics and additional path planning to avoid collisions with environmental obstacles or restrictions due to patient anatomy. This is not covered in this work but will be added to our discussion.</p>
+
+  <p>The initial X-ray needs to be acquired within the capture range of the algorithm (α, β ∈ [-30°,30°], t ∈ [-50mm, 50mm]). Our approach aims to predict a correct standard view. The radiation exposure of this resulting single shot is currently not considered. However, the radiation dose is drastically reduced by replacing the iterative manual positioning procedure with the proposed approach requiring only a single X-ray. We will include this in the discussion.</p>
+
+  <p>We hope we could respond to the open questions and we are looking forward to meeting you at MICCAI.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0433-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0434-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Interventional Imaging Systems"
+        class="post-category">
+        Interventional Imaging Systems
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Kausch, Lisa"
+        class="post-category">
+        Kausch, Lisa
+      </a> |  
+      
+      <a href="kittywong/tags#Thomas, Sarina"
+        class="post-category">
+        Thomas, Sarina
+      </a> |  
+      
+      <a href="kittywong/tags#Kunze, Holger"
+        class="post-category">
+        Kunze, Holger
+      </a> |  
+      
+      <a href="kittywong/tags#Norajitra, Tobias"
+        class="post-category">
+        Norajitra, Tobias
+      </a> |  
+      
+      <a href="kittywong/tags#Klein, André"
+        class="post-category">
+        Klein, André
+      </a> |  
+      
+      <a href="kittywong/tags#El Barbari, Jan Siad"
+        class="post-category">
+        El Barbari, Jan Siad
+      </a> |  
+      
+      <a href="kittywong/tags#Privalov, Maxim"
+        class="post-category">
+        Privalov, Maxim
+      </a> |  
+      
+      <a href="kittywong/tags#Vetter, Sven"
+        class="post-category">
+        Vetter, Sven
+      </a> |  
+      
+      <a href="kittywong/tags#Mahnken, Andreas"
+        class="post-category">
+        Mahnken, Andreas
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Lena"
+        class="post-category">
+        Maier-Hein, Lena
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Klaus H."
+        class="post-category">
+        Maier-Hein, Klaus H.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0434/12/31/Paper2117">
+          Quantitative Assessments for Ultrasound Probe Calibration
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0432/12/31/Paper2007">
+          Efficient Global-Local Memory for Real-time Instrument Segmentation of Robotic Surgical Video
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

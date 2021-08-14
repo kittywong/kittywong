@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Medical Matting: A New Perspective on Medical Segmentation with Uncertainty | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Medical Matting: A New Perspective on Medical Segmentation with Uncertainty" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Lin Wang, Lie Ju, Donghao Zhang, Xin Wang, Wanji He, Yelin Huang, Zhiwen Yang, Xuan Yao, Xin Zhao, Xiufen Ye, Zongyuan Ge Abstract In medical image segmentation, it is difficult to mark ambiguous areas accurately with binary masks, especially when dealing with small lesions. Therefore, it is a challenge for radiologists to reach a consensus by using binary masks under the condition of multiple annotations. However, these uncertain areas may contain anatomical structures that are conducive to diagnosis. Uncertainty is introduced to study these situations. Nevertheless, the uncertainty is usually measured by the variances between predictions in a multiple trial way. It is not intuitive, and there is no exact correspondence in the image. Inspired by image matting, we introduce matting as a soft segmentation method and a new perspective to deal with and represent uncertain regions into medical scenes, namely medical matting. More specifically, because there is no available medical matting dataset, we first labeled two medical datasets with alpha matte. Secondly, the matting methods applied to the natural image are not suitable for the medical scene, so we propose a new architecture to generate binary masks and alpha matte in a row. Thirdly, the uncertainty map is introduced to highlight the ambiguous regions from the binary results and improve the matting performance. Evaluated on these datasets, the proposed model outperformed state-of-the-art matting algorithms by a large margin, and alpha matte is proved to be a more efficient labeling form than a binary mask. Link to paper https://doi.org/10.1007/978-3-030-87199-4_54 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors present experiments using alpha mattes as a prediction target for segmentation problems. These mattes were generated from data that had been segmented by multiple observers using a pipeline which leveraged their disagreement to produce a trimap which was then provided to an existing matting method from the literature. The authors present empirical evidence that the resulting maps were preferred by clinicians in terms of their ability to faithfully represent the spatial extent of the underlying structure. The authors further propose a multitask approach to simulaneously predict the alpha matte as well as binary masks that were produced by applying thresholds to the alpha matte. They show that their multitask approach outperforms a single-task approach as well as existing matte prediction approaches. The authors promise to release the underlying data for their experiments once the review process is complete. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. “Soft” segmentation labels like the authors’ “alpha mattes” have enormous potential in medical image segmentation. Resolution limitations and obscuring artifacts often make ROI boundaries literally impossible to delineate exactly. The traditional approach to “uncertain” labels is to have multiple annotators delineate the region independently and treat these as samples from the underlying distribution, which captures the uncertainty. This work attempts to represent the uncertainty directly, and use it as a prediction target. I have to agree with the authors here that this is a far more intuitive and elegant approach. I also like that the authors solicited the opinion of expert clinicians on this topic who also overwhelmingly preferred this representation to the the multiple-annotation alternative. Another strength of this work is the empirical experiments which show the value of these derived alpha mattes as versatile objects for creative loss functions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The alpha mattes being used in this work are ultimately derived from multiple annotations, which means they carry many of the limitations that multiple annotations do – namely that they have some bias toward “modes” of plausible region boundaries. For example if 1000 raters are all 90% sure the boundary is at position A rather than position B, then they will all annotation for position A, rather than the 90-10 split that one would hope for. When raters are asked to make binary decisions, you will lose information regardless of how many raters you have. I will concede that the authors mention that the clinicians were asked to tweak the derived alpha mattes, but no information was given about how often this tweaking was done or what tools were used. I imagine that manually providing voxel-wise confidence values is extremely tedious, so I can’t imagine it was done often or done carefully when attempted. Aside from this, I have only a few minor suggestions/points of confusion: At first I didn’t catch where the P_c function from equation 2 was defined – perhaps the “average score map” should be introduced formally It would be nice to mention the methods for creating the ground truth alpha matte within the methodology section It’s probably not a good idea to state in your conclusions that “new experiments will be carried out to prove its value in diagnosis” – of course you don’t know whether its value will be proved or not until the experiments have been run. Perhaps “…to test its value…” would be better Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will be releasing the mattes that they generated. I didn’t see a statement about the pretrained models or code. It would be nice if they released those as well. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like how the authors involved clinicians in the evaluation process and valued their qualitative impression of the proposed representation. Presumably, clinicians have spent their careers building some kind of high-fidelity semantic representation of depicted structures in their minds when they read films. We should be doing our best to emulate and extend these rather than sticking to discrete segmentation masks just because they’re convenient. I appreciate that there is a dearth of datasets and challenges with multiple annotations, but it would be nice to benchmark the proposed method on a challenge leaderboard. Also, I appreciate that you are running up against space constraints, but it would be nice to discuss the limitations of this work. Certainly the soft labels have their advantages, but can we be sure that they faithfully represent the underlying uncertainty? How can we empirically evaluate the quality of labels like these? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors clearly outlined the problem they are addressing, how they are addressing it, and supported their claims with experimental data. The problem highly important and relevant to the MICCAI community, and existing solutions are inadequate. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes using alpha matting for medical image segmentation to alleviate the ambiguity issues related to binary masks. To this end, a specific architecture and dedicated losses are proposed. The approach is evaluated on two public datasets, for which the ground truth alpha mattes were generated and made publicly available. The results show a superiority of the proposed approach compared to existing image matting techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Important topic: By addressing the inherent ambiguity, the paper addresses an important problem in medical image segmentation. I like that the paper tries to bring a new perspective to the problem by approaching it with image matting. It is refreshing to see alternatives to the commonly used uncertainty estimation techniques. Feedback from clinicians: I appreciate the effort that the authors put into obtaining the feedback of clinical experts for the alpha mattes. Publicly available annotations: The author generated alpha mattes annotations for two medical image segmentation datasets and will make them publicly available. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -Difficult to read: The writing is convoluted and contains many errors. This renders the reading, and consequently, the understanding of the paper difficult. Also, it makes it hard to the motivation and details of the paper. Overly complicated method: The method includes many elements/parts that are not really motivated. I wonder whether it wouldn’t be possible to regress the alpha matte from the input image directly. And why is the probabilistic U-Net essential when the GT alpha matte can be sampled/thresholded (as done for the training of the probabilistic U-Net)?. Besides the missing motivation, the different elements are lacking proper ablation. By omitting ablations of individual elements (e.g., probabilistic U-Net, gradient loss, uncertainty-weighted loss, channel-wise attention), the reader cannot identify which elements are essential and which might be omitted/replaced. Finally, the missing motivation and missing ablations lead to an unclear message; I do not know what the paper wants to tell or what I should learn from it. Missing experiments to back up the claims: The title claims that the paper is providing a new perspective on medical image segmentation with uncertainty by introducing matting. However, the proposed method is only compared to existing matting techniques. The paper lacks experiments that show the benefit of matting over using uncertainty/certainty maps (not binary masks) in the first place. Only the experiment in Fig. 5 provides some information about the usefulness of matting. However, the performance of prob. U-Net and prob. U-Net+Matting seem to be almost identical, suggesting no benefit. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist was inappropriately filled in. For instance, the authors affirmed the options “The exact number of training and evaluation runs,” “Details on how baseline methods were implemented and tuned,” “A clear definition of the specific evaluation metrics and/or statistics used to report results,” “A description of results with central tendency (e.g. mean) &amp; variation (e.g. error bars),” “A description of the memory footprint,” but they did neither of those. Although publishing code for the review is not mandatory when promising code release, it would be beneficial to provide code already during the review phase for clarifying questions regarding the implementation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To improve the paper in the future, I suggest the following: Re-iterate the writing and proofreading to improve the readability, and consequently, the understanding. Define a clear message: Currently, I am not sure whether the message is to show that the proposed approach is improving over the existing matting methods or if the paper should actually show the benefits of matting (as the title suggests). Defining a clear message and setting up experiments that support this message would greatly benefit the paper. Simplify the method: I suggest simplifying the method if the main message should be showing the benefits of using alpha mattes in medical image segmentation. A simple method that shows the benefit of your new perspective will have much more impact than a convoluted, overly complicated method. Weaken claims: The paper includes several claims that are not backed up by experiments or by references, e.g., “our model outperforms all the other methods in both datasets, which illustrates our method is more applicable to the medical scenarios,” “[…] which has a better ability to reveal tiny and ambiguous structures and has a big potential for diagnosis,” “and prove that alpha matte is a more powerful annotation method than the binary mask.” Please weaken such claims or back them up with experiments or references. Metrics: Please shortly explain the metrics used for comparison in Table 1. Also, it would be beneficial to explain the meaning of the specific/uncommon metrics Dice_u and Dice@0.5 and why they are used. Baselines: Shortly explaining the baselines and motivating their selection would be helpful, such that a reader does not need to look up every of the referenced papers. Also, clarify how you apply them to your data. -Clarify motivation for alpha matte as uncertainty: It looks as that the generated alpha mattes very much resemble an image multiplied by a mask and are, thus, closely related to the actual image intensities. Due to this relation to the intensities, I wonder if it is valid to use mattes as reference for segmentation ambiguity/uncertainty. Motivating the use of mattes as uncertainty/ambiguity in the introduction would be helpful. Minor: Title: The title might extend the title by “medical IMAGE segmentation” to improve the clarity. Equation 7: I am not sure what two values “max” is comparing. Please clarify. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The poor writing, the unclear message, as well as the missing ablation and motivation of the overly complicated method are the major factors that led to my overall score. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper tackles medical image segmentation from the perspective of image matting. The authors prepare a matting dataset by considering multiple annotators. The deviations of probabilistic U-Net predictions are used as a measure of uncertainty, creating a trimap for a secondary image matting network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Tackling medical image segmentation as image matting, using uncertainty to form a trimap, is an interesting idea. The obtained results are qualitatively and quantitatively promising. The gathered manually labelled datasets for the study on uncertainty learning and matting in medical scenarios will be publicly available to the research community Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method needs multiple segmentation labels per training sample. Noticing the high cost associated with the acquisition of medical labels, this bottleneck could limit the applicability of the proposed approach. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The provided details seem to be adequate and the method has good reproducibility. The authors mention the training code will be available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The adaptation of the methodology for imaging modalities with blur edges, such as ultrasound data, could be an interesting investigation. The extension of the methodology for 3D image segmentation, and considerations for temporal data incorporation for video analysis, could also be an interesting future exploration. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factors for my recommendation, as detailed in the “strengths” section, are the obtained results and novelty of the application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission considers performing medical image segmentation with uncertainty using alpha matting. The proposed strategy is interesting and looks promising. However, reviewers have concerns about the readability of the manuscript, the complicated method with some unmotivated components, the missing experiments, and the use of multiple segmentation labels. In the rebuttal letter, the authors are suggested to addresses these concerns, and other questions from the reviewers if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal period. This submission could attract a lot of attention in the MICCAI community; therefore, it is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to include image matting into medical imaging segmentation task. It is a clear benefit to the clinicians (verified in Fig 2.). The way they collaborate with the clinicians should be encouraged. The release of the data shall also benefit the community. These has been appraised by almost all reviewers too. The weakness of this paper is no discussion on the extra effort for generating such image matting. This makes it difficult to be applied to the other tasks. The experiments part needs more work, especially Fig 4 (image too small) and Fig 5 (message unclear). This work needs to consider most MICCAI readers are not familiar with image matting. Current version is difficult to enlighten the readers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed an interesting idea of using alpha matting to deal with uncertainty in medical image segmentation. The concerns raised by the reviewers mainly include writing of the paper, motivation of the method, and description of some evaluation metrics. The authors clarified these points well in the rebuttal. The small weaknesses do not obscure its strength. Thus, I recommend acceptance of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers for their time and efforts. We reorganized the comments and responded to them as follows: Q: Motivation of using alpha matte for uncertainty measurement A: In medical segmentation tasks, we found that the fuzzy regions are difficult to annotate precisely, which are the potential reasons for the inconsistency between multiple annotations. i.e., the uncertainty is related to the structural information of the corresponding image. Image matting is able to deduce the estimated probability through the patterns of foreground and background regions. Inspired by this, we introduce matting into medical scenes as a soft segmentation method and a new perspective to handle and represent uncertainty region, namely medical matting. Apart from that, our ablation study shows that using soft labels to annotate medical images is informative as it is equivalent to leveraging multiple binary masks for training, which provides a potential route for more efficient use of limited data. In our latest study, experiments reveal that alpha matte outperforms binary masks trained model in the 3D CT nodules staging on LIDC, suggesting its potential application in various diagnosis tasks. Q: Network structure complexity A: As described in Section 3, our end-to-end network only consists of 2 major parts. The #MASK GENERATOR outputs various segmentation predictions under the target distribution. Such intermediate results are merged to create an UNCERTAINTY MAP, which assists the following #MATTING NETWORK like the trimap. Neither of these two sub-modules is dispensable. To simplify the model design and demonstrate the efficacy of the alpha matte idea, we only use a vanilla UNet architecture for prob-UNet rather than its more complex descendants. Q: Alpha matte with a single model It may seem possible to regress the alpha matte directly from the model design perspective. But, it is a consensus in general image matting that it is challenging to regress each pixel directly, as matting is a task intertwined with regression and classification. Hence the trimap mechanism is frequently used both in Laplacian-based and deep learning-based methods [1,5,6,8,11]. Our experiments also show that the uncertainty map, which analog to trimap, can achieve the best performance. Q: Experiments: Abalation &amp; Comparison &amp; Metric A: As aforementioned, The two sub-models #MASK GENERATOR and #MATTING NETWORK must work together, so ablation study on submodel can not be performed. Our work is the first work using matting to handle uncertainty. There exist no models for a direct and comprehensive comparison. So we designed the comparative experiment in two aspects. One aspect to compare the existing matting methods quantitatively, and shows that general matting methods can not be transferred directly to medical images. Another, we demonstrate that alpha matte can be a better method than the multiple binary labels in learning the uncertainty distribution, which provides a new direction for improving the soft boundary-based annotation method of medical image. We chose to use the adapted Dice metrics because Dice is a commonly used metric in segmentation, and the modified version can evaluate the similarity between the predictions and the targets at the distribution level and individual level, respectively. The change of the performance for matting metrics in recent literature is relatively small in value. Work from [5] uses x1000 to emphasize the difference of their method compared to others. To further increase the readability without changing the initial context, we have added a short overview for each model part. We have improved the structure of the Methodology section. Fig.3 also has been modified to make each sub-module more distinguishable to each other. At last, the authors would like to thank the reviewers and ACs again for their thoughtful comments. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Lin Wang, Lie Ju, Donghao Zhang, Xin Wang, Wanji He, Yelin Huang, Zhiwen Yang, Xuan Yao, Xin Zhao, Xiufen Ye, Zongyuan Ge Abstract In medical image segmentation, it is difficult to mark ambiguous areas accurately with binary masks, especially when dealing with small lesions. Therefore, it is a challenge for radiologists to reach a consensus by using binary masks under the condition of multiple annotations. However, these uncertain areas may contain anatomical structures that are conducive to diagnosis. Uncertainty is introduced to study these situations. Nevertheless, the uncertainty is usually measured by the variances between predictions in a multiple trial way. It is not intuitive, and there is no exact correspondence in the image. Inspired by image matting, we introduce matting as a soft segmentation method and a new perspective to deal with and represent uncertain regions into medical scenes, namely medical matting. More specifically, because there is no available medical matting dataset, we first labeled two medical datasets with alpha matte. Secondly, the matting methods applied to the natural image are not suitable for the medical scene, so we propose a new architecture to generate binary masks and alpha matte in a row. Thirdly, the uncertainty map is introduced to highlight the ambiguous regions from the binary results and improve the matting performance. Evaluated on these datasets, the proposed model outperformed state-of-the-art matting algorithms by a large margin, and alpha matte is proved to be a more efficient labeling form than a binary mask. Link to paper https://doi.org/10.1007/978-3-030-87199-4_54 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors present experiments using alpha mattes as a prediction target for segmentation problems. These mattes were generated from data that had been segmented by multiple observers using a pipeline which leveraged their disagreement to produce a trimap which was then provided to an existing matting method from the literature. The authors present empirical evidence that the resulting maps were preferred by clinicians in terms of their ability to faithfully represent the spatial extent of the underlying structure. The authors further propose a multitask approach to simulaneously predict the alpha matte as well as binary masks that were produced by applying thresholds to the alpha matte. They show that their multitask approach outperforms a single-task approach as well as existing matte prediction approaches. The authors promise to release the underlying data for their experiments once the review process is complete. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. “Soft” segmentation labels like the authors’ “alpha mattes” have enormous potential in medical image segmentation. Resolution limitations and obscuring artifacts often make ROI boundaries literally impossible to delineate exactly. The traditional approach to “uncertain” labels is to have multiple annotators delineate the region independently and treat these as samples from the underlying distribution, which captures the uncertainty. This work attempts to represent the uncertainty directly, and use it as a prediction target. I have to agree with the authors here that this is a far more intuitive and elegant approach. I also like that the authors solicited the opinion of expert clinicians on this topic who also overwhelmingly preferred this representation to the the multiple-annotation alternative. Another strength of this work is the empirical experiments which show the value of these derived alpha mattes as versatile objects for creative loss functions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The alpha mattes being used in this work are ultimately derived from multiple annotations, which means they carry many of the limitations that multiple annotations do – namely that they have some bias toward “modes” of plausible region boundaries. For example if 1000 raters are all 90% sure the boundary is at position A rather than position B, then they will all annotation for position A, rather than the 90-10 split that one would hope for. When raters are asked to make binary decisions, you will lose information regardless of how many raters you have. I will concede that the authors mention that the clinicians were asked to tweak the derived alpha mattes, but no information was given about how often this tweaking was done or what tools were used. I imagine that manually providing voxel-wise confidence values is extremely tedious, so I can’t imagine it was done often or done carefully when attempted. Aside from this, I have only a few minor suggestions/points of confusion: At first I didn’t catch where the P_c function from equation 2 was defined – perhaps the “average score map” should be introduced formally It would be nice to mention the methods for creating the ground truth alpha matte within the methodology section It’s probably not a good idea to state in your conclusions that “new experiments will be carried out to prove its value in diagnosis” – of course you don’t know whether its value will be proved or not until the experiments have been run. Perhaps “…to test its value…” would be better Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will be releasing the mattes that they generated. I didn’t see a statement about the pretrained models or code. It would be nice if they released those as well. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like how the authors involved clinicians in the evaluation process and valued their qualitative impression of the proposed representation. Presumably, clinicians have spent their careers building some kind of high-fidelity semantic representation of depicted structures in their minds when they read films. We should be doing our best to emulate and extend these rather than sticking to discrete segmentation masks just because they’re convenient. I appreciate that there is a dearth of datasets and challenges with multiple annotations, but it would be nice to benchmark the proposed method on a challenge leaderboard. Also, I appreciate that you are running up against space constraints, but it would be nice to discuss the limitations of this work. Certainly the soft labels have their advantages, but can we be sure that they faithfully represent the underlying uncertainty? How can we empirically evaluate the quality of labels like these? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors clearly outlined the problem they are addressing, how they are addressing it, and supported their claims with experimental data. The problem highly important and relevant to the MICCAI community, and existing solutions are inadequate. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes using alpha matting for medical image segmentation to alleviate the ambiguity issues related to binary masks. To this end, a specific architecture and dedicated losses are proposed. The approach is evaluated on two public datasets, for which the ground truth alpha mattes were generated and made publicly available. The results show a superiority of the proposed approach compared to existing image matting techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Important topic: By addressing the inherent ambiguity, the paper addresses an important problem in medical image segmentation. I like that the paper tries to bring a new perspective to the problem by approaching it with image matting. It is refreshing to see alternatives to the commonly used uncertainty estimation techniques. Feedback from clinicians: I appreciate the effort that the authors put into obtaining the feedback of clinical experts for the alpha mattes. Publicly available annotations: The author generated alpha mattes annotations for two medical image segmentation datasets and will make them publicly available. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -Difficult to read: The writing is convoluted and contains many errors. This renders the reading, and consequently, the understanding of the paper difficult. Also, it makes it hard to the motivation and details of the paper. Overly complicated method: The method includes many elements/parts that are not really motivated. I wonder whether it wouldn’t be possible to regress the alpha matte from the input image directly. And why is the probabilistic U-Net essential when the GT alpha matte can be sampled/thresholded (as done for the training of the probabilistic U-Net)?. Besides the missing motivation, the different elements are lacking proper ablation. By omitting ablations of individual elements (e.g., probabilistic U-Net, gradient loss, uncertainty-weighted loss, channel-wise attention), the reader cannot identify which elements are essential and which might be omitted/replaced. Finally, the missing motivation and missing ablations lead to an unclear message; I do not know what the paper wants to tell or what I should learn from it. Missing experiments to back up the claims: The title claims that the paper is providing a new perspective on medical image segmentation with uncertainty by introducing matting. However, the proposed method is only compared to existing matting techniques. The paper lacks experiments that show the benefit of matting over using uncertainty/certainty maps (not binary masks) in the first place. Only the experiment in Fig. 5 provides some information about the usefulness of matting. However, the performance of prob. U-Net and prob. U-Net+Matting seem to be almost identical, suggesting no benefit. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist was inappropriately filled in. For instance, the authors affirmed the options “The exact number of training and evaluation runs,” “Details on how baseline methods were implemented and tuned,” “A clear definition of the specific evaluation metrics and/or statistics used to report results,” “A description of results with central tendency (e.g. mean) &amp; variation (e.g. error bars),” “A description of the memory footprint,” but they did neither of those. Although publishing code for the review is not mandatory when promising code release, it would be beneficial to provide code already during the review phase for clarifying questions regarding the implementation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To improve the paper in the future, I suggest the following: Re-iterate the writing and proofreading to improve the readability, and consequently, the understanding. Define a clear message: Currently, I am not sure whether the message is to show that the proposed approach is improving over the existing matting methods or if the paper should actually show the benefits of matting (as the title suggests). Defining a clear message and setting up experiments that support this message would greatly benefit the paper. Simplify the method: I suggest simplifying the method if the main message should be showing the benefits of using alpha mattes in medical image segmentation. A simple method that shows the benefit of your new perspective will have much more impact than a convoluted, overly complicated method. Weaken claims: The paper includes several claims that are not backed up by experiments or by references, e.g., “our model outperforms all the other methods in both datasets, which illustrates our method is more applicable to the medical scenarios,” “[…] which has a better ability to reveal tiny and ambiguous structures and has a big potential for diagnosis,” “and prove that alpha matte is a more powerful annotation method than the binary mask.” Please weaken such claims or back them up with experiments or references. Metrics: Please shortly explain the metrics used for comparison in Table 1. Also, it would be beneficial to explain the meaning of the specific/uncommon metrics Dice_u and Dice@0.5 and why they are used. Baselines: Shortly explaining the baselines and motivating their selection would be helpful, such that a reader does not need to look up every of the referenced papers. Also, clarify how you apply them to your data. -Clarify motivation for alpha matte as uncertainty: It looks as that the generated alpha mattes very much resemble an image multiplied by a mask and are, thus, closely related to the actual image intensities. Due to this relation to the intensities, I wonder if it is valid to use mattes as reference for segmentation ambiguity/uncertainty. Motivating the use of mattes as uncertainty/ambiguity in the introduction would be helpful. Minor: Title: The title might extend the title by “medical IMAGE segmentation” to improve the clarity. Equation 7: I am not sure what two values “max” is comparing. Please clarify. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The poor writing, the unclear message, as well as the missing ablation and motivation of the overly complicated method are the major factors that led to my overall score. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper tackles medical image segmentation from the perspective of image matting. The authors prepare a matting dataset by considering multiple annotators. The deviations of probabilistic U-Net predictions are used as a measure of uncertainty, creating a trimap for a secondary image matting network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Tackling medical image segmentation as image matting, using uncertainty to form a trimap, is an interesting idea. The obtained results are qualitatively and quantitatively promising. The gathered manually labelled datasets for the study on uncertainty learning and matting in medical scenarios will be publicly available to the research community Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method needs multiple segmentation labels per training sample. Noticing the high cost associated with the acquisition of medical labels, this bottleneck could limit the applicability of the proposed approach. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The provided details seem to be adequate and the method has good reproducibility. The authors mention the training code will be available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The adaptation of the methodology for imaging modalities with blur edges, such as ultrasound data, could be an interesting investigation. The extension of the methodology for 3D image segmentation, and considerations for temporal data incorporation for video analysis, could also be an interesting future exploration. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factors for my recommendation, as detailed in the “strengths” section, are the obtained results and novelty of the application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission considers performing medical image segmentation with uncertainty using alpha matting. The proposed strategy is interesting and looks promising. However, reviewers have concerns about the readability of the manuscript, the complicated method with some unmotivated components, the missing experiments, and the use of multiple segmentation labels. In the rebuttal letter, the authors are suggested to addresses these concerns, and other questions from the reviewers if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal period. This submission could attract a lot of attention in the MICCAI community; therefore, it is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to include image matting into medical imaging segmentation task. It is a clear benefit to the clinicians (verified in Fig 2.). The way they collaborate with the clinicians should be encouraged. The release of the data shall also benefit the community. These has been appraised by almost all reviewers too. The weakness of this paper is no discussion on the extra effort for generating such image matting. This makes it difficult to be applied to the other tasks. The experiments part needs more work, especially Fig 4 (image too small) and Fig 5 (message unclear). This work needs to consider most MICCAI readers are not familiar with image matting. Current version is difficult to enlighten the readers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed an interesting idea of using alpha matting to deal with uncertainty in medical image segmentation. The concerns raised by the reviewers mainly include writing of the paper, motivation of the method, and description of some evaluation metrics. The authors clarified these points well in the rebuttal. The small weaknesses do not obscure its strength. Thus, I recommend acceptance of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers for their time and efforts. We reorganized the comments and responded to them as follows: Q: Motivation of using alpha matte for uncertainty measurement A: In medical segmentation tasks, we found that the fuzzy regions are difficult to annotate precisely, which are the potential reasons for the inconsistency between multiple annotations. i.e., the uncertainty is related to the structural information of the corresponding image. Image matting is able to deduce the estimated probability through the patterns of foreground and background regions. Inspired by this, we introduce matting into medical scenes as a soft segmentation method and a new perspective to handle and represent uncertainty region, namely medical matting. Apart from that, our ablation study shows that using soft labels to annotate medical images is informative as it is equivalent to leveraging multiple binary masks for training, which provides a potential route for more efficient use of limited data. In our latest study, experiments reveal that alpha matte outperforms binary masks trained model in the 3D CT nodules staging on LIDC, suggesting its potential application in various diagnosis tasks. Q: Network structure complexity A: As described in Section 3, our end-to-end network only consists of 2 major parts. The #MASK GENERATOR outputs various segmentation predictions under the target distribution. Such intermediate results are merged to create an UNCERTAINTY MAP, which assists the following #MATTING NETWORK like the trimap. Neither of these two sub-modules is dispensable. To simplify the model design and demonstrate the efficacy of the alpha matte idea, we only use a vanilla UNet architecture for prob-UNet rather than its more complex descendants. Q: Alpha matte with a single model It may seem possible to regress the alpha matte directly from the model design perspective. But, it is a consensus in general image matting that it is challenging to regress each pixel directly, as matting is a task intertwined with regression and classification. Hence the trimap mechanism is frequently used both in Laplacian-based and deep learning-based methods [1,5,6,8,11]. Our experiments also show that the uncertainty map, which analog to trimap, can achieve the best performance. Q: Experiments: Abalation &amp; Comparison &amp; Metric A: As aforementioned, The two sub-models #MASK GENERATOR and #MATTING NETWORK must work together, so ablation study on submodel can not be performed. Our work is the first work using matting to handle uncertainty. There exist no models for a direct and comprehensive comparison. So we designed the comparative experiment in two aspects. One aspect to compare the existing matting methods quantitatively, and shows that general matting methods can not be transferred directly to medical images. Another, we demonstrate that alpha matte can be a better method than the multiple binary labels in learning the uncertainty distribution, which provides a new direction for improving the soft boundary-based annotation method of medical image. We chose to use the adapted Dice metrics because Dice is a commonly used metric in segmentation, and the modified version can evaluate the similarity between the predictions and the targets at the distribution level and individual level, respectively. The change of the performance for matting metrics in recent literature is relatively small in value. Work from [5] uses x1000 to emphasize the difference of their method compared to others. To further increase the readability without changing the initial context, we have added a short overview for each model part. We have improved the structure of the Methodology section. Fig.3 also has been modified to make each sub-module more distinguishable to each other. At last, the authors would like to thank the reviewers and ACs again for their thoughtful comments. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0353/12/31/Paper0097" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0353/12/31/Paper0097" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0353-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Medical Matting: A New Perspective on Medical Segmentation with Uncertainty" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0353/12/31/Paper0097"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0353/12/31/Paper0097","headline":"Medical Matting: A New Perspective on Medical Segmentation with Uncertainty","dateModified":"0354-01-02T00:00:00-05:17","datePublished":"0353-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Lin Wang, Lie Ju, Donghao Zhang, Xin Wang, Wanji He, Yelin Huang, Zhiwen Yang, Xuan Yao, Xin Zhao, Xiufen Ye, Zongyuan Ge Abstract In medical image segmentation, it is difficult to mark ambiguous areas accurately with binary masks, especially when dealing with small lesions. Therefore, it is a challenge for radiologists to reach a consensus by using binary masks under the condition of multiple annotations. However, these uncertain areas may contain anatomical structures that are conducive to diagnosis. Uncertainty is introduced to study these situations. Nevertheless, the uncertainty is usually measured by the variances between predictions in a multiple trial way. It is not intuitive, and there is no exact correspondence in the image. Inspired by image matting, we introduce matting as a soft segmentation method and a new perspective to deal with and represent uncertain regions into medical scenes, namely medical matting. More specifically, because there is no available medical matting dataset, we first labeled two medical datasets with alpha matte. Secondly, the matting methods applied to the natural image are not suitable for the medical scene, so we propose a new architecture to generate binary masks and alpha matte in a row. Thirdly, the uncertainty map is introduced to highlight the ambiguous regions from the binary results and improve the matting performance. Evaluated on these datasets, the proposed model outperformed state-of-the-art matting algorithms by a large margin, and alpha matte is proved to be a more efficient labeling form than a binary mask. Link to paper https://doi.org/10.1007/978-3-030-87199-4_54 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors present experiments using alpha mattes as a prediction target for segmentation problems. These mattes were generated from data that had been segmented by multiple observers using a pipeline which leveraged their disagreement to produce a trimap which was then provided to an existing matting method from the literature. The authors present empirical evidence that the resulting maps were preferred by clinicians in terms of their ability to faithfully represent the spatial extent of the underlying structure. The authors further propose a multitask approach to simulaneously predict the alpha matte as well as binary masks that were produced by applying thresholds to the alpha matte. They show that their multitask approach outperforms a single-task approach as well as existing matte prediction approaches. The authors promise to release the underlying data for their experiments once the review process is complete. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. “Soft” segmentation labels like the authors’ “alpha mattes” have enormous potential in medical image segmentation. Resolution limitations and obscuring artifacts often make ROI boundaries literally impossible to delineate exactly. The traditional approach to “uncertain” labels is to have multiple annotators delineate the region independently and treat these as samples from the underlying distribution, which captures the uncertainty. This work attempts to represent the uncertainty directly, and use it as a prediction target. I have to agree with the authors here that this is a far more intuitive and elegant approach. I also like that the authors solicited the opinion of expert clinicians on this topic who also overwhelmingly preferred this representation to the the multiple-annotation alternative. Another strength of this work is the empirical experiments which show the value of these derived alpha mattes as versatile objects for creative loss functions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The alpha mattes being used in this work are ultimately derived from multiple annotations, which means they carry many of the limitations that multiple annotations do – namely that they have some bias toward “modes” of plausible region boundaries. For example if 1000 raters are all 90% sure the boundary is at position A rather than position B, then they will all annotation for position A, rather than the 90-10 split that one would hope for. When raters are asked to make binary decisions, you will lose information regardless of how many raters you have. I will concede that the authors mention that the clinicians were asked to tweak the derived alpha mattes, but no information was given about how often this tweaking was done or what tools were used. I imagine that manually providing voxel-wise confidence values is extremely tedious, so I can’t imagine it was done often or done carefully when attempted. Aside from this, I have only a few minor suggestions/points of confusion: At first I didn’t catch where the P_c function from equation 2 was defined – perhaps the “average score map” should be introduced formally It would be nice to mention the methods for creating the ground truth alpha matte within the methodology section It’s probably not a good idea to state in your conclusions that “new experiments will be carried out to prove its value in diagnosis” – of course you don’t know whether its value will be proved or not until the experiments have been run. Perhaps “…to test its value…” would be better Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will be releasing the mattes that they generated. I didn’t see a statement about the pretrained models or code. It would be nice if they released those as well. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like how the authors involved clinicians in the evaluation process and valued their qualitative impression of the proposed representation. Presumably, clinicians have spent their careers building some kind of high-fidelity semantic representation of depicted structures in their minds when they read films. We should be doing our best to emulate and extend these rather than sticking to discrete segmentation masks just because they’re convenient. I appreciate that there is a dearth of datasets and challenges with multiple annotations, but it would be nice to benchmark the proposed method on a challenge leaderboard. Also, I appreciate that you are running up against space constraints, but it would be nice to discuss the limitations of this work. Certainly the soft labels have their advantages, but can we be sure that they faithfully represent the underlying uncertainty? How can we empirically evaluate the quality of labels like these? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors clearly outlined the problem they are addressing, how they are addressing it, and supported their claims with experimental data. The problem highly important and relevant to the MICCAI community, and existing solutions are inadequate. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes using alpha matting for medical image segmentation to alleviate the ambiguity issues related to binary masks. To this end, a specific architecture and dedicated losses are proposed. The approach is evaluated on two public datasets, for which the ground truth alpha mattes were generated and made publicly available. The results show a superiority of the proposed approach compared to existing image matting techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Important topic: By addressing the inherent ambiguity, the paper addresses an important problem in medical image segmentation. I like that the paper tries to bring a new perspective to the problem by approaching it with image matting. It is refreshing to see alternatives to the commonly used uncertainty estimation techniques. Feedback from clinicians: I appreciate the effort that the authors put into obtaining the feedback of clinical experts for the alpha mattes. Publicly available annotations: The author generated alpha mattes annotations for two medical image segmentation datasets and will make them publicly available. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -Difficult to read: The writing is convoluted and contains many errors. This renders the reading, and consequently, the understanding of the paper difficult. Also, it makes it hard to the motivation and details of the paper. Overly complicated method: The method includes many elements/parts that are not really motivated. I wonder whether it wouldn’t be possible to regress the alpha matte from the input image directly. And why is the probabilistic U-Net essential when the GT alpha matte can be sampled/thresholded (as done for the training of the probabilistic U-Net)?. Besides the missing motivation, the different elements are lacking proper ablation. By omitting ablations of individual elements (e.g., probabilistic U-Net, gradient loss, uncertainty-weighted loss, channel-wise attention), the reader cannot identify which elements are essential and which might be omitted/replaced. Finally, the missing motivation and missing ablations lead to an unclear message; I do not know what the paper wants to tell or what I should learn from it. Missing experiments to back up the claims: The title claims that the paper is providing a new perspective on medical image segmentation with uncertainty by introducing matting. However, the proposed method is only compared to existing matting techniques. The paper lacks experiments that show the benefit of matting over using uncertainty/certainty maps (not binary masks) in the first place. Only the experiment in Fig. 5 provides some information about the usefulness of matting. However, the performance of prob. U-Net and prob. U-Net+Matting seem to be almost identical, suggesting no benefit. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist was inappropriately filled in. For instance, the authors affirmed the options “The exact number of training and evaluation runs,” “Details on how baseline methods were implemented and tuned,” “A clear definition of the specific evaluation metrics and/or statistics used to report results,” “A description of results with central tendency (e.g. mean) &amp; variation (e.g. error bars),” “A description of the memory footprint,” but they did neither of those. Although publishing code for the review is not mandatory when promising code release, it would be beneficial to provide code already during the review phase for clarifying questions regarding the implementation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To improve the paper in the future, I suggest the following: Re-iterate the writing and proofreading to improve the readability, and consequently, the understanding. Define a clear message: Currently, I am not sure whether the message is to show that the proposed approach is improving over the existing matting methods or if the paper should actually show the benefits of matting (as the title suggests). Defining a clear message and setting up experiments that support this message would greatly benefit the paper. Simplify the method: I suggest simplifying the method if the main message should be showing the benefits of using alpha mattes in medical image segmentation. A simple method that shows the benefit of your new perspective will have much more impact than a convoluted, overly complicated method. Weaken claims: The paper includes several claims that are not backed up by experiments or by references, e.g., “our model outperforms all the other methods in both datasets, which illustrates our method is more applicable to the medical scenarios,” “[…] which has a better ability to reveal tiny and ambiguous structures and has a big potential for diagnosis,” “and prove that alpha matte is a more powerful annotation method than the binary mask.” Please weaken such claims or back them up with experiments or references. Metrics: Please shortly explain the metrics used for comparison in Table 1. Also, it would be beneficial to explain the meaning of the specific/uncommon metrics Dice_u and Dice@0.5 and why they are used. Baselines: Shortly explaining the baselines and motivating their selection would be helpful, such that a reader does not need to look up every of the referenced papers. Also, clarify how you apply them to your data. -Clarify motivation for alpha matte as uncertainty: It looks as that the generated alpha mattes very much resemble an image multiplied by a mask and are, thus, closely related to the actual image intensities. Due to this relation to the intensities, I wonder if it is valid to use mattes as reference for segmentation ambiguity/uncertainty. Motivating the use of mattes as uncertainty/ambiguity in the introduction would be helpful. Minor: Title: The title might extend the title by “medical IMAGE segmentation” to improve the clarity. Equation 7: I am not sure what two values “max” is comparing. Please clarify. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The poor writing, the unclear message, as well as the missing ablation and motivation of the overly complicated method are the major factors that led to my overall score. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper tackles medical image segmentation from the perspective of image matting. The authors prepare a matting dataset by considering multiple annotators. The deviations of probabilistic U-Net predictions are used as a measure of uncertainty, creating a trimap for a secondary image matting network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Tackling medical image segmentation as image matting, using uncertainty to form a trimap, is an interesting idea. The obtained results are qualitatively and quantitatively promising. The gathered manually labelled datasets for the study on uncertainty learning and matting in medical scenarios will be publicly available to the research community Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method needs multiple segmentation labels per training sample. Noticing the high cost associated with the acquisition of medical labels, this bottleneck could limit the applicability of the proposed approach. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The provided details seem to be adequate and the method has good reproducibility. The authors mention the training code will be available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The adaptation of the methodology for imaging modalities with blur edges, such as ultrasound data, could be an interesting investigation. The extension of the methodology for 3D image segmentation, and considerations for temporal data incorporation for video analysis, could also be an interesting future exploration. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factors for my recommendation, as detailed in the “strengths” section, are the obtained results and novelty of the application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission considers performing medical image segmentation with uncertainty using alpha matting. The proposed strategy is interesting and looks promising. However, reviewers have concerns about the readability of the manuscript, the complicated method with some unmotivated components, the missing experiments, and the use of multiple segmentation labels. In the rebuttal letter, the authors are suggested to addresses these concerns, and other questions from the reviewers if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal period. This submission could attract a lot of attention in the MICCAI community; therefore, it is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to include image matting into medical imaging segmentation task. It is a clear benefit to the clinicians (verified in Fig 2.). The way they collaborate with the clinicians should be encouraged. The release of the data shall also benefit the community. These has been appraised by almost all reviewers too. The weakness of this paper is no discussion on the extra effort for generating such image matting. This makes it difficult to be applied to the other tasks. The experiments part needs more work, especially Fig 4 (image too small) and Fig 5 (message unclear). This work needs to consider most MICCAI readers are not familiar with image matting. Current version is difficult to enlighten the readers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed an interesting idea of using alpha matting to deal with uncertainty in medical image segmentation. The concerns raised by the reviewers mainly include writing of the paper, motivation of the method, and description of some evaluation metrics. The authors clarified these points well in the rebuttal. The small weaknesses do not obscure its strength. Thus, I recommend acceptance of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers for their time and efforts. We reorganized the comments and responded to them as follows: Q: Motivation of using alpha matte for uncertainty measurement A: In medical segmentation tasks, we found that the fuzzy regions are difficult to annotate precisely, which are the potential reasons for the inconsistency between multiple annotations. i.e., the uncertainty is related to the structural information of the corresponding image. Image matting is able to deduce the estimated probability through the patterns of foreground and background regions. Inspired by this, we introduce matting into medical scenes as a soft segmentation method and a new perspective to handle and represent uncertainty region, namely medical matting. Apart from that, our ablation study shows that using soft labels to annotate medical images is informative as it is equivalent to leveraging multiple binary masks for training, which provides a potential route for more efficient use of limited data. In our latest study, experiments reveal that alpha matte outperforms binary masks trained model in the 3D CT nodules staging on LIDC, suggesting its potential application in various diagnosis tasks. Q: Network structure complexity A: As described in Section 3, our end-to-end network only consists of 2 major parts. The #MASK GENERATOR outputs various segmentation predictions under the target distribution. Such intermediate results are merged to create an UNCERTAINTY MAP, which assists the following #MATTING NETWORK like the trimap. Neither of these two sub-modules is dispensable. To simplify the model design and demonstrate the efficacy of the alpha matte idea, we only use a vanilla UNet architecture for prob-UNet rather than its more complex descendants. Q: Alpha matte with a single model It may seem possible to regress the alpha matte directly from the model design perspective. But, it is a consensus in general image matting that it is challenging to regress each pixel directly, as matting is a task intertwined with regression and classification. Hence the trimap mechanism is frequently used both in Laplacian-based and deep learning-based methods [1,5,6,8,11]. Our experiments also show that the uncertainty map, which analog to trimap, can achieve the best performance. Q: Experiments: Abalation &amp; Comparison &amp; Metric A: As aforementioned, The two sub-models #MASK GENERATOR and #MATTING NETWORK must work together, so ablation study on submodel can not be performed. Our work is the first work using matting to handle uncertainty. There exist no models for a direct and comprehensive comparison. So we designed the comparative experiment in two aspects. One aspect to compare the existing matting methods quantitatively, and shows that general matting methods can not be transferred directly to medical images. Another, we demonstrate that alpha matte can be a better method than the multiple binary labels in learning the uncertainty distribution, which provides a new direction for improving the soft boundary-based annotation method of medical image. We chose to use the adapted Dice metrics because Dice is a commonly used metric in segmentation, and the modified version can evaluate the similarity between the predictions and the targets at the distribution level and individual level, respectively. The change of the performance for matting metrics in recent literature is relatively small in value. Work from [5] uses x1000 to emphasize the difference of their method compared to others. To further increase the readability without changing the initial context, we have added a short overview for each model part. We have improved the structure of the Methodology section. Fig.3 also has been modified to make each sub-module more distinguishable to each other. At last, the authors would like to thank the reviewers and ACs again for their thoughtful comments. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wang, Lin,Ju, Lie,Zhang, Donghao,Wang, Xin,He, Wanji,Huang, Yelin,Yang, Zhiwen,Yao, Xuan,Zhao, Xin,Ye, Xiufen,Ge, Zongyuan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Medical Matting: A New Perspective on Medical Segmentation with Uncertainty</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wang, Lin"
+        class="post-tags">
+        Wang, Lin
+      </a> |  
+      
+      <a href="kittywong/tags#Ju, Lie"
+        class="post-tags">
+        Ju, Lie
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Donghao"
+        class="post-tags">
+        Zhang, Donghao
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Xin"
+        class="post-tags">
+        Wang, Xin
+      </a> |  
+      
+      <a href="kittywong/tags#He, Wanji"
+        class="post-tags">
+        He, Wanji
+      </a> |  
+      
+      <a href="kittywong/tags#Huang, Yelin"
+        class="post-tags">
+        Huang, Yelin
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Zhiwen"
+        class="post-tags">
+        Yang, Zhiwen
+      </a> |  
+      
+      <a href="kittywong/tags#Yao, Xuan"
+        class="post-tags">
+        Yao, Xuan
+      </a> |  
+      
+      <a href="kittywong/tags#Zhao, Xin"
+        class="post-tags">
+        Zhao, Xin
+      </a> |  
+      
+      <a href="kittywong/tags#Ye, Xiufen"
+        class="post-tags">
+        Ye, Xiufen
+      </a> |  
+      
+      <a href="kittywong/tags#Ge, Zongyuan"
+        class="post-tags">
+        Ge, Zongyuan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Lin Wang, Lie Ju, Donghao Zhang, Xin Wang, Wanji He, Yelin Huang, Zhiwen Yang, Xuan Yao, Xin Zhao, Xiufen Ye, Zongyuan Ge
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>In medical image segmentation, it is difficult to mark ambiguous areas accurately with binary masks, especially when dealing with small lesions. Therefore, it is a challenge for radiologists to reach a consensus by using binary masks under the condition of multiple annotations. However, these uncertain areas may contain anatomical structures that are conducive to diagnosis. Uncertainty is introduced to study these situations. Nevertheless, the uncertainty is usually measured by the variances between predictions in a multiple trial way. It is not intuitive, and there is no exact correspondence in the image. Inspired by image matting, we introduce matting as a soft segmentation method and a new perspective to deal with and represent uncertain regions into medical scenes, namely medical matting. More specifically, because there is no available medical matting dataset, we first labeled two medical datasets with alpha matte. Secondly, the matting methods applied to the natural image are not suitable for the medical scene, so we propose a new architecture to generate binary masks and alpha matte in a row. Thirdly, the uncertainty map is introduced to highlight the ambiguous regions from the binary results and improve the matting performance. Evaluated on these datasets, the proposed model outperformed state-of-the-art matting algorithms by a large margin, and alpha matte is proved to be a more efficient labeling form than a binary mask.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_54">https://doi.org/10.1007/978-3-030-87199-4_54</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors present experiments using alpha mattes as a prediction target for segmentation problems. These mattes were generated from data that had been segmented by multiple observers using a pipeline which leveraged their disagreement to produce a trimap which was then provided to an existing matting method from the literature. The authors present empirical evidence that the resulting maps were preferred by clinicians in terms of their ability to faithfully represent the spatial extent of the underlying structure. The authors further propose a multitask approach to simulaneously predict the alpha matte as well as binary masks that were produced by applying thresholds to the alpha matte. They show that their multitask approach outperforms a single-task approach as well as existing matte prediction approaches. The authors promise to release the underlying data for their experiments once the review process is complete.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>“Soft” segmentation labels like the authors’ “alpha mattes” have enormous potential in medical image segmentation. Resolution limitations and obscuring artifacts often make ROI boundaries literally impossible to delineate exactly. The traditional approach to “uncertain” labels is to have multiple annotators delineate the region independently and treat these as samples from the underlying distribution, which captures the uncertainty. This work attempts to represent the uncertainty directly, and use it as a prediction target. I have to agree with the authors here that this is a far more intuitive and elegant approach. I also like that the authors solicited the opinion of expert clinicians on this topic who also overwhelmingly preferred this representation to the the multiple-annotation alternative. Another strength of this work is the empirical experiments which show the value of these derived alpha mattes as versatile objects for creative loss functions.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The alpha mattes being used in this work are ultimately derived from multiple annotations, which means they carry many of the limitations that multiple annotations do – namely that they have some bias toward “modes” of plausible region boundaries. For example if 1000 raters are all 90% sure the boundary is at position A rather than position B, then they will all annotation for position A, rather than the 90-10 split that one would hope for. When raters are asked to make binary decisions, you will lose information regardless of how many raters you have. I will concede that the authors mention that the clinicians were asked to tweak the derived alpha mattes, but no information was given about how often this tweaking was done or what tools were used. I imagine that manually providing voxel-wise confidence values is extremely tedious, so I can’t imagine it was done often or done carefully when attempted.</p>
+
+      <p>Aside from this, I have only a few minor suggestions/points of confusion:</p>
+      <ul>
+        <li>At first I didn’t catch where the P_c function from equation 2 was defined – perhaps the “average score map” should be introduced formally</li>
+        <li>It would be nice to mention the methods for creating the ground truth alpha matte within the methodology section</li>
+        <li>It’s probably not a good idea to state in your conclusions that “new experiments will be carried out to prove its value in diagnosis” – of course you don’t know whether its value will be proved or not until the experiments have been run. Perhaps “…to <em>test</em> its value…” would be better</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors mention that they will be releasing the mattes that they generated. I didn’t see a statement about the pretrained models or code. It would be nice if they released those as well.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I like how the authors involved clinicians in the evaluation process and valued their qualitative impression of the proposed representation. Presumably, clinicians have spent their careers building some kind of high-fidelity semantic representation of depicted structures in their minds when they read films. We should be doing our best to emulate and extend these rather than sticking to discrete segmentation masks just because they’re convenient.</p>
+
+      <p>I appreciate that there is a dearth of datasets and challenges with multiple annotations, but it would be nice to benchmark the proposed method on a challenge leaderboard.</p>
+
+      <p>Also, I appreciate that you are running up against space constraints, but it would be nice to discuss the limitations of this work. Certainly the soft labels have their advantages, but can we be sure that they faithfully represent the underlying uncertainty? How can we empirically evaluate the quality of labels like these?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The authors clearly outlined the problem they are addressing, how they are addressing it, and supported their claims with experimental data. The problem highly important and relevant to the MICCAI community, and existing solutions are inadequate.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes using alpha matting for medical image segmentation to alleviate the ambiguity issues related to binary masks. To this end, a specific architecture and dedicated losses are proposed. The approach is evaluated on two public datasets, for which the ground truth alpha mattes were generated and made publicly available. The results show a superiority of the proposed approach compared to existing image matting techniques.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Important topic: By addressing the inherent ambiguity, the paper addresses an important problem in medical image segmentation. I like that the paper tries to bring a new perspective to the problem by approaching it with image matting. It is refreshing to see alternatives to the commonly used uncertainty estimation techniques.</p>
+        </li>
+        <li>
+          <p>Feedback from clinicians: I appreciate the effort that the authors put into obtaining the feedback of clinical experts for the alpha mattes.</p>
+        </li>
+        <li>
+          <p>Publicly available annotations: The author generated alpha mattes annotations for two medical image segmentation datasets and will make them publicly available.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>-Difficult to read: The writing is convoluted and contains many errors. This renders the reading, and consequently, the understanding of the paper difficult. Also, it makes it hard to the motivation and details of the paper.</p>
+
+      <ul>
+        <li>
+          <p>Overly complicated method: The method includes many elements/parts that are not really motivated. I wonder whether it wouldn’t be possible to regress the alpha matte from the input image directly. And why is the probabilistic U-Net essential when the GT alpha matte can be sampled/thresholded (as done for the training of the probabilistic U-Net)?. Besides the missing motivation, the different elements are lacking proper ablation. By omitting ablations of individual elements (e.g., probabilistic U-Net, gradient loss, uncertainty-weighted loss, channel-wise attention), the reader cannot identify which elements are essential and which might be omitted/replaced. Finally, the missing motivation and missing ablations lead to an unclear message; I do not know what the paper wants to tell or what I should learn from it.</p>
+        </li>
+        <li>
+          <p>Missing experiments to back up the claims: The title claims that the paper is providing a new perspective on medical image segmentation with uncertainty by introducing matting. However, the proposed method is only compared to existing matting techniques. The paper lacks experiments that show the benefit of matting over using uncertainty/certainty maps (not binary masks) in the first place. Only the experiment in Fig. 5 provides some information about the usefulness of matting. However, the performance of prob. U-Net and prob. U-Net+Matting seem to be almost identical, suggesting no benefit.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The reproducibility checklist was inappropriately filled in. For instance, the authors affirmed the options “The exact number of training and evaluation runs,” “Details on how baseline methods were implemented and tuned,” “A clear definition of the specific evaluation metrics and/or statistics used to report results,” “A description of results with central tendency (e.g. mean) &amp; variation (e.g. error bars),” “A description of the memory footprint,” but they did neither of those.</p>
+        </li>
+        <li>
+          <p>Although publishing code for the review is not mandatory when promising code release, it would be beneficial to provide code already during the review phase for clarifying questions regarding the implementation.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>To improve the paper in the future, I suggest the following:</p>
+
+      <ul>
+        <li>
+          <p>Re-iterate the writing and proofreading to improve the readability, and consequently, the understanding.</p>
+        </li>
+        <li>
+          <p>Define a clear message: Currently, I am not sure whether the message is to show that the proposed approach is improving over the existing matting methods or if the paper should actually show the benefits of matting (as the title suggests). Defining a clear message and setting up experiments that support this message would greatly benefit the paper.</p>
+        </li>
+        <li>
+          <p>Simplify the method: I suggest simplifying the method if the main message should be showing the benefits of using alpha mattes in medical image segmentation. A simple method that shows the benefit of your new perspective will have much more impact than a convoluted, overly complicated method.</p>
+        </li>
+        <li>
+          <p>Weaken claims: The paper includes several claims that are not backed up by experiments or by references, e.g., “our model outperforms all the other methods in both datasets, which illustrates our method is more applicable to the medical scenarios,” “[…] which has a better ability to reveal tiny and ambiguous structures and has a big potential for diagnosis,” “and prove that alpha matte is a more powerful annotation method than the binary mask.” Please weaken such claims or back them up with experiments or references.</p>
+        </li>
+        <li>
+          <p>Metrics: Please shortly explain the metrics used for comparison in Table 1. Also, it would be beneficial to explain the meaning of the specific/uncommon metrics Dice_u and Dice@0.5 and why they are used.</p>
+        </li>
+        <li>
+          <p>Baselines: Shortly explaining the baselines and motivating their selection would be helpful, such that a reader does not need to look up every of the referenced papers. Also, clarify how you apply them to your data.</p>
+        </li>
+      </ul>
+
+      <p>-Clarify motivation for alpha matte as uncertainty: It looks as that the generated alpha mattes very much resemble an image multiplied by a mask and are, thus, closely related to the actual image intensities. Due to this relation to the intensities, I wonder if it is valid to use mattes as reference for segmentation ambiguity/uncertainty. Motivating the use of mattes as uncertainty/ambiguity in the introduction would be helpful.</p>
+
+      <p>Minor:</p>
+      <ul>
+        <li>Title: The title might extend the title by “medical IMAGE segmentation” to improve the clarity.</li>
+        <li>Equation 7: I am not sure what two values “max” is comparing. Please clarify.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>reject (3)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The poor writing, the unclear message, as well as the missing ablation and motivation of the overly complicated method are the major factors that led to my overall score.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper tackles medical image segmentation from the perspective of image matting. The authors prepare a matting dataset by considering multiple annotators. The deviations of probabilistic U-Net predictions are used as a measure of uncertainty, creating a trimap for a secondary image matting network.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Tackling medical image segmentation as image matting, using uncertainty to form a trimap, is an interesting idea.</li>
+        <li>The obtained results are qualitatively and quantitatively promising.</li>
+        <li>The gathered manually labelled datasets for the study on uncertainty learning and matting in medical scenarios will be publicly available to the research community</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The method needs multiple segmentation labels per training sample. Noticing the high cost associated with the acquisition of medical labels, this bottleneck could limit the applicability of the proposed approach.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The provided details seem to be adequate and the method has good reproducibility. The authors mention the training code will be available upon acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>The adaptation of the methodology for imaging modalities with blur edges, such as ultrasound data, could be an interesting investigation.</li>
+        <li>The extension of the methodology for 3D image segmentation, and considerations for temporal data incorporation for video analysis, could also be an interesting future exploration.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The major factors for my recommendation, as detailed in the “strengths” section, are the obtained  results and novelty of the application.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The submission considers performing medical image segmentation with uncertainty using alpha matting. The proposed strategy is interesting and looks promising. However, reviewers have concerns about the readability of the manuscript, the complicated method with some unmotivated components, the missing experiments, and the use of multiple segmentation labels. In the rebuttal letter, the authors are suggested to addresses these concerns, and other questions from the reviewers if space allows.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors addressed most of the conerns raised by the reviewers in the rebuttal period. This submission could attract a lot of attention in the MICCAI community; therefore, it is recommended for acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>In this paper, the authors proposed to include image matting into medical imaging segmentation task. It is a clear benefit to the clinicians (verified in Fig 2.). The way they collaborate with the clinicians should be encouraged. The release of the data shall also benefit the community. These has been appraised by almost all reviewers too. The weakness of this paper is no discussion on the extra effort for generating such image matting. This makes it difficult to be applied to the other tasks. The experiments part needs more work, especially Fig 4 (image too small) and Fig 5 (message unclear). This work needs to consider most MICCAI readers are not familiar with image matting. Current version is difficult to enlighten the readers.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>12</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper proposed an interesting idea of using alpha matting to deal with uncertainty in medical image segmentation. The concerns raised by the reviewers mainly include writing of the paper, motivation of the method, and description of some evaluation metrics.  The authors clarified these points well in the rebuttal.  The small weaknesses do not obscure its strength. Thus, I recommend acceptance of this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We sincerely thank all the reviewers for their time and efforts. We reorganized the comments and responded to them as follows:</p>
+
+  <p>Q: Motivation of using alpha matte for uncertainty measurement
+A: In medical segmentation tasks, we found that the fuzzy regions are difficult to annotate precisely, which are the potential reasons for the inconsistency between multiple annotations. i.e., the uncertainty is related to the structural information of the corresponding image.</p>
+
+  <p>Image matting is able to deduce the estimated probability through the patterns of foreground and background regions. Inspired by this, we introduce matting into medical scenes as a soft segmentation method and a new perspective to handle and represent uncertainty region, namely medical matting.
+Apart from that, our ablation study shows that using soft labels to annotate medical images is informative as it is equivalent to leveraging multiple binary masks for training, which provides a potential route for more efficient use of limited data. In our latest study, experiments reveal that alpha matte outperforms binary masks trained model in the 3D CT nodules staging on LIDC, suggesting its potential application in various diagnosis tasks.</p>
+
+  <p>Q: Network structure complexity 
+A: As described in Section 3, our end-to-end network only consists of 2 major parts. The #MASK GENERATOR outputs various segmentation predictions under the target distribution. Such intermediate results are merged to create an UNCERTAINTY MAP, which assists the following #MATTING NETWORK like the trimap. Neither of these two sub-modules is dispensable.</p>
+
+  <p>To simplify the model design and demonstrate the efficacy of the alpha matte idea, we only use a vanilla UNet architecture for prob-UNet rather than its more complex descendants.</p>
+
+  <p>Q: Alpha matte with a single model 
+It may seem possible to regress the alpha matte directly from the model design perspective. But, it is a consensus in general image matting that it is challenging to regress each pixel directly, as matting is a task intertwined with regression and classification. Hence the trimap mechanism is frequently used both in Laplacian-based and deep learning-based methods [1,5,6,8,11]. Our experiments also show that the uncertainty map, which analog to trimap, can achieve the best performance.</p>
+
+  <p>Q: Experiments: Abalation &amp; Comparison &amp; Metric
+A: As aforementioned, The two sub-models #MASK GENERATOR and #MATTING NETWORK must work together, so ablation study on submodel can not be performed. 
+Our work is the first work using matting to handle uncertainty. There exist no models for a direct and comprehensive comparison. So we designed the comparative experiment in two aspects. One aspect to compare the existing matting methods quantitatively, and shows that general matting methods can not be transferred directly to medical images.
+Another, we demonstrate that alpha matte can be a better method than the multiple binary labels in learning the uncertainty distribution, which provides a new direction for improving the soft boundary-based annotation method of medical image.</p>
+
+  <p>We chose to use the adapted Dice metrics because Dice is a commonly used metric in segmentation, and the modified version can evaluate the similarity between the predictions and the targets at the distribution level and individual level, respectively.</p>
+
+  <p>The change of the performance for matting metrics in recent literature is relatively small in value. Work from [5] uses x1000 to emphasize the difference of their method compared to others.</p>
+
+  <p>To further increase the readability without changing the initial context, we have added a short overview for each model part. We have improved the structure of the Methodology section. Fig.3 also has been modified to make each sub-module more distinguishable to each other.</p>
+
+  <p>At last, the authors would like to thank the reviewers and ACs again for their thoughtful comments.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0353-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0354-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wang, Lin"
+        class="post-category">
+        Wang, Lin
+      </a> |  
+      
+      <a href="kittywong/tags#Ju, Lie"
+        class="post-category">
+        Ju, Lie
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Donghao"
+        class="post-category">
+        Zhang, Donghao
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Xin"
+        class="post-category">
+        Wang, Xin
+      </a> |  
+      
+      <a href="kittywong/tags#He, Wanji"
+        class="post-category">
+        He, Wanji
+      </a> |  
+      
+      <a href="kittywong/tags#Huang, Yelin"
+        class="post-category">
+        Huang, Yelin
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Zhiwen"
+        class="post-category">
+        Yang, Zhiwen
+      </a> |  
+      
+      <a href="kittywong/tags#Yao, Xuan"
+        class="post-category">
+        Yao, Xuan
+      </a> |  
+      
+      <a href="kittywong/tags#Zhao, Xin"
+        class="post-category">
+        Zhao, Xin
+      </a> |  
+      
+      <a href="kittywong/tags#Ye, Xiufen"
+        class="post-category">
+        Ye, Xiufen
+      </a> |  
+      
+      <a href="kittywong/tags#Ge, Zongyuan"
+        class="post-category">
+        Ge, Zongyuan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0354/12/31/Paper0611">
+          Confidence-aware Cascaded Network for Fetal Brain Segmentation on MR Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0352/12/31/Paper2481">
+          PAC Bayesian Performance Guarantees for (Stochastic) Deep Networks in Medical Imaging
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

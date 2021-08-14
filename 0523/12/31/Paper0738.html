@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Cost-Sensitive Meta-Learning for Progress Prediction of Subjective Cognitive Decline with Brain Structural MRI | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Cost-Sensitive Meta-Learning for Progress Prediction of Subjective Cognitive Decline with Brain Structural MRI" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Guan, Yunbi Liu, Shifu Xiao, Ling Yue, Mingxia Liu Abstract Subjective cognitive decline (SCD) is a preclinical phase of Alzheimer’s disease (AD) which occurs before the de cits could be detected by cognitive tests. It is highly desired to predict the progress of SCD for possible intervention of AD-related cognitive decline. Many neuroimaging-based methods have been developed for AD diagnosis, but there are few studies devoted to automated progress prediction of SCD due to the limited number of SCD subjects. Even though some studies proposed to transfer models (trained on AD/MCI) to SCD analysis, the signi cant domain shift between their data distributions may degrade the prediction performance. To this end, this paper tackles the problem of learning a model from the source data for which can directly generalize to an unseen target domain for SCD prediction. We propose a cost-sensitive meta-learning scheme to simultaneously improve the model generalization and its sensitivity in MRI-based SCD detection. During training, the source domain is divided into virtual meta-train and metatest sets to explicitly simulate the scenario for early-stage detection of AD. Considering the importance of sensitivity for progressive status detection, we further introduce cost-sensitive learning to enhance the metaoptimization process by encouraging the model to gain higher sensitivity for SCD detection with simulated domain shift. Experiments conducted on the large-scale ADNI dataset and a small-scale SCD dataset have demonstrated the effectiveness of the proposed method. Link to paper https://doi.org/10.1007/978-3-030-87240-3_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deep architecture to predict the evolution of patients diagnosed with subjective cognitive decline (SCD) toward Alzheimer disease (AD) in MRI. Based on the very limited number of SCD MRI exams, the authors propose an architecture based on the meta-learning framework that was derived to address the problem of domain adaptation in the context of multiple annotated source and unannotated target datasets. The authors also add a cost-sensitive loss term to maximise sensitivity. The source datasets are extracted from the ADNI database including MCI (653) , AD (367) and SCD (16) patients while the target dataset is a private one consisting of 76 SCD patients. The proposed method is compared to alternative architectures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -the implementation of the meta-learning framework, although it has been previously applied to different medical diagnostic task is original for this application -Attempt to visualize the latent space is interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -The technical soundness of the implementation of the meta-learning framework is questionable. Please see my detailed comment below. The experimental study, especially regarding the comparison with SOTA methods, should be further detailed. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will release all available code in section2 of the check-list, which is not mentioned in the core paper. They answered ‘yes’ to almost all questions, which is not always correct : the range of hyper-parameters considered and details on how baseline methods were implemented and tuned are not always provided, statistical analysis of results are analysis of situations in which the method failed are not performed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and clear. I have one major concern regarding the technical correctness of the meta-learning implementation. Please find below some comments and questions. -The author mention that their architecture relies on the meta-learning paradigm proposed by Li et al in [14]. In this paper, the authors propose an iterative process whose algorithm is described in ‘Algorithm 1’ of their paper. A each iteration 1) the meta-training and meta-test datasets are modified by selecting different combinations of sources datasets and 2) the weight of the CNN are updated based on both backpropagation of the meta-train and meta-test loss function. Also note that a beta parameter is added to weight the different contributions of these two loss terms. Based on the text and on fig 2, it is not clear that your implementation follows this methodology: 1) could you please clarify If you perform this iteration loop to modify the meta source datasets of the meta-train and meta-test sets? If not, I guess your model resumes to a classical CNN model trained with mixed sources data (including PSC patient of the ADNI database) with the addition of a cost-sensitive loss term. 2) could you please further detail how the weights are updated bases on the different loss terms. Fig 2 indicates the update of the meta-test CNN (blue vertical arrow) but what about updating the weight of the meta-train CNN based on the meta-test and cost-sensitive losses. The update process should be clarified. -Regarding the implementation the authors mention “ For simplicity, the parameters alpha and beta in Eq. (2) are set to 1.”. The authors should discuss this and evaluate the impact of these parameters on the global performance -Regarding results in Fig 6, If I understand correctly, CSML is the considered model, while CSML-1 and -2 are the same models trained with different sources (cf my remarks above, I guess the meta-train sources are not iteratively mixed) but without the cost-sensitive term. I would say that the performance achieved with CSML-2 and CSML-1 do not differ significantly from that achieved with the global model, thus meaning that the cost-sensitive loss term has a minor impact on the global performance. Please comment. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I am questioning the correctness of the meta-learning implementation. Comparison with the SOTA methods should be improved, as pointed in my comments, to confirm that the proposed method outperforms SOTA methods. The reproducibility check-list does not fully reflect the content of the paper. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors show that by applying a meta-learning framework (meta-train with different domain than target domain, meta-test with target domain, and cost-sensitive loss to improve sensitivity) they are able to predict whether SCD subjects will progress to MCI or remain stable with a better AUC than state of the art methods. They include subjects from ADNI, but also patients from a local hospital with a larger number of SCD subjects than those found in ADNI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The evaluation of their results was compared against multiple competing methods as well as against multiple state-of-the-art methodologies, obtaining promising results. The inclusion of a cost-sensitive loss enhances the sensitivity of their methodology. The validation dataset includes much more SDC patients than its ADNI counterpart. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the comparison between the proposed method, the competing methods and the variants of the proposed method are somewhat biased towards yielding a positive conclusion regarding the proposed method (e.g., the accuracy of the baseline-2 method is comparable to the proposed method and its variants.) Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that they have shared a link to a downloadable version of the new dataset, but I am unable to find it (it could be my mistake, though). Same goes for their code, I don’t know if they will make it available after (if) accepted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This work is very interesting and I believe its results are very promising. Howevert, the results of the Baseline-2 method should be further analyzed; I believe it is being harshly evaluated. It achieves almost the same accuracy as the proposed method, a metric of more clinical significance than the AUC values. Maybe you could evaluate whether if by performing a meta-train and meta-test, both with the M domain, so as not to consider it an CSML variant, but including the cost-sensitive loss, the baseline-2 results would also be comparable to your proposed methods in terms of sensitiviy. Moreso, the baseline-2 methodology does take into account the typical restriction that yields the need for a meta-learning scheme, no target samples are available for model training or fine-tuning. Whereas, your methodology does imply the need of target samples available for model training. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the methodology, the amount of methods against which it was compared/evaluated, the inclusion of a larger database than typically used, the promising results that they obtained, and the overall good structure/organization/clarity of the manuscript. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A Cost Sensitive Meta-Learning (CSML) framework for Subjective Cognitive Decline (SCD) progress prediction was presented. The source domain that consisted divided into meta-train and meta-test datasets so as to generalize to an unseen target SCD domain. An ablation analysis was also performed to assess the importance of this learning scheme in the model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • Novelty, in that SCD was focused rather than classification of MCI from AD • Clinical relevance of the problem Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • Minor concern: Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology. • Sensitivity (SEN) metric, on which the model was optimized on was still below state of the art GANs (as evident from Table 2) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • Part of the data used is from a publicly available dataset Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Concerns: Please try to include more clinincal details regarding the diagnosis/prognosis of pSCD and sSCD, and the standard norms for it. Please comment on higher specificity (SPE) for the Baseline-2 model as evident in Table 1 Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology What was the rationale to include Normal Controls (NCs) only in the A source domain, but not in the M or S ? Considering the fact that SCDs are pre-clinical, one would expect that the NC feature distributions would also be closer to SCDs as are MCIs, and should be studied. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? • Novelty of the problem • Further extensive evaluation of the model results using Ablation analysis, Saliency maps and comparisons to similar models and state of the art What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper is written well, and some details need to be supplemented. For example, the experimental comparison with SOTA methods, detail how the weights are updated bases on the different loss terms, clarify this iteration loop to modify the meta source datasets of the meta-train and meta-test sets，and some others. Please revise the paper carefully according to the comments. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We appreciate the ACs and Reviewers for the constructive comments. We are encouraged by the many positive comments about our ‘novelty’ of both the problem and method (R3), ‘original and clinical relevant application’ (R1&amp;R3), and ‘very interesting work and very promising results’ (R2), and ‘well-written’ manuscript (R1&amp;R2&amp;R3&amp;AC). We will address the minor concerns in the following: Q1: Comparison with SOTA methods (R1,AC) -For the fair comparison, we reproduced the SOTA methods in Table 2 using the same data set as this work. -As suggested, we’ll include more details on implementations of these methods in the final version. Q2: How to update weights based on different loss terms (R1) -Please note that there is only one CNN in the proposed framework, and there are not the “meta-train CNN” or “meta-test CNN”. In Fig. 2, the CNNs in different colors merely indicate the different update stages of the CNN, not different CNNs. -Let w denote the weight of the CNN. The weight goes through a two-step update. First, the CNN is trained with the meta-train loss on meta-train set, and the weight w is updated according to equation (1). Then, the updated CNN is fed with the meta-test set, and the meta-test loss and cost-sensitive loss are utilized to further update the weight. The training on the meta-test set can be understood as a regularization term which enables the network to gain a generalization ability for SCD prediction on the target domain. -In the final version, we will add more details on the optimization. Q3: Iteration loop to modify meta source datasets of meta-train and meta-test sets (R1) -The study in [14] has a different problem setting from ours. In [14], there are multiple (typically&gt;4) source domains which share the same label space (and the target domain shares the same label space, too). Thus, their task is to develop a transferable model for entire label space while alleviating the domain shift without accessing the target data for training. Please note that the only difference between their source domains is their covariance shift. -The focus of this work is to predict the future progress of SCD. There are 2 source domains (i.e., M with pMCI&amp;sMCI, and S with pSCD&amp;sSCD) and they do not share the same label space. We aim to develop a train a model on source domains and do not access the target domain (an SCD dataset). Thus, M is utilized as the meta-train set and S is used as the meta-test set. The meta-learning in our framework ensures its fundamental difference from a plain CNN just trained with data from mixed sources. -In the future work, we plan to collect data from more sources to further improve our model. Q4: Impact of cost-sensitive loss on the global performance &amp; Statistical analysis or results (R1,R2) -We’d like to mention that the task of SCD progress prediction is very challenging, due to the fact that SCD appears at the preclinical stage of Alzheimer’s disease (AD) even without significant objective impairment in the brain. Results reported in Tables 1-2 and Fig. 6 suggest that results of SCD progress prediction are usually worse than those of MCI conversion prediction and AD identification [1,2]. -We add an experiment to evaluate whether the results of CSML and its 2 variants (i.e., CSML-1 and CSML-2) are significantly different via pair-wise t-test. The p-value for results of CSML vs. CSML-1 is 0.029, while that for CSML vs. CSML-2 is 0.033. This suggests that there is significant difference (p&lt;0.05) between CSML and CSML-1/CSML-2. -We will add the results in the final version. [1] DOI:10.1093/brain/awaa137 [2] DOI: 10.1016/j.neuroimage.2019.01.031 Q5: Using longitudinal neuroimaging data at multiple time points or not (R3) -We only used baseline MRIs in this work, without using longitudinal MRI data. -We will point this out in the final version. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Guan, Yunbi Liu, Shifu Xiao, Ling Yue, Mingxia Liu Abstract Subjective cognitive decline (SCD) is a preclinical phase of Alzheimer’s disease (AD) which occurs before the de cits could be detected by cognitive tests. It is highly desired to predict the progress of SCD for possible intervention of AD-related cognitive decline. Many neuroimaging-based methods have been developed for AD diagnosis, but there are few studies devoted to automated progress prediction of SCD due to the limited number of SCD subjects. Even though some studies proposed to transfer models (trained on AD/MCI) to SCD analysis, the signi cant domain shift between their data distributions may degrade the prediction performance. To this end, this paper tackles the problem of learning a model from the source data for which can directly generalize to an unseen target domain for SCD prediction. We propose a cost-sensitive meta-learning scheme to simultaneously improve the model generalization and its sensitivity in MRI-based SCD detection. During training, the source domain is divided into virtual meta-train and metatest sets to explicitly simulate the scenario for early-stage detection of AD. Considering the importance of sensitivity for progressive status detection, we further introduce cost-sensitive learning to enhance the metaoptimization process by encouraging the model to gain higher sensitivity for SCD detection with simulated domain shift. Experiments conducted on the large-scale ADNI dataset and a small-scale SCD dataset have demonstrated the effectiveness of the proposed method. Link to paper https://doi.org/10.1007/978-3-030-87240-3_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deep architecture to predict the evolution of patients diagnosed with subjective cognitive decline (SCD) toward Alzheimer disease (AD) in MRI. Based on the very limited number of SCD MRI exams, the authors propose an architecture based on the meta-learning framework that was derived to address the problem of domain adaptation in the context of multiple annotated source and unannotated target datasets. The authors also add a cost-sensitive loss term to maximise sensitivity. The source datasets are extracted from the ADNI database including MCI (653) , AD (367) and SCD (16) patients while the target dataset is a private one consisting of 76 SCD patients. The proposed method is compared to alternative architectures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -the implementation of the meta-learning framework, although it has been previously applied to different medical diagnostic task is original for this application -Attempt to visualize the latent space is interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -The technical soundness of the implementation of the meta-learning framework is questionable. Please see my detailed comment below. The experimental study, especially regarding the comparison with SOTA methods, should be further detailed. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will release all available code in section2 of the check-list, which is not mentioned in the core paper. They answered ‘yes’ to almost all questions, which is not always correct : the range of hyper-parameters considered and details on how baseline methods were implemented and tuned are not always provided, statistical analysis of results are analysis of situations in which the method failed are not performed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and clear. I have one major concern regarding the technical correctness of the meta-learning implementation. Please find below some comments and questions. -The author mention that their architecture relies on the meta-learning paradigm proposed by Li et al in [14]. In this paper, the authors propose an iterative process whose algorithm is described in ‘Algorithm 1’ of their paper. A each iteration 1) the meta-training and meta-test datasets are modified by selecting different combinations of sources datasets and 2) the weight of the CNN are updated based on both backpropagation of the meta-train and meta-test loss function. Also note that a beta parameter is added to weight the different contributions of these two loss terms. Based on the text and on fig 2, it is not clear that your implementation follows this methodology: 1) could you please clarify If you perform this iteration loop to modify the meta source datasets of the meta-train and meta-test sets? If not, I guess your model resumes to a classical CNN model trained with mixed sources data (including PSC patient of the ADNI database) with the addition of a cost-sensitive loss term. 2) could you please further detail how the weights are updated bases on the different loss terms. Fig 2 indicates the update of the meta-test CNN (blue vertical arrow) but what about updating the weight of the meta-train CNN based on the meta-test and cost-sensitive losses. The update process should be clarified. -Regarding the implementation the authors mention “ For simplicity, the parameters alpha and beta in Eq. (2) are set to 1.”. The authors should discuss this and evaluate the impact of these parameters on the global performance -Regarding results in Fig 6, If I understand correctly, CSML is the considered model, while CSML-1 and -2 are the same models trained with different sources (cf my remarks above, I guess the meta-train sources are not iteratively mixed) but without the cost-sensitive term. I would say that the performance achieved with CSML-2 and CSML-1 do not differ significantly from that achieved with the global model, thus meaning that the cost-sensitive loss term has a minor impact on the global performance. Please comment. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I am questioning the correctness of the meta-learning implementation. Comparison with the SOTA methods should be improved, as pointed in my comments, to confirm that the proposed method outperforms SOTA methods. The reproducibility check-list does not fully reflect the content of the paper. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors show that by applying a meta-learning framework (meta-train with different domain than target domain, meta-test with target domain, and cost-sensitive loss to improve sensitivity) they are able to predict whether SCD subjects will progress to MCI or remain stable with a better AUC than state of the art methods. They include subjects from ADNI, but also patients from a local hospital with a larger number of SCD subjects than those found in ADNI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The evaluation of their results was compared against multiple competing methods as well as against multiple state-of-the-art methodologies, obtaining promising results. The inclusion of a cost-sensitive loss enhances the sensitivity of their methodology. The validation dataset includes much more SDC patients than its ADNI counterpart. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the comparison between the proposed method, the competing methods and the variants of the proposed method are somewhat biased towards yielding a positive conclusion regarding the proposed method (e.g., the accuracy of the baseline-2 method is comparable to the proposed method and its variants.) Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that they have shared a link to a downloadable version of the new dataset, but I am unable to find it (it could be my mistake, though). Same goes for their code, I don’t know if they will make it available after (if) accepted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This work is very interesting and I believe its results are very promising. Howevert, the results of the Baseline-2 method should be further analyzed; I believe it is being harshly evaluated. It achieves almost the same accuracy as the proposed method, a metric of more clinical significance than the AUC values. Maybe you could evaluate whether if by performing a meta-train and meta-test, both with the M domain, so as not to consider it an CSML variant, but including the cost-sensitive loss, the baseline-2 results would also be comparable to your proposed methods in terms of sensitiviy. Moreso, the baseline-2 methodology does take into account the typical restriction that yields the need for a meta-learning scheme, no target samples are available for model training or fine-tuning. Whereas, your methodology does imply the need of target samples available for model training. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the methodology, the amount of methods against which it was compared/evaluated, the inclusion of a larger database than typically used, the promising results that they obtained, and the overall good structure/organization/clarity of the manuscript. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A Cost Sensitive Meta-Learning (CSML) framework for Subjective Cognitive Decline (SCD) progress prediction was presented. The source domain that consisted divided into meta-train and meta-test datasets so as to generalize to an unseen target SCD domain. An ablation analysis was also performed to assess the importance of this learning scheme in the model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • Novelty, in that SCD was focused rather than classification of MCI from AD • Clinical relevance of the problem Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • Minor concern: Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology. • Sensitivity (SEN) metric, on which the model was optimized on was still below state of the art GANs (as evident from Table 2) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • Part of the data used is from a publicly available dataset Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Concerns: Please try to include more clinincal details regarding the diagnosis/prognosis of pSCD and sSCD, and the standard norms for it. Please comment on higher specificity (SPE) for the Baseline-2 model as evident in Table 1 Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology What was the rationale to include Normal Controls (NCs) only in the A source domain, but not in the M or S ? Considering the fact that SCDs are pre-clinical, one would expect that the NC feature distributions would also be closer to SCDs as are MCIs, and should be studied. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? • Novelty of the problem • Further extensive evaluation of the model results using Ablation analysis, Saliency maps and comparisons to similar models and state of the art What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper is written well, and some details need to be supplemented. For example, the experimental comparison with SOTA methods, detail how the weights are updated bases on the different loss terms, clarify this iteration loop to modify the meta source datasets of the meta-train and meta-test sets，and some others. Please revise the paper carefully according to the comments. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We appreciate the ACs and Reviewers for the constructive comments. We are encouraged by the many positive comments about our ‘novelty’ of both the problem and method (R3), ‘original and clinical relevant application’ (R1&amp;R3), and ‘very interesting work and very promising results’ (R2), and ‘well-written’ manuscript (R1&amp;R2&amp;R3&amp;AC). We will address the minor concerns in the following: Q1: Comparison with SOTA methods (R1,AC) -For the fair comparison, we reproduced the SOTA methods in Table 2 using the same data set as this work. -As suggested, we’ll include more details on implementations of these methods in the final version. Q2: How to update weights based on different loss terms (R1) -Please note that there is only one CNN in the proposed framework, and there are not the “meta-train CNN” or “meta-test CNN”. In Fig. 2, the CNNs in different colors merely indicate the different update stages of the CNN, not different CNNs. -Let w denote the weight of the CNN. The weight goes through a two-step update. First, the CNN is trained with the meta-train loss on meta-train set, and the weight w is updated according to equation (1). Then, the updated CNN is fed with the meta-test set, and the meta-test loss and cost-sensitive loss are utilized to further update the weight. The training on the meta-test set can be understood as a regularization term which enables the network to gain a generalization ability for SCD prediction on the target domain. -In the final version, we will add more details on the optimization. Q3: Iteration loop to modify meta source datasets of meta-train and meta-test sets (R1) -The study in [14] has a different problem setting from ours. In [14], there are multiple (typically&gt;4) source domains which share the same label space (and the target domain shares the same label space, too). Thus, their task is to develop a transferable model for entire label space while alleviating the domain shift without accessing the target data for training. Please note that the only difference between their source domains is their covariance shift. -The focus of this work is to predict the future progress of SCD. There are 2 source domains (i.e., M with pMCI&amp;sMCI, and S with pSCD&amp;sSCD) and they do not share the same label space. We aim to develop a train a model on source domains and do not access the target domain (an SCD dataset). Thus, M is utilized as the meta-train set and S is used as the meta-test set. The meta-learning in our framework ensures its fundamental difference from a plain CNN just trained with data from mixed sources. -In the future work, we plan to collect data from more sources to further improve our model. Q4: Impact of cost-sensitive loss on the global performance &amp; Statistical analysis or results (R1,R2) -We’d like to mention that the task of SCD progress prediction is very challenging, due to the fact that SCD appears at the preclinical stage of Alzheimer’s disease (AD) even without significant objective impairment in the brain. Results reported in Tables 1-2 and Fig. 6 suggest that results of SCD progress prediction are usually worse than those of MCI conversion prediction and AD identification [1,2]. -We add an experiment to evaluate whether the results of CSML and its 2 variants (i.e., CSML-1 and CSML-2) are significantly different via pair-wise t-test. The p-value for results of CSML vs. CSML-1 is 0.029, while that for CSML vs. CSML-2 is 0.033. This suggests that there is significant difference (p&lt;0.05) between CSML and CSML-1/CSML-2. -We will add the results in the final version. [1] DOI:10.1093/brain/awaa137 [2] DOI: 10.1016/j.neuroimage.2019.01.031 Q5: Using longitudinal neuroimaging data at multiple time points or not (R3) -We only used baseline MRIs in this work, without using longitudinal MRI data. -We will point this out in the final version. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0523/12/31/Paper0738" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0523/12/31/Paper0738" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0523-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Cost-Sensitive Meta-Learning for Progress Prediction of Subjective Cognitive Decline with Brain Structural MRI" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0523/12/31/Paper0738"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0523/12/31/Paper0738","headline":"Cost-Sensitive Meta-Learning for Progress Prediction of Subjective Cognitive Decline with Brain Structural MRI","dateModified":"0524-01-03T00:00:00-05:17","datePublished":"0523-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Guan, Yunbi Liu, Shifu Xiao, Ling Yue, Mingxia Liu Abstract Subjective cognitive decline (SCD) is a preclinical phase of Alzheimer’s disease (AD) which occurs before the de cits could be detected by cognitive tests. It is highly desired to predict the progress of SCD for possible intervention of AD-related cognitive decline. Many neuroimaging-based methods have been developed for AD diagnosis, but there are few studies devoted to automated progress prediction of SCD due to the limited number of SCD subjects. Even though some studies proposed to transfer models (trained on AD/MCI) to SCD analysis, the signi cant domain shift between their data distributions may degrade the prediction performance. To this end, this paper tackles the problem of learning a model from the source data for which can directly generalize to an unseen target domain for SCD prediction. We propose a cost-sensitive meta-learning scheme to simultaneously improve the model generalization and its sensitivity in MRI-based SCD detection. During training, the source domain is divided into virtual meta-train and metatest sets to explicitly simulate the scenario for early-stage detection of AD. Considering the importance of sensitivity for progressive status detection, we further introduce cost-sensitive learning to enhance the metaoptimization process by encouraging the model to gain higher sensitivity for SCD detection with simulated domain shift. Experiments conducted on the large-scale ADNI dataset and a small-scale SCD dataset have demonstrated the effectiveness of the proposed method. Link to paper https://doi.org/10.1007/978-3-030-87240-3_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deep architecture to predict the evolution of patients diagnosed with subjective cognitive decline (SCD) toward Alzheimer disease (AD) in MRI. Based on the very limited number of SCD MRI exams, the authors propose an architecture based on the meta-learning framework that was derived to address the problem of domain adaptation in the context of multiple annotated source and unannotated target datasets. The authors also add a cost-sensitive loss term to maximise sensitivity. The source datasets are extracted from the ADNI database including MCI (653) , AD (367) and SCD (16) patients while the target dataset is a private one consisting of 76 SCD patients. The proposed method is compared to alternative architectures. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. -the implementation of the meta-learning framework, although it has been previously applied to different medical diagnostic task is original for this application -Attempt to visualize the latent space is interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. -The technical soundness of the implementation of the meta-learning framework is questionable. Please see my detailed comment below. The experimental study, especially regarding the comparison with SOTA methods, should be further detailed. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors mention that they will release all available code in section2 of the check-list, which is not mentioned in the core paper. They answered ‘yes’ to almost all questions, which is not always correct : the range of hyper-parameters considered and details on how baseline methods were implemented and tuned are not always provided, statistical analysis of results are analysis of situations in which the method failed are not performed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and clear. I have one major concern regarding the technical correctness of the meta-learning implementation. Please find below some comments and questions. -The author mention that their architecture relies on the meta-learning paradigm proposed by Li et al in [14]. In this paper, the authors propose an iterative process whose algorithm is described in ‘Algorithm 1’ of their paper. A each iteration 1) the meta-training and meta-test datasets are modified by selecting different combinations of sources datasets and 2) the weight of the CNN are updated based on both backpropagation of the meta-train and meta-test loss function. Also note that a beta parameter is added to weight the different contributions of these two loss terms. Based on the text and on fig 2, it is not clear that your implementation follows this methodology: 1) could you please clarify If you perform this iteration loop to modify the meta source datasets of the meta-train and meta-test sets? If not, I guess your model resumes to a classical CNN model trained with mixed sources data (including PSC patient of the ADNI database) with the addition of a cost-sensitive loss term. 2) could you please further detail how the weights are updated bases on the different loss terms. Fig 2 indicates the update of the meta-test CNN (blue vertical arrow) but what about updating the weight of the meta-train CNN based on the meta-test and cost-sensitive losses. The update process should be clarified. -Regarding the implementation the authors mention “ For simplicity, the parameters alpha and beta in Eq. (2) are set to 1.”. The authors should discuss this and evaluate the impact of these parameters on the global performance -Regarding results in Fig 6, If I understand correctly, CSML is the considered model, while CSML-1 and -2 are the same models trained with different sources (cf my remarks above, I guess the meta-train sources are not iteratively mixed) but without the cost-sensitive term. I would say that the performance achieved with CSML-2 and CSML-1 do not differ significantly from that achieved with the global model, thus meaning that the cost-sensitive loss term has a minor impact on the global performance. Please comment. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I am questioning the correctness of the meta-learning implementation. Comparison with the SOTA methods should be improved, as pointed in my comments, to confirm that the proposed method outperforms SOTA methods. The reproducibility check-list does not fully reflect the content of the paper. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors show that by applying a meta-learning framework (meta-train with different domain than target domain, meta-test with target domain, and cost-sensitive loss to improve sensitivity) they are able to predict whether SCD subjects will progress to MCI or remain stable with a better AUC than state of the art methods. They include subjects from ADNI, but also patients from a local hospital with a larger number of SCD subjects than those found in ADNI. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The evaluation of their results was compared against multiple competing methods as well as against multiple state-of-the-art methodologies, obtaining promising results. The inclusion of a cost-sensitive loss enhances the sensitivity of their methodology. The validation dataset includes much more SDC patients than its ADNI counterpart. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the comparison between the proposed method, the competing methods and the variants of the proposed method are somewhat biased towards yielding a positive conclusion regarding the proposed method (e.g., the accuracy of the baseline-2 method is comparable to the proposed method and its variants.) Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors state that they have shared a link to a downloadable version of the new dataset, but I am unable to find it (it could be my mistake, though). Same goes for their code, I don’t know if they will make it available after (if) accepted. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This work is very interesting and I believe its results are very promising. Howevert, the results of the Baseline-2 method should be further analyzed; I believe it is being harshly evaluated. It achieves almost the same accuracy as the proposed method, a metric of more clinical significance than the AUC values. Maybe you could evaluate whether if by performing a meta-train and meta-test, both with the M domain, so as not to consider it an CSML variant, but including the cost-sensitive loss, the baseline-2 results would also be comparable to your proposed methods in terms of sensitiviy. Moreso, the baseline-2 methodology does take into account the typical restriction that yields the need for a meta-learning scheme, no target samples are available for model training or fine-tuning. Whereas, your methodology does imply the need of target samples available for model training. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the methodology, the amount of methods against which it was compared/evaluated, the inclusion of a larger database than typically used, the promising results that they obtained, and the overall good structure/organization/clarity of the manuscript. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper A Cost Sensitive Meta-Learning (CSML) framework for Subjective Cognitive Decline (SCD) progress prediction was presented. The source domain that consisted divided into meta-train and meta-test datasets so as to generalize to an unseen target SCD domain. An ablation analysis was also performed to assess the importance of this learning scheme in the model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • Novelty, in that SCD was focused rather than classification of MCI from AD • Clinical relevance of the problem Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • Minor concern: Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology. • Sensitivity (SEN) metric, on which the model was optimized on was still below state of the art GANs (as evident from Table 2) Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • Part of the data used is from a publicly available dataset Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Minor Concerns: Please try to include more clinincal details regarding the diagnosis/prognosis of pSCD and sSCD, and the standard norms for it. Please comment on higher specificity (SPE) for the Baseline-2 model as evident in Table 1 Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology What was the rationale to include Normal Controls (NCs) only in the A source domain, but not in the M or S ? Considering the fact that SCDs are pre-clinical, one would expect that the NC feature distributions would also be closer to SCDs as are MCIs, and should be studied. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? • Novelty of the problem • Further extensive evaluation of the model results using Ablation analysis, Saliency maps and comparisons to similar models and state of the art What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper is written well, and some details need to be supplemented. For example, the experimental comparison with SOTA methods, detail how the weights are updated bases on the different loss terms, clarify this iteration loop to modify the meta source datasets of the meta-train and meta-test sets，and some others. Please revise the paper carefully according to the comments. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We appreciate the ACs and Reviewers for the constructive comments. We are encouraged by the many positive comments about our ‘novelty’ of both the problem and method (R3), ‘original and clinical relevant application’ (R1&amp;R3), and ‘very interesting work and very promising results’ (R2), and ‘well-written’ manuscript (R1&amp;R2&amp;R3&amp;AC). We will address the minor concerns in the following: Q1: Comparison with SOTA methods (R1,AC) -For the fair comparison, we reproduced the SOTA methods in Table 2 using the same data set as this work. -As suggested, we’ll include more details on implementations of these methods in the final version. Q2: How to update weights based on different loss terms (R1) -Please note that there is only one CNN in the proposed framework, and there are not the “meta-train CNN” or “meta-test CNN”. In Fig. 2, the CNNs in different colors merely indicate the different update stages of the CNN, not different CNNs. -Let w denote the weight of the CNN. The weight goes through a two-step update. First, the CNN is trained with the meta-train loss on meta-train set, and the weight w is updated according to equation (1). Then, the updated CNN is fed with the meta-test set, and the meta-test loss and cost-sensitive loss are utilized to further update the weight. The training on the meta-test set can be understood as a regularization term which enables the network to gain a generalization ability for SCD prediction on the target domain. -In the final version, we will add more details on the optimization. Q3: Iteration loop to modify meta source datasets of meta-train and meta-test sets (R1) -The study in [14] has a different problem setting from ours. In [14], there are multiple (typically&gt;4) source domains which share the same label space (and the target domain shares the same label space, too). Thus, their task is to develop a transferable model for entire label space while alleviating the domain shift without accessing the target data for training. Please note that the only difference between their source domains is their covariance shift. -The focus of this work is to predict the future progress of SCD. There are 2 source domains (i.e., M with pMCI&amp;sMCI, and S with pSCD&amp;sSCD) and they do not share the same label space. We aim to develop a train a model on source domains and do not access the target domain (an SCD dataset). Thus, M is utilized as the meta-train set and S is used as the meta-test set. The meta-learning in our framework ensures its fundamental difference from a plain CNN just trained with data from mixed sources. -In the future work, we plan to collect data from more sources to further improve our model. Q4: Impact of cost-sensitive loss on the global performance &amp; Statistical analysis or results (R1,R2) -We’d like to mention that the task of SCD progress prediction is very challenging, due to the fact that SCD appears at the preclinical stage of Alzheimer’s disease (AD) even without significant objective impairment in the brain. Results reported in Tables 1-2 and Fig. 6 suggest that results of SCD progress prediction are usually worse than those of MCI conversion prediction and AD identification [1,2]. -We add an experiment to evaluate whether the results of CSML and its 2 variants (i.e., CSML-1 and CSML-2) are significantly different via pair-wise t-test. The p-value for results of CSML vs. CSML-1 is 0.029, while that for CSML vs. CSML-2 is 0.033. This suggests that there is significant difference (p&lt;0.05) between CSML and CSML-1/CSML-2. -We will add the results in the final version. [1] DOI:10.1093/brain/awaa137 [2] DOI: 10.1016/j.neuroimage.2019.01.031 Q5: Using longitudinal neuroimaging data at multiple time points or not (R3) -We only used baseline MRIs in this work, without using longitudinal MRI data. -We will point this out in the final version. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Guan, Hao,Liu, Yunbi,Xiao, Shifu,Yue, Ling,Liu, Mingxia" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Cost-Sensitive Meta-Learning for Progress Prediction of Subjective Cognitive Decline with Brain Structural MRI</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Others"
+        class="post-category">
+        Clinical applications - Neuroimaging - Others
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Guan, Hao"
+        class="post-tags">
+        Guan, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yunbi"
+        class="post-tags">
+        Liu, Yunbi
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Shifu"
+        class="post-tags">
+        Xiao, Shifu
+      </a> |  
+      
+      <a href="kittywong/tags#Yue, Ling"
+        class="post-tags">
+        Yue, Ling
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Mingxia"
+        class="post-tags">
+        Liu, Mingxia
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Hao Guan, Yunbi Liu, Shifu Xiao, Ling Yue, Mingxia Liu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Subjective cognitive decline (SCD) is a preclinical phase of Alzheimer’s disease (AD) which occurs before the decits could be detected by cognitive tests. It is highly desired to predict the progress of SCD for possible intervention of AD-related cognitive decline. Many neuroimaging-based methods have been developed for AD diagnosis, but there are few studies devoted to automated progress prediction of SCD due to the limited number of SCD subjects. Even though some studies
+proposed to transfer models (trained on AD/MCI) to SCD analysis, the signicant domain shift between their data distributions may degrade the prediction performance. To this end, this paper tackles the problem of learning a model from the source data for which can directly generalize to an unseen target domain for SCD prediction. We propose a cost-sensitive meta-learning scheme to simultaneously improve the model generalization and its sensitivity in MRI-based SCD detection. During training, the source domain is divided into virtual meta-train and metatest sets to explicitly simulate the scenario for early-stage detection of
+AD. Considering the importance of sensitivity for progressive status detection,
+we further introduce cost-sensitive learning to enhance the metaoptimization
+process by encouraging the model to gain higher sensitivity for SCD detection with simulated domain shift. Experiments conducted on the large-scale ADNI dataset and a small-scale SCD dataset have demonstrated the effectiveness of the proposed method.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87240-3_24">https://doi.org/10.1007/978-3-030-87240-3_24</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a deep architecture to predict the evolution of patients diagnosed with subjective cognitive decline (SCD) toward Alzheimer disease (AD) in MRI.  Based on the very limited number of SCD MRI exams, the authors propose an architecture based on the meta-learning framework that was derived to address the problem of domain adaptation in the context of multiple annotated source and unannotated target datasets. The authors also add a cost-sensitive loss term to maximise sensitivity. The source datasets are extracted from the ADNI database including MCI (653) , AD (367) and SCD (16) patients while the target dataset is a private one consisting of 76 SCD patients. The proposed method is compared to alternative architectures.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>-the implementation of the meta-learning framework, although it has been previously applied to different medical diagnostic task is original for this application
+-Attempt to visualize the latent space is interesting</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>-The technical soundness of the implementation of the meta-learning framework is questionable. Please see my detailed comment below.</p>
+      <ul>
+        <li>The experimental study, especially regarding the comparison with SOTA methods, should be further detailed.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors mention that they will release all available code in section2 of the check-list, which is not mentioned in the core paper.
+They answered ‘yes’ to almost all questions, which is not always correct : the range of hyper-parameters considered and details on how baseline methods were implemented and tuned are not always provided, statistical analysis of results are analysis of situations in which the method failed are not performed</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper is well written and clear. I have one major concern regarding the technical correctness of the meta-learning implementation. Please find below some comments and questions.</p>
+
+      <p>-The author mention that their architecture relies on the meta-learning paradigm proposed by Li et al in [14]. In this paper, the authors propose an iterative process whose algorithm is described in ‘Algorithm 1’ of their paper. A each iteration  1) the meta-training and meta-test datasets are modified by selecting different combinations of sources datasets and 2) the weight of the CNN are updated based on both backpropagation of the meta-train and meta-test loss function. Also note that a beta parameter is added to weight the different contributions of these two loss terms. Based on the text and on fig 2, it is not clear that your implementation follows this methodology:
+1) could you please clarify If you perform this iteration loop to modify the meta source datasets of the meta-train and meta-test sets? If not, I guess your model resumes to a classical CNN model trained with mixed sources data (including PSC patient of the ADNI database) with the addition of a cost-sensitive loss term.
+2) could you please further detail how the weights are updated bases on the different loss terms. Fig 2 indicates the update of the meta-test CNN (blue vertical arrow) but what about updating the weight of the meta-train CNN based on the meta-test and cost-sensitive losses. The update process should be clarified.</p>
+
+      <p>-Regarding the implementation the authors mention “ For simplicity, the parameters  alpha and beta  in Eq. (2) are set to 1.”. The authors should discuss this and evaluate the impact of these parameters on the global performance</p>
+
+      <p>-Regarding results in Fig 6, If I understand correctly, CSML is the considered model, while CSML-1 and -2 are the same models trained with different sources (cf my remarks above, I guess the meta-train sources are not iteratively mixed) but without the cost-sensitive term. I would say that the performance achieved with CSML-2 and CSML-1 do not differ significantly from that achieved with the global model, thus meaning that the cost-sensitive loss term has a minor impact on the global performance. Please comment.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I am questioning the correctness of the meta-learning implementation. Comparison with the SOTA methods should be improved, as pointed in my comments, to confirm that the proposed method outperforms SOTA methods. The reproducibility check-list does not fully reflect the content of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors show that by applying a meta-learning framework (meta-train with different domain than target domain, meta-test with target domain, and cost-sensitive loss to improve sensitivity) they are able to predict whether SCD subjects will progress to MCI or remain stable with a better AUC than state of the art methods. They include subjects from ADNI, but also patients from a local hospital with a larger number of SCD subjects than those found in ADNI.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The evaluation of their results was compared against multiple competing methods as well as against multiple state-of-the-art methodologies, obtaining promising results.
+The inclusion of a cost-sensitive loss enhances the sensitivity of their methodology.
+The validation dataset includes much more SDC patients than its ADNI counterpart.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I believe the comparison between the proposed method, the competing methods and the variants of the proposed method are somewhat biased towards yielding a positive conclusion regarding the proposed method (e.g., the accuracy of the baseline-2 method is comparable to the proposed method and its variants.)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors state that they have shared a link to a downloadable version of the new dataset, but I am unable to find it (it could be my mistake, though).
+Same goes for their code, I don’t know if they will make it available after (if) accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This work is very interesting and I believe its results are very promising. Howevert, the results of the Baseline-2 method should be further analyzed; I believe it is being harshly evaluated. It achieves almost the same accuracy as the proposed method, a metric of more clinical significance than the AUC values. Maybe you could evaluate whether if by performing a meta-train and meta-test, both with the M domain, so as not to consider it an CSML variant, but including the cost-sensitive loss, the baseline-2 results would also be comparable to your proposed methods in terms of sensitiviy. Moreso, the baseline-2 methodology does take into account the typical restriction that yields the need for a meta-learning scheme, no target samples are available for model training or fine-tuning. Whereas, your methodology does imply the need of target samples available for model training.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The novelty of the methodology, the amount of methods against which it was compared/evaluated, the inclusion of a larger database than typically used, the promising results that they obtained, and the overall good structure/organization/clarity of the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>A Cost Sensitive Meta-Learning (CSML) framework for Subjective Cognitive Decline (SCD) progress prediction was presented.  The source domain that consisted divided into meta-train and meta-test datasets so as to generalize to an unseen target SCD domain. An ablation analysis was also performed to assess the importance of this learning scheme in the model.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>•	Novelty, in that SCD was focused rather than classification of MCI from AD
+•	Clinical relevance of the problem</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>•	Minor concern: Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology.</p>
+
+      <p>•	Sensitivity (SEN) metric, on which the model was optimized on was still below state of the art GANs (as evident from Table 2)</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>•	Part of the data used is from a publicly available dataset</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Minor Concerns:</p>
+      <ol>
+        <li>Please try to include more clinincal details regarding the diagnosis/prognosis of pSCD and sSCD, and the standard norms for it.</li>
+        <li>Please comment on higher specificity (SPE) for the Baseline-2 model as evident in Table 1</li>
+        <li>Was actual longitudinal neuroimaging data at multiple time points used, where SCD would progress into MCI, and the performance of the model on such a data evaluated? If yes, not explicitly evident from the methodology</li>
+        <li>What was the rationale to include Normal Controls (NCs) only in the A source domain, but not in the M or S ?  Considering the fact that SCDs are pre-clinical, one would expect that the NC feature distributions would also be closer to SCDs as are MCIs, and should be studied.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>•	Novelty of the problem
+•	Further extensive evaluation of the model results using Ablation analysis, Saliency maps and comparisons to similar models and state of the art</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The paper is written well, and some details need to be supplemented. For example, the experimental comparison with SOTA methods,  detail how the weights are updated bases on the different loss terms,  clarify this iteration loop to modify the meta source datasets of the meta-train and meta-test sets，and some others. Please revise the paper carefully according to the comments.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We appreciate the ACs and Reviewers for the constructive comments. We are encouraged by the many positive comments about our ‘novelty’ of both the problem and method (R3), ‘original and clinical relevant application’ (R1&amp;R3), and ‘very interesting work and very promising results’ (R2), and ‘well-written’ manuscript (R1&amp;R2&amp;R3&amp;AC). We will address the minor concerns in the following:</p>
+
+  <p>Q1: Comparison with SOTA methods (R1,AC)
+-For the fair comparison, we reproduced the SOTA methods in Table 2 using the same data set as this work. 
+-As suggested, we’ll include more details on implementations of these methods in the final version.</p>
+
+  <p>Q2: How to update weights based on different loss terms (R1)
+-Please note that there is only one CNN in the proposed framework, and there are not the “meta-train CNN” or “meta-test CNN”. In Fig. 2, the CNNs in different colors merely indicate the different update stages of the CNN, not different CNNs.
+-Let w denote the weight of the CNN. The weight goes through a two-step update. First, the CNN is trained with the meta-train loss on meta-train set, and the weight w is updated according to equation (1). Then, the updated CNN is fed with the meta-test set, and the meta-test loss and cost-sensitive loss are utilized to further update the weight. The training on the meta-test set can be understood as a regularization term which enables the network to gain a generalization ability for SCD prediction on the target domain. 
+-In the final version, we will add more details on the optimization.</p>
+
+  <p>Q3: Iteration loop to modify meta source datasets of meta-train and meta-test sets (R1)
+-The study in [14] has a different problem setting from ours. In [14], there are multiple (typically&gt;4) source domains which share the same label space (and the target domain shares the same label space, too). Thus, their task is to develop a transferable model for entire label space while alleviating the domain shift without accessing the target data for training. Please note that the only difference between their source domains is their covariance shift. 
+-The focus of this work is to predict the future progress of SCD. There are 2 source domains (i.e., M with pMCI&amp;sMCI, and S with pSCD&amp;sSCD) and they do not share the same label space. We aim to develop a train a model on source domains and do not access the target domain (an SCD dataset). Thus, M is utilized as the meta-train set and S is used as the meta-test set. The meta-learning in our framework ensures its fundamental difference from a plain CNN just trained with data from mixed sources. 
+-In the future work, we plan to collect data from more sources to further improve our model.</p>
+
+  <p>Q4: Impact of cost-sensitive loss on the global performance &amp; Statistical analysis or results (R1,R2)
+-We’d like to mention that the task of SCD progress prediction is very challenging, due to the fact that SCD appears at the preclinical stage of Alzheimer’s disease (AD) even without significant objective impairment in the brain. Results reported in Tables 1-2 and Fig. 6 suggest that results of SCD progress prediction are usually worse than those of MCI conversion prediction and AD identification [1,2].<br />
+-We add an experiment to evaluate whether the results of CSML and its 2 variants (i.e., CSML-1 and CSML-2) are significantly different via pair-wise t-test. The p-value for results of CSML vs. CSML-1 is 0.029, while that for CSML vs. CSML-2 is 0.033. This suggests that there is significant difference (p&lt;0.05) between CSML and CSML-1/CSML-2.
+-We will add the results in the final version. 
+[1] DOI:10.1093/brain/awaa137
+[2] DOI: 10.1016/j.neuroimage.2019.01.031</p>
+
+  <p>Q5: Using longitudinal neuroimaging data at multiple time points or not (R3)
+-We only used baseline MRIs in this work, without using longitudinal MRI data. 
+-We will point this out in the final version.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0523-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0524-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Others"
+        class="post-category">
+        Clinical applications - Neuroimaging - Others
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Guan, Hao"
+        class="post-category">
+        Guan, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yunbi"
+        class="post-category">
+        Liu, Yunbi
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Shifu"
+        class="post-category">
+        Xiao, Shifu
+      </a> |  
+      
+      <a href="kittywong/tags#Yue, Ling"
+        class="post-category">
+        Yue, Ling
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Mingxia"
+        class="post-category">
+        Liu, Mingxia
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0524/12/31/Paper0744">
+          Effective Pancreatic Cancer Screening on Non-contrast CT Scans via Anatomy-Aware Transformers
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0522/12/31/Paper0734">
+          ASC-Net: Adversarial-based Selective Network for Unsupervised Anomaly Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

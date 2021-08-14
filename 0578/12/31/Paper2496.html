@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Attention-based Multi-scale Gated Recurrent Encoder with Novel Correlation Loss for COVID-19 Progression Prediction | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Attention-based Multi-scale Gated Recurrent Encoder with Novel Correlation Loss for COVID-19 Progression Prediction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Aishik Konwer, Joseph Bae, Gagandeep Singh, Rishabh Gattu, Syed Ali, Jeremy Green, Tej Phatak, Prateek Prasanna Abstract COVID-19 image analysis has mostly focused on diagnostic tasks using single time point scans acquired upon disease presentation or admission. We present a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Our method first utilizes convolutional neural networks (CNNs) for feature extraction from patches within the concerned lung zone, and also from neighboring and remote boundary regions. The framework further incorporates a multi-scale Gated Recurrent Unit (GRU) with a correlation module for effective predictions. The GRU accepts CNN feature vectors from three different areas as input and generates a fused representation. The correlation module attempts to minimize the correlation loss between hidden representations of concerned and neighboring area feature vectors, while maximizing the loss between the same from concerned and remote regions. Further, we employ an attention module over the output hidden states of each encoder timepoint to generate a context vector. This vector is used as an input to a decoder module to predict patch severity grades at a future timepoint. Finally, we ensemble the patch classification scores to calculate the patient-wise grades. Specifically, our framework predicts zone-wise disease severity for a patient on a given day by learning representations from the previous temporal CXRs. Our novel multi-institutional dataset comprises sequential CXR scans from N=93 patients. Our approach outperforms transfer learning and radiomic feature based baselines on this dataset. Link to paper https://doi.org/10.1007/978-3-030-87240-3_79 Link to the code repository https://github.com/AishikKonwer95/Prog_Cxr_corrGRU Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This study proposes a multi-scale GRU model that takes in serial chest X-ray data of covid patients to predict severity of covid lesions in 6 spatial lung regions. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. the paper is well presented, the data set well defined, and the model is described appropriately. this model would also be generalizable to other situations with serial lung imaging data or beyond. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. it’s not clear how clinically useful the model would be if several time points are needed to predict the severity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the authors have a proper evaluation method, the results appear robust and as such are likely to be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would recommend the authors to put figure 2 in the beginning of the methods section and first refer to it before describing the model in details, this will make it easier for the reader to understand the method. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? the paper is explained well and the clinical use case is correct. the results are interesting and properly presented. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper presents a method of for predicting COVID-19 severity scores for 6 lung zones given a time sequence of chest images. The method is composed of the following key components: (1) an extended GRU architecture that operates on a sequence of patch triplets coming from different lung zones, (2) a correlation loss for the patches, and (3) an attention module on the time sequence. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Based on the authors’ claim, and a small search I did, there is no previous study that classifies the progression of COVID-19 based on a sequence of chest X-rays images. The presented architecture seems sound, as well as the overall analysis. The correlation loss seems novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The overall idea of applying CNN-RNN (with LSTM/GRU) for learning from longitudinal image data is not novel, e.g., see Xu, Yiwen, et al. “Deep learning predicts lung cancer treatment response from serial medical imaging.” Clinical Cancer Research 25.11 (2019): 3266-3275. images The use of attention module with RNN for learning the importance of timepoints is also quite prevalent. The experiments in the study are based on a small dataset of 93 patients. The labels, which are based on human annotations, do not seem standard, and there is no information on them, apart that they correspond to 3 levels of severity. Therefore, it may be difficult to reproduce this study, or compare its results to other studies. Finally, there are some unclear details on the method and experiments, which are elaborated below. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are missing/unclear details in the description of the method, and therefore it would be difficult to implement it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: Can you provide more details on the meaning of the severity, e.g., the associated risk with each severity level? The handling of time values was unclear to me at the beginning, and only at Section 3.2 (implementation details), the following information appears: “We used pack padded sequence to mask out all losses that surpassed the required sequence length. Thus, we could nullify the effect of missing timesteps for a patient in the dataset.” I am familiar with pack_padded for handling sequences of unequal size, but how do you handle missing observations that are in the middle of the sequence? If there are no missing observations in the middle (i.e., the observations for each patient are from consecutive days without gaps), then why do you use the notation t_1, t_{d} to denote time values, and not simply 1, …d ? Another option is that the value of the timepoint is taken into account by the model, but this is not mentioned. Please revise the text to explain this. Patch selection: the definition of neighbor and remote zones is unclear. Why is R1 considered a neighbor of L1, but R2 is not considered a neighbor of L2? Also, what are the remotes zones for the middle area L2? Section 2.4, Multi-Scale GRU Section: need to update that w^i_t, i=1,2,3, are also learned parameters. Multi-Scale GRU Section: “X_t is the feature vector of each patch”. X_t is not mentioned. Maybe you intended to explain X^i_t, i=1,2,3, instead of (the non-existent) X_t? Section 2.4, Correlation module: how is the correlation computed? As Pearson correlation (i.e., normalized dot product)? Equation 9: The equation should specify on which elements the maximum and minimum computed. After reading the paper I assume that these are computed on all patients, independently for each patch. Section 2.4, Attention module: the reference to the number of analyzed time points is confusing. For example, consider the phrase “the available t_{d-1} timepoints”: isn’t the number of processed time points equal (d-1)? If you do process t_{d-1} timepoints, what is done for timepoints with unobserved images? Decoder Section: “For each patient, we predict 16 such patch classification scores”. To make clearer I suggest rephrasing: “For each patient AND ZONE, we predict 16 …” Why doesn’t the method (encoder/decoder) use the image from timepoint t_d? Section 3.1 Dataset description: can you provide some statistics on the labels and sequence length? First Baseline is unclear: at start it is mentioned how to extract a feature vector from time points t_1, …, t_{d-1} “we obtained a P X 4096 feature vector where P denotes the total number of patches extracted for a patient from the L1 zones of images collected from multiple timepoints t_1, t_2,…,t_{d-1}.” These featured, from P patches, are aggregated with a simple average. Therefore, it is unclear to what majority voting is applied in the next step. Maybe the P patches include only one patch 1 per timepoint, and the majority vote is done on patches? In this case I P would be t_{d-1}. Second baseline is unclear as well: were the radiomics features extracted only from the last timepoint? If not, how did you handle the variability in sequence length? Minor comments: Methodology Section: “The images corresponding to these D timepoints” ==&gt; “d timepoints” Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application of the proposed study seems novel (COVID-19 related predictions from time sequence of images), and the overall architecture and analysis seem sound, although not very novel. As there are some unclear parts in the paper, its presentation should be improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper presents a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This proposed algorithm exploits the temporal and spatial dependencies of CRX findings to predict COVID-19 progression The multiscale approach allows for this method to accept inputs from different regions at the same timepoint Overall, this method outperformed the radiomics and transfer learning approaches This method is very robust and doesn’t require image registration for images at different time points The research addresses a very relevant topic in COVID-19 progression and prognosis, as it has affected the world and needs as much research as possible to combat it Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A comparison between the computational complexities (or time spent running the models) between the proposed and the baseline methods would help show another strength of the model, or weakness Limitations and weaknesses of the model should be given to show what could be improved upon for future research Accuracy is a good metric, but it isn’t the only metric that tells the story of the strength of a method Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors give the structure of the network, the parameters used, and the folds of cross validation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very good paper, and it touches on a topic that has crushed the world. This work could be accepted off the strength of the topic alone, as well as the substance of the algorithm. I would’ve liked to see more data and comparisons between the proposed method and the baselines. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic alone is worth fast tracking the paper. It stands on its own merit as an algorithm, notwithstanding. I enjoyed the paper, and outside of my criticisms it needs to be displayed. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper incorporates a multi-scale GRU module, a correlation loss, and an attention module for COVID-19 progression prediction based on a sequence of X-ray images. Although not very novel, the overall method sounds, and the results outperform those of radiomics and transfer learning. The overall methodology contribution is possitive, but the critiques form reviewers need to be addressed properly. Please refer to the detailed constructive comments of Reviewer #4 for possible improvement. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their insightful comments and feedback on improving the quality of our manuscript. Below we have responded to the major concerns. We will incorporate them in the paper/supplementary as necessary 1) The labels do not seem standard. More details on severity levels (R4) A. Each score was determined by agreement among three expert readers (≥15, ≥3, and ≥2 years of experience, respectively). This system mirrors the formulation of other scoring systems (Kwon et al. Radiology: AI 2020, Balbi et al., Eur Rad 2020). 0 is assigned for a lung zone in which there are no radiographic findings; 1 - existence of ground glass opacities; 2 - opacities with confluent bronchograms. 2) How to handle missing observations in the middle of the sequence? (R4) A. Timepoints t_1, t_2, …, t_d are not consecutive timepoints. The duration between these timepoints are not factored in our model. We only handle unequal sequence sizes which we described in the Implementation section. 3) Definition of neighbor, remote zones is unclear. (R4) A. Since imaging findings suggest that COVID infiltrates spread gradually from lower to upper zones, we considered L1 and L3 as neighbors of L2. Remote patches (Rp) - patches from far-off boundaries of neighbors and Neighbor patches (Np) - patches from closer boundaries of neighbors. For example: Rp of L2 were extracted from far-off boundaries of L1 and L3, whereas Np of L2 were extracted from closer boundaries of L1 and L3. 4) Updates in the equations of Multi-Scale GRU Section (R4) A. We shall update that w^i_t, i=1,2,3, are also learned parameters. Also, X^i_t, i=1,2,3 are the CNN feature vectors of patches from the three primary, neighbor, and remote zones. 5) How is the correlation computed? (R4) A. Pearson correlation coefficient has been used. For all patients, independently for each patch from Pp and Np zones, we maximized the correlation function. Similarly we minimized the correlation function for each patch from Pp and Rp zones. 6) Why doesn’t the method use the image from timepoint t_d?(R4) A. We use the encoded representation from the first d-1 images to predict the severity scores at timepoint t_d. 7) Dataset statistics on labels and sequence length?(R4) A. We will include a figure in the Supplementary showing the normalized distribution of severity grades across all timepoints. 8) Attention module: the reference to the number of analyzed time points is confusing (R4) A. The number of processed timepoints equals ‘d-1’ and not ‘t_d-1’. This will be corrected in the manuscript. All observed timepoints t_1,…,t_d are associated with an image. As mentioned in #2 above, these timepoints are not equally spaced. 9) First and second baselines not clear. (R4) A. In Baseline 1, each patient had 16 sequences since an image from one timepoint was divided into 16 grids. Majority voting is done on the output severity scores for each such sequence in order to obtain the final patient-level severity score. We utilized only one timepoint per patient as input in our radiomic approach. Since the approach was not temporal, we did not have to handle variability in sequence length. 10) The experiments are based on a small dataset of 93 patients. (R4) A. Public datasets have limited temporal information. Since we have a very unique dataset that comprises temporal scans, the total number of unique images from N=93 patients is 621. Owing to the limited N, we evaluated our methodology in a cross-validated fashion. 11) A comparison between the computational complexities (R5) A. We implemented our framework on a server with 11gb Nvidia RTX 2080 Ti gpu. Each model in the proposed approach was trained in ~3.4 hours for 30 epochs. Baseline 1 and 2 took ~2 hours and 1.25 hours respectively. 12) Acc. is a good metric, but should not be the only metric. (R5) A. Besides accuracy, our analysis included commonly used metrics such as Precision and Recall. We also provided the kappa scores. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Aishik Konwer, Joseph Bae, Gagandeep Singh, Rishabh Gattu, Syed Ali, Jeremy Green, Tej Phatak, Prateek Prasanna Abstract COVID-19 image analysis has mostly focused on diagnostic tasks using single time point scans acquired upon disease presentation or admission. We present a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Our method first utilizes convolutional neural networks (CNNs) for feature extraction from patches within the concerned lung zone, and also from neighboring and remote boundary regions. The framework further incorporates a multi-scale Gated Recurrent Unit (GRU) with a correlation module for effective predictions. The GRU accepts CNN feature vectors from three different areas as input and generates a fused representation. The correlation module attempts to minimize the correlation loss between hidden representations of concerned and neighboring area feature vectors, while maximizing the loss between the same from concerned and remote regions. Further, we employ an attention module over the output hidden states of each encoder timepoint to generate a context vector. This vector is used as an input to a decoder module to predict patch severity grades at a future timepoint. Finally, we ensemble the patch classification scores to calculate the patient-wise grades. Specifically, our framework predicts zone-wise disease severity for a patient on a given day by learning representations from the previous temporal CXRs. Our novel multi-institutional dataset comprises sequential CXR scans from N=93 patients. Our approach outperforms transfer learning and radiomic feature based baselines on this dataset. Link to paper https://doi.org/10.1007/978-3-030-87240-3_79 Link to the code repository https://github.com/AishikKonwer95/Prog_Cxr_corrGRU Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This study proposes a multi-scale GRU model that takes in serial chest X-ray data of covid patients to predict severity of covid lesions in 6 spatial lung regions. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. the paper is well presented, the data set well defined, and the model is described appropriately. this model would also be generalizable to other situations with serial lung imaging data or beyond. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. it’s not clear how clinically useful the model would be if several time points are needed to predict the severity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the authors have a proper evaluation method, the results appear robust and as such are likely to be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would recommend the authors to put figure 2 in the beginning of the methods section and first refer to it before describing the model in details, this will make it easier for the reader to understand the method. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? the paper is explained well and the clinical use case is correct. the results are interesting and properly presented. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper presents a method of for predicting COVID-19 severity scores for 6 lung zones given a time sequence of chest images. The method is composed of the following key components: (1) an extended GRU architecture that operates on a sequence of patch triplets coming from different lung zones, (2) a correlation loss for the patches, and (3) an attention module on the time sequence. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Based on the authors’ claim, and a small search I did, there is no previous study that classifies the progression of COVID-19 based on a sequence of chest X-rays images. The presented architecture seems sound, as well as the overall analysis. The correlation loss seems novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The overall idea of applying CNN-RNN (with LSTM/GRU) for learning from longitudinal image data is not novel, e.g., see Xu, Yiwen, et al. “Deep learning predicts lung cancer treatment response from serial medical imaging.” Clinical Cancer Research 25.11 (2019): 3266-3275. images The use of attention module with RNN for learning the importance of timepoints is also quite prevalent. The experiments in the study are based on a small dataset of 93 patients. The labels, which are based on human annotations, do not seem standard, and there is no information on them, apart that they correspond to 3 levels of severity. Therefore, it may be difficult to reproduce this study, or compare its results to other studies. Finally, there are some unclear details on the method and experiments, which are elaborated below. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are missing/unclear details in the description of the method, and therefore it would be difficult to implement it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: Can you provide more details on the meaning of the severity, e.g., the associated risk with each severity level? The handling of time values was unclear to me at the beginning, and only at Section 3.2 (implementation details), the following information appears: “We used pack padded sequence to mask out all losses that surpassed the required sequence length. Thus, we could nullify the effect of missing timesteps for a patient in the dataset.” I am familiar with pack_padded for handling sequences of unequal size, but how do you handle missing observations that are in the middle of the sequence? If there are no missing observations in the middle (i.e., the observations for each patient are from consecutive days without gaps), then why do you use the notation t_1, t_{d} to denote time values, and not simply 1, …d ? Another option is that the value of the timepoint is taken into account by the model, but this is not mentioned. Please revise the text to explain this. Patch selection: the definition of neighbor and remote zones is unclear. Why is R1 considered a neighbor of L1, but R2 is not considered a neighbor of L2? Also, what are the remotes zones for the middle area L2? Section 2.4, Multi-Scale GRU Section: need to update that w^i_t, i=1,2,3, are also learned parameters. Multi-Scale GRU Section: “X_t is the feature vector of each patch”. X_t is not mentioned. Maybe you intended to explain X^i_t, i=1,2,3, instead of (the non-existent) X_t? Section 2.4, Correlation module: how is the correlation computed? As Pearson correlation (i.e., normalized dot product)? Equation 9: The equation should specify on which elements the maximum and minimum computed. After reading the paper I assume that these are computed on all patients, independently for each patch. Section 2.4, Attention module: the reference to the number of analyzed time points is confusing. For example, consider the phrase “the available t_{d-1} timepoints”: isn’t the number of processed time points equal (d-1)? If you do process t_{d-1} timepoints, what is done for timepoints with unobserved images? Decoder Section: “For each patient, we predict 16 such patch classification scores”. To make clearer I suggest rephrasing: “For each patient AND ZONE, we predict 16 …” Why doesn’t the method (encoder/decoder) use the image from timepoint t_d? Section 3.1 Dataset description: can you provide some statistics on the labels and sequence length? First Baseline is unclear: at start it is mentioned how to extract a feature vector from time points t_1, …, t_{d-1} “we obtained a P X 4096 feature vector where P denotes the total number of patches extracted for a patient from the L1 zones of images collected from multiple timepoints t_1, t_2,…,t_{d-1}.” These featured, from P patches, are aggregated with a simple average. Therefore, it is unclear to what majority voting is applied in the next step. Maybe the P patches include only one patch 1 per timepoint, and the majority vote is done on patches? In this case I P would be t_{d-1}. Second baseline is unclear as well: were the radiomics features extracted only from the last timepoint? If not, how did you handle the variability in sequence length? Minor comments: Methodology Section: “The images corresponding to these D timepoints” ==&gt; “d timepoints” Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application of the proposed study seems novel (COVID-19 related predictions from time sequence of images), and the overall architecture and analysis seem sound, although not very novel. As there are some unclear parts in the paper, its presentation should be improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper presents a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This proposed algorithm exploits the temporal and spatial dependencies of CRX findings to predict COVID-19 progression The multiscale approach allows for this method to accept inputs from different regions at the same timepoint Overall, this method outperformed the radiomics and transfer learning approaches This method is very robust and doesn’t require image registration for images at different time points The research addresses a very relevant topic in COVID-19 progression and prognosis, as it has affected the world and needs as much research as possible to combat it Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A comparison between the computational complexities (or time spent running the models) between the proposed and the baseline methods would help show another strength of the model, or weakness Limitations and weaknesses of the model should be given to show what could be improved upon for future research Accuracy is a good metric, but it isn’t the only metric that tells the story of the strength of a method Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors give the structure of the network, the parameters used, and the folds of cross validation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very good paper, and it touches on a topic that has crushed the world. This work could be accepted off the strength of the topic alone, as well as the substance of the algorithm. I would’ve liked to see more data and comparisons between the proposed method and the baselines. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic alone is worth fast tracking the paper. It stands on its own merit as an algorithm, notwithstanding. I enjoyed the paper, and outside of my criticisms it needs to be displayed. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper incorporates a multi-scale GRU module, a correlation loss, and an attention module for COVID-19 progression prediction based on a sequence of X-ray images. Although not very novel, the overall method sounds, and the results outperform those of radiomics and transfer learning. The overall methodology contribution is possitive, but the critiques form reviewers need to be addressed properly. Please refer to the detailed constructive comments of Reviewer #4 for possible improvement. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their insightful comments and feedback on improving the quality of our manuscript. Below we have responded to the major concerns. We will incorporate them in the paper/supplementary as necessary 1) The labels do not seem standard. More details on severity levels (R4) A. Each score was determined by agreement among three expert readers (≥15, ≥3, and ≥2 years of experience, respectively). This system mirrors the formulation of other scoring systems (Kwon et al. Radiology: AI 2020, Balbi et al., Eur Rad 2020). 0 is assigned for a lung zone in which there are no radiographic findings; 1 - existence of ground glass opacities; 2 - opacities with confluent bronchograms. 2) How to handle missing observations in the middle of the sequence? (R4) A. Timepoints t_1, t_2, …, t_d are not consecutive timepoints. The duration between these timepoints are not factored in our model. We only handle unequal sequence sizes which we described in the Implementation section. 3) Definition of neighbor, remote zones is unclear. (R4) A. Since imaging findings suggest that COVID infiltrates spread gradually from lower to upper zones, we considered L1 and L3 as neighbors of L2. Remote patches (Rp) - patches from far-off boundaries of neighbors and Neighbor patches (Np) - patches from closer boundaries of neighbors. For example: Rp of L2 were extracted from far-off boundaries of L1 and L3, whereas Np of L2 were extracted from closer boundaries of L1 and L3. 4) Updates in the equations of Multi-Scale GRU Section (R4) A. We shall update that w^i_t, i=1,2,3, are also learned parameters. Also, X^i_t, i=1,2,3 are the CNN feature vectors of patches from the three primary, neighbor, and remote zones. 5) How is the correlation computed? (R4) A. Pearson correlation coefficient has been used. For all patients, independently for each patch from Pp and Np zones, we maximized the correlation function. Similarly we minimized the correlation function for each patch from Pp and Rp zones. 6) Why doesn’t the method use the image from timepoint t_d?(R4) A. We use the encoded representation from the first d-1 images to predict the severity scores at timepoint t_d. 7) Dataset statistics on labels and sequence length?(R4) A. We will include a figure in the Supplementary showing the normalized distribution of severity grades across all timepoints. 8) Attention module: the reference to the number of analyzed time points is confusing (R4) A. The number of processed timepoints equals ‘d-1’ and not ‘t_d-1’. This will be corrected in the manuscript. All observed timepoints t_1,…,t_d are associated with an image. As mentioned in #2 above, these timepoints are not equally spaced. 9) First and second baselines not clear. (R4) A. In Baseline 1, each patient had 16 sequences since an image from one timepoint was divided into 16 grids. Majority voting is done on the output severity scores for each such sequence in order to obtain the final patient-level severity score. We utilized only one timepoint per patient as input in our radiomic approach. Since the approach was not temporal, we did not have to handle variability in sequence length. 10) The experiments are based on a small dataset of 93 patients. (R4) A. Public datasets have limited temporal information. Since we have a very unique dataset that comprises temporal scans, the total number of unique images from N=93 patients is 621. Owing to the limited N, we evaluated our methodology in a cross-validated fashion. 11) A comparison between the computational complexities (R5) A. We implemented our framework on a server with 11gb Nvidia RTX 2080 Ti gpu. Each model in the proposed approach was trained in ~3.4 hours for 30 epochs. Baseline 1 and 2 took ~2 hours and 1.25 hours respectively. 12) Acc. is a good metric, but should not be the only metric. (R5) A. Besides accuracy, our analysis included commonly used metrics such as Precision and Recall. We also provided the kappa scores. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0578/12/31/Paper2496" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0578/12/31/Paper2496" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0578-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Attention-based Multi-scale Gated Recurrent Encoder with Novel Correlation Loss for COVID-19 Progression Prediction" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0578/12/31/Paper2496"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0578/12/31/Paper2496","headline":"Attention-based Multi-scale Gated Recurrent Encoder with Novel Correlation Loss for COVID-19 Progression Prediction","dateModified":"0579-01-03T00:00:00-05:17","datePublished":"0578-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Aishik Konwer, Joseph Bae, Gagandeep Singh, Rishabh Gattu, Syed Ali, Jeremy Green, Tej Phatak, Prateek Prasanna Abstract COVID-19 image analysis has mostly focused on diagnostic tasks using single time point scans acquired upon disease presentation or admission. We present a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Our method first utilizes convolutional neural networks (CNNs) for feature extraction from patches within the concerned lung zone, and also from neighboring and remote boundary regions. The framework further incorporates a multi-scale Gated Recurrent Unit (GRU) with a correlation module for effective predictions. The GRU accepts CNN feature vectors from three different areas as input and generates a fused representation. The correlation module attempts to minimize the correlation loss between hidden representations of concerned and neighboring area feature vectors, while maximizing the loss between the same from concerned and remote regions. Further, we employ an attention module over the output hidden states of each encoder timepoint to generate a context vector. This vector is used as an input to a decoder module to predict patch severity grades at a future timepoint. Finally, we ensemble the patch classification scores to calculate the patient-wise grades. Specifically, our framework predicts zone-wise disease severity for a patient on a given day by learning representations from the previous temporal CXRs. Our novel multi-institutional dataset comprises sequential CXR scans from N=93 patients. Our approach outperforms transfer learning and radiomic feature based baselines on this dataset. Link to paper https://doi.org/10.1007/978-3-030-87240-3_79 Link to the code repository https://github.com/AishikKonwer95/Prog_Cxr_corrGRU Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This study proposes a multi-scale GRU model that takes in serial chest X-ray data of covid patients to predict severity of covid lesions in 6 spatial lung regions. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. the paper is well presented, the data set well defined, and the model is described appropriately. this model would also be generalizable to other situations with serial lung imaging data or beyond. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. it’s not clear how clinically useful the model would be if several time points are needed to predict the severity. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the authors have a proper evaluation method, the results appear robust and as such are likely to be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would recommend the authors to put figure 2 in the beginning of the methods section and first refer to it before describing the model in details, this will make it easier for the reader to understand the method. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? the paper is explained well and the clinical use case is correct. the results are interesting and properly presented. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper presents a method of for predicting COVID-19 severity scores for 6 lung zones given a time sequence of chest images. The method is composed of the following key components: (1) an extended GRU architecture that operates on a sequence of patch triplets coming from different lung zones, (2) a correlation loss for the patches, and (3) an attention module on the time sequence. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Based on the authors’ claim, and a small search I did, there is no previous study that classifies the progression of COVID-19 based on a sequence of chest X-rays images. The presented architecture seems sound, as well as the overall analysis. The correlation loss seems novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The overall idea of applying CNN-RNN (with LSTM/GRU) for learning from longitudinal image data is not novel, e.g., see Xu, Yiwen, et al. “Deep learning predicts lung cancer treatment response from serial medical imaging.” Clinical Cancer Research 25.11 (2019): 3266-3275. images The use of attention module with RNN for learning the importance of timepoints is also quite prevalent. The experiments in the study are based on a small dataset of 93 patients. The labels, which are based on human annotations, do not seem standard, and there is no information on them, apart that they correspond to 3 levels of severity. Therefore, it may be difficult to reproduce this study, or compare its results to other studies. Finally, there are some unclear details on the method and experiments, which are elaborated below. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There are missing/unclear details in the description of the method, and therefore it would be difficult to implement it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: Can you provide more details on the meaning of the severity, e.g., the associated risk with each severity level? The handling of time values was unclear to me at the beginning, and only at Section 3.2 (implementation details), the following information appears: “We used pack padded sequence to mask out all losses that surpassed the required sequence length. Thus, we could nullify the effect of missing timesteps for a patient in the dataset.” I am familiar with pack_padded for handling sequences of unequal size, but how do you handle missing observations that are in the middle of the sequence? If there are no missing observations in the middle (i.e., the observations for each patient are from consecutive days without gaps), then why do you use the notation t_1, t_{d} to denote time values, and not simply 1, …d ? Another option is that the value of the timepoint is taken into account by the model, but this is not mentioned. Please revise the text to explain this. Patch selection: the definition of neighbor and remote zones is unclear. Why is R1 considered a neighbor of L1, but R2 is not considered a neighbor of L2? Also, what are the remotes zones for the middle area L2? Section 2.4, Multi-Scale GRU Section: need to update that w^i_t, i=1,2,3, are also learned parameters. Multi-Scale GRU Section: “X_t is the feature vector of each patch”. X_t is not mentioned. Maybe you intended to explain X^i_t, i=1,2,3, instead of (the non-existent) X_t? Section 2.4, Correlation module: how is the correlation computed? As Pearson correlation (i.e., normalized dot product)? Equation 9: The equation should specify on which elements the maximum and minimum computed. After reading the paper I assume that these are computed on all patients, independently for each patch. Section 2.4, Attention module: the reference to the number of analyzed time points is confusing. For example, consider the phrase “the available t_{d-1} timepoints”: isn’t the number of processed time points equal (d-1)? If you do process t_{d-1} timepoints, what is done for timepoints with unobserved images? Decoder Section: “For each patient, we predict 16 such patch classification scores”. To make clearer I suggest rephrasing: “For each patient AND ZONE, we predict 16 …” Why doesn’t the method (encoder/decoder) use the image from timepoint t_d? Section 3.1 Dataset description: can you provide some statistics on the labels and sequence length? First Baseline is unclear: at start it is mentioned how to extract a feature vector from time points t_1, …, t_{d-1} “we obtained a P X 4096 feature vector where P denotes the total number of patches extracted for a patient from the L1 zones of images collected from multiple timepoints t_1, t_2,…,t_{d-1}.” These featured, from P patches, are aggregated with a simple average. Therefore, it is unclear to what majority voting is applied in the next step. Maybe the P patches include only one patch 1 per timepoint, and the majority vote is done on patches? In this case I P would be t_{d-1}. Second baseline is unclear as well: were the radiomics features extracted only from the last timepoint? If not, how did you handle the variability in sequence length? Minor comments: Methodology Section: “The images corresponding to these D timepoints” ==&gt; “d timepoints” Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application of the proposed study seems novel (COVID-19 related predictions from time sequence of images), and the overall architecture and analysis seem sound, although not very novel. As there are some unclear parts in the paper, its presentation should be improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper presents a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This proposed algorithm exploits the temporal and spatial dependencies of CRX findings to predict COVID-19 progression The multiscale approach allows for this method to accept inputs from different regions at the same timepoint Overall, this method outperformed the radiomics and transfer learning approaches This method is very robust and doesn’t require image registration for images at different time points The research addresses a very relevant topic in COVID-19 progression and prognosis, as it has affected the world and needs as much research as possible to combat it Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A comparison between the computational complexities (or time spent running the models) between the proposed and the baseline methods would help show another strength of the model, or weakness Limitations and weaknesses of the model should be given to show what could be improved upon for future research Accuracy is a good metric, but it isn’t the only metric that tells the story of the strength of a method Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors give the structure of the network, the parameters used, and the folds of cross validation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very good paper, and it touches on a topic that has crushed the world. This work could be accepted off the strength of the topic alone, as well as the substance of the algorithm. I would’ve liked to see more data and comparisons between the proposed method and the baselines. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic alone is worth fast tracking the paper. It stands on its own merit as an algorithm, notwithstanding. I enjoyed the paper, and outside of my criticisms it needs to be displayed. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper incorporates a multi-scale GRU module, a correlation loss, and an attention module for COVID-19 progression prediction based on a sequence of X-ray images. Although not very novel, the overall method sounds, and the results outperform those of radiomics and transfer learning. The overall methodology contribution is possitive, but the critiques form reviewers need to be addressed properly. Please refer to the detailed constructive comments of Reviewer #4 for possible improvement. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their insightful comments and feedback on improving the quality of our manuscript. Below we have responded to the major concerns. We will incorporate them in the paper/supplementary as necessary 1) The labels do not seem standard. More details on severity levels (R4) A. Each score was determined by agreement among three expert readers (≥15, ≥3, and ≥2 years of experience, respectively). This system mirrors the formulation of other scoring systems (Kwon et al. Radiology: AI 2020, Balbi et al., Eur Rad 2020). 0 is assigned for a lung zone in which there are no radiographic findings; 1 - existence of ground glass opacities; 2 - opacities with confluent bronchograms. 2) How to handle missing observations in the middle of the sequence? (R4) A. Timepoints t_1, t_2, …, t_d are not consecutive timepoints. The duration between these timepoints are not factored in our model. We only handle unequal sequence sizes which we described in the Implementation section. 3) Definition of neighbor, remote zones is unclear. (R4) A. Since imaging findings suggest that COVID infiltrates spread gradually from lower to upper zones, we considered L1 and L3 as neighbors of L2. Remote patches (Rp) - patches from far-off boundaries of neighbors and Neighbor patches (Np) - patches from closer boundaries of neighbors. For example: Rp of L2 were extracted from far-off boundaries of L1 and L3, whereas Np of L2 were extracted from closer boundaries of L1 and L3. 4) Updates in the equations of Multi-Scale GRU Section (R4) A. We shall update that w^i_t, i=1,2,3, are also learned parameters. Also, X^i_t, i=1,2,3 are the CNN feature vectors of patches from the three primary, neighbor, and remote zones. 5) How is the correlation computed? (R4) A. Pearson correlation coefficient has been used. For all patients, independently for each patch from Pp and Np zones, we maximized the correlation function. Similarly we minimized the correlation function for each patch from Pp and Rp zones. 6) Why doesn’t the method use the image from timepoint t_d?(R4) A. We use the encoded representation from the first d-1 images to predict the severity scores at timepoint t_d. 7) Dataset statistics on labels and sequence length?(R4) A. We will include a figure in the Supplementary showing the normalized distribution of severity grades across all timepoints. 8) Attention module: the reference to the number of analyzed time points is confusing (R4) A. The number of processed timepoints equals ‘d-1’ and not ‘t_d-1’. This will be corrected in the manuscript. All observed timepoints t_1,…,t_d are associated with an image. As mentioned in #2 above, these timepoints are not equally spaced. 9) First and second baselines not clear. (R4) A. In Baseline 1, each patient had 16 sequences since an image from one timepoint was divided into 16 grids. Majority voting is done on the output severity scores for each such sequence in order to obtain the final patient-level severity score. We utilized only one timepoint per patient as input in our radiomic approach. Since the approach was not temporal, we did not have to handle variability in sequence length. 10) The experiments are based on a small dataset of 93 patients. (R4) A. Public datasets have limited temporal information. Since we have a very unique dataset that comprises temporal scans, the total number of unique images from N=93 patients is 621. Owing to the limited N, we evaluated our methodology in a cross-validated fashion. 11) A comparison between the computational complexities (R5) A. We implemented our framework on a server with 11gb Nvidia RTX 2080 Ti gpu. Each model in the proposed approach was trained in ~3.4 hours for 30 epochs. Baseline 1 and 2 took ~2 hours and 1.25 hours respectively. 12) Acc. is a good metric, but should not be the only metric. (R5) A. Besides accuracy, our analysis included commonly used metrics such as Precision and Recall. We also provided the kappa scores. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Konwer, Aishik,Bae, Joseph,Singh, Gagandeep,Gattu, Rishabh,Ali, Syed,Green, Jeremy,Phatak, Tej,Prasanna, Prateek" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Attention-based Multi-scale Gated Recurrent Encoder with Novel Correlation Loss for COVID-19 Progression Prediction</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Konwer, Aishik"
+        class="post-tags">
+        Konwer, Aishik
+      </a> |  
+      
+      <a href="kittywong/tags#Bae, Joseph"
+        class="post-tags">
+        Bae, Joseph
+      </a> |  
+      
+      <a href="kittywong/tags#Singh, Gagandeep"
+        class="post-tags">
+        Singh, Gagandeep
+      </a> |  
+      
+      <a href="kittywong/tags#Gattu, Rishabh"
+        class="post-tags">
+        Gattu, Rishabh
+      </a> |  
+      
+      <a href="kittywong/tags#Ali, Syed"
+        class="post-tags">
+        Ali, Syed
+      </a> |  
+      
+      <a href="kittywong/tags#Green, Jeremy"
+        class="post-tags">
+        Green, Jeremy
+      </a> |  
+      
+      <a href="kittywong/tags#Phatak, Tej"
+        class="post-tags">
+        Phatak, Tej
+      </a> |  
+      
+      <a href="kittywong/tags#Prasanna, Prateek"
+        class="post-tags">
+        Prasanna, Prateek
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Aishik Konwer, Joseph Bae, Gagandeep Singh, Rishabh Gattu, Syed Ali, Jeremy Green, Tej Phatak, Prateek Prasanna
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>COVID-19 image analysis has mostly focused on diagnostic tasks using single time point scans acquired upon disease presentation or admission. We present a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients. Our method first utilizes convolutional neural networks (CNNs) for feature extraction from patches within the concerned lung zone, and also from neighboring and remote boundary regions. The framework further incorporates a multi-scale Gated Recurrent Unit (GRU) with a correlation module for effective predictions. The GRU accepts CNN feature vectors from three different areas as input and generates a fused representation. The correlation module attempts to minimize the correlation loss between hidden representations of concerned and neighboring area feature vectors, while maximizing the loss between the same from concerned and remote regions. Further, we employ an attention module over the output hidden states of each encoder timepoint to generate a context vector. This vector is used as an input to a decoder module to predict patch severity grades at a future timepoint. Finally, we ensemble the patch classification scores to calculate the patient-wise grades. Specifically, our framework predicts zone-wise disease severity for a patient on a given day by learning representations from the previous temporal CXRs. Our novel multi-institutional dataset comprises sequential CXR scans from N=93 patients. Our approach outperforms transfer learning and radiomic feature based baselines on this dataset.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87240-3_79">https://doi.org/10.1007/978-3-030-87240-3_79</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/AishikKonwer95/Prog_Cxr_corrGRU
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This study proposes a multi-scale GRU model that takes in serial chest X-ray data of covid patients to predict severity of covid lesions in 6 spatial lung regions.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>the paper is well presented, the data set well defined, and the model is described appropriately.</li>
+        <li>this model would also be generalizable to other situations with serial lung imaging data or beyond.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>it’s not clear how clinically useful the model would be if several time points are needed to predict the severity.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>the authors have a proper evaluation method, the results appear robust and as such are likely to be reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I would recommend the authors to put figure 2 in the beginning of the methods section and first refer to it before describing the model in details, this will make it easier for the reader to understand the method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ul>
+        <li>the paper is explained well and the clinical use case is correct.</li>
+        <li>the results are interesting and properly presented.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a method of for predicting COVID-19 severity scores for 6 lung zones given a time sequence of chest images. The method is composed of the following key components: (1) an extended GRU architecture that operates on a sequence of patch triplets coming from different lung zones, (2) a correlation loss for the patches, and (3) an attention module on the time sequence.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>Based on the authors’ claim, and a small search I did, there is no previous study that classifies the progression of COVID-19 based on a sequence of chest X-rays images.</li>
+        <li>The presented architecture seems sound, as well as the overall analysis.</li>
+        <li>The correlation loss seems novel.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The overall idea of applying CNN-RNN (with LSTM/GRU) for learning from longitudinal image data is not novel, e.g., see 
+Xu, Yiwen, et al. “Deep learning predicts lung cancer treatment response from serial medical imaging.” Clinical Cancer Research 25.11 (2019): 3266-3275. images</li>
+        <li>The use of attention module with RNN for learning the importance of timepoints is also quite prevalent.</li>
+        <li>The experiments in the study are based on a small dataset of 93 patients.</li>
+        <li>The labels, which are based on human annotations, do not seem standard, and there is no information on them, apart that they correspond to 3 levels of severity.  Therefore, it may be difficult to reproduce this study, or compare its results to other studies.</li>
+        <li>Finally, there are some unclear details on the method and experiments, which are elaborated below.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There are missing/unclear details in the description of the method, and therefore it would be difficult to implement it.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <h2 id="major-comments">Major comments:</h2>
+      <ol>
+        <li>Can you provide more details on the meaning of the severity, e.g., the associated risk with each severity level?</li>
+        <li>The handling of time values was unclear to me at the beginning, and only at Section 3.2 (implementation details), the following information appears: “We used pack padded sequence to mask out all losses that surpassed the required sequence length. Thus, we could nullify the effect of missing timesteps for a patient in the dataset.” I am familiar with pack_padded for handling sequences of unequal size, but how do you handle missing observations that are in the middle of the sequence? 
+If there are no missing observations in the middle (i.e., the observations for each patient are from consecutive days without gaps), then why do you use the notation t_1, t_{d} to denote time values, and not simply 1, …d ?
+Another option is that the value of the timepoint is taken into account by the model, but this is not mentioned.
+Please revise the text to explain this.</li>
+        <li>Patch selection: the definition of neighbor and remote zones is unclear. Why is R1 considered a neighbor of L1, but R2 is not considered a neighbor of L2?   Also, what are the remotes zones for the middle area L2?</li>
+        <li>Section 2.4, Multi-Scale GRU Section: need to update that w^i_t,  i=1,2,3, are also learned parameters.</li>
+        <li>Multi-Scale GRU Section: “X_t is the feature vector of each patch”. X_t is not mentioned. Maybe you intended to explain X^i_t,  i=1,2,3, instead of (the non-existent) X_t?</li>
+        <li>Section 2.4, Correlation module:  how is the correlation computed?  As Pearson correlation (i.e., normalized dot product)?</li>
+        <li>Equation 9: The equation should specify on which elements the maximum and minimum computed.  After reading the paper I assume that these are computed on all patients, independently for each patch.</li>
+        <li>Section 2.4, Attention module: the reference to the number of analyzed time points is confusing. For example, consider the phrase “the available t_{d-1} timepoints”: isn’t the number of processed time points equal (d-1)?  If you do process t_{d-1} timepoints, what is done for timepoints with unobserved images?</li>
+        <li>Decoder Section: “For each patient, we predict 16 such patch classification scores”.  To make clearer I suggest rephrasing: “For each patient AND ZONE, we predict 16 …”</li>
+        <li>Why doesn’t the method (encoder/decoder) use the image from timepoint t_d?</li>
+        <li>Section 3.1 Dataset description: can you provide some statistics on the labels and sequence length?</li>
+        <li>First Baseline is unclear: at start it is mentioned how to extract a feature vector from time points t_1, …, t_{d-1}  “we obtained a P X 4096 feature vector where P denotes the total number of patches extracted for a patient from the L1 zones of images collected from multiple timepoints t_1, t_2,…,t_{d-1}.”  These featured, from P patches, are aggregated with a simple average. Therefore, it is unclear to what majority voting is applied in the next step. Maybe the P patches include only one patch 1 per timepoint, and the majority vote is done on patches?  In this case I P would be t_{d-1}.</li>
+        <li>Second baseline is unclear as well: were the radiomics features extracted only from the last timepoint?  If not, how did you handle the variability in sequence length?</li>
+      </ol>
+
+      <h2 id="minor-comments">Minor comments:</h2>
+      <ol>
+        <li>Methodology Section: “The images corresponding to these D timepoints” ==&gt; “d timepoints”</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The application of the proposed study seems novel (COVID-19 related predictions from time sequence of images), and the overall architecture and analysis seem sound, although not very novel. As there are some unclear parts in the paper, its presentation should be improved.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a deep learning-based approach to predict the lung infiltrate progression from serial chest radiographs (CXRs) of COVID-19 patients.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>This proposed algorithm exploits the temporal and spatial dependencies of CRX findings to predict COVID-19 progression</li>
+        <li>The multiscale approach allows for this method to accept inputs from different regions at the same timepoint</li>
+        <li>Overall, this method outperformed the radiomics and transfer learning approaches</li>
+        <li>This method is very robust and doesn’t require image registration for images at different time points</li>
+        <li>The research addresses a very relevant topic in COVID-19 progression and prognosis, as it has affected the world and needs as much research as possible to combat it</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>A comparison between the computational complexities (or time spent running the models) between the proposed and the baseline methods would help show another strength of the model, or weakness</li>
+        <li>Limitations and weaknesses of the model should be given to show what could be improved upon for future research</li>
+        <li>Accuracy is a good metric, but it isn’t the only metric that tells the story of the strength of a method</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors give the structure of the network, the parameters used, and the folds of cross validation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This is a very good paper, and it touches on a topic that has crushed the world. This work could be accepted off the strength of the topic alone, as well as the substance of the algorithm. I would’ve liked to see more data and comparisons between the proposed method and the baselines.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The topic alone is worth fast tracking the paper. It stands on its own merit as an algorithm, notwithstanding. I enjoyed the paper, and outside of my criticisms it needs to be displayed.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper incorporates a multi-scale GRU module, a correlation loss, and an attention module for COVID-19 progression prediction based on a sequence of X-ray images. Although not very novel, the overall method sounds, and the results outperform those of  radiomics and transfer learning. The overall methodology contribution is possitive, but the critiques form reviewers need to be addressed properly.</p>
+
+      <p>Please refer to the detailed constructive comments of Reviewer #4 for possible improvement.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their insightful comments and feedback on improving the quality of our manuscript. Below we have responded to the major concerns. We will incorporate them in the paper/supplementary as necessary</p>
+
+  <p>1)	The labels do not seem standard. More details on severity levels (R4)
+A.	Each score was determined by agreement among three expert readers (≥15, ≥3, and ≥2 years of experience, respectively). This system mirrors the formulation of other scoring systems (Kwon et al. Radiology: AI 2020, Balbi et al., Eur Rad 2020). 0 is assigned for a lung zone in which there are no radiographic findings; 1 - existence of ground glass opacities; 2 - opacities with confluent bronchograms.</p>
+
+  <p>2)	How to handle missing observations in the middle of the sequence? (R4)
+A.	Timepoints t_1, t_2, …, t_d are not consecutive timepoints. The duration between these timepoints are not factored in our model. We only handle unequal sequence sizes which we described in the Implementation section.</p>
+
+  <p>3)	Definition of neighbor, remote zones is unclear. (R4)
+A.	Since imaging findings suggest that COVID infiltrates spread gradually from lower to upper zones, we considered L1 and L3 as neighbors of L2. Remote patches (Rp) - patches from far-off boundaries of neighbors and Neighbor patches (Np) - patches from closer boundaries of neighbors.  For example: Rp of L2 were extracted from far-off boundaries of L1 and L3, whereas Np of L2 were extracted from closer boundaries of L1 and L3.</p>
+
+  <p>4)	Updates in the equations of Multi-Scale GRU Section (R4)
+A.	We shall update that w^i_t, i=1,2,3, are also learned parameters. Also, X^i_t, i=1,2,3 are the CNN feature vectors of patches from the three primary, neighbor, and remote zones.</p>
+
+  <p>5)	How is the correlation computed? (R4)
+A.	Pearson correlation coefficient has been used. For all patients, independently for each patch from Pp and Np zones, we maximized the correlation function. Similarly we minimized the correlation function for each patch from Pp and Rp zones.</p>
+
+  <p>6)	Why doesn’t the method use the image from timepoint t_d?(R4)
+A.	We use the encoded representation from the first d-1 images to predict the severity scores at timepoint t_d.</p>
+
+  <p>7)	Dataset statistics on labels and sequence length?(R4)
+A.	We will include a figure in the Supplementary showing the normalized distribution of severity grades across all timepoints.</p>
+
+  <p>8)	Attention module: the reference to the number of analyzed time points is confusing (R4)
+A.	The number of processed timepoints equals ‘d-1’ and not ‘t_d-1’. This will be corrected in the manuscript. All observed timepoints t_1,…,t_d are associated with an image. As mentioned in #2 above, these timepoints are not equally spaced.</p>
+
+  <p>9)	First and second baselines not clear. (R4)
+A.	In Baseline 1, each patient had 16 sequences since an image from one timepoint was divided into 16 grids. Majority voting is done on the output severity scores for each such sequence in order to obtain the final patient-level severity score. We utilized only one timepoint per patient as input in our radiomic approach. Since the approach was not temporal, we did not have to handle variability in sequence length.</p>
+
+  <p>10)	 The experiments are based on a small dataset of 93 patients. (R4)
+A.	Public datasets have limited temporal information. Since we have a very unique dataset that comprises temporal scans, the total number of unique images from N=93 patients is 621. Owing to the limited N, we evaluated our methodology in a cross-validated fashion.</p>
+
+  <p>11)	 A comparison between the computational complexities (R5) 
+A.	We implemented our framework on a server with 11gb Nvidia RTX 2080 Ti gpu. Each model in the proposed approach was trained in ~3.4 hours for 30 epochs. Baseline 1 and 2 took ~2 hours and 1.25 hours respectively.</p>
+
+  <p>12)	Acc. is a good metric, but should not be the only metric. (R5) 
+A.	Besides accuracy, our analysis included commonly used metrics such as Precision and Recall. We also provided the kappa scores.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0578-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0579-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Konwer, Aishik"
+        class="post-category">
+        Konwer, Aishik
+      </a> |  
+      
+      <a href="kittywong/tags#Bae, Joseph"
+        class="post-category">
+        Bae, Joseph
+      </a> |  
+      
+      <a href="kittywong/tags#Singh, Gagandeep"
+        class="post-category">
+        Singh, Gagandeep
+      </a> |  
+      
+      <a href="kittywong/tags#Gattu, Rishabh"
+        class="post-category">
+        Gattu, Rishabh
+      </a> |  
+      
+      <a href="kittywong/tags#Ali, Syed"
+        class="post-category">
+        Ali, Syed
+      </a> |  
+      
+      <a href="kittywong/tags#Green, Jeremy"
+        class="post-category">
+        Green, Jeremy
+      </a> |  
+      
+      <a href="kittywong/tags#Phatak, Tej"
+        class="post-category">
+        Phatak, Tej
+      </a> |  
+      
+      <a href="kittywong/tags#Prasanna, Prateek"
+        class="post-category">
+        Prasanna, Prateek
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0600/12/31/Paper0051">
+          Two-Stage Self-Supervised Cycle-Consistency Network for Reconstruction of Thin-Slice MR Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0577/12/31/Paper1510">
+          Projection-wise Disentangling for Fair and Interpretable Representation Learning: Application to 3D Facial Shape Analysis
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>End-to-end Ugly Duckling Sign Detection for Melanoma Identification with Transformers | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="End-to-end Ugly Duckling Sign Detection for Melanoma Identification with Transformers" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Yu, Victoria Mar, Anders Eriksson, Shakes Chandra, Paul Bonnington, Lei Zhang, Zongyuan Ge Abstract The concept of ugly ducklings was introduced in dermatology to improve the likelihood of detecting melanoma by comparing a suspicious lesion against its surrounding lesions. The ugly duckling sign suggests nevi in the same individual tend to resemble one another while malignant melanoma often deviates from this nevus pattern. Differentiating the ugly duckling sign was more discriminatory between malignant melanoma and other nevi than quantitatively assessing dermoscopic patterns. In this study, we propose a framework for modeling ugly duckling context early melanoma identification (called UDTR hereafter). To this end, we construct our model in three parts: Firstly, we extract multi-scale features using a deep neural network from lesions in the same individuals; Then, we learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, we design a two branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, we propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. We evaluate our method on ISIC 2020 dataset which consists of ∼30,000 images from ∼2,000 patients. Extensive experiments evidence the effectiveness of our approach and highlight the importance of detecting lesions with clues from surrounding lesions than that of only evaluating lesion in question. Link to paper https://doi.org/10.1007/978-3-030-87234-2_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper at hand addresses the problem of melanoma detection from dermoscopic images. The authors aim to incorporate the ugly duckling principle into a deep learning model by capturing the context with multiple lesions from one patient. For this purpose, the authors employ a transformer that processes pooled feature vectors for each lesion from an encoding CNN as its tokens. Furthermore, the authors use a lesion-level loss, a patient-level loss, and a contrastive loss between features of benign and malignant lesions. The authors use the publicly available ISIC 2020 dataset. Multiple ablation experiments are performed, showing improved performance compared to a lesion-wise CNN. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • The idea of using context in terms of multiple lesions is well motivated. • Transformers are excellently suited for the proposed problem. • The authors clearly describe their validation/testing strategy. • The authors provide ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The author’s way of presenting results is partially confusing: o The authors should state which model variant they used in Table 1. The reader can guess this from comparing values but this should be stated. o The authors leave out the patient-level result in Table 2 without clearly stating that. o The authors leave out sensitivity and specificity in Table 3. • There is no proper comparison to other methods in the literature: o Where do “score post-processing” and “feature post-processing” come from? Did the authors create these? If yes, why compare to them if they do not work? o The ISIC 2020 challenge provides plenty of methods to compare against. I acknowledge that a lot of them use lots of tricks to achieve high performance but the authors could have reproduced one of those methods in their settings (only 10crop as test augmentation) • The value of Fig. 3 and 4 is unclear: o Fig. 3: uncalibrated softmax probabilities are generally a suboptimal measure for model uncertainty – what is the main takeaway from this figure? o Fig. 4: The authors do not provide an interpretation of the visualized attention weights. To the reader, it looks like few, arbitrary lesions (not the malignant one) are selected as being important by the attention weights. • The authors do not provide significance tests (they do provide CV standard deviations, however) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • The authors evaluate on a public dataset (ISIC 2020 challenge), helping reproducibility • The authors do not comment on the release of their code, hindering reproducibility Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html • In general, I believe that the authors approach is very reasonable and transformers are well-suited to incorporate the ugly-duckling principle. However, there are multiple points the authors should fix (presentation/description of results) and discuss (Fig. 3, 4, related work). See weaknesses for details. • Something else that is missing for me is a set of standard aggregation techniques for patient-level predictions, e.g., in terms of ensembling (averaging (weighted) probabilities/selecting the largest probability, etc.). This could have been done for the standard CNN. • The dataset is extremely unbalanced. The authors appear to achieve balanced metric results (sens./spec.), however, I cannot find any mentioning of balancing techniques such as loss weighting or balanced batch sampling. What did the authors use to account for class imbalance? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My rating is borderline. In general, the approach is very interesting for the MICCAI community, however, the authors should improve their results section/discussion before publication. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The author proposed a framework named UDTR hereafter for modeling ugly duckling context in melanoma identification (called UDTR hereafter). They first extract multi-scale features using a deep neural network from lesions in the same individuals; Then, they learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, they design a two-branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, they propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clear motivation and sufficient literature review. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 4.1 Please add detailed description in caption of Fig.2. 4.2 In Fig.2, Encoder layer corresponding to which part in the left architecture figure? 4.3 What is insight of using group contrastive learning instead of image contrastive learning? image contrastive learning means do contrastive calculation in image by image without group them. I think the image contrastive learning is a strong baseline for comparison. 4.4 How to define N? As it directly related to contrastive learning results. How to adapt this hyper-parameter to different image quantity of dataset? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance good Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figures should add detailed caption also for better readability Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novelty, solid method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces to leverage transformer to detect melanoma by using a patient’s entire dermoscopy images. Initially, CNN was used to encode image features which were then parsed by a transformer to model the dependency relationship. Finally, a two-branched network with contrastive loss function was used for predicting both the lesion and patient level results. The experimental results with the public ISIC 2020 dataset appear to be better than the existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well organized and structured, which made audience easy to follow. The concept of leverage a patient’s all the available lesion images is interesting and novel. There are sufficient experimental results to justify the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It seems that the proposed method is a straightforward implementation of transformer. Therefore, it’s not clear why it’s novel and why transformer is the optimal choice. There is no comparison to the existing methods that are optimized for melanoma detection. Therefore, it’s challenging to understand that the proposed method has improved the state-of-the-art. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method was developed with a well benchmarked public dataset. The selected hyperparameters were also given in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Both level and patient level prediction dropped after image number 30 (Table 1). Are there any reasons for that? Theoretically, the performance should increase or consistent when the number of images increases. It seems that the improvement from using global context is incremental (an increase of 0.5%, Table 2, UDTR-L and UDTR-LP). Is this significant? It will be good to have detections results on CNN predicting patient level melanoma. This will help to understand the importance of global context. There are some non-standard hyperparameters used without justification. It will be better if author can explain the selection. E.g., c=1.24 and m=0.3. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The concept of using a patient’s all the available dermoscopy images for detecting melanoma is novel and interesting. Authors also conduct detailed experiments to justify the proposed method. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers acknowledge that the paper introduces an interesting Transformer-based method coupled with the ugly-duckling principle for melanoma detection in dermoscopic images. However, some detailed descriptions of the proposed method are currently missing and presentation of the results also need to be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of major comments in their rebuttal and explained regarding the missing / unclear information. While the limited comparative evaluation is still a concern, the concept of using ugly duckling for melanoma detection was interesting and hence I suggest an acceptance for MICCAI2021. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The submission proposes an ugly duckling sign detection algorithm for melanoma identification based on transformers. The proposed method is a reasonable solution to the targeted problem, and its effectiveness is demonstrated by the reported experimental results. Main concerns regarding the baselines and design choices have been addressed in the rebuttal period. Therefore, this submission is recommended for acceptance. Updates as stated in the rebuttal letter are encouraged to be made to the final version. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed method is of great interest and seems to provide suitable performance. However, some aspects of the experimental design are still unclear after rebuttal. Further, there may be concerns of validity of the study related to the choice of the final threshold used to calculate the evaluation metrics. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Author Feedback Q1. There is no proper comparison to other methods in the literature. It is unclear the proposed mothed has improved state-of-art. Also, why compare to “post-processing methods” if they do not work? Why not compare method from ISIC 2020? (R1 &amp; R3) Re: As far as we know, no previous research has explored modelling “ugly duckling sign” for melanoma diagnosis. Thus, there is no publicly reported method for comparison. In our study, we proposed two baseline methods for comparison: 1) CNN score-based post-processing; and 2) CNN feature based post-processing. Since our aim is to compare lesions from the same patient for classifying outlier lesion, performing post-processing either on the CNN scores or CNN features is an intuitive and efficient way to assess relationship among lesions. According to our experiment, although we choose optimal hyper-parameters on validation dataset, their performance drops on the testing dataset, which indicates that these methods are unsuitable for dealing with such complicated task of contextual-based outlier lesion detection. In this study, we mainly focused on exploring how to effectively model ugly duckling context to improve melanoma diagnosis. We compared our model with basic CNN models under the same standard training and data augmentation strategy on the ISIC 2020 dataset. Results demonstrated the benefit of using lesion context as well as the superiority of our method. Indeed, there is plenty of methods in ISIC 2020 challenge, but both of top-ranking methods are based on heavy ensemble of multiple models with different architectures or trained with different input size. For instance, the 1st rank method ensembles 18 models for the final prediction. Also, they use external data to improve performance for each single CNN model. These methods are heavily engineered targeting for higher performance rather than clinical-inspired solutions. Q2: What is insight of using group contrastive learning instead of image contrastive learning? I think the image contrastive learning is a strong baseline for comparison. (R2) Re: We use group contrastive loss to force a large margin between benign lesions and melanoma in feature space as possible. This enables the following transformer model to capture the relationships of multiple lesions in a global view and make better decisions. While contrastive learning only focuses on learning the correlation between a pair of lesions, which does not suit for the “ugly duckling concept”. Besides, we incorporated a hard sample selection mechanism in our group contrastive learning considering the extremely imbalanced dataset. We also tried directly using image pair-wise contrastive loss, but it didn’t boost the performance. Q4: How to define N? How to adapt this hyper-parameter to different dataset? (R2) Re: The N is the input lesion image number of our model which depends on the average lesion number of patients. In ISIC 2020, the average lesions number from each patient is ~16. We performed an ablation study on the N (Table 1) and the results show that increasing N above the average number will not make much difference. Q5: The dataset is extremely unbalanced. The authors appear to achieve balanced sens./spec., What did the authors use to account for class imbalance? (R1) Re: The sens/spec results are strongly related to the setting of the threshold. We choose optimal threshold with Youden’s index (sens. + spec. -1) which enables a balanced sens/spec result. Q6: The value of Fig. 3 and 4 is unclear. (R1) Re: Fig. 3 is used to show how incorporating lesion contextual information changes the prediction scores for a same group of lesions. With lesion context from surrounding lesions, the model tends to give more confident prediction scores. Fig. 4 illustrated the attention weights of our model; the line weights reflect strength of relation between two lesions. Usually a melanoma is less similar to benign lesions and it has weak connection to normal lesions. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Yu, Victoria Mar, Anders Eriksson, Shakes Chandra, Paul Bonnington, Lei Zhang, Zongyuan Ge Abstract The concept of ugly ducklings was introduced in dermatology to improve the likelihood of detecting melanoma by comparing a suspicious lesion against its surrounding lesions. The ugly duckling sign suggests nevi in the same individual tend to resemble one another while malignant melanoma often deviates from this nevus pattern. Differentiating the ugly duckling sign was more discriminatory between malignant melanoma and other nevi than quantitatively assessing dermoscopic patterns. In this study, we propose a framework for modeling ugly duckling context early melanoma identification (called UDTR hereafter). To this end, we construct our model in three parts: Firstly, we extract multi-scale features using a deep neural network from lesions in the same individuals; Then, we learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, we design a two branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, we propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. We evaluate our method on ISIC 2020 dataset which consists of ∼30,000 images from ∼2,000 patients. Extensive experiments evidence the effectiveness of our approach and highlight the importance of detecting lesions with clues from surrounding lesions than that of only evaluating lesion in question. Link to paper https://doi.org/10.1007/978-3-030-87234-2_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper at hand addresses the problem of melanoma detection from dermoscopic images. The authors aim to incorporate the ugly duckling principle into a deep learning model by capturing the context with multiple lesions from one patient. For this purpose, the authors employ a transformer that processes pooled feature vectors for each lesion from an encoding CNN as its tokens. Furthermore, the authors use a lesion-level loss, a patient-level loss, and a contrastive loss between features of benign and malignant lesions. The authors use the publicly available ISIC 2020 dataset. Multiple ablation experiments are performed, showing improved performance compared to a lesion-wise CNN. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • The idea of using context in terms of multiple lesions is well motivated. • Transformers are excellently suited for the proposed problem. • The authors clearly describe their validation/testing strategy. • The authors provide ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The author’s way of presenting results is partially confusing: o The authors should state which model variant they used in Table 1. The reader can guess this from comparing values but this should be stated. o The authors leave out the patient-level result in Table 2 without clearly stating that. o The authors leave out sensitivity and specificity in Table 3. • There is no proper comparison to other methods in the literature: o Where do “score post-processing” and “feature post-processing” come from? Did the authors create these? If yes, why compare to them if they do not work? o The ISIC 2020 challenge provides plenty of methods to compare against. I acknowledge that a lot of them use lots of tricks to achieve high performance but the authors could have reproduced one of those methods in their settings (only 10crop as test augmentation) • The value of Fig. 3 and 4 is unclear: o Fig. 3: uncalibrated softmax probabilities are generally a suboptimal measure for model uncertainty – what is the main takeaway from this figure? o Fig. 4: The authors do not provide an interpretation of the visualized attention weights. To the reader, it looks like few, arbitrary lesions (not the malignant one) are selected as being important by the attention weights. • The authors do not provide significance tests (they do provide CV standard deviations, however) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • The authors evaluate on a public dataset (ISIC 2020 challenge), helping reproducibility • The authors do not comment on the release of their code, hindering reproducibility Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html • In general, I believe that the authors approach is very reasonable and transformers are well-suited to incorporate the ugly-duckling principle. However, there are multiple points the authors should fix (presentation/description of results) and discuss (Fig. 3, 4, related work). See weaknesses for details. • Something else that is missing for me is a set of standard aggregation techniques for patient-level predictions, e.g., in terms of ensembling (averaging (weighted) probabilities/selecting the largest probability, etc.). This could have been done for the standard CNN. • The dataset is extremely unbalanced. The authors appear to achieve balanced metric results (sens./spec.), however, I cannot find any mentioning of balancing techniques such as loss weighting or balanced batch sampling. What did the authors use to account for class imbalance? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My rating is borderline. In general, the approach is very interesting for the MICCAI community, however, the authors should improve their results section/discussion before publication. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The author proposed a framework named UDTR hereafter for modeling ugly duckling context in melanoma identification (called UDTR hereafter). They first extract multi-scale features using a deep neural network from lesions in the same individuals; Then, they learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, they design a two-branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, they propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clear motivation and sufficient literature review. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 4.1 Please add detailed description in caption of Fig.2. 4.2 In Fig.2, Encoder layer corresponding to which part in the left architecture figure? 4.3 What is insight of using group contrastive learning instead of image contrastive learning? image contrastive learning means do contrastive calculation in image by image without group them. I think the image contrastive learning is a strong baseline for comparison. 4.4 How to define N? As it directly related to contrastive learning results. How to adapt this hyper-parameter to different image quantity of dataset? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance good Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figures should add detailed caption also for better readability Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novelty, solid method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces to leverage transformer to detect melanoma by using a patient’s entire dermoscopy images. Initially, CNN was used to encode image features which were then parsed by a transformer to model the dependency relationship. Finally, a two-branched network with contrastive loss function was used for predicting both the lesion and patient level results. The experimental results with the public ISIC 2020 dataset appear to be better than the existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well organized and structured, which made audience easy to follow. The concept of leverage a patient’s all the available lesion images is interesting and novel. There are sufficient experimental results to justify the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It seems that the proposed method is a straightforward implementation of transformer. Therefore, it’s not clear why it’s novel and why transformer is the optimal choice. There is no comparison to the existing methods that are optimized for melanoma detection. Therefore, it’s challenging to understand that the proposed method has improved the state-of-the-art. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method was developed with a well benchmarked public dataset. The selected hyperparameters were also given in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Both level and patient level prediction dropped after image number 30 (Table 1). Are there any reasons for that? Theoretically, the performance should increase or consistent when the number of images increases. It seems that the improvement from using global context is incremental (an increase of 0.5%, Table 2, UDTR-L and UDTR-LP). Is this significant? It will be good to have detections results on CNN predicting patient level melanoma. This will help to understand the importance of global context. There are some non-standard hyperparameters used without justification. It will be better if author can explain the selection. E.g., c=1.24 and m=0.3. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The concept of using a patient’s all the available dermoscopy images for detecting melanoma is novel and interesting. Authors also conduct detailed experiments to justify the proposed method. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers acknowledge that the paper introduces an interesting Transformer-based method coupled with the ugly-duckling principle for melanoma detection in dermoscopic images. However, some detailed descriptions of the proposed method are currently missing and presentation of the results also need to be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of major comments in their rebuttal and explained regarding the missing / unclear information. While the limited comparative evaluation is still a concern, the concept of using ugly duckling for melanoma detection was interesting and hence I suggest an acceptance for MICCAI2021. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The submission proposes an ugly duckling sign detection algorithm for melanoma identification based on transformers. The proposed method is a reasonable solution to the targeted problem, and its effectiveness is demonstrated by the reported experimental results. Main concerns regarding the baselines and design choices have been addressed in the rebuttal period. Therefore, this submission is recommended for acceptance. Updates as stated in the rebuttal letter are encouraged to be made to the final version. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed method is of great interest and seems to provide suitable performance. However, some aspects of the experimental design are still unclear after rebuttal. Further, there may be concerns of validity of the study related to the choice of the final threshold used to calculate the evaluation metrics. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Author Feedback Q1. There is no proper comparison to other methods in the literature. It is unclear the proposed mothed has improved state-of-art. Also, why compare to “post-processing methods” if they do not work? Why not compare method from ISIC 2020? (R1 &amp; R3) Re: As far as we know, no previous research has explored modelling “ugly duckling sign” for melanoma diagnosis. Thus, there is no publicly reported method for comparison. In our study, we proposed two baseline methods for comparison: 1) CNN score-based post-processing; and 2) CNN feature based post-processing. Since our aim is to compare lesions from the same patient for classifying outlier lesion, performing post-processing either on the CNN scores or CNN features is an intuitive and efficient way to assess relationship among lesions. According to our experiment, although we choose optimal hyper-parameters on validation dataset, their performance drops on the testing dataset, which indicates that these methods are unsuitable for dealing with such complicated task of contextual-based outlier lesion detection. In this study, we mainly focused on exploring how to effectively model ugly duckling context to improve melanoma diagnosis. We compared our model with basic CNN models under the same standard training and data augmentation strategy on the ISIC 2020 dataset. Results demonstrated the benefit of using lesion context as well as the superiority of our method. Indeed, there is plenty of methods in ISIC 2020 challenge, but both of top-ranking methods are based on heavy ensemble of multiple models with different architectures or trained with different input size. For instance, the 1st rank method ensembles 18 models for the final prediction. Also, they use external data to improve performance for each single CNN model. These methods are heavily engineered targeting for higher performance rather than clinical-inspired solutions. Q2: What is insight of using group contrastive learning instead of image contrastive learning? I think the image contrastive learning is a strong baseline for comparison. (R2) Re: We use group contrastive loss to force a large margin between benign lesions and melanoma in feature space as possible. This enables the following transformer model to capture the relationships of multiple lesions in a global view and make better decisions. While contrastive learning only focuses on learning the correlation between a pair of lesions, which does not suit for the “ugly duckling concept”. Besides, we incorporated a hard sample selection mechanism in our group contrastive learning considering the extremely imbalanced dataset. We also tried directly using image pair-wise contrastive loss, but it didn’t boost the performance. Q4: How to define N? How to adapt this hyper-parameter to different dataset? (R2) Re: The N is the input lesion image number of our model which depends on the average lesion number of patients. In ISIC 2020, the average lesions number from each patient is ~16. We performed an ablation study on the N (Table 1) and the results show that increasing N above the average number will not make much difference. Q5: The dataset is extremely unbalanced. The authors appear to achieve balanced sens./spec., What did the authors use to account for class imbalance? (R1) Re: The sens/spec results are strongly related to the setting of the threshold. We choose optimal threshold with Youden’s index (sens. + spec. -1) which enables a balanced sens/spec result. Q6: The value of Fig. 3 and 4 is unclear. (R1) Re: Fig. 3 is used to show how incorporating lesion contextual information changes the prediction scores for a same group of lesions. With lesion context from surrounding lesions, the model tends to give more confident prediction scores. Fig. 4 illustrated the attention weights of our model; the line weights reflect strength of relation between two lesions. Usually a melanoma is less similar to benign lesions and it has weak connection to normal lesions. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0716/12/31/Paper1304" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0716/12/31/Paper1304" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0716-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="End-to-end Ugly Duckling Sign Detection for Melanoma Identification with Transformers" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0716/12/31/Paper1304"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0716/12/31/Paper1304","headline":"End-to-end Ugly Duckling Sign Detection for Melanoma Identification with Transformers","dateModified":"0717-01-05T00:00:00-05:17","datePublished":"0716-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Yu, Victoria Mar, Anders Eriksson, Shakes Chandra, Paul Bonnington, Lei Zhang, Zongyuan Ge Abstract The concept of ugly ducklings was introduced in dermatology to improve the likelihood of detecting melanoma by comparing a suspicious lesion against its surrounding lesions. The ugly duckling sign suggests nevi in the same individual tend to resemble one another while malignant melanoma often deviates from this nevus pattern. Differentiating the ugly duckling sign was more discriminatory between malignant melanoma and other nevi than quantitatively assessing dermoscopic patterns. In this study, we propose a framework for modeling ugly duckling context early melanoma identification (called UDTR hereafter). To this end, we construct our model in three parts: Firstly, we extract multi-scale features using a deep neural network from lesions in the same individuals; Then, we learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, we design a two branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, we propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. We evaluate our method on ISIC 2020 dataset which consists of ∼30,000 images from ∼2,000 patients. Extensive experiments evidence the effectiveness of our approach and highlight the importance of detecting lesions with clues from surrounding lesions than that of only evaluating lesion in question. Link to paper https://doi.org/10.1007/978-3-030-87234-2_17 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper at hand addresses the problem of melanoma detection from dermoscopic images. The authors aim to incorporate the ugly duckling principle into a deep learning model by capturing the context with multiple lesions from one patient. For this purpose, the authors employ a transformer that processes pooled feature vectors for each lesion from an encoding CNN as its tokens. Furthermore, the authors use a lesion-level loss, a patient-level loss, and a contrastive loss between features of benign and malignant lesions. The authors use the publicly available ISIC 2020 dataset. Multiple ablation experiments are performed, showing improved performance compared to a lesion-wise CNN. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • The idea of using context in terms of multiple lesions is well motivated. • Transformers are excellently suited for the proposed problem. • The authors clearly describe their validation/testing strategy. • The authors provide ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The author’s way of presenting results is partially confusing: o The authors should state which model variant they used in Table 1. The reader can guess this from comparing values but this should be stated. o The authors leave out the patient-level result in Table 2 without clearly stating that. o The authors leave out sensitivity and specificity in Table 3. • There is no proper comparison to other methods in the literature: o Where do “score post-processing” and “feature post-processing” come from? Did the authors create these? If yes, why compare to them if they do not work? o The ISIC 2020 challenge provides plenty of methods to compare against. I acknowledge that a lot of them use lots of tricks to achieve high performance but the authors could have reproduced one of those methods in their settings (only 10crop as test augmentation) • The value of Fig. 3 and 4 is unclear: o Fig. 3: uncalibrated softmax probabilities are generally a suboptimal measure for model uncertainty – what is the main takeaway from this figure? o Fig. 4: The authors do not provide an interpretation of the visualized attention weights. To the reader, it looks like few, arbitrary lesions (not the malignant one) are selected as being important by the attention weights. • The authors do not provide significance tests (they do provide CV standard deviations, however) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance • The authors evaluate on a public dataset (ISIC 2020 challenge), helping reproducibility • The authors do not comment on the release of their code, hindering reproducibility Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html • In general, I believe that the authors approach is very reasonable and transformers are well-suited to incorporate the ugly-duckling principle. However, there are multiple points the authors should fix (presentation/description of results) and discuss (Fig. 3, 4, related work). See weaknesses for details. • Something else that is missing for me is a set of standard aggregation techniques for patient-level predictions, e.g., in terms of ensembling (averaging (weighted) probabilities/selecting the largest probability, etc.). This could have been done for the standard CNN. • The dataset is extremely unbalanced. The authors appear to achieve balanced metric results (sens./spec.), however, I cannot find any mentioning of balancing techniques such as loss weighting or balanced batch sampling. What did the authors use to account for class imbalance? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My rating is borderline. In general, the approach is very interesting for the MICCAI community, however, the authors should improve their results section/discussion before publication. What is the ranking of this paper in your review stack? 5 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The author proposed a framework named UDTR hereafter for modeling ugly duckling context in melanoma identification (called UDTR hereafter). They first extract multi-scale features using a deep neural network from lesions in the same individuals; Then, they learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, they design a two-branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, they propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Clear motivation and sufficient literature review. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 4.1 Please add detailed description in caption of Fig.2. 4.2 In Fig.2, Encoder layer corresponding to which part in the left architecture figure? 4.3 What is insight of using group contrastive learning instead of image contrastive learning? image contrastive learning means do contrastive calculation in image by image without group them. I think the image contrastive learning is a strong baseline for comparison. 4.4 How to define N? As it directly related to contrastive learning results. How to adapt this hyper-parameter to different image quantity of dataset? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance good Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figures should add detailed caption also for better readability Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novelty, solid method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces to leverage transformer to detect melanoma by using a patient’s entire dermoscopy images. Initially, CNN was used to encode image features which were then parsed by a transformer to model the dependency relationship. Finally, a two-branched network with contrastive loss function was used for predicting both the lesion and patient level results. The experimental results with the public ISIC 2020 dataset appear to be better than the existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well organized and structured, which made audience easy to follow. The concept of leverage a patient’s all the available lesion images is interesting and novel. There are sufficient experimental results to justify the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It seems that the proposed method is a straightforward implementation of transformer. Therefore, it’s not clear why it’s novel and why transformer is the optimal choice. There is no comparison to the existing methods that are optimized for melanoma detection. Therefore, it’s challenging to understand that the proposed method has improved the state-of-the-art. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method was developed with a well benchmarked public dataset. The selected hyperparameters were also given in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Both level and patient level prediction dropped after image number 30 (Table 1). Are there any reasons for that? Theoretically, the performance should increase or consistent when the number of images increases. It seems that the improvement from using global context is incremental (an increase of 0.5%, Table 2, UDTR-L and UDTR-LP). Is this significant? It will be good to have detections results on CNN predicting patient level melanoma. This will help to understand the importance of global context. There are some non-standard hyperparameters used without justification. It will be better if author can explain the selection. E.g., c=1.24 and m=0.3. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The concept of using a patient’s all the available dermoscopy images for detecting melanoma is novel and interesting. Authors also conduct detailed experiments to justify the proposed method. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers acknowledge that the paper introduces an interesting Transformer-based method coupled with the ugly-duckling principle for melanoma detection in dermoscopic images. However, some detailed descriptions of the proposed method are currently missing and presentation of the results also need to be improved. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of major comments in their rebuttal and explained regarding the missing / unclear information. While the limited comparative evaluation is still a concern, the concept of using ugly duckling for melanoma detection was interesting and hence I suggest an acceptance for MICCAI2021. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The submission proposes an ugly duckling sign detection algorithm for melanoma identification based on transformers. The proposed method is a reasonable solution to the targeted problem, and its effectiveness is demonstrated by the reported experimental results. Main concerns regarding the baselines and design choices have been addressed in the rebuttal period. Therefore, this submission is recommended for acceptance. Updates as stated in the rebuttal letter are encouraged to be made to the final version. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed method is of great interest and seems to provide suitable performance. However, some aspects of the experimental design are still unclear after rebuttal. Further, there may be concerns of validity of the study related to the choice of the final threshold used to calculate the evaluation metrics. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Author Feedback Q1. There is no proper comparison to other methods in the literature. It is unclear the proposed mothed has improved state-of-art. Also, why compare to “post-processing methods” if they do not work? Why not compare method from ISIC 2020? (R1 &amp; R3) Re: As far as we know, no previous research has explored modelling “ugly duckling sign” for melanoma diagnosis. Thus, there is no publicly reported method for comparison. In our study, we proposed two baseline methods for comparison: 1) CNN score-based post-processing; and 2) CNN feature based post-processing. Since our aim is to compare lesions from the same patient for classifying outlier lesion, performing post-processing either on the CNN scores or CNN features is an intuitive and efficient way to assess relationship among lesions. According to our experiment, although we choose optimal hyper-parameters on validation dataset, their performance drops on the testing dataset, which indicates that these methods are unsuitable for dealing with such complicated task of contextual-based outlier lesion detection. In this study, we mainly focused on exploring how to effectively model ugly duckling context to improve melanoma diagnosis. We compared our model with basic CNN models under the same standard training and data augmentation strategy on the ISIC 2020 dataset. Results demonstrated the benefit of using lesion context as well as the superiority of our method. Indeed, there is plenty of methods in ISIC 2020 challenge, but both of top-ranking methods are based on heavy ensemble of multiple models with different architectures or trained with different input size. For instance, the 1st rank method ensembles 18 models for the final prediction. Also, they use external data to improve performance for each single CNN model. These methods are heavily engineered targeting for higher performance rather than clinical-inspired solutions. Q2: What is insight of using group contrastive learning instead of image contrastive learning? I think the image contrastive learning is a strong baseline for comparison. (R2) Re: We use group contrastive loss to force a large margin between benign lesions and melanoma in feature space as possible. This enables the following transformer model to capture the relationships of multiple lesions in a global view and make better decisions. While contrastive learning only focuses on learning the correlation between a pair of lesions, which does not suit for the “ugly duckling concept”. Besides, we incorporated a hard sample selection mechanism in our group contrastive learning considering the extremely imbalanced dataset. We also tried directly using image pair-wise contrastive loss, but it didn’t boost the performance. Q4: How to define N? How to adapt this hyper-parameter to different dataset? (R2) Re: The N is the input lesion image number of our model which depends on the average lesion number of patients. In ISIC 2020, the average lesions number from each patient is ~16. We performed an ablation study on the N (Table 1) and the results show that increasing N above the average number will not make much difference. Q5: The dataset is extremely unbalanced. The authors appear to achieve balanced sens./spec., What did the authors use to account for class imbalance? (R1) Re: The sens/spec results are strongly related to the setting of the threshold. We choose optimal threshold with Youden’s index (sens. + spec. -1) which enables a balanced sens/spec result. Q6: The value of Fig. 3 and 4 is unclear. (R1) Re: Fig. 3 is used to show how incorporating lesion contextual information changes the prediction scores for a same group of lesions. With lesion context from surrounding lesions, the model tends to give more confident prediction scores. Fig. 4 illustrated the attention weights of our model; the line weights reflect strength of relation between two lesions. Usually a melanoma is less similar to benign lesions and it has weak connection to normal lesions. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Yu, Zhen,Mar, Victoria,Eriksson, Anders,Chandra, Shakes,Bonnington, Paul,Zhang, Lei,Ge, Zongyuan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>End-to-end Ugly Duckling Sign Detection for Melanoma Identification with Transformers</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Dermatology"
+        class="post-category">
+        Clinical applications - Dermatology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Yu, Zhen"
+        class="post-tags">
+        Yu, Zhen
+      </a> |  
+      
+      <a href="kittywong/tags#Mar, Victoria"
+        class="post-tags">
+        Mar, Victoria
+      </a> |  
+      
+      <a href="kittywong/tags#Eriksson, Anders"
+        class="post-tags">
+        Eriksson, Anders
+      </a> |  
+      
+      <a href="kittywong/tags#Chandra, Shakes"
+        class="post-tags">
+        Chandra, Shakes
+      </a> |  
+      
+      <a href="kittywong/tags#Bonnington, Paul"
+        class="post-tags">
+        Bonnington, Paul
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Lei"
+        class="post-tags">
+        Zhang, Lei
+      </a> |  
+      
+      <a href="kittywong/tags#Ge, Zongyuan"
+        class="post-tags">
+        Ge, Zongyuan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Zhen Yu, Victoria Mar, Anders Eriksson, Shakes Chandra, Paul Bonnington, Lei Zhang, Zongyuan Ge
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The concept of ugly ducklings was introduced in dermatology to improve the likelihood of detecting melanoma by comparing a suspicious lesion against its surrounding lesions. The ugly duckling sign suggests nevi in the same individual tend to resemble one another while malignant melanoma often deviates from this nevus pattern. Differentiating the ugly duckling sign was more discriminatory between malignant melanoma and other nevi than quantitatively assessing dermoscopic patterns. In this study, we propose a framework for modeling ugly duckling context early melanoma identification (called UDTR hereafter). To this end, we construct our model in three parts: Firstly, we extract multi-scale features using a deep neural network from lesions in the same individuals; Then, we learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, we design a two branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, we propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning. We evaluate our method on ISIC 2020 dataset which consists of ∼30,000 images from ∼2,000 patients. Extensive experiments evidence the effectiveness of our approach and highlight the importance of detecting lesions with clues from surrounding lesions than that of only evaluating lesion in question.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87234-2_17">https://doi.org/10.1007/978-3-030-87234-2_17</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper at hand addresses the problem of melanoma detection from dermoscopic images. The authors aim to incorporate the ugly duckling principle into a deep learning model by capturing the context with multiple lesions from one patient. For this purpose, the authors employ a transformer that processes pooled feature vectors for each lesion from an encoding CNN as its tokens. Furthermore, the authors use a lesion-level loss, a patient-level loss, and a contrastive loss between features of benign and malignant lesions. The authors use the publicly available ISIC 2020 dataset. Multiple ablation experiments are performed, showing improved performance compared to a lesion-wise CNN.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>•	The idea of using context in terms of multiple lesions is well motivated.
+•	Transformers are excellently suited for the proposed problem.
+•	The authors clearly describe their validation/testing strategy.
+•	The authors provide ablation experiments.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>•	The author’s way of presenting results is partially confusing:
+o	The authors should state which model variant they used in Table 1. The reader can guess this from comparing values but this should be stated.
+o	The authors leave out the patient-level result in Table 2 without clearly stating that.
+o	The authors leave out sensitivity and specificity in Table 3.
+•	There is no proper comparison to other methods in the literature:
+o	Where do “score post-processing” and “feature post-processing” come from? Did the authors create these? If yes, why compare to them if they do not work?
+o	The ISIC 2020 challenge provides plenty of methods to compare against. I acknowledge that a lot of them use lots of tricks to achieve high performance but the authors could have reproduced one of those methods in their settings (only 10crop as test augmentation)
+•	The value of Fig. 3 and 4 is unclear:
+o	Fig. 3: uncalibrated softmax probabilities are generally a suboptimal measure for model uncertainty – what is the main takeaway from this figure?
+o	Fig. 4: The authors do not provide an interpretation of the visualized attention weights. To the reader, it looks like few, arbitrary lesions (not the malignant one) are selected as being important by the attention weights.
+•	The authors do not provide significance tests (they do provide CV standard deviations, however)</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>•	The authors evaluate on a public dataset (ISIC 2020 challenge), helping reproducibility
+•	The authors do not comment on the release of their code, hindering reproducibility</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>•	In general, I believe that the authors approach is very reasonable and transformers are well-suited to incorporate the ugly-duckling principle. However, there are multiple points the authors should fix (presentation/description of results) and discuss (Fig. 3, 4, related work). See weaknesses for details.
+•	Something else that is missing for me is a set of standard aggregation techniques for patient-level predictions, e.g., in terms of ensembling (averaging (weighted) probabilities/selecting the largest probability, etc.). This could have been done for the standard CNN.
+•	The dataset is extremely unbalanced. The authors appear to achieve balanced metric results (sens./spec.), however, I cannot find any mentioning of balancing techniques such as loss weighting or balanced batch sampling. What did the authors use to account for class imbalance?</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>My rating is borderline. In general, the approach is very interesting for the MICCAI community, however, the authors should improve their results section/discussion before publication.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The author proposed a framework named UDTR hereafter for modeling ugly duckling context in melanoma identification (called UDTR hereafter). They first extract multi-scale features using a deep neural network from lesions in the same individuals; Then, they learn lesion context by modeling the dependency among features of lesions using a transformer encoder; Finally, they design a two-branch architecture for performing both patient-level prediction and lesion-level prediction concurrently. Also, they propose a group contrastive learning strategy to enforce a large margin between benign and malignant lesions in feature space for better contextual feature learning.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Clear motivation and sufficient literature review.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>4.1 Please add detailed description in caption of Fig.2.
+4.2 In Fig.2, Encoder layer corresponding to which part in the left architecture figure?
+4.3 What is insight of using group contrastive learning instead of image contrastive learning? image contrastive learning means do contrastive calculation in image by image without group them. I think the image contrastive learning is a strong baseline for comparison.
+4.4 How to define N? As it directly related to contrastive learning results. How to adapt this hyper-parameter to different image quantity of dataset?</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Figures should add detailed caption also for better readability</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Novelty, solid method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper introduces to leverage transformer to detect melanoma by using a patient’s entire dermoscopy images. Initially, CNN was used to encode image features which were then parsed by a transformer to model the dependency relationship. Finally, a two-branched network with contrastive loss function was used for predicting both the lesion and patient level results. The experimental results with the public ISIC 2020 dataset appear to be better than the existing methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper is well organized and structured, which made audience easy to follow.
+The concept of leverage a patient’s all the available lesion images is interesting and novel.
+There are sufficient experimental results to justify the proposed method.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>It seems that the proposed method is a straightforward implementation of transformer. Therefore, it’s not clear why it’s novel and why transformer is the optimal choice.</p>
+
+      <p>There is no comparison to the existing methods that are optimized for melanoma detection. Therefore, it’s challenging to understand that the proposed method has improved the state-of-the-art.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The proposed method was developed with a well benchmarked public dataset. The selected hyperparameters were also given in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Both level and patient level prediction dropped after image number 30 (Table 1). Are there any reasons for that? Theoretically, the performance should increase or consistent when the number of images increases.</p>
+
+      <p>It seems that the improvement from using global context is incremental (an increase of 0.5%, Table 2, UDTR-L and UDTR-LP). Is this significant? It will be good to have detections results on CNN predicting patient level melanoma. This will help to understand the importance of global context.</p>
+
+      <p>There are some non-standard hyperparameters used without justification. It will be better if author can explain the selection. E.g., c=1.24 and m=0.3.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The concept of using a patient’s all the available dermoscopy images for detecting melanoma is novel and interesting. Authors also conduct detailed experiments to justify the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>All reviewers acknowledge that the paper introduces an interesting Transformer-based method coupled with the ugly-duckling principle for melanoma detection in dermoscopic images. However, some detailed descriptions of the proposed method are currently missing and presentation of the results also need to be improved.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors addressed most of major comments in their rebuttal and explained regarding the missing / unclear information. While the limited comparative evaluation is still a concern, the concept of using ugly duckling for melanoma detection was interesting and hence I suggest an acceptance for MICCAI2021.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The submission proposes an ugly duckling sign detection algorithm for melanoma identification based on transformers. The proposed method is a reasonable solution to the targeted problem, and its effectiveness is demonstrated by the reported experimental results. Main concerns regarding the baselines and design choices have been addressed in the rebuttal period. Therefore, this submission is recommended for acceptance. Updates as stated in the rebuttal letter are encouraged to be made to the final version.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The proposed method is of great interest and seems to provide suitable performance. However, some aspects of the experimental design are still unclear after rebuttal. Further, there may be concerns of validity of the study related to the choice of the final threshold used to calculate the evaluation metrics.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>12</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Q1. There is no proper comparison to other methods in the literature. It is unclear the proposed mothed has improved state-of-art. Also, why compare to “post-processing methods” if they do not work? Why not compare method from ISIC 2020? (R1 &amp; R3)</p>
+
+  <p>Re: As far as we know, no previous research has explored modelling “ugly duckling sign” for melanoma diagnosis. Thus, there is no publicly reported method for comparison. In our study, we proposed two baseline methods for comparison: 1) CNN score-based post-processing; and 2) CNN feature based post-processing.</p>
+
+  <p>Since our aim is to compare lesions from the same patient for classifying outlier lesion, performing post-processing either on the CNN scores or CNN features is an intuitive and efficient way to assess relationship among lesions. According to our experiment, although we choose optimal hyper-parameters on validation dataset, their performance drops on the testing dataset, which indicates that these methods are unsuitable for dealing with such complicated task of contextual-based outlier lesion detection.</p>
+
+  <p>In this study, we mainly focused on exploring how to effectively model ugly duckling context to improve melanoma diagnosis. We compared our model with basic CNN models under the same standard training and data augmentation strategy on the ISIC 2020 dataset. Results demonstrated the benefit of using lesion context as well as the superiority of our method.</p>
+
+  <p>Indeed, there is plenty of methods in ISIC 2020 challenge, but both of top-ranking methods are based on heavy ensemble of multiple models with different architectures or trained with different input size. For instance, the 1st rank method ensembles 18 models for the final prediction. Also, they use external data to improve performance for each single CNN model. These methods are heavily engineered targeting for higher performance rather than clinical-inspired solutions.</p>
+
+  <p>Q2: What is insight of using group contrastive learning instead of image contrastive learning? I think the image contrastive learning is a strong baseline for comparison. (R2)</p>
+
+  <p>Re: We use group contrastive loss to force a large margin between benign lesions and melanoma in feature space as possible. This enables the following transformer model to capture the relationships of multiple lesions in a global view and make better decisions. While contrastive learning only focuses on learning the correlation between a pair of lesions, which does not suit for the “ugly duckling concept”. Besides, we incorporated a hard sample selection mechanism in our group contrastive learning considering the extremely imbalanced dataset. We also tried directly using image pair-wise contrastive loss, but it didn’t boost the performance.</p>
+
+  <p>Q4: How to define N? How to adapt this hyper-parameter to different dataset? (R2)</p>
+
+  <p>Re: The N is the input lesion image number of our model which depends on the average lesion number of patients. In ISIC 2020, the average lesions number from each patient is ~16. We performed an ablation study on the N (Table 1) and the results show that increasing N above the average number will not make much difference.</p>
+
+  <p>Q5: The dataset is extremely unbalanced. The authors appear to achieve balanced sens./spec., What did the authors use to account for class imbalance? (R1)</p>
+
+  <p>Re: The sens/spec results are strongly related to the setting of the threshold. We choose optimal threshold with Youden’s index (sens. + spec. -1) which enables a balanced sens/spec result.</p>
+
+  <p>Q6: The value of Fig. 3 and 4 is unclear. (R1)
+Re: Fig. 3 is used to show how incorporating lesion contextual information changes the prediction scores for a same group of lesions. With lesion context from surrounding lesions, the model tends to give more confident prediction scores. Fig. 4 illustrated the attention weights of our model; the line weights reflect strength of relation between two lesions. Usually a melanoma is less similar to benign lesions and it has weak connection to normal lesions.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0716-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0717-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Dermatology"
+        class="post-category">
+        Clinical applications - Dermatology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Yu, Zhen"
+        class="post-category">
+        Yu, Zhen
+      </a> |  
+      
+      <a href="kittywong/tags#Mar, Victoria"
+        class="post-category">
+        Mar, Victoria
+      </a> |  
+      
+      <a href="kittywong/tags#Eriksson, Anders"
+        class="post-category">
+        Eriksson, Anders
+      </a> |  
+      
+      <a href="kittywong/tags#Chandra, Shakes"
+        class="post-category">
+        Chandra, Shakes
+      </a> |  
+      
+      <a href="kittywong/tags#Bonnington, Paul"
+        class="post-category">
+        Bonnington, Paul
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Lei"
+        class="post-category">
+        Zhang, Lei
+      </a> |  
+      
+      <a href="kittywong/tags#Ge, Zongyuan"
+        class="post-category">
+        Ge, Zongyuan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0717/12/31/Paper1657">
+          Automatic Severity Rating for Improved Psoriasis Treatment
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0715/12/31/Paper1095">
+          Culprit-Prune-Net: Efficient Continual Sequential Multi-Domain Learning with Application to Skin Lesion Classification
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

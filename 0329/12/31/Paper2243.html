@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Style Transfer Using Generative Adversarial Networks for Multi-Site MRI Harmonization | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Style Transfer Using Generative Adversarial Networks for Multi-Site MRI Harmonization" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Mengting Liu, Piyush Maiti, Sophia Thomopoulos, Alyssa Zhu, Yaqiong Chai, Hosung Kim, Neda Jahanshad Abstract Large data initiatives and high-powered brain imaging analyses require the pooling of MR images acquired across multiple scanners, often using different protocols. Prospective cross-site harmonization often involves the use of a phantom or traveling subjects. However, as more datasets are becoming publicly available, there is a growing need for retrospective harmonization, pooling data from sites not originally coordinated together. Several retrospective harmonization techniques have shown promise in removing cross-site image variation. However, most unsupervised methods cannot distinguish between image-acquisition based variability and cross-site population variability, so they require that datasets contain subjects or patient groups with similar clinical or demographic information. To overcome this limitation, we consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. We trained our model using data from five large-scale multi-site datasets with varied demographics. Results demonstrated that our style-encoding model can harmonize MR images, and match intensity profiles, successfully, without relying on traveling subjects. This model also avoids the need to control for clinical, diagnostic, or demographic information. Moreover, we further demonstrated that if we included diverse enough images into the training set, our method successfully harmonized MR images collected from unseen scanners and protocols, suggesting a promising novel tool for ongoing collaborative studies. Link to paper https://doi.org/10.1007/978-3-030-87199-4_30 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose a method from MR harmonization using a StyleGAN framework with cycle-consistency loss to encourage separation of style and anatomical features. Also included are style-consistency and style-diversification losses to promote the use of style codes in the network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper takes an extremely successful strategy from computer vision and applies it to a very important problem in medical imaging (especially MRI). The paper is mostly well-written and has clear results. This paper clearly focuses on correcting for a limitation of GANs which is fidelity to the input. The combination of style encoding loss, adversarial loss and cyclic loss clearly encourage the network to reconstruct the images faithfully to the input anatomy. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This method currently lacks comparisons to other methods, even if they might be inferior in implementation. For example, a CycleGAN between specific sites, or StarGAN could be implemented as a comparison. Or the approach from 2020 MICCAI (“A Disentangled Latent Space for Cross-Site MRI Harmonization”). The paper also lacks a true comparison test between subjects scanned differently. While this data is difficult to come by, it could be approximated by finding scans done close together on different scanners (there are a few in the OASIS dataset), or by simulating different sequences using something like BrainWeb. There is also no description of the learned style or image codes. These could be visualized using a technique like tSNE or UMAP to see if the style codes do differ by acquisition and that the anatomical codes do not (and do differ by anatomy). It is worrisome that the cycle loss is such an important hyperparameter. It looks like the model has not completely disentangled the style from anatomy given the difference in contrast as well as anatomical features in Figure 3. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper should be easily reproducible with code to be provided by the authors and these publicly available datasets. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction is well-written and researched, but I think the Dewey et al. “A Disentangled Latent Space for Cross-Site MRI Harmonization” is the citation intended for [9]. In the last sentence of 2.1, the model also includes the mapping network. Description of methods is clean and detailed. A final description of how one training iteration would run would be helpful, especially describing how L_div is included. While the travelling subject is interesting, one subject by itself is only a single data point. It would be useful to hold out an entire group of similarly imaged patients as well to test extensibility on a larger set. A brief description or table of the acquisition parameters is important, even if it is in supplementary materials. Ranges or multiple values can be given if the values vary within a site. It would be more impactful to see this applied to images with the skull on. This would remove the variation in images due to skull stripping on differing contrasts. Why were 9 DOF used in registration? This limits variability in the images and must be undone on any subsequent volumetric analysis. How were the images resized to 128x128x128? Were they padded to 256x256x256 and downsampled? Or directed downsampled from the MNI space? Why was this done if only 2D images were used in the model? Only two subjects were used for histogram validation? Why only two? It seems that this would be a more impactful measure if a more reliable population metric could be derived. What statistical test was used to calculated the p-value in the histogram comparison? What was the hypothesis tested? It seems that the training data from the UKBB dataset could be used to train the segmentation network, since it was used to train the harmonization network. Citation is needed here for U-Net. Were the ground truth for the segmentations from the “statistical partial volume model”? What was the statistical test here? Typo in the 3.2 title. Perhaps “Validation of the Preservation of Brian Anatomical Information” The analysis used in Section 3.2 is very confusing. It seems the authors are trying to verify that the images are not structurally different after harmonization, but the results are very muddled. Perhaps a more straightforward approach or an experiment on the traveling subject using a single traveling subject site as a reference point and calculating the difference between the reference point and the harmonized images would be easier to understand. Other hyperparameters should be discussed (besides L_cyc). Statistical tests of one subject are not particularly informative in 3.4. Consider synthetic or approximate traveling subjects in large datasets. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a strong paper. It has a lot of promise and addresses an important question. It lacks some in the experiments, but given the lack of available data in harmonization work, this should not be too much of a penalty. That being said, some of the additions mentioned in the comments would push this well into the accept range. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. Eu Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors are dedicated to solving a real problem, which even this reviewer has already experienced in practice in previous research. Clear and well-written paper. Few points of adjustments Public bases, methodology and clear parameters, which facilitates the reproducibility of the work. The theoretical part is well constructed and described. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. given the objective of the work I think the authors could add more data from the equipment used in the acquisition of the databases used. For example: Which manufacturers? What fields are used in these acquisitions? This will help the reader and those interested in research to understand the variability involved in this topic. A point of attention to the authors is a hypothesis adopted in the text that I believe needs to be better discussed, as this directly impacts the results: “All image acquisition information for these public resources can be found elsewhere, but briefly they vary in terms of scanner manufacturer, field strength, voxel size, and more, often within the same study” The method is well described but there are some points that, if better described / referenced, can help in the reproducibility of the article: “All the images were skull-stripped, nonuniformity corrected and registered to the MNI template using a 9 dof linear registration. “ “To pilot this work, we used 2D slices as input, and we selected 50 axial slices in the middle of each MRI volume as input” . What is the criterion for selecting these 50 slices? And why the number 50? were tests done? In the introduction there are some statements that should contain references. For example: “Decade-long running studies, such as ADNI undergo scanner upgrades, and many studies of small effects or effects across wide demographic ranges, require retrospective pooling of data.” Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The article uses public bases and the parameters of the methods are well described, which facilitates the reproducibility of the work. Some small points of attention, which improves this item, I mentioned in the main weaknesses section The authors could mention the programming language (python, r), main packages (tensorflow, pytorch) and infrastructure used in the research. This helps in the reproducibility of the work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A point of attention in the introduction of the article is that a phantom is multi-purpose. A hospital that is accredited to the ACR needs weekly / monthly tests for the machine’s Q&amp;A and the phantom is essential in this task. I think the authors can make this a little bit clearer. In figure 1, I believe that the authors would like to have mentioned layers of convolution. It is written convolusion. I think it’s worth a little review. All other points I made a brief recommendation in the main weaknesses section. Well-written article and relevant problem. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of generalizing image problems is real. Databases obtained in different ways need to be harmonized to think about the next step in algorithms. The problem is relevant, the strategy adopted is interesting and the article is well written. I have some points of attention but I have already reported it previously. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To distinguish between image-acquisition based variability and cross-site population variability, this paper considers cross-site MRI image harmonization as a style transfer problem, and harmonize MR images by using a GAN-based fully unsupervised framework, without relying on traveling subjects. The effectiveness of proposed methods is verified on five brain T1w datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper models the multi-site MRI harmonization problem as a style transfer problem and process each MR image individually, without separating images into different sites, which is quite interesting. The performance of proposed methods are evaluated on multiple datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My major concern is the novelty. From my point of view, the major components of proposed method in this paper are included or similar as another paper in MICCAI 2020, “Unified cross-modality feature disentangler for unsupervised multi-domain MRI abdomen organs segmentation”, which uses not only style code but also domain code for multi-domain translation. The experiments are insufficient. This paper only reports the results of proposed method, without the comparison with other synthesis methods, which is insufficient to prove the effectiveness of proposed method. Besides, some important properties could be explored. For example, the multi-site problem is modeled as a style transfer problem by using a reference image, and does the selection of reference image inference the results? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is satisfactory, and the authors are willing to provide the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The novelty could be improved. More experiments are needed, e.g., the comparison with other SoTA methods. Please refer to the weaknesses for more details. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty seems limited, and the experiments are quite insufficient. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Reviewers in their detailed assessments agree on the good clarity and organization of the paper, and on interesting novel aspects of the work addressing a relevant problem in medical imaging. Reviewers also point to weaknesses that will need to be adressed would this paper be selected for publication. In particular, reviewers note on the lack of comparisons to other methods, questions on 2D slice training and related slice selection, and insufficient experiments - showing feasibility only on five T1w datasets. A major concern raised by rev#3 is novelty in regard to previously published methods. This is a critical point to be addressed in detail in a potential rebuttal as significant overlap with previous methods may raise concerns for this paper to be selected for MICCAI. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Reviewers responded to all critiques an limitations as brought up by reviewers. In their rebuttal, they say they will train on sets of slices of 3D volumes, after co-registration. They also provide a detailed response to similarity/difference to Jiang et al. It seems that after all these changes to be made and additional processing on 50 datasets, this paper may pass the bar to be accepted for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Concerns relating to the novelty of the proposed method have been addressed by the authors explaining that their method considers each image as belonging to its own unique domain, rather than considering sets of images as being in a particular domain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper tackles an important topic in MRI and deep learning. The approach seems interesting. There was significant disagreement between reviewers. As noted, however, there seems to be significant compromises in the evaluation: 1) skull-stripped images only, 2) 2-D slices only, 3) only a subset of slices are used, 4) slices are downsampled to 128x128, 5) very limited quantitative results in terms of comparisons to other methods and numbers of data sets analyzed. The segmentation performance on CSF was particularly poor, although improved from non-harmonized images. Given the requirements of skull-stripping, downsampling, and using only center slices, the practical utility of the approach is somewhat low. For these reasons, I favor rejection. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback The reviewers were basically very positive about this work, “This is a strong paper”, “problem is relevant, the strategy adopted is interesting and the article is well written” and “dedicated to solving a real problem”. The main critiques from reviewer’s comments, and how we will address them, are listed below. 1 Lack of comparisons with a population of subjects scanned differently and other methods. We now assess 50 ADNI 1 participants scanned with 1.5 and 3T MRI to harmonize the different protocols. We use Rev 1’s suggestion to assess the differences before and after harmonization with respect to the true scan. Furthermore, given limitations in the ground truth availability, comparisons with other methods cannot quantifiably confirm a “better” method. We now add to the discussion a sentence to describe the difficulties with validation, in efforts to encourage the MICCAI community to help address this. Despite this, as mentioned in the next response, we have expanded our approach to 3D and plan to compare with other harmonization methods indirectly in follow-up work. 2 Information surrounding datasets, preprocessing rational and 2D slice training. If it were not for GPU memory limits, our network would easily extend to 3D. All reviewers commented on the preprocessing of the images and slice selection. The same network can of course be trained with unprocessed images, however, brain extraction and 9dof registration are fairly standard image processing steps that help reduce variability and allows the training model to focus more on the anatomy of interest rather than non-brain tissue/components. We now add two sentences to clarify our preprocessing rational and the slice selection criterion: we select the middle 50 axial slices (in MNI space) as all of these slices contain multiple brain tissue types/contrasts to help ensure the model learns style features; 50 is somewhat arbitrary but much fewer would provide less training data and more would include training data with limited style messages. For the 2D model, we agree with Rev3 that selection of reference, even from the same 3D volume, would slightly alter the results. We have put this as a limitation in discussion. We are now extending this to 3D harmonization by stacking 2D slices together using a slice-matched (after registration) harmonization strategy to avoid the single-slice bias. Our 2D processing of the 128 cube helps prepare for 3D processing in all orientations. Rev 2 and 3 commented on the datasets used. We will add more details on field strength and manufacturer to our existing tables/figures. 3 Lack of novelty with respect to a previously published paper We thank Rev3 for bringing Jiang et al, 2020 to our attention, we now cite this work and explain how our work is different. Both works are inspired by the computer vision framework that disentangles images into content and style. However our model is quite different and has several important novelties in domain labeling, style learning, style definition and content learning. Jiang (2020) groups different modalities of images into different domains, with style indexing within domain diversities. We do not separate images into domains based on datasets but consider every single image as a unique “domain” with its own style. Domain-based approaches can only translate images among limited groups with clear borders. In harmonization studies like ours, it is difficult to clearly define a dataset as a domain, because each dataset may collect images from many sites, some with various scanners, throughout many years of scanner drifts and upgrades, Jiang (2020) also assumes the styles encoded from images match a universal prior (Gaussian) distribution that span all domains and can be learned using a variational auto-encoder. We learn style codes adversarially using a GAN-like approach, which does not rely on any hypothesized prior distribution and allows us to learn style codes with greater flexibility. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Mengting Liu, Piyush Maiti, Sophia Thomopoulos, Alyssa Zhu, Yaqiong Chai, Hosung Kim, Neda Jahanshad Abstract Large data initiatives and high-powered brain imaging analyses require the pooling of MR images acquired across multiple scanners, often using different protocols. Prospective cross-site harmonization often involves the use of a phantom or traveling subjects. However, as more datasets are becoming publicly available, there is a growing need for retrospective harmonization, pooling data from sites not originally coordinated together. Several retrospective harmonization techniques have shown promise in removing cross-site image variation. However, most unsupervised methods cannot distinguish between image-acquisition based variability and cross-site population variability, so they require that datasets contain subjects or patient groups with similar clinical or demographic information. To overcome this limitation, we consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. We trained our model using data from five large-scale multi-site datasets with varied demographics. Results demonstrated that our style-encoding model can harmonize MR images, and match intensity profiles, successfully, without relying on traveling subjects. This model also avoids the need to control for clinical, diagnostic, or demographic information. Moreover, we further demonstrated that if we included diverse enough images into the training set, our method successfully harmonized MR images collected from unseen scanners and protocols, suggesting a promising novel tool for ongoing collaborative studies. Link to paper https://doi.org/10.1007/978-3-030-87199-4_30 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose a method from MR harmonization using a StyleGAN framework with cycle-consistency loss to encourage separation of style and anatomical features. Also included are style-consistency and style-diversification losses to promote the use of style codes in the network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper takes an extremely successful strategy from computer vision and applies it to a very important problem in medical imaging (especially MRI). The paper is mostly well-written and has clear results. This paper clearly focuses on correcting for a limitation of GANs which is fidelity to the input. The combination of style encoding loss, adversarial loss and cyclic loss clearly encourage the network to reconstruct the images faithfully to the input anatomy. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This method currently lacks comparisons to other methods, even if they might be inferior in implementation. For example, a CycleGAN between specific sites, or StarGAN could be implemented as a comparison. Or the approach from 2020 MICCAI (“A Disentangled Latent Space for Cross-Site MRI Harmonization”). The paper also lacks a true comparison test between subjects scanned differently. While this data is difficult to come by, it could be approximated by finding scans done close together on different scanners (there are a few in the OASIS dataset), or by simulating different sequences using something like BrainWeb. There is also no description of the learned style or image codes. These could be visualized using a technique like tSNE or UMAP to see if the style codes do differ by acquisition and that the anatomical codes do not (and do differ by anatomy). It is worrisome that the cycle loss is such an important hyperparameter. It looks like the model has not completely disentangled the style from anatomy given the difference in contrast as well as anatomical features in Figure 3. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper should be easily reproducible with code to be provided by the authors and these publicly available datasets. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction is well-written and researched, but I think the Dewey et al. “A Disentangled Latent Space for Cross-Site MRI Harmonization” is the citation intended for [9]. In the last sentence of 2.1, the model also includes the mapping network. Description of methods is clean and detailed. A final description of how one training iteration would run would be helpful, especially describing how L_div is included. While the travelling subject is interesting, one subject by itself is only a single data point. It would be useful to hold out an entire group of similarly imaged patients as well to test extensibility on a larger set. A brief description or table of the acquisition parameters is important, even if it is in supplementary materials. Ranges or multiple values can be given if the values vary within a site. It would be more impactful to see this applied to images with the skull on. This would remove the variation in images due to skull stripping on differing contrasts. Why were 9 DOF used in registration? This limits variability in the images and must be undone on any subsequent volumetric analysis. How were the images resized to 128x128x128? Were they padded to 256x256x256 and downsampled? Or directed downsampled from the MNI space? Why was this done if only 2D images were used in the model? Only two subjects were used for histogram validation? Why only two? It seems that this would be a more impactful measure if a more reliable population metric could be derived. What statistical test was used to calculated the p-value in the histogram comparison? What was the hypothesis tested? It seems that the training data from the UKBB dataset could be used to train the segmentation network, since it was used to train the harmonization network. Citation is needed here for U-Net. Were the ground truth for the segmentations from the “statistical partial volume model”? What was the statistical test here? Typo in the 3.2 title. Perhaps “Validation of the Preservation of Brian Anatomical Information” The analysis used in Section 3.2 is very confusing. It seems the authors are trying to verify that the images are not structurally different after harmonization, but the results are very muddled. Perhaps a more straightforward approach or an experiment on the traveling subject using a single traveling subject site as a reference point and calculating the difference between the reference point and the harmonized images would be easier to understand. Other hyperparameters should be discussed (besides L_cyc). Statistical tests of one subject are not particularly informative in 3.4. Consider synthetic or approximate traveling subjects in large datasets. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a strong paper. It has a lot of promise and addresses an important question. It lacks some in the experiments, but given the lack of available data in harmonization work, this should not be too much of a penalty. That being said, some of the additions mentioned in the comments would push this well into the accept range. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. Eu Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors are dedicated to solving a real problem, which even this reviewer has already experienced in practice in previous research. Clear and well-written paper. Few points of adjustments Public bases, methodology and clear parameters, which facilitates the reproducibility of the work. The theoretical part is well constructed and described. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. given the objective of the work I think the authors could add more data from the equipment used in the acquisition of the databases used. For example: Which manufacturers? What fields are used in these acquisitions? This will help the reader and those interested in research to understand the variability involved in this topic. A point of attention to the authors is a hypothesis adopted in the text that I believe needs to be better discussed, as this directly impacts the results: “All image acquisition information for these public resources can be found elsewhere, but briefly they vary in terms of scanner manufacturer, field strength, voxel size, and more, often within the same study” The method is well described but there are some points that, if better described / referenced, can help in the reproducibility of the article: “All the images were skull-stripped, nonuniformity corrected and registered to the MNI template using a 9 dof linear registration. “ “To pilot this work, we used 2D slices as input, and we selected 50 axial slices in the middle of each MRI volume as input” . What is the criterion for selecting these 50 slices? And why the number 50? were tests done? In the introduction there are some statements that should contain references. For example: “Decade-long running studies, such as ADNI undergo scanner upgrades, and many studies of small effects or effects across wide demographic ranges, require retrospective pooling of data.” Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The article uses public bases and the parameters of the methods are well described, which facilitates the reproducibility of the work. Some small points of attention, which improves this item, I mentioned in the main weaknesses section The authors could mention the programming language (python, r), main packages (tensorflow, pytorch) and infrastructure used in the research. This helps in the reproducibility of the work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A point of attention in the introduction of the article is that a phantom is multi-purpose. A hospital that is accredited to the ACR needs weekly / monthly tests for the machine’s Q&amp;A and the phantom is essential in this task. I think the authors can make this a little bit clearer. In figure 1, I believe that the authors would like to have mentioned layers of convolution. It is written convolusion. I think it’s worth a little review. All other points I made a brief recommendation in the main weaknesses section. Well-written article and relevant problem. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of generalizing image problems is real. Databases obtained in different ways need to be harmonized to think about the next step in algorithms. The problem is relevant, the strategy adopted is interesting and the article is well written. I have some points of attention but I have already reported it previously. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To distinguish between image-acquisition based variability and cross-site population variability, this paper considers cross-site MRI image harmonization as a style transfer problem, and harmonize MR images by using a GAN-based fully unsupervised framework, without relying on traveling subjects. The effectiveness of proposed methods is verified on five brain T1w datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper models the multi-site MRI harmonization problem as a style transfer problem and process each MR image individually, without separating images into different sites, which is quite interesting. The performance of proposed methods are evaluated on multiple datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My major concern is the novelty. From my point of view, the major components of proposed method in this paper are included or similar as another paper in MICCAI 2020, “Unified cross-modality feature disentangler for unsupervised multi-domain MRI abdomen organs segmentation”, which uses not only style code but also domain code for multi-domain translation. The experiments are insufficient. This paper only reports the results of proposed method, without the comparison with other synthesis methods, which is insufficient to prove the effectiveness of proposed method. Besides, some important properties could be explored. For example, the multi-site problem is modeled as a style transfer problem by using a reference image, and does the selection of reference image inference the results? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is satisfactory, and the authors are willing to provide the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The novelty could be improved. More experiments are needed, e.g., the comparison with other SoTA methods. Please refer to the weaknesses for more details. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty seems limited, and the experiments are quite insufficient. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Reviewers in their detailed assessments agree on the good clarity and organization of the paper, and on interesting novel aspects of the work addressing a relevant problem in medical imaging. Reviewers also point to weaknesses that will need to be adressed would this paper be selected for publication. In particular, reviewers note on the lack of comparisons to other methods, questions on 2D slice training and related slice selection, and insufficient experiments - showing feasibility only on five T1w datasets. A major concern raised by rev#3 is novelty in regard to previously published methods. This is a critical point to be addressed in detail in a potential rebuttal as significant overlap with previous methods may raise concerns for this paper to be selected for MICCAI. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Reviewers responded to all critiques an limitations as brought up by reviewers. In their rebuttal, they say they will train on sets of slices of 3D volumes, after co-registration. They also provide a detailed response to similarity/difference to Jiang et al. It seems that after all these changes to be made and additional processing on 50 datasets, this paper may pass the bar to be accepted for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Concerns relating to the novelty of the proposed method have been addressed by the authors explaining that their method considers each image as belonging to its own unique domain, rather than considering sets of images as being in a particular domain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper tackles an important topic in MRI and deep learning. The approach seems interesting. There was significant disagreement between reviewers. As noted, however, there seems to be significant compromises in the evaluation: 1) skull-stripped images only, 2) 2-D slices only, 3) only a subset of slices are used, 4) slices are downsampled to 128x128, 5) very limited quantitative results in terms of comparisons to other methods and numbers of data sets analyzed. The segmentation performance on CSF was particularly poor, although improved from non-harmonized images. Given the requirements of skull-stripping, downsampling, and using only center slices, the practical utility of the approach is somewhat low. For these reasons, I favor rejection. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback The reviewers were basically very positive about this work, “This is a strong paper”, “problem is relevant, the strategy adopted is interesting and the article is well written” and “dedicated to solving a real problem”. The main critiques from reviewer’s comments, and how we will address them, are listed below. 1 Lack of comparisons with a population of subjects scanned differently and other methods. We now assess 50 ADNI 1 participants scanned with 1.5 and 3T MRI to harmonize the different protocols. We use Rev 1’s suggestion to assess the differences before and after harmonization with respect to the true scan. Furthermore, given limitations in the ground truth availability, comparisons with other methods cannot quantifiably confirm a “better” method. We now add to the discussion a sentence to describe the difficulties with validation, in efforts to encourage the MICCAI community to help address this. Despite this, as mentioned in the next response, we have expanded our approach to 3D and plan to compare with other harmonization methods indirectly in follow-up work. 2 Information surrounding datasets, preprocessing rational and 2D slice training. If it were not for GPU memory limits, our network would easily extend to 3D. All reviewers commented on the preprocessing of the images and slice selection. The same network can of course be trained with unprocessed images, however, brain extraction and 9dof registration are fairly standard image processing steps that help reduce variability and allows the training model to focus more on the anatomy of interest rather than non-brain tissue/components. We now add two sentences to clarify our preprocessing rational and the slice selection criterion: we select the middle 50 axial slices (in MNI space) as all of these slices contain multiple brain tissue types/contrasts to help ensure the model learns style features; 50 is somewhat arbitrary but much fewer would provide less training data and more would include training data with limited style messages. For the 2D model, we agree with Rev3 that selection of reference, even from the same 3D volume, would slightly alter the results. We have put this as a limitation in discussion. We are now extending this to 3D harmonization by stacking 2D slices together using a slice-matched (after registration) harmonization strategy to avoid the single-slice bias. Our 2D processing of the 128 cube helps prepare for 3D processing in all orientations. Rev 2 and 3 commented on the datasets used. We will add more details on field strength and manufacturer to our existing tables/figures. 3 Lack of novelty with respect to a previously published paper We thank Rev3 for bringing Jiang et al, 2020 to our attention, we now cite this work and explain how our work is different. Both works are inspired by the computer vision framework that disentangles images into content and style. However our model is quite different and has several important novelties in domain labeling, style learning, style definition and content learning. Jiang (2020) groups different modalities of images into different domains, with style indexing within domain diversities. We do not separate images into domains based on datasets but consider every single image as a unique “domain” with its own style. Domain-based approaches can only translate images among limited groups with clear borders. In harmonization studies like ours, it is difficult to clearly define a dataset as a domain, because each dataset may collect images from many sites, some with various scanners, throughout many years of scanner drifts and upgrades, Jiang (2020) also assumes the styles encoded from images match a universal prior (Gaussian) distribution that span all domains and can be learned using a variational auto-encoder. We learn style codes adversarially using a GAN-like approach, which does not rely on any hypothesized prior distribution and allows us to learn style codes with greater flexibility. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0329/12/31/Paper2243" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0329/12/31/Paper2243" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0329-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Style Transfer Using Generative Adversarial Networks for Multi-Site MRI Harmonization" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0329/12/31/Paper2243"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0329/12/31/Paper2243","headline":"Style Transfer Using Generative Adversarial Networks for Multi-Site MRI Harmonization","dateModified":"0330-01-02T00:00:00-05:17","datePublished":"0329-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Mengting Liu, Piyush Maiti, Sophia Thomopoulos, Alyssa Zhu, Yaqiong Chai, Hosung Kim, Neda Jahanshad Abstract Large data initiatives and high-powered brain imaging analyses require the pooling of MR images acquired across multiple scanners, often using different protocols. Prospective cross-site harmonization often involves the use of a phantom or traveling subjects. However, as more datasets are becoming publicly available, there is a growing need for retrospective harmonization, pooling data from sites not originally coordinated together. Several retrospective harmonization techniques have shown promise in removing cross-site image variation. However, most unsupervised methods cannot distinguish between image-acquisition based variability and cross-site population variability, so they require that datasets contain subjects or patient groups with similar clinical or demographic information. To overcome this limitation, we consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. We trained our model using data from five large-scale multi-site datasets with varied demographics. Results demonstrated that our style-encoding model can harmonize MR images, and match intensity profiles, successfully, without relying on traveling subjects. This model also avoids the need to control for clinical, diagnostic, or demographic information. Moreover, we further demonstrated that if we included diverse enough images into the training set, our method successfully harmonized MR images collected from unseen scanners and protocols, suggesting a promising novel tool for ongoing collaborative studies. Link to paper https://doi.org/10.1007/978-3-030-87199-4_30 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose a method from MR harmonization using a StyleGAN framework with cycle-consistency loss to encourage separation of style and anatomical features. Also included are style-consistency and style-diversification losses to promote the use of style codes in the network. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper takes an extremely successful strategy from computer vision and applies it to a very important problem in medical imaging (especially MRI). The paper is mostly well-written and has clear results. This paper clearly focuses on correcting for a limitation of GANs which is fidelity to the input. The combination of style encoding loss, adversarial loss and cyclic loss clearly encourage the network to reconstruct the images faithfully to the input anatomy. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This method currently lacks comparisons to other methods, even if they might be inferior in implementation. For example, a CycleGAN between specific sites, or StarGAN could be implemented as a comparison. Or the approach from 2020 MICCAI (“A Disentangled Latent Space for Cross-Site MRI Harmonization”). The paper also lacks a true comparison test between subjects scanned differently. While this data is difficult to come by, it could be approximated by finding scans done close together on different scanners (there are a few in the OASIS dataset), or by simulating different sequences using something like BrainWeb. There is also no description of the learned style or image codes. These could be visualized using a technique like tSNE or UMAP to see if the style codes do differ by acquisition and that the anatomical codes do not (and do differ by anatomy). It is worrisome that the cycle loss is such an important hyperparameter. It looks like the model has not completely disentangled the style from anatomy given the difference in contrast as well as anatomical features in Figure 3. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper should be easily reproducible with code to be provided by the authors and these publicly available datasets. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction is well-written and researched, but I think the Dewey et al. “A Disentangled Latent Space for Cross-Site MRI Harmonization” is the citation intended for [9]. In the last sentence of 2.1, the model also includes the mapping network. Description of methods is clean and detailed. A final description of how one training iteration would run would be helpful, especially describing how L_div is included. While the travelling subject is interesting, one subject by itself is only a single data point. It would be useful to hold out an entire group of similarly imaged patients as well to test extensibility on a larger set. A brief description or table of the acquisition parameters is important, even if it is in supplementary materials. Ranges or multiple values can be given if the values vary within a site. It would be more impactful to see this applied to images with the skull on. This would remove the variation in images due to skull stripping on differing contrasts. Why were 9 DOF used in registration? This limits variability in the images and must be undone on any subsequent volumetric analysis. How were the images resized to 128x128x128? Were they padded to 256x256x256 and downsampled? Or directed downsampled from the MNI space? Why was this done if only 2D images were used in the model? Only two subjects were used for histogram validation? Why only two? It seems that this would be a more impactful measure if a more reliable population metric could be derived. What statistical test was used to calculated the p-value in the histogram comparison? What was the hypothesis tested? It seems that the training data from the UKBB dataset could be used to train the segmentation network, since it was used to train the harmonization network. Citation is needed here for U-Net. Were the ground truth for the segmentations from the “statistical partial volume model”? What was the statistical test here? Typo in the 3.2 title. Perhaps “Validation of the Preservation of Brian Anatomical Information” The analysis used in Section 3.2 is very confusing. It seems the authors are trying to verify that the images are not structurally different after harmonization, but the results are very muddled. Perhaps a more straightforward approach or an experiment on the traveling subject using a single traveling subject site as a reference point and calculating the difference between the reference point and the harmonized images would be easier to understand. Other hyperparameters should be discussed (besides L_cyc). Statistical tests of one subject are not particularly informative in 3.4. Consider synthetic or approximate traveling subjects in large datasets. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a strong paper. It has a lot of promise and addresses an important question. It lacks some in the experiments, but given the lack of available data in harmonization work, this should not be too much of a penalty. That being said, some of the additions mentioned in the comments would push this well into the accept range. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. Eu Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors are dedicated to solving a real problem, which even this reviewer has already experienced in practice in previous research. Clear and well-written paper. Few points of adjustments Public bases, methodology and clear parameters, which facilitates the reproducibility of the work. The theoretical part is well constructed and described. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. given the objective of the work I think the authors could add more data from the equipment used in the acquisition of the databases used. For example: Which manufacturers? What fields are used in these acquisitions? This will help the reader and those interested in research to understand the variability involved in this topic. A point of attention to the authors is a hypothesis adopted in the text that I believe needs to be better discussed, as this directly impacts the results: “All image acquisition information for these public resources can be found elsewhere, but briefly they vary in terms of scanner manufacturer, field strength, voxel size, and more, often within the same study” The method is well described but there are some points that, if better described / referenced, can help in the reproducibility of the article: “All the images were skull-stripped, nonuniformity corrected and registered to the MNI template using a 9 dof linear registration. “ “To pilot this work, we used 2D slices as input, and we selected 50 axial slices in the middle of each MRI volume as input” . What is the criterion for selecting these 50 slices? And why the number 50? were tests done? In the introduction there are some statements that should contain references. For example: “Decade-long running studies, such as ADNI undergo scanner upgrades, and many studies of small effects or effects across wide demographic ranges, require retrospective pooling of data.” Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The article uses public bases and the parameters of the methods are well described, which facilitates the reproducibility of the work. Some small points of attention, which improves this item, I mentioned in the main weaknesses section The authors could mention the programming language (python, r), main packages (tensorflow, pytorch) and infrastructure used in the research. This helps in the reproducibility of the work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A point of attention in the introduction of the article is that a phantom is multi-purpose. A hospital that is accredited to the ACR needs weekly / monthly tests for the machine’s Q&amp;A and the phantom is essential in this task. I think the authors can make this a little bit clearer. In figure 1, I believe that the authors would like to have mentioned layers of convolution. It is written convolusion. I think it’s worth a little review. All other points I made a brief recommendation in the main weaknesses section. Well-written article and relevant problem. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The problem of generalizing image problems is real. Databases obtained in different ways need to be harmonized to think about the next step in algorithms. The problem is relevant, the strategy adopted is interesting and the article is well written. I have some points of attention but I have already reported it previously. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To distinguish between image-acquisition based variability and cross-site population variability, this paper considers cross-site MRI image harmonization as a style transfer problem, and harmonize MR images by using a GAN-based fully unsupervised framework, without relying on traveling subjects. The effectiveness of proposed methods is verified on five brain T1w datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper models the multi-site MRI harmonization problem as a style transfer problem and process each MR image individually, without separating images into different sites, which is quite interesting. The performance of proposed methods are evaluated on multiple datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My major concern is the novelty. From my point of view, the major components of proposed method in this paper are included or similar as another paper in MICCAI 2020, “Unified cross-modality feature disentangler for unsupervised multi-domain MRI abdomen organs segmentation”, which uses not only style code but also domain code for multi-domain translation. The experiments are insufficient. This paper only reports the results of proposed method, without the comparison with other synthesis methods, which is insufficient to prove the effectiveness of proposed method. Besides, some important properties could be explored. For example, the multi-site problem is modeled as a style transfer problem by using a reference image, and does the selection of reference image inference the results? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is satisfactory, and the authors are willing to provide the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The novelty could be improved. More experiments are needed, e.g., the comparison with other SoTA methods. Please refer to the weaknesses for more details. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty seems limited, and the experiments are quite insufficient. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Reviewers in their detailed assessments agree on the good clarity and organization of the paper, and on interesting novel aspects of the work addressing a relevant problem in medical imaging. Reviewers also point to weaknesses that will need to be adressed would this paper be selected for publication. In particular, reviewers note on the lack of comparisons to other methods, questions on 2D slice training and related slice selection, and insufficient experiments - showing feasibility only on five T1w datasets. A major concern raised by rev#3 is novelty in regard to previously published methods. This is a critical point to be addressed in detail in a potential rebuttal as significant overlap with previous methods may raise concerns for this paper to be selected for MICCAI. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Reviewers responded to all critiques an limitations as brought up by reviewers. In their rebuttal, they say they will train on sets of slices of 3D volumes, after co-registration. They also provide a detailed response to similarity/difference to Jiang et al. It seems that after all these changes to be made and additional processing on 50 datasets, this paper may pass the bar to be accepted for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Concerns relating to the novelty of the proposed method have been addressed by the authors explaining that their method considers each image as belonging to its own unique domain, rather than considering sets of images as being in a particular domain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper tackles an important topic in MRI and deep learning. The approach seems interesting. There was significant disagreement between reviewers. As noted, however, there seems to be significant compromises in the evaluation: 1) skull-stripped images only, 2) 2-D slices only, 3) only a subset of slices are used, 4) slices are downsampled to 128x128, 5) very limited quantitative results in terms of comparisons to other methods and numbers of data sets analyzed. The segmentation performance on CSF was particularly poor, although improved from non-harmonized images. Given the requirements of skull-stripping, downsampling, and using only center slices, the practical utility of the approach is somewhat low. For these reasons, I favor rejection. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback The reviewers were basically very positive about this work, “This is a strong paper”, “problem is relevant, the strategy adopted is interesting and the article is well written” and “dedicated to solving a real problem”. The main critiques from reviewer’s comments, and how we will address them, are listed below. 1 Lack of comparisons with a population of subjects scanned differently and other methods. We now assess 50 ADNI 1 participants scanned with 1.5 and 3T MRI to harmonize the different protocols. We use Rev 1’s suggestion to assess the differences before and after harmonization with respect to the true scan. Furthermore, given limitations in the ground truth availability, comparisons with other methods cannot quantifiably confirm a “better” method. We now add to the discussion a sentence to describe the difficulties with validation, in efforts to encourage the MICCAI community to help address this. Despite this, as mentioned in the next response, we have expanded our approach to 3D and plan to compare with other harmonization methods indirectly in follow-up work. 2 Information surrounding datasets, preprocessing rational and 2D slice training. If it were not for GPU memory limits, our network would easily extend to 3D. All reviewers commented on the preprocessing of the images and slice selection. The same network can of course be trained with unprocessed images, however, brain extraction and 9dof registration are fairly standard image processing steps that help reduce variability and allows the training model to focus more on the anatomy of interest rather than non-brain tissue/components. We now add two sentences to clarify our preprocessing rational and the slice selection criterion: we select the middle 50 axial slices (in MNI space) as all of these slices contain multiple brain tissue types/contrasts to help ensure the model learns style features; 50 is somewhat arbitrary but much fewer would provide less training data and more would include training data with limited style messages. For the 2D model, we agree with Rev3 that selection of reference, even from the same 3D volume, would slightly alter the results. We have put this as a limitation in discussion. We are now extending this to 3D harmonization by stacking 2D slices together using a slice-matched (after registration) harmonization strategy to avoid the single-slice bias. Our 2D processing of the 128 cube helps prepare for 3D processing in all orientations. Rev 2 and 3 commented on the datasets used. We will add more details on field strength and manufacturer to our existing tables/figures. 3 Lack of novelty with respect to a previously published paper We thank Rev3 for bringing Jiang et al, 2020 to our attention, we now cite this work and explain how our work is different. Both works are inspired by the computer vision framework that disentangles images into content and style. However our model is quite different and has several important novelties in domain labeling, style learning, style definition and content learning. Jiang (2020) groups different modalities of images into different domains, with style indexing within domain diversities. We do not separate images into domains based on datasets but consider every single image as a unique “domain” with its own style. Domain-based approaches can only translate images among limited groups with clear borders. In harmonization studies like ours, it is difficult to clearly define a dataset as a domain, because each dataset may collect images from many sites, some with various scanners, throughout many years of scanner drifts and upgrades, Jiang (2020) also assumes the styles encoded from images match a universal prior (Gaussian) distribution that span all domains and can be learned using a variational auto-encoder. We learn style codes adversarially using a GAN-like approach, which does not rely on any hypothesized prior distribution and allows us to learn style codes with greater flexibility. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Liu, Mengting,Maiti, Piyush,Thomopoulos, Sophia,Zhu, Alyssa,Chai, Yaqiong,Kim, Hosung,Jahanshad, Neda" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Style Transfer Using Generative Adversarial Networks for Multi-Site MRI Harmonization</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Liu, Mengting"
+        class="post-tags">
+        Liu, Mengting
+      </a> |  
+      
+      <a href="kittywong/tags#Maiti, Piyush"
+        class="post-tags">
+        Maiti, Piyush
+      </a> |  
+      
+      <a href="kittywong/tags#Thomopoulos, Sophia"
+        class="post-tags">
+        Thomopoulos, Sophia
+      </a> |  
+      
+      <a href="kittywong/tags#Zhu, Alyssa"
+        class="post-tags">
+        Zhu, Alyssa
+      </a> |  
+      
+      <a href="kittywong/tags#Chai, Yaqiong"
+        class="post-tags">
+        Chai, Yaqiong
+      </a> |  
+      
+      <a href="kittywong/tags#Kim, Hosung"
+        class="post-tags">
+        Kim, Hosung
+      </a> |  
+      
+      <a href="kittywong/tags#Jahanshad, Neda"
+        class="post-tags">
+        Jahanshad, Neda
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Mengting Liu, Piyush Maiti, Sophia Thomopoulos, Alyssa Zhu, Yaqiong Chai, Hosung Kim, Neda Jahanshad
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Large data initiatives and high-powered brain imaging analyses require the pooling of MR images acquired across multiple scanners, often using different protocols. Prospective cross-site harmonization often involves the use of a phantom or traveling subjects. However, as more datasets are becoming publicly available, there is a growing need for retrospective harmonization, pooling data from sites not originally coordinated together. Several retrospective harmonization techniques have shown promise in removing cross-site image variation. However, most unsupervised methods cannot distinguish between image-acquisition based variability and cross-site population variability, so they require that datasets contain subjects or patient groups with similar clinical or demographic information. To overcome this limitation, we consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori. We trained our model using data from five large-scale multi-site datasets with varied demographics. Results demonstrated that our style-encoding model can harmonize MR images, and match intensity profiles, successfully, without relying on traveling subjects. This model also avoids the need to control for clinical, diagnostic, or demographic information. Moreover, we further demonstrated that if we included diverse enough images into the training set, our method successfully harmonized MR images collected from unseen scanners and protocols, suggesting a promising novel tool for ongoing collaborative studies.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_30">https://doi.org/10.1007/978-3-030-87199-4_30</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose a method from MR harmonization using a StyleGAN framework with cycle-consistency loss to encourage separation of style and anatomical features. Also included are style-consistency and style-diversification losses to promote the use of style codes in the network.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This paper takes an extremely successful strategy from computer vision and applies it to a very important problem in medical imaging (especially MRI).</p>
+
+      <p>The paper is mostly well-written and has clear results.</p>
+
+      <p>This paper clearly focuses on correcting for a limitation of GANs which is fidelity to the input. The combination of style encoding loss, adversarial loss and cyclic loss clearly encourage the network to reconstruct the images faithfully to the input anatomy.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>This method currently lacks comparisons to other methods, even if they might be inferior in implementation. For example, a CycleGAN between specific sites, or StarGAN could be implemented as a comparison. Or the approach from 2020 MICCAI (“A Disentangled Latent Space for Cross-Site MRI Harmonization”).</p>
+
+      <p>The paper also lacks a true comparison test between subjects scanned differently. While this data is difficult to come by, it could be approximated by finding scans done close together on different scanners (there are a few in the OASIS dataset), or by simulating different sequences using something like BrainWeb.</p>
+
+      <p>There is also no description of the learned style or image codes. These could be visualized using a technique like tSNE or UMAP to see if the style codes do differ by acquisition and that the anatomical codes do not (and do differ by anatomy).</p>
+
+      <p>It is worrisome that the cycle loss is such an important hyperparameter. It looks like the model has not completely disentangled the style from anatomy given the difference in contrast as well as anatomical features in Figure 3.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>This paper should be easily reproducible with code to be provided by the authors and these publicly available datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Introduction is well-written and researched, but I think the Dewey et al. “A Disentangled Latent Space for Cross-Site MRI Harmonization” is the citation intended for [9].</p>
+
+      <p>In the last sentence of 2.1, the model also includes the mapping network.</p>
+
+      <p>Description of methods is clean and detailed. A final description of how one training iteration would run would be helpful, especially describing how L_div is included.</p>
+
+      <p>While the travelling subject is interesting, one subject by itself is only a single data point. It would be useful to hold out an entire group of similarly imaged patients as well to test extensibility on a larger set.</p>
+
+      <p>A brief description or table of the acquisition parameters is important, even if it is in supplementary materials. Ranges or multiple values can be given if the values vary within a site.</p>
+
+      <p>It would be more impactful to see this applied to images with the skull on. This would remove the variation in images due to skull stripping on differing contrasts.</p>
+
+      <p>Why were 9 DOF used in registration? This limits variability in the images and must be undone on any subsequent volumetric analysis.</p>
+
+      <p>How were the images resized to 128x128x128? Were they padded to 256x256x256 and downsampled? Or directed downsampled from the MNI space? Why was this done if only 2D images were used in the model?</p>
+
+      <p>Only two subjects were used for histogram validation? Why only two? It seems that this would be a more impactful measure if a more reliable population metric could be derived.</p>
+
+      <p>What statistical test was used to calculated the p-value in the histogram comparison? What was the hypothesis tested?</p>
+
+      <p>It seems that the training data from the UKBB dataset could be used to train the segmentation network, since it was used to train the harmonization network. Citation is needed here for U-Net.</p>
+
+      <p>Were the ground truth for the segmentations from the “statistical partial volume model”? What was the statistical test here?</p>
+
+      <p>Typo in the 3.2 title. Perhaps “Validation of the Preservation of Brian Anatomical Information”</p>
+
+      <p>The analysis used in Section 3.2 is very confusing. It seems the authors are trying to verify that the images are not structurally different after harmonization, but the results are very muddled. Perhaps a more straightforward approach or an experiment on the traveling subject using a single traveling subject site as a reference point and calculating the difference between the reference point and the harmonized images would be easier to understand.</p>
+
+      <p>Other hyperparameters should be discussed (besides L_cyc).</p>
+
+      <p>Statistical tests of one subject are not particularly informative in 3.4. Consider synthetic or approximate traveling subjects in large datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This is a strong paper. It has a lot of promise and addresses an important question. It lacks some in the experiments, but given the lack of available data in harmonization work, this should not be too much of a penalty. That being said, some of the additions mentioned in the comments would push this well into the accept range.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>consider cross-site MRI image harmonization as a style transfer problem rather than a domain transfer problem. Using a fully unsupervised deep-learning framework based on a generative adversarial network (GAN), we show that MR images can be harmonized by inserting the style information encoded from a reference image directly, without knowing their site/scanner labels a priori.
+Eu</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The authors are dedicated to solving a real problem, which even this reviewer has already experienced in practice in previous research.</p>
+        </li>
+        <li>
+          <p>Clear and well-written paper. Few points of adjustments</p>
+        </li>
+        <li>
+          <p>Public bases, methodology and clear parameters, which facilitates the reproducibility of the work.</p>
+        </li>
+        <li>
+          <p>The theoretical part is well constructed and described.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>given the objective of the work I think the authors could add more data from the equipment used in the acquisition of the databases used. For example: Which manufacturers? What fields are used in these acquisitions? This will help the reader and those interested in research to understand the variability involved in this topic.</p>
+        </li>
+        <li>
+          <p>A point of attention to the authors is a hypothesis adopted in the text that I believe needs to be better discussed, as this directly impacts the results:</p>
+        </li>
+      </ul>
+
+      <p>“All image acquisition information for these public resources can be found elsewhere, but briefly they vary in terms of scanner manufacturer, field strength, voxel size, and more, often within the same study”</p>
+
+      <ul>
+        <li>The method is well described but there are some points that, if better described / referenced, can help in the reproducibility of the article:</li>
+      </ul>
+
+      <p>“All the images were skull-stripped, nonuniformity corrected and registered to the MNI template using a 9 dof linear registration. “</p>
+
+      <p>“To pilot this work, we used 2D slices as input, and we selected 50 axial slices in the middle of each MRI volume as input”  .  What is the criterion for selecting these 50 slices? And why the number 50? were tests done?</p>
+
+      <ul>
+        <li>In the introduction there are some statements that should contain references. For  example:</li>
+      </ul>
+
+      <p>“Decade-long running studies, such as ADNI undergo scanner upgrades, and many studies of small effects or effects
+across wide demographic ranges, require retrospective pooling of data.”</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The article uses public bases and the parameters of the methods are well described, which facilitates the reproducibility of the work. Some small points of attention, which improves this item, I mentioned in the main weaknesses section</p>
+        </li>
+        <li>
+          <p>The authors could mention the programming language (python, r), main packages (tensorflow, pytorch) and infrastructure used in the research. This helps in the reproducibility of the work.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>A point of attention in the introduction of the article is that a phantom is multi-purpose. A hospital that is accredited to the ACR needs weekly / monthly tests for the machine’s Q&amp;A and the phantom is essential in this task. I think the authors can make this a little bit clearer.</p>
+        </li>
+        <li>
+          <p>In figure 1, I believe that the authors would like to have mentioned layers of convolution. It is written convolusion. I think it’s worth a little review.</p>
+        </li>
+        <li>
+          <p>All other points I made a brief recommendation in the main weaknesses section. Well-written article and relevant problem.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The problem of generalizing image problems is real. Databases obtained in different ways need to be harmonized to think about the next step in algorithms. The problem is relevant, the strategy adopted is interesting and the article is well written. I have some points of attention but I have already reported it previously.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>To distinguish between image-acquisition based variability and cross-site population variability, this paper considers cross-site MRI image harmonization as a style transfer problem, and harmonize MR images by using a GAN-based fully unsupervised framework, without relying on traveling subjects. The effectiveness of proposed methods is verified on five brain T1w datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>This paper models the multi-site MRI harmonization problem as a style transfer problem and process each MR image individually, without separating images into different sites, which is quite interesting.</li>
+        <li>The performance of proposed methods are evaluated on multiple datasets.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>My major concern is the novelty. From my point of view, the major components of proposed method in this paper are included or similar as another paper in MICCAI 2020, “Unified cross-modality feature disentangler for unsupervised multi-domain MRI abdomen organs segmentation”, which uses not only style code but also domain code for multi-domain translation.</li>
+        <li>The experiments are insufficient. This paper only reports the results of proposed method, without the comparison with other synthesis methods, which is insufficient to prove the effectiveness of proposed method. Besides, some important properties could be explored. For example, the multi-site problem is modeled as a style transfer problem by using a reference image, and does the selection of reference image inference the results?</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility of the paper is satisfactory, and the authors are willing to provide the code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>The novelty could be improved.</li>
+        <li>More experiments are needed, e.g., the comparison with other SoTA methods.
+Please refer to the weaknesses for more details.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The novelty seems limited, and the experiments are quite insufficient.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Reviewers in their detailed assessments agree on the good clarity and organization of the paper, and on interesting novel aspects of the work addressing a relevant problem in medical imaging. Reviewers also point to weaknesses that will need to be adressed would this paper be selected for publication. In particular, reviewers note on the lack of comparisons to other methods, questions on 2D slice training and related slice selection, and insufficient experiments - showing feasibility only on five T1w datasets. A major concern raised by rev#3 is novelty in regard to previously published methods. This is a critical point to be addressed in detail in a potential rebuttal as significant overlap with previous methods may raise concerns for this paper to be selected for MICCAI.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Reviewers responded to all critiques an limitations as brought up by reviewers. In their rebuttal, they say they will train on sets of slices of 3D volumes, after co-registration. They also provide a detailed response to similarity/difference to Jiang et al. It seems that after all these changes to be made and additional processing on 50 datasets, this paper may pass the bar to be accepted for MICCAI.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Concerns relating to the novelty of the proposed method have been addressed by the authors explaining that their method considers each image as belonging to its own unique domain, rather than considering sets of images as being in a particular domain.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper tackles an important topic in MRI and deep learning.  The approach seems interesting.  There was significant disagreement between reviewers.  As noted, however, there seems to be significant compromises in the evaluation: 1) skull-stripped images only, 2) 2-D slices only, 3) only a subset of slices are used, 4) slices are downsampled to 128x128, 5) very limited quantitative results in terms of comparisons to other methods and numbers of data sets analyzed.   The segmentation performance on CSF was particularly poor, although improved from non-harmonized images.  Given the requirements of skull-stripping, downsampling, and using only center slices, the practical utility of the approach is somewhat low.  For these reasons, I favor rejection.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>The reviewers were basically very positive about this work, “This is a strong paper”, “problem is relevant, the strategy adopted is interesting and the article is well written” and “dedicated to solving a real problem”. The main critiques from reviewer’s comments, and how we will address them, are listed below.</p>
+
+  <p>1 Lack of comparisons with a population of subjects scanned differently and other methods.</p>
+
+  <p>We now assess 50 ADNI 1 participants scanned with 1.5 and 3T MRI to harmonize the different protocols. We use Rev 1’s suggestion to assess the differences before and after harmonization with respect to the true scan.</p>
+
+  <p>Furthermore, given limitations in the ground truth availability, comparisons with other methods cannot quantifiably confirm a “better” method. We now add to the discussion a sentence to describe the difficulties with validation, in efforts to encourage the MICCAI community to help address this. Despite this, as mentioned in the next response, we have expanded our approach to 3D and plan to compare with other harmonization methods indirectly in follow-up work.</p>
+
+  <p>2 Information surrounding datasets, preprocessing rational and 2D slice training.</p>
+
+  <p>If it were not for GPU memory limits, our network would easily extend to 3D.</p>
+
+  <p>All reviewers commented on the preprocessing of the images and slice selection. The same network can of course be trained with unprocessed images, however, brain extraction and 9dof registration are fairly standard image processing steps that help reduce variability and allows the training model to focus more on the anatomy of interest rather than non-brain tissue/components. We now add two sentences to clarify our preprocessing rational and the slice selection criterion:  we select the middle 50 axial slices (in MNI space) as all of these slices contain multiple brain tissue types/contrasts to help ensure the model learns style features; 50 is somewhat arbitrary but much fewer would provide less training data and more would include training data with limited style messages. For the 2D model, we agree with Rev3 that selection of reference, even from the same 3D volume, would slightly alter the results. We have put this as a limitation in discussion. We are now extending this to 3D harmonization by stacking 2D slices together using a slice-matched (after registration) harmonization strategy to avoid the single-slice bias. Our 2D processing of the 128 cube helps prepare for 3D processing in all orientations.</p>
+
+  <p>Rev 2 and 3 commented on the datasets used. We will add more details on field strength and manufacturer to our existing tables/figures.</p>
+
+  <p>3 Lack of novelty with respect to a previously published paper</p>
+
+  <p>We thank Rev3 for bringing Jiang et al, 2020 to our attention, we now cite this work and explain how our work is different. Both works are inspired by the computer vision framework that disentangles images into content and style. However our model is quite different and has several important novelties in domain labeling, style learning, style definition and content learning. Jiang (2020) groups different modalities of images into different domains, with style indexing within domain diversities. We do not separate images into domains based on datasets but consider every single image as a unique “domain” with its own style. Domain-based approaches can only translate images among limited groups with clear borders. In harmonization studies like ours, it is difficult to clearly define a dataset as a domain, because each dataset may collect images from many sites, some with various scanners, throughout many years of scanner drifts and upgrades, Jiang (2020) also assumes the styles encoded from images match a universal prior (Gaussian) distribution that span all domains and can be learned using a variational auto-encoder. We learn style codes adversarially using a GAN-like approach, which does not rely on any hypothesized prior distribution and allows us to learn style codes with greater flexibility.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0329-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0330-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Liu, Mengting"
+        class="post-category">
+        Liu, Mengting
+      </a> |  
+      
+      <a href="kittywong/tags#Maiti, Piyush"
+        class="post-category">
+        Maiti, Piyush
+      </a> |  
+      
+      <a href="kittywong/tags#Thomopoulos, Sophia"
+        class="post-category">
+        Thomopoulos, Sophia
+      </a> |  
+      
+      <a href="kittywong/tags#Zhu, Alyssa"
+        class="post-category">
+        Zhu, Alyssa
+      </a> |  
+      
+      <a href="kittywong/tags#Chai, Yaqiong"
+        class="post-category">
+        Chai, Yaqiong
+      </a> |  
+      
+      <a href="kittywong/tags#Kim, Hosung"
+        class="post-category">
+        Kim, Hosung
+      </a> |  
+      
+      <a href="kittywong/tags#Jahanshad, Neda"
+        class="post-category">
+        Jahanshad, Neda
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0330/12/31/Paper0299">
+          Federated Semi-supervised Medical Image Classification via Inter-client Relation Matching
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0328/12/31/Paper2128">
+          EndoUDA: A modality independent segmentation approach for endoscopy imaging
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

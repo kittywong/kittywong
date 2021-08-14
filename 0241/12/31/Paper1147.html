@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Tripled-uncertainty Guided Mean Teacher model for Semi-supervised Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Tripled-uncertainty Guided Mean Teacher model for Semi-supervised Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Kaiping Wang, Bo Zhan, Chen Zu, Xi Wu, Jiliu Zhou, Luping Zhou, Yan Wang Abstract Due to the difficulty in accessing a large amount of labeled data, semi-supervised learning is becoming an attractive solution in medical image segmentation. To make use of unlabeled data, current popular semi-supervised methods (e.g., temporal ensembling, mean teacher) mainly impo-se data-level and model-level consistency on unlabeled data. In this paper, we argue that in addition to these strategies, we could further utilize auxili-ary tasks and consider task-level consistency to better leverage unlabeled data for segmentation. Specifically, we introduce two auxiliary tasks, i.e., a foreground and background reconstruction task for capturing semantic in-formation and a signed distance field (SDF) prediction task for imposing shape constraint, and explore the mutual promotion effect between the two auxiliary and the segmentation tasks based on mean teacher architecture. Moreover, to handle the potential bias of the teacher model caused by anno-tation scarcity, we develop a tripled-uncertainty guided framework to en-courage the three tasks in the teacher model to generate more reliable pseudo labels. When calculating uncertainty, we innovatively propose an uncertainty weighted integration (UWI) strategy for yielding the segmenta-tion predictions of teacher. Extensive experiments on public 2017 ACDC dataset and PROMISE12 dataset have demostrated the effectiveness of our method. Link to paper https://doi.org/10.1007/978-3-030-87196-3_42 Link to the code repository https://github.com/DeepMedLab/Tri-U-MT Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a teacher-student architecture for semisupervised segmentation, utilizing segmentation uncertainty. The way that uncertainty is utilized in the method is no well motivated and I cannot see why it should work. Results indicate small improvements on small datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Expensive annotation is a very common challenge, making semisupervised learning relevant The use of a three-headed structure solving auxiliary tasks is nice Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Methodological novelty is limited. I find the paper a bit heavy to read, and sometimes confusing. For instance, why do you use foreground and background segmentations in the reconstruction task (line 13 of section 2)? The teacher model uses MC dropout to assess uncertainty in the segmentation output, by having K channels, one per dropout sample. For each dropout sample you compute a pixelwise entropy, and then apply softmax to the image 1 - entropy in order to obtain a spatial weight map used to combine the different MC sample segmentations. Why does this make any sense? Why do you not use the prediction variance for the segmentation channel, as you do for the other channels? Experiments are performed on small datasets (training set size 75 and 35). Most of these images are used without labels, and you do not present the accuracy obtained using all the labels in a fully supervised setting. These are public databases – was it not feasible to assess your approach on datasets with at least more un-annotated data? This would have been very interesting. Table 1: You do not describe any correction for multiple testing, do you do this? Table 2: Why do you not use a test of significance here? Table 1: Your performance is only marginally better than Shape-aware. Did you check whether the reconstruction task actually gives you any performance boost at all? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear whether the significance levels have been corrected for multiple testing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The methodological novelty is limited and mainly consists of the tripled-uncertainty, which seems completely random to me. If the authors can motivate well where it came from, I might be willing to increase my score. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed to use three auxiliary tasks and corresponding uncertainties to better guide a student-teacher model for semi-supervised segmentation. The extensive evaluation shows that their method outperforms the state-of-the-art, while the ablation study shows the influences of the individual contributions very well. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method combines very well inter-task and student-teacher consistency losses for unsupervised segmentation. The evaluation is extensive and the ablation study shows the influence of the individual contributions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some parts in the method section are hard to follow or missing. The uncertainty segmentation is hard to follow and may is erroneous. The equation for “U_seg = Y log Y” in Equation (3) is similar to the entropy in the binary case (which would be “- (Y log Y + (1 - Y) log (1 - Y))”), however, the minus and the second term are missing. With the current equation, as Y is the probability of the foreground segmentation (with 0 &lt;= Y &lt;= 1), U_seg would be small (&lt; 0) for uncertain regions, while U_rec and U_sdf are large (&gt; 0) for uncertain regions. What are the additional runtime and memory requirements for the MC dropout based uncertainty estimation? Doing 8 forward passes through the teacher for one uncertainty/loss calculation seems costly. What is xi? What kind of noise do you use to perturb the images? There are not many details of the network architecture given and the authors did not state whether they publish the used code (or give additional details in the supplementary materials.) More comments in 7. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors did not state whether they would publish the used code. There are also many details of the network architectures missing, which makes reimplementation difficult. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: “are hard to be available” - reformulate “susceptible due to the uneven quality” - reformulate “to boost segmentation” - “to boost segmentation performance”? “by mining the correlations” - “mining”? “we innovatively propose” - “we propose” Methodology: “These two models share a similar encoder-decoder structure,” - should it be “the same”? “N labeled data and M unlabeled data” - “unlabeled data samples” What are the different “perturbations xi and xi’”? Is it noise you add to the input image? What kind of noise is applied? This needs clarification. “Moreover, as there is no label on D^u, the results of the teacher model may be biased by the introduction of noise xi′.” - Why? I don’t see this. “micrify” - reformulate “preliminary results” - reformulate, maybe “individual forward predictions”, “stochastic predictions”, “MC predictions”? “innovatively” - reformulate or remove “contrain” “consistent in semantic level” - ? Training details should be a subsection of 3 Experiment and Analysis “trained on Pytorch framework” - reformulate “as no uncertainty map needs estimating” - reformulate “Equantion” “Gussian” The batch size is two. Does this mean, you used one supervised and one unsupervised sample? This is not clear. Why do you use the student model and not the teacher model for inference? Experiment and Analysis Fig. 2 caption: “blue” - should be “green” “It is obvious” - e.g. “it can be seen” “comparative methods” - “compared methods” “Obviously” - reformulate Why do you use a table for ACDC and a plots for Promise to show the quantitative results? I would suggest to also use a table for the quantitative results in Fig. 3. What is UncA? The abbreviations UncW and UWI are inconsistent. Conclusion: “noised” - “noisy” References: Some inconsistencies in the references, e.g., for 9 I would suggest to use the NeurIPS reference instead of the arXiv reference. General: Consistency of abbreviations, e.g., Unet, U-net, SDF, sdf Some formulations are hard to understand. I would suggest another proof read. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method of using the three uncertainties of the teacher to better guide the student seems promising. The evaluation is extensive and the influence of the individual contributions is shown. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the author proposed a unified semi-supervised mean teacher model guided by tripled-uncertainty maps from three tasks of segmentation task, foreground and background reconstruction task and signed distance field (SDF) prediction task. Ablation study and comparison experiments with state-of-the-art methods were presented to validate the proposed model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed a novel unified semi-supervised mean teacher model based on task-level consistency to better leverage unlabeled data for segmentation. Proposed a novel multitask integrated architecture for mean teacher model so that the segmentation task could benefit from the enhanced semantic and geometric shape information. Proposed an innovative uncertainty estimation and develop a tripled-uncertainty to guide the student model to learn more reliable predictions from the teacher model. Ablation study and comparison experiments with state-of-the-art methods demonstrate its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The two datasets used in this study contained only 100 and 50 subjects, it is hard to verify the generalization of the model on such small datasets. The literature study is not sufficient, such as this work: Yu, L., Wang, S., Li, X., Fu, C.-W., &amp; Heng, P.-A. (2019). Uncertainty-aware Self-ensembling Model for Semi-supervised 3D Left Atrium Segmentation. MICCAI. Lack of description about the experiment details. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance almost reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Because there are many modules in this model, authors should explain how to optimize it, one step training or multi step training? Authors used hyperparameters α μ and λ to balance the training losses of different tasks, how to set these hyperparameters and how to get the best hyperparameters? It would be nice if the author could verify the model performance on other datasets. It would be nice if the authors public the code of this study. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? nice innovation What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work has received a mix of scores, with reviewers highlighting different concerns. While R2 and R4 have a positive opinion about this paper, they have highlighted several major concerns regarding the lack of clarity on the methodology and experimental section (many important details are missing). This makes the reproducibility of this work hard, as no code is given with the submission. R2 also brings an interesting concern related to the complexity of the proposed method. On the other hand, R1 is more critical with this paper, and stresses the difficulty of reading this work (shared by R2), and more importantly, the lack of novelty. R1 also questions the motivation behind the proposed methodology (generation of uncertainty based on k-channels followed by softmax of 1 - entropy, or choice to use or not of predicted variance, among others). Furthermore, this Area Chair questions the choice of compared approaches, which results in an incomplete empirical evaluation. In particular, the paper brought by R4 is a more suitable choice than [7], as it also integrates an uncertainty component during training (there exist more recent papers not included in the evaluation which are evaluated on the same dataset, e.g., [a]). Thus, despite the paper has some merits, reviewers have highlighted important concerns that need to be addressed in their rebuttal, particularly related to technical novelty, motivation, lack of clarity and incomplete experimental results. [a] Peng J, Pedersoli M, Desrosiers C. Boosting Semi-supervised Image Segmentation with Global and Local Mutual Information Regularization. MIDL’20. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Authors have positively addressed major concerns raised by the reviewers and this meta-reviewer. I therefore recommend it for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to use triple uncertainty in the semi-supervised learning by leveraging the inter-task consistency. The paper is well written and relatively easy to understand, although many edits are needed. The authors included the OSS link which should make the work reproducible. The idea of adding inter-task consistency is interesting and could be helpful to similar researches. However, the choice of uncertainty computation could be further improved. Recommend to accept and ask the authors to include the exp results in the rebuttal to the paper if finally accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper combined several existing methods, i.e., uncertainty-guided mean teacher and multi-task learning for semi-supervised learning. The combination is interesting and the proposed method achieved promising results. The rebuttal clarified most points raised by the reviewers. However, to me, this paper is an extension of [10] (L. Yu MICCAI 2019) and [12] (X. Luo et al.), but the proposed method was not compared with these works to demonstrate its superiority. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback Thank all reviewers (R1, R2, R4, Meta-Reviewer) for their constructive comments. Due to space limit, for the comments unmentioned in this rebuttal, we will incorporate them in the final paper. Q1: Reproducibility. (R2&amp;R4) A1: We have released our code at https://github.com/dream2reallllll/TriU-MT. We will provide the link in the final paper. Q2: Technical novelty is limited. (R1) A2: Our technical novelty is highlighted as follows. First, we innovatively inject the spirit of multi-task learning into mean teacher architecture, which is not trivial, involving a novel unified multi-task integrated mean teacher model. Compared with other semi-supervised segmentation (SSS) methods, ours enjoys stronger consistency regularization at three levels: data, model, and task, which has not been achieved by existing SSS methods including those multi-task based ones like [13,14]. Second, to guide the student model to learn more reliable predictions from the teacher model, we impose the uncertainty estimation on all tasks and develop a tripled-uncertainty guided mean teacher model. Third, current approaches tend to generate uncertainty maps by averaging the results from multiple Monte Carlo (MC) samplings, neglecting their diverse confidence levels. In contrast, we propose an uncertainty weighted integration (UWI) strategy to assign different weights for different sampling results, generating a more accurate segmentation prediction. Q3: Why does the UWI make any sense? (R1&amp;R2) A3: UWI explicitly considers the potential negative effects of low confident MC sampling results in generating uncertainty maps. Rather than averaging the results from MC samplings conventionally, it assigns larger weights to those sampling results with high confidence. Considering entropy can reflect the uncertainty degree of information, we used 1-entropy to measure the confidence level for each sampling result, leading to K confidence maps while each pixel corresponds to a vector with length of K. The values of the vector were further normalized to [0,1] by a softmax operation. In this way, each confidence map can be regarded as a weight map to be used during aggregation. UWI proves to be a very effective strategy especially when there are very few labeled training samples, e.g., when n= 5, the Dice value increases from 70.8% to 79.3% on ACDC dataset by employing UWI. Q4: Why not use the prediction variance for the segmentation channel? (R1) A4: For segmentation, using entropy for uncertainty map has been a common practice, like Ref [10,11] in our paper. In addition, the result of segmentation is probability values rather than real regression values like in other tasks. Therefore, entropy is more appropriate for segmentation uncertainty estimation. Q5: The incomplete experimental results. (Meta-Reviewer&amp;R1) A5: To Meta-Reviewer: We have newly tested the performances of the model mentioned by R4 (Ref [10]), denoted as UA-MT, and the model proposed in [a], denoted as MI-SSS, on ACDC dataset. UA-MT achieves Dices (std) of 70.7%(14.1%), 80.6%(17.8%) and 88.7%(10.5%), respectively, when n=5, 10 and 20. In contrast, MI-SSS yields better Dice results with 81.2%(20.9%) , 84.7%(15.2%) and 91.3%(5.6%), accordingly. Compared with these two methods, our method shows statistically significant improvements with p-value&lt;0.05 in most cases, except for MI-SSS when n=20 (on-par). These results again strengthen our superiority at a low supervision. To R1: As suggested, we newly trained our network using all labels, and obtained a Dice value of 92.7%(6.7%) and a JI value of 87.1%(10.2%), which can be viewed as a ceiling performance of our method. These results will be reported in the final paper. Q6: Additional runtime and memory cost for the uncertainty estimation. (R2) A6: Based on our study, 8 times MC dropout based uncertainty estimation increases the runtime of training process by a factor of 1.05 and the memory cost by a factor of 0.04 compared with single time dropout. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Kaiping Wang, Bo Zhan, Chen Zu, Xi Wu, Jiliu Zhou, Luping Zhou, Yan Wang Abstract Due to the difficulty in accessing a large amount of labeled data, semi-supervised learning is becoming an attractive solution in medical image segmentation. To make use of unlabeled data, current popular semi-supervised methods (e.g., temporal ensembling, mean teacher) mainly impo-se data-level and model-level consistency on unlabeled data. In this paper, we argue that in addition to these strategies, we could further utilize auxili-ary tasks and consider task-level consistency to better leverage unlabeled data for segmentation. Specifically, we introduce two auxiliary tasks, i.e., a foreground and background reconstruction task for capturing semantic in-formation and a signed distance field (SDF) prediction task for imposing shape constraint, and explore the mutual promotion effect between the two auxiliary and the segmentation tasks based on mean teacher architecture. Moreover, to handle the potential bias of the teacher model caused by anno-tation scarcity, we develop a tripled-uncertainty guided framework to en-courage the three tasks in the teacher model to generate more reliable pseudo labels. When calculating uncertainty, we innovatively propose an uncertainty weighted integration (UWI) strategy for yielding the segmenta-tion predictions of teacher. Extensive experiments on public 2017 ACDC dataset and PROMISE12 dataset have demostrated the effectiveness of our method. Link to paper https://doi.org/10.1007/978-3-030-87196-3_42 Link to the code repository https://github.com/DeepMedLab/Tri-U-MT Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a teacher-student architecture for semisupervised segmentation, utilizing segmentation uncertainty. The way that uncertainty is utilized in the method is no well motivated and I cannot see why it should work. Results indicate small improvements on small datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Expensive annotation is a very common challenge, making semisupervised learning relevant The use of a three-headed structure solving auxiliary tasks is nice Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Methodological novelty is limited. I find the paper a bit heavy to read, and sometimes confusing. For instance, why do you use foreground and background segmentations in the reconstruction task (line 13 of section 2)? The teacher model uses MC dropout to assess uncertainty in the segmentation output, by having K channels, one per dropout sample. For each dropout sample you compute a pixelwise entropy, and then apply softmax to the image 1 - entropy in order to obtain a spatial weight map used to combine the different MC sample segmentations. Why does this make any sense? Why do you not use the prediction variance for the segmentation channel, as you do for the other channels? Experiments are performed on small datasets (training set size 75 and 35). Most of these images are used without labels, and you do not present the accuracy obtained using all the labels in a fully supervised setting. These are public databases – was it not feasible to assess your approach on datasets with at least more un-annotated data? This would have been very interesting. Table 1: You do not describe any correction for multiple testing, do you do this? Table 2: Why do you not use a test of significance here? Table 1: Your performance is only marginally better than Shape-aware. Did you check whether the reconstruction task actually gives you any performance boost at all? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear whether the significance levels have been corrected for multiple testing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The methodological novelty is limited and mainly consists of the tripled-uncertainty, which seems completely random to me. If the authors can motivate well where it came from, I might be willing to increase my score. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed to use three auxiliary tasks and corresponding uncertainties to better guide a student-teacher model for semi-supervised segmentation. The extensive evaluation shows that their method outperforms the state-of-the-art, while the ablation study shows the influences of the individual contributions very well. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method combines very well inter-task and student-teacher consistency losses for unsupervised segmentation. The evaluation is extensive and the ablation study shows the influence of the individual contributions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some parts in the method section are hard to follow or missing. The uncertainty segmentation is hard to follow and may is erroneous. The equation for “U_seg = Y log Y” in Equation (3) is similar to the entropy in the binary case (which would be “- (Y log Y + (1 - Y) log (1 - Y))”), however, the minus and the second term are missing. With the current equation, as Y is the probability of the foreground segmentation (with 0 &lt;= Y &lt;= 1), U_seg would be small (&lt; 0) for uncertain regions, while U_rec and U_sdf are large (&gt; 0) for uncertain regions. What are the additional runtime and memory requirements for the MC dropout based uncertainty estimation? Doing 8 forward passes through the teacher for one uncertainty/loss calculation seems costly. What is xi? What kind of noise do you use to perturb the images? There are not many details of the network architecture given and the authors did not state whether they publish the used code (or give additional details in the supplementary materials.) More comments in 7. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors did not state whether they would publish the used code. There are also many details of the network architectures missing, which makes reimplementation difficult. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: “are hard to be available” - reformulate “susceptible due to the uneven quality” - reformulate “to boost segmentation” - “to boost segmentation performance”? “by mining the correlations” - “mining”? “we innovatively propose” - “we propose” Methodology: “These two models share a similar encoder-decoder structure,” - should it be “the same”? “N labeled data and M unlabeled data” - “unlabeled data samples” What are the different “perturbations xi and xi’”? Is it noise you add to the input image? What kind of noise is applied? This needs clarification. “Moreover, as there is no label on D^u, the results of the teacher model may be biased by the introduction of noise xi′.” - Why? I don’t see this. “micrify” - reformulate “preliminary results” - reformulate, maybe “individual forward predictions”, “stochastic predictions”, “MC predictions”? “innovatively” - reformulate or remove “contrain” “consistent in semantic level” - ? Training details should be a subsection of 3 Experiment and Analysis “trained on Pytorch framework” - reformulate “as no uncertainty map needs estimating” - reformulate “Equantion” “Gussian” The batch size is two. Does this mean, you used one supervised and one unsupervised sample? This is not clear. Why do you use the student model and not the teacher model for inference? Experiment and Analysis Fig. 2 caption: “blue” - should be “green” “It is obvious” - e.g. “it can be seen” “comparative methods” - “compared methods” “Obviously” - reformulate Why do you use a table for ACDC and a plots for Promise to show the quantitative results? I would suggest to also use a table for the quantitative results in Fig. 3. What is UncA? The abbreviations UncW and UWI are inconsistent. Conclusion: “noised” - “noisy” References: Some inconsistencies in the references, e.g., for 9 I would suggest to use the NeurIPS reference instead of the arXiv reference. General: Consistency of abbreviations, e.g., Unet, U-net, SDF, sdf Some formulations are hard to understand. I would suggest another proof read. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method of using the three uncertainties of the teacher to better guide the student seems promising. The evaluation is extensive and the influence of the individual contributions is shown. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the author proposed a unified semi-supervised mean teacher model guided by tripled-uncertainty maps from three tasks of segmentation task, foreground and background reconstruction task and signed distance field (SDF) prediction task. Ablation study and comparison experiments with state-of-the-art methods were presented to validate the proposed model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed a novel unified semi-supervised mean teacher model based on task-level consistency to better leverage unlabeled data for segmentation. Proposed a novel multitask integrated architecture for mean teacher model so that the segmentation task could benefit from the enhanced semantic and geometric shape information. Proposed an innovative uncertainty estimation and develop a tripled-uncertainty to guide the student model to learn more reliable predictions from the teacher model. Ablation study and comparison experiments with state-of-the-art methods demonstrate its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The two datasets used in this study contained only 100 and 50 subjects, it is hard to verify the generalization of the model on such small datasets. The literature study is not sufficient, such as this work: Yu, L., Wang, S., Li, X., Fu, C.-W., &amp; Heng, P.-A. (2019). Uncertainty-aware Self-ensembling Model for Semi-supervised 3D Left Atrium Segmentation. MICCAI. Lack of description about the experiment details. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance almost reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Because there are many modules in this model, authors should explain how to optimize it, one step training or multi step training? Authors used hyperparameters α μ and λ to balance the training losses of different tasks, how to set these hyperparameters and how to get the best hyperparameters? It would be nice if the author could verify the model performance on other datasets. It would be nice if the authors public the code of this study. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? nice innovation What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work has received a mix of scores, with reviewers highlighting different concerns. While R2 and R4 have a positive opinion about this paper, they have highlighted several major concerns regarding the lack of clarity on the methodology and experimental section (many important details are missing). This makes the reproducibility of this work hard, as no code is given with the submission. R2 also brings an interesting concern related to the complexity of the proposed method. On the other hand, R1 is more critical with this paper, and stresses the difficulty of reading this work (shared by R2), and more importantly, the lack of novelty. R1 also questions the motivation behind the proposed methodology (generation of uncertainty based on k-channels followed by softmax of 1 - entropy, or choice to use or not of predicted variance, among others). Furthermore, this Area Chair questions the choice of compared approaches, which results in an incomplete empirical evaluation. In particular, the paper brought by R4 is a more suitable choice than [7], as it also integrates an uncertainty component during training (there exist more recent papers not included in the evaluation which are evaluated on the same dataset, e.g., [a]). Thus, despite the paper has some merits, reviewers have highlighted important concerns that need to be addressed in their rebuttal, particularly related to technical novelty, motivation, lack of clarity and incomplete experimental results. [a] Peng J, Pedersoli M, Desrosiers C. Boosting Semi-supervised Image Segmentation with Global and Local Mutual Information Regularization. MIDL’20. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Authors have positively addressed major concerns raised by the reviewers and this meta-reviewer. I therefore recommend it for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to use triple uncertainty in the semi-supervised learning by leveraging the inter-task consistency. The paper is well written and relatively easy to understand, although many edits are needed. The authors included the OSS link which should make the work reproducible. The idea of adding inter-task consistency is interesting and could be helpful to similar researches. However, the choice of uncertainty computation could be further improved. Recommend to accept and ask the authors to include the exp results in the rebuttal to the paper if finally accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper combined several existing methods, i.e., uncertainty-guided mean teacher and multi-task learning for semi-supervised learning. The combination is interesting and the proposed method achieved promising results. The rebuttal clarified most points raised by the reviewers. However, to me, this paper is an extension of [10] (L. Yu MICCAI 2019) and [12] (X. Luo et al.), but the proposed method was not compared with these works to demonstrate its superiority. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback Thank all reviewers (R1, R2, R4, Meta-Reviewer) for their constructive comments. Due to space limit, for the comments unmentioned in this rebuttal, we will incorporate them in the final paper. Q1: Reproducibility. (R2&amp;R4) A1: We have released our code at https://github.com/dream2reallllll/TriU-MT. We will provide the link in the final paper. Q2: Technical novelty is limited. (R1) A2: Our technical novelty is highlighted as follows. First, we innovatively inject the spirit of multi-task learning into mean teacher architecture, which is not trivial, involving a novel unified multi-task integrated mean teacher model. Compared with other semi-supervised segmentation (SSS) methods, ours enjoys stronger consistency regularization at three levels: data, model, and task, which has not been achieved by existing SSS methods including those multi-task based ones like [13,14]. Second, to guide the student model to learn more reliable predictions from the teacher model, we impose the uncertainty estimation on all tasks and develop a tripled-uncertainty guided mean teacher model. Third, current approaches tend to generate uncertainty maps by averaging the results from multiple Monte Carlo (MC) samplings, neglecting their diverse confidence levels. In contrast, we propose an uncertainty weighted integration (UWI) strategy to assign different weights for different sampling results, generating a more accurate segmentation prediction. Q3: Why does the UWI make any sense? (R1&amp;R2) A3: UWI explicitly considers the potential negative effects of low confident MC sampling results in generating uncertainty maps. Rather than averaging the results from MC samplings conventionally, it assigns larger weights to those sampling results with high confidence. Considering entropy can reflect the uncertainty degree of information, we used 1-entropy to measure the confidence level for each sampling result, leading to K confidence maps while each pixel corresponds to a vector with length of K. The values of the vector were further normalized to [0,1] by a softmax operation. In this way, each confidence map can be regarded as a weight map to be used during aggregation. UWI proves to be a very effective strategy especially when there are very few labeled training samples, e.g., when n= 5, the Dice value increases from 70.8% to 79.3% on ACDC dataset by employing UWI. Q4: Why not use the prediction variance for the segmentation channel? (R1) A4: For segmentation, using entropy for uncertainty map has been a common practice, like Ref [10,11] in our paper. In addition, the result of segmentation is probability values rather than real regression values like in other tasks. Therefore, entropy is more appropriate for segmentation uncertainty estimation. Q5: The incomplete experimental results. (Meta-Reviewer&amp;R1) A5: To Meta-Reviewer: We have newly tested the performances of the model mentioned by R4 (Ref [10]), denoted as UA-MT, and the model proposed in [a], denoted as MI-SSS, on ACDC dataset. UA-MT achieves Dices (std) of 70.7%(14.1%), 80.6%(17.8%) and 88.7%(10.5%), respectively, when n=5, 10 and 20. In contrast, MI-SSS yields better Dice results with 81.2%(20.9%) , 84.7%(15.2%) and 91.3%(5.6%), accordingly. Compared with these two methods, our method shows statistically significant improvements with p-value&lt;0.05 in most cases, except for MI-SSS when n=20 (on-par). These results again strengthen our superiority at a low supervision. To R1: As suggested, we newly trained our network using all labels, and obtained a Dice value of 92.7%(6.7%) and a JI value of 87.1%(10.2%), which can be viewed as a ceiling performance of our method. These results will be reported in the final paper. Q6: Additional runtime and memory cost for the uncertainty estimation. (R2) A6: Based on our study, 8 times MC dropout based uncertainty estimation increases the runtime of training process by a factor of 1.05 and the memory cost by a factor of 0.04 compared with single time dropout. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0241/12/31/Paper1147" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0241/12/31/Paper1147" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0241-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tripled-uncertainty Guided Mean Teacher model for Semi-supervised Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0241/12/31/Paper1147"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0241/12/31/Paper1147","headline":"Tripled-uncertainty Guided Mean Teacher model for Semi-supervised Medical Image Segmentation","dateModified":"0242-01-01T00:00:00-05:17","datePublished":"0241-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Kaiping Wang, Bo Zhan, Chen Zu, Xi Wu, Jiliu Zhou, Luping Zhou, Yan Wang Abstract Due to the difficulty in accessing a large amount of labeled data, semi-supervised learning is becoming an attractive solution in medical image segmentation. To make use of unlabeled data, current popular semi-supervised methods (e.g., temporal ensembling, mean teacher) mainly impo-se data-level and model-level consistency on unlabeled data. In this paper, we argue that in addition to these strategies, we could further utilize auxili-ary tasks and consider task-level consistency to better leverage unlabeled data for segmentation. Specifically, we introduce two auxiliary tasks, i.e., a foreground and background reconstruction task for capturing semantic in-formation and a signed distance field (SDF) prediction task for imposing shape constraint, and explore the mutual promotion effect between the two auxiliary and the segmentation tasks based on mean teacher architecture. Moreover, to handle the potential bias of the teacher model caused by anno-tation scarcity, we develop a tripled-uncertainty guided framework to en-courage the three tasks in the teacher model to generate more reliable pseudo labels. When calculating uncertainty, we innovatively propose an uncertainty weighted integration (UWI) strategy for yielding the segmenta-tion predictions of teacher. Extensive experiments on public 2017 ACDC dataset and PROMISE12 dataset have demostrated the effectiveness of our method. Link to paper https://doi.org/10.1007/978-3-030-87196-3_42 Link to the code repository https://github.com/DeepMedLab/Tri-U-MT Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a teacher-student architecture for semisupervised segmentation, utilizing segmentation uncertainty. The way that uncertainty is utilized in the method is no well motivated and I cannot see why it should work. Results indicate small improvements on small datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Expensive annotation is a very common challenge, making semisupervised learning relevant The use of a three-headed structure solving auxiliary tasks is nice Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Methodological novelty is limited. I find the paper a bit heavy to read, and sometimes confusing. For instance, why do you use foreground and background segmentations in the reconstruction task (line 13 of section 2)? The teacher model uses MC dropout to assess uncertainty in the segmentation output, by having K channels, one per dropout sample. For each dropout sample you compute a pixelwise entropy, and then apply softmax to the image 1 - entropy in order to obtain a spatial weight map used to combine the different MC sample segmentations. Why does this make any sense? Why do you not use the prediction variance for the segmentation channel, as you do for the other channels? Experiments are performed on small datasets (training set size 75 and 35). Most of these images are used without labels, and you do not present the accuracy obtained using all the labels in a fully supervised setting. These are public databases – was it not feasible to assess your approach on datasets with at least more un-annotated data? This would have been very interesting. Table 1: You do not describe any correction for multiple testing, do you do this? Table 2: Why do you not use a test of significance here? Table 1: Your performance is only marginally better than Shape-aware. Did you check whether the reconstruction task actually gives you any performance boost at all? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is unclear whether the significance levels have been corrected for multiple testing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The methodological novelty is limited and mainly consists of the tripled-uncertainty, which seems completely random to me. If the authors can motivate well where it came from, I might be willing to increase my score. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed to use three auxiliary tasks and corresponding uncertainties to better guide a student-teacher model for semi-supervised segmentation. The extensive evaluation shows that their method outperforms the state-of-the-art, while the ablation study shows the influences of the individual contributions very well. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method combines very well inter-task and student-teacher consistency losses for unsupervised segmentation. The evaluation is extensive and the ablation study shows the influence of the individual contributions. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some parts in the method section are hard to follow or missing. The uncertainty segmentation is hard to follow and may is erroneous. The equation for “U_seg = Y log Y” in Equation (3) is similar to the entropy in the binary case (which would be “- (Y log Y + (1 - Y) log (1 - Y))”), however, the minus and the second term are missing. With the current equation, as Y is the probability of the foreground segmentation (with 0 &lt;= Y &lt;= 1), U_seg would be small (&lt; 0) for uncertain regions, while U_rec and U_sdf are large (&gt; 0) for uncertain regions. What are the additional runtime and memory requirements for the MC dropout based uncertainty estimation? Doing 8 forward passes through the teacher for one uncertainty/loss calculation seems costly. What is xi? What kind of noise do you use to perturb the images? There are not many details of the network architecture given and the authors did not state whether they publish the used code (or give additional details in the supplementary materials.) More comments in 7. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors did not state whether they would publish the used code. There are also many details of the network architectures missing, which makes reimplementation difficult. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: “are hard to be available” - reformulate “susceptible due to the uneven quality” - reformulate “to boost segmentation” - “to boost segmentation performance”? “by mining the correlations” - “mining”? “we innovatively propose” - “we propose” Methodology: “These two models share a similar encoder-decoder structure,” - should it be “the same”? “N labeled data and M unlabeled data” - “unlabeled data samples” What are the different “perturbations xi and xi’”? Is it noise you add to the input image? What kind of noise is applied? This needs clarification. “Moreover, as there is no label on D^u, the results of the teacher model may be biased by the introduction of noise xi′.” - Why? I don’t see this. “micrify” - reformulate “preliminary results” - reformulate, maybe “individual forward predictions”, “stochastic predictions”, “MC predictions”? “innovatively” - reformulate or remove “contrain” “consistent in semantic level” - ? Training details should be a subsection of 3 Experiment and Analysis “trained on Pytorch framework” - reformulate “as no uncertainty map needs estimating” - reformulate “Equantion” “Gussian” The batch size is two. Does this mean, you used one supervised and one unsupervised sample? This is not clear. Why do you use the student model and not the teacher model for inference? Experiment and Analysis Fig. 2 caption: “blue” - should be “green” “It is obvious” - e.g. “it can be seen” “comparative methods” - “compared methods” “Obviously” - reformulate Why do you use a table for ACDC and a plots for Promise to show the quantitative results? I would suggest to also use a table for the quantitative results in Fig. 3. What is UncA? The abbreviations UncW and UWI are inconsistent. Conclusion: “noised” - “noisy” References: Some inconsistencies in the references, e.g., for 9 I would suggest to use the NeurIPS reference instead of the arXiv reference. General: Consistency of abbreviations, e.g., Unet, U-net, SDF, sdf Some formulations are hard to understand. I would suggest another proof read. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method of using the three uncertainties of the teacher to better guide the student seems promising. The evaluation is extensive and the influence of the individual contributions is shown. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the author proposed a unified semi-supervised mean teacher model guided by tripled-uncertainty maps from three tasks of segmentation task, foreground and background reconstruction task and signed distance field (SDF) prediction task. Ablation study and comparison experiments with state-of-the-art methods were presented to validate the proposed model. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Proposed a novel unified semi-supervised mean teacher model based on task-level consistency to better leverage unlabeled data for segmentation. Proposed a novel multitask integrated architecture for mean teacher model so that the segmentation task could benefit from the enhanced semantic and geometric shape information. Proposed an innovative uncertainty estimation and develop a tripled-uncertainty to guide the student model to learn more reliable predictions from the teacher model. Ablation study and comparison experiments with state-of-the-art methods demonstrate its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The two datasets used in this study contained only 100 and 50 subjects, it is hard to verify the generalization of the model on such small datasets. The literature study is not sufficient, such as this work: Yu, L., Wang, S., Li, X., Fu, C.-W., &amp; Heng, P.-A. (2019). Uncertainty-aware Self-ensembling Model for Semi-supervised 3D Left Atrium Segmentation. MICCAI. Lack of description about the experiment details. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance almost reproducible Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Because there are many modules in this model, authors should explain how to optimize it, one step training or multi step training? Authors used hyperparameters α μ and λ to balance the training losses of different tasks, how to set these hyperparameters and how to get the best hyperparameters? It would be nice if the author could verify the model performance on other datasets. It would be nice if the authors public the code of this study. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? nice innovation What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work has received a mix of scores, with reviewers highlighting different concerns. While R2 and R4 have a positive opinion about this paper, they have highlighted several major concerns regarding the lack of clarity on the methodology and experimental section (many important details are missing). This makes the reproducibility of this work hard, as no code is given with the submission. R2 also brings an interesting concern related to the complexity of the proposed method. On the other hand, R1 is more critical with this paper, and stresses the difficulty of reading this work (shared by R2), and more importantly, the lack of novelty. R1 also questions the motivation behind the proposed methodology (generation of uncertainty based on k-channels followed by softmax of 1 - entropy, or choice to use or not of predicted variance, among others). Furthermore, this Area Chair questions the choice of compared approaches, which results in an incomplete empirical evaluation. In particular, the paper brought by R4 is a more suitable choice than [7], as it also integrates an uncertainty component during training (there exist more recent papers not included in the evaluation which are evaluated on the same dataset, e.g., [a]). Thus, despite the paper has some merits, reviewers have highlighted important concerns that need to be addressed in their rebuttal, particularly related to technical novelty, motivation, lack of clarity and incomplete experimental results. [a] Peng J, Pedersoli M, Desrosiers C. Boosting Semi-supervised Image Segmentation with Global and Local Mutual Information Regularization. MIDL’20. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Authors have positively addressed major concerns raised by the reviewers and this meta-reviewer. I therefore recommend it for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors proposed to use triple uncertainty in the semi-supervised learning by leveraging the inter-task consistency. The paper is well written and relatively easy to understand, although many edits are needed. The authors included the OSS link which should make the work reproducible. The idea of adding inter-task consistency is interesting and could be helpful to similar researches. However, the choice of uncertainty computation could be further improved. Recommend to accept and ask the authors to include the exp results in the rebuttal to the paper if finally accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper combined several existing methods, i.e., uncertainty-guided mean teacher and multi-task learning for semi-supervised learning. The combination is interesting and the proposed method achieved promising results. The rebuttal clarified most points raised by the reviewers. However, to me, this paper is an extension of [10] (L. Yu MICCAI 2019) and [12] (X. Luo et al.), but the proposed method was not compared with these works to demonstrate its superiority. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback Thank all reviewers (R1, R2, R4, Meta-Reviewer) for their constructive comments. Due to space limit, for the comments unmentioned in this rebuttal, we will incorporate them in the final paper. Q1: Reproducibility. (R2&amp;R4) A1: We have released our code at https://github.com/dream2reallllll/TriU-MT. We will provide the link in the final paper. Q2: Technical novelty is limited. (R1) A2: Our technical novelty is highlighted as follows. First, we innovatively inject the spirit of multi-task learning into mean teacher architecture, which is not trivial, involving a novel unified multi-task integrated mean teacher model. Compared with other semi-supervised segmentation (SSS) methods, ours enjoys stronger consistency regularization at three levels: data, model, and task, which has not been achieved by existing SSS methods including those multi-task based ones like [13,14]. Second, to guide the student model to learn more reliable predictions from the teacher model, we impose the uncertainty estimation on all tasks and develop a tripled-uncertainty guided mean teacher model. Third, current approaches tend to generate uncertainty maps by averaging the results from multiple Monte Carlo (MC) samplings, neglecting their diverse confidence levels. In contrast, we propose an uncertainty weighted integration (UWI) strategy to assign different weights for different sampling results, generating a more accurate segmentation prediction. Q3: Why does the UWI make any sense? (R1&amp;R2) A3: UWI explicitly considers the potential negative effects of low confident MC sampling results in generating uncertainty maps. Rather than averaging the results from MC samplings conventionally, it assigns larger weights to those sampling results with high confidence. Considering entropy can reflect the uncertainty degree of information, we used 1-entropy to measure the confidence level for each sampling result, leading to K confidence maps while each pixel corresponds to a vector with length of K. The values of the vector were further normalized to [0,1] by a softmax operation. In this way, each confidence map can be regarded as a weight map to be used during aggregation. UWI proves to be a very effective strategy especially when there are very few labeled training samples, e.g., when n= 5, the Dice value increases from 70.8% to 79.3% on ACDC dataset by employing UWI. Q4: Why not use the prediction variance for the segmentation channel? (R1) A4: For segmentation, using entropy for uncertainty map has been a common practice, like Ref [10,11] in our paper. In addition, the result of segmentation is probability values rather than real regression values like in other tasks. Therefore, entropy is more appropriate for segmentation uncertainty estimation. Q5: The incomplete experimental results. (Meta-Reviewer&amp;R1) A5: To Meta-Reviewer: We have newly tested the performances of the model mentioned by R4 (Ref [10]), denoted as UA-MT, and the model proposed in [a], denoted as MI-SSS, on ACDC dataset. UA-MT achieves Dices (std) of 70.7%(14.1%), 80.6%(17.8%) and 88.7%(10.5%), respectively, when n=5, 10 and 20. In contrast, MI-SSS yields better Dice results with 81.2%(20.9%) , 84.7%(15.2%) and 91.3%(5.6%), accordingly. Compared with these two methods, our method shows statistically significant improvements with p-value&lt;0.05 in most cases, except for MI-SSS when n=20 (on-par). These results again strengthen our superiority at a low supervision. To R1: As suggested, we newly trained our network using all labels, and obtained a Dice value of 92.7%(6.7%) and a JI value of 87.1%(10.2%), which can be viewed as a ceiling performance of our method. These results will be reported in the final paper. Q6: Additional runtime and memory cost for the uncertainty estimation. (R2) A6: Based on our study, 8 times MC dropout based uncertainty estimation increases the runtime of training process by a factor of 1.05 and the memory cost by a factor of 0.04 compared with single time dropout. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wang, Kaiping,Zhan, Bo,Zu, Chen,Wu, Xi,Zhou, Jiliu,Zhou, Luping,Wang, Yan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Tripled-uncertainty Guided Mean Teacher model for Semi-supervised Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wang, Kaiping"
+        class="post-tags">
+        Wang, Kaiping
+      </a> |  
+      
+      <a href="kittywong/tags#Zhan, Bo"
+        class="post-tags">
+        Zhan, Bo
+      </a> |  
+      
+      <a href="kittywong/tags#Zu, Chen"
+        class="post-tags">
+        Zu, Chen
+      </a> |  
+      
+      <a href="kittywong/tags#Wu, Xi"
+        class="post-tags">
+        Wu, Xi
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Jiliu"
+        class="post-tags">
+        Zhou, Jiliu
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Luping"
+        class="post-tags">
+        Zhou, Luping
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Yan"
+        class="post-tags">
+        Wang, Yan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Kaiping Wang, Bo Zhan, Chen Zu, Xi Wu, Jiliu Zhou, Luping Zhou, Yan Wang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Due to the difficulty in accessing a large amount of labeled data, semi-supervised learning is becoming an attractive solution in medical image segmentation. To make use of unlabeled data, current popular semi-supervised methods (e.g., temporal ensembling, mean teacher) mainly impo-se data-level and model-level consistency on unlabeled data. In this paper, we argue that in addition to these strategies, we could further utilize auxili-ary tasks and consider task-level consistency to better leverage unlabeled data for segmentation. Specifically, we introduce two auxiliary tasks, i.e., a foreground and background reconstruction task for capturing semantic in-formation and a signed distance field (SDF) prediction task for imposing shape constraint, and explore the mutual promotion effect between the two auxiliary and the segmentation tasks based on mean teacher architecture. Moreover, to handle the potential bias of the teacher model caused by anno-tation scarcity, we develop a tripled-uncertainty guided framework to en-courage the three tasks in the teacher model to generate more reliable pseudo labels. When calculating uncertainty, we innovatively propose an uncertainty weighted integration (UWI) strategy for yielding the segmenta-tion predictions of teacher. Extensive experiments on public 2017 ACDC dataset and PROMISE12 dataset have demostrated the effectiveness of our method.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_42">https://doi.org/10.1007/978-3-030-87196-3_42</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/DeepMedLab/Tri-U-MT
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a teacher-student architecture for semisupervised segmentation, utilizing segmentation uncertainty. The way that uncertainty is utilized in the method is no well motivated and I cannot see why it should work. Results indicate small improvements on small datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Expensive annotation is a very common challenge, making semisupervised learning relevant</li>
+        <li>The use of a three-headed structure solving auxiliary tasks is nice</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Methodological novelty is limited.</li>
+        <li>I find the paper a bit heavy to read, and sometimes confusing. For instance, why do you use foreground and background segmentations in the reconstruction task (line 13 of section  2)?</li>
+        <li>The teacher model uses MC dropout to assess uncertainty in the segmentation output, by having K channels, one per dropout sample. For each dropout sample you compute a pixelwise entropy, and then apply softmax to the image 1 - entropy in order to obtain a spatial weight map used to combine the different MC sample segmentations. Why does this make any sense?</li>
+        <li>Why do you not use the prediction variance for the segmentation channel, as you do for the other channels?</li>
+        <li>Experiments are performed on small datasets (training set size 75 and 35). Most of these images are used without labels, and you do not present the accuracy obtained using all the labels in a fully supervised setting. These are public databases – was it not feasible to assess your approach on datasets with at least more un-annotated data? This would have been very interesting.</li>
+        <li>Table 1: You do not describe any correction for multiple testing, do you do this?</li>
+        <li>Table 2: Why do you not use a test of significance here?</li>
+        <li>Table 1: Your performance is only marginally better than Shape-aware. Did you check whether the reconstruction task actually gives you any performance boost at all?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It is unclear whether the significance levels have been corrected for multiple testing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Please see above.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The methodological novelty is limited and mainly consists of the tripled-uncertainty, which seems completely random to me. If the authors can motivate well where it came from, I might be willing to increase my score.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors proposed to use three auxiliary tasks and corresponding uncertainties to better guide a student-teacher model for semi-supervised segmentation. The extensive evaluation shows that their method outperforms the state-of-the-art, while the ablation study shows the influences of the individual contributions very well.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The method combines very well inter-task and student-teacher consistency losses for unsupervised segmentation.</li>
+        <li>The evaluation is extensive and the ablation study shows the influence of the individual contributions.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Some parts in the method section are hard to follow or missing.
+          <ul>
+            <li>The uncertainty segmentation is hard to follow and may is erroneous. The equation for “U_seg = Y log Y” in Equation (3) is similar to the entropy in the binary case (which would be “- (Y log Y + (1 - Y) log (1 - Y))”), however, the minus and the second term are missing. With the current equation, as Y is the probability of the foreground segmentation (with 0 &lt;= Y &lt;= 1), U_seg would be small (&lt; 0) for uncertain regions, while U_rec and U_sdf are large (&gt; 0) for uncertain regions.</li>
+            <li>What are the additional runtime and memory requirements for the MC dropout based uncertainty estimation? Doing 8 forward passes through the teacher for one uncertainty/loss calculation seems costly.</li>
+            <li>What is xi? What kind of noise do you use to perturb the images?</li>
+            <li>There are not many details of the network architecture given and the authors did not state whether they publish the used code (or give additional details in the supplementary materials.)</li>
+            <li>More comments in 7.</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors did not state whether they would publish the used code. There are also many details of the network architectures missing, which makes reimplementation difficult.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Introduction:
+“are hard to be available” - reformulate
+“susceptible due to the uneven quality” - reformulate
+“to boost segmentation” - “to boost segmentation performance”?
+“by mining the correlations” - “mining”?
+“we innovatively propose” - “we propose”</p>
+
+      <p>Methodology:
+“These two models share a similar encoder-decoder structure,” - should it be “the same”?
+“N labeled data and M unlabeled data” - “unlabeled data samples”
+What are the different “perturbations xi and xi’”? Is it noise you add to the input image? What kind of noise is applied? This needs clarification.
+“Moreover, as there is no label on D^u, the results of the teacher model may be biased by the introduction of noise xi′.” - Why? I don’t see this.
+“micrify” - reformulate
+“preliminary results” - reformulate, maybe “individual forward predictions”, “stochastic predictions”, “MC predictions”?
+“innovatively” - reformulate or remove
+“contrain”
+“consistent in semantic level” - ?</p>
+
+      <p>Training details should be a subsection of 3 Experiment and Analysis
+“trained on Pytorch framework” - reformulate
+“as no uncertainty map needs estimating” - reformulate
+“Equantion”
+“Gussian”
+The batch size is two. Does this mean, you used one supervised and one unsupervised sample? This is not clear.
+Why do you use the student model and not the teacher model for inference?</p>
+
+      <p>Experiment and Analysis
+Fig. 2 caption: “blue” - should be “green”
+“It is obvious” - e.g. “it can be seen”
+“comparative methods” - “compared methods”
+“Obviously” - reformulate
+Why do you use a table for ACDC and a plots for Promise to show the quantitative results? I would suggest to also use a table for the quantitative results in Fig. 3.
+What is UncA?
+The abbreviations UncW and UWI are inconsistent.</p>
+
+      <p>Conclusion:
+“noised” - “noisy”</p>
+
+      <p>References:
+Some inconsistencies in the references, e.g., for 9 I would suggest to use the NeurIPS reference instead of the arXiv reference.</p>
+
+      <p>General:
+Consistency of abbreviations, e.g., Unet, U-net, SDF, sdf
+Some formulations are hard to understand. I would suggest another proof read.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The method of using the three uncertainties of the teacher to better guide the student seems promising. The evaluation is extensive and the influence of the individual contributions is shown.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the author proposed a unified semi-supervised mean teacher model guided by tripled-uncertainty maps from three tasks of segmentation task, foreground and background reconstruction task and signed distance field (SDF) prediction task. Ablation study and comparison experiments with state-of-the-art methods were presented to validate the proposed model.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>Proposed a novel unified semi-supervised mean teacher model based on task-level consistency to better leverage unlabeled data for segmentation.</li>
+        <li>Proposed a novel multitask integrated architecture for mean teacher model so that the segmentation task could benefit from the enhanced semantic and geometric shape information.</li>
+        <li>Proposed an innovative uncertainty estimation and develop a tripled-uncertainty to guide the student model to learn more reliable predictions from the teacher model.</li>
+        <li>Ablation study and comparison experiments with state-of-the-art methods demonstrate its effectiveness.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The two datasets used in this study contained only 100 and 50 subjects, it is hard to verify the generalization of the model on such small datasets.</li>
+        <li>The literature study is not sufficient, such as this work: Yu, L., Wang, S., Li, X., Fu, C.-W., &amp; Heng, P.-A. (2019). Uncertainty-aware Self-ensembling Model for Semi-supervised 3D Left Atrium Segmentation. MICCAI.</li>
+        <li>Lack of description about the experiment details.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>almost reproducible</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>Because there are many modules in this model, authors should explain how to optimize it, one step training or multi step training?</li>
+        <li>Authors used hyperparameters α μ and λ to balance the training losses of different tasks, how to set these hyperparameters and how to get the best hyperparameters?</li>
+        <li>It would be nice if the author could verify the model performance on other datasets.</li>
+        <li>It would be nice if the authors public the code of this study.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>nice innovation</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work has received a mix of scores, with reviewers highlighting different concerns. While R2 and R4 have a positive opinion about this paper, they have highlighted several major concerns regarding the lack of clarity on the methodology and experimental section (many important details are missing). This makes the reproducibility of this work hard, as no code is given with the submission. R2 also brings an interesting concern related to the complexity of the proposed method. On the other hand, R1 is more critical with this paper, and stresses the difficulty of reading this work (shared by R2), and more importantly, the lack of novelty. R1 also questions the motivation behind the proposed methodology (generation of uncertainty based on k-channels followed by softmax of 1 - entropy, or choice to use or not of predicted variance, among others). Furthermore, this Area Chair questions the choice of compared approaches, which results in an incomplete empirical evaluation. In particular, the paper brought by R4 is a more suitable choice than [7], as it also integrates an uncertainty component during training (there exist more recent papers not included in the evaluation which are evaluated on the same dataset, e.g., [a]). Thus, despite the paper has some merits, reviewers have highlighted important concerns that need to be addressed in their rebuttal, particularly related to technical novelty, motivation, lack of clarity and incomplete experimental results.</p>
+
+      <p>[a] Peng J, Pedersoli M, Desrosiers C. Boosting Semi-supervised Image Segmentation with Global and Local Mutual Information Regularization. MIDL’20.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Authors have positively addressed major concerns raised by the reviewers and this meta-reviewer. I therefore recommend it for acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>In this paper, the authors proposed to use triple uncertainty in the semi-supervised learning by leveraging the inter-task consistency. The paper is well written and relatively easy to understand, although many edits are needed. The authors included the OSS link which should make the work reproducible. The idea of adding inter-task consistency is interesting and could be helpful to similar researches. However, the choice of uncertainty computation could be further improved. Recommend to accept and ask the authors to include the exp results in the rebuttal to the paper if finally accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper combined several existing methods, i.e., uncertainty-guided mean teacher and multi-task learning for semi-supervised learning. The combination is interesting and the proposed method achieved promising results. The rebuttal clarified most points raised by the reviewers. However, to me, this paper is an extension of [10] (L. Yu MICCAI 2019) and [12] (X. Luo et al.), but the proposed method was not compared with these works to demonstrate its superiority.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Thank all reviewers (R1, R2, R4, Meta-Reviewer) for their constructive comments. Due to space limit, for the comments unmentioned in this rebuttal, we will incorporate them in the final paper.</p>
+
+  <p>Q1: Reproducibility. (R2&amp;R4)
+A1: We have released our code at https://github.com/dream2reallllll/TriU-MT. We will provide the link in the final paper.</p>
+
+  <p>Q2: Technical novelty is limited. (R1)
+A2: Our technical novelty is highlighted as follows. First, we innovatively inject the spirit of multi-task learning into mean teacher architecture, which is not trivial, involving a novel unified multi-task integrated mean teacher model. Compared with other semi-supervised segmentation (SSS) methods, ours enjoys stronger consistency regularization at three levels: data, model, and task, which has not been achieved by existing SSS methods including those multi-task based ones like [13,14]. Second, to guide the student model to learn more reliable predictions from the teacher model, we impose the uncertainty estimation on all tasks and develop a tripled-uncertainty guided mean teacher model. Third, current approaches tend to generate uncertainty maps by averaging the results from multiple Monte Carlo (MC) samplings, neglecting their diverse confidence levels. In contrast, we propose an uncertainty weighted integration (UWI) strategy to assign different weights for different sampling results, generating a more accurate segmentation prediction.</p>
+
+  <p>Q3: Why does the UWI make any sense? (R1&amp;R2)
+A3: UWI explicitly considers the potential negative effects of low confident MC sampling results in generating uncertainty maps. Rather than averaging the results from MC samplings conventionally, it assigns larger weights to those sampling results with high confidence. Considering entropy can reflect the uncertainty degree of information, we used 1-entropy to measure the confidence level for each sampling result, leading to K confidence maps while each pixel corresponds to a vector with length of K. The values of the vector were further normalized to [0,1] by a softmax operation. In this way, each confidence map can be regarded as a weight map to be used during aggregation. UWI proves to be a very effective strategy especially when there are very few labeled training samples, e.g., when n= 5, the Dice value increases from 70.8% to 79.3% on ACDC dataset by employing UWI.</p>
+
+  <p>Q4: Why not use the prediction variance for the segmentation channel? (R1)
+A4: For segmentation, using entropy for uncertainty map has been a common practice, like Ref [10,11] in our paper. In addition, the result of segmentation is probability values rather than real regression values like in other tasks. Therefore, entropy is more appropriate for segmentation uncertainty estimation.</p>
+
+  <p>Q5: The incomplete experimental results. (Meta-Reviewer&amp;R1)
+A5: To Meta-Reviewer: We have newly tested the performances of the model mentioned by R4 (Ref [10]), denoted as UA-MT, and the model proposed in [a], denoted as MI-SSS, on ACDC dataset. UA-MT achieves Dices (std) of 70.7%(14.1%), 80.6%(17.8%) and 88.7%(10.5%), respectively, when n=5, 10 and 20. In contrast, MI-SSS yields better Dice results with 81.2%(20.9%) , 84.7%(15.2%)  and 91.3%(5.6%), accordingly. Compared with these two methods, our method shows statistically significant improvements with p-value&lt;0.05 in most cases, except for MI-SSS when n=20 (on-par). These results again strengthen our superiority at a low supervision.
+To R1: As suggested, we newly trained our network using all labels, and obtained a Dice value of 92.7%(6.7%) and a JI value of 87.1%(10.2%), which can be viewed as a ceiling performance of our method.
+These results will be reported in the final paper.</p>
+
+  <p>Q6: Additional runtime and memory cost for the uncertainty estimation. (R2)
+A6: Based on our study, 8 times MC dropout based uncertainty estimation increases the runtime of training process by a factor of 1.05 and the memory cost by a factor of 0.04 compared with single time dropout.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0241-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0242-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wang, Kaiping"
+        class="post-category">
+        Wang, Kaiping
+      </a> |  
+      
+      <a href="kittywong/tags#Zhan, Bo"
+        class="post-category">
+        Zhan, Bo
+      </a> |  
+      
+      <a href="kittywong/tags#Zu, Chen"
+        class="post-category">
+        Zu, Chen
+      </a> |  
+      
+      <a href="kittywong/tags#Wu, Xi"
+        class="post-category">
+        Wu, Xi
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Jiliu"
+        class="post-category">
+        Zhou, Jiliu
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Luping"
+        class="post-category">
+        Zhou, Luping
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Yan"
+        class="post-category">
+        Wang, Yan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0242/12/31/Paper1662">
+          Learning with Noise: Mask-guided Attention Model for Weakly Supervised Nuclei Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0240/12/31/Paper1138">
+          Neighbor Matching for Semi-supervised Learning
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

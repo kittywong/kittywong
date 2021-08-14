@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A spherical convolutional neural network for white matter structure imaging via diffusion MRI | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="A spherical convolutional neural network for white matter structure imaging via diffusion MRI" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sara Sedlar, Abib Alimi, Theodore Papadopoulo, Rachid Deriche, Samuel Deslauriers-Gauthier Abstract Diffusion Magnetic Resonance Imaging (dMRI) is a powerful non-invasive and in-vivo imaging modality for probing brain white matter structure. Convolutional neural networks (CNNs) have been shown to be a powerful tool for many computer vision problems where the signals are acquired on a regular grid and where translational invariance is important. However, as we are considering dMRI signals that are acquired on a sphere, rotational invariance, rather than translational, is desired. In this work, we propose a spherical CNN model with fully spectral domain convolutional and non-linear layers. It provides rotational invariance and is adapted to the real nature of dMRI signals and uniform random distribution of sampling points. The proposed model is positively evaluated on the problem of estimation of neurite orientation dispersion and density imaging (NODDI) parameters on the data from Human Connectome Project (HCP). Link to paper https://doi.org/10.1007/978-3-030-87199-4_50 Link to the code repository https://gitlab.inria.fr/ssedlar/fourier_s2cnn Link to the dataset(s) https://db.humanconnectome.org Reviews Review #1 Please describe the contribution of the paper This study proposes a revised method to assess clinical parameters in dMRI data using a CNN architecture that relies on aspects of the geometry of the image aquisition. This method exploits mathematical properties of rotational symmetry groups S^2 and SO(3) in this domain which are integrated in a neural network. The paper discusses in great detail which motivations have lead to certain choices for layers and network architecture. The studies validate their approach with 50 subjects from the Human Connectome Project and compare accuracy in prediction for a NODDI task to methods in the field published about 5 years ago. The authors highlight that strengths of the proposed method with respect to computational effort required and quality of estimation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method is based on a rigorous mathematical understanding of symmetry groups which is used to process dMRI data. It is clear that the authors have invested a respectable amount of time to derive a mathematical basis for their network design choices. The paper discusses these in section 2 on theory and section 3 on the methods used. The article relies on prior work on equivariant neural networks and similar techniques to add information about these known symmetries in the training of the neural network. The clinical relevance of this work given the applications of dMRI in oncology and acute brain ischemia is undisputed. The application of this approach is restricted to regression, but lends itself for classification as well. Sections 4 contains hints to a reduced computational effort required by this method - which in turn can be beneficial in practice. In this vein, this work exposes an interesting line of architectural choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The study relies heavily on the incremental (re-)design of a neural network architecture to perform regression of dMRI data. The methods section relies predominantly on methods (two references, 21 and 23, out of 3 for this section) that are referenced as preprints only. It would have been important to run the same neural network architecture on (a) synthetic data that clearly exposes the mathematical propoerties the article aims for and (b) on a synthetic dataset that does NOT have these properties. Moreover, the denoising layers imposed in the first method section appear arbitrary and questionable as I would expect that they converge to a unity matrix. Denoising should perhaps be conducted as a preprocessing step in contrast to the design proposed. Finally, the article misses to highlight the advances made. From Table 1 in section 5, I learn that the proposed approach delivers comparable accuracy as methods published about 5 years ago. Figure 2 supports this notion. Table 2 shows clear improvements in accuracy for selected values of diffusion tensor fit directions. However without knowledge of other diffusion tensor fit direction domains or the clinical relevance of the 2 chosen domains, these numbers stand isolated and do not warrant a valid impression of novelty. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the presented results is unclear. First of all, the authors use preprint-based methods exclusively where it is unclear how these used methods perform under the observation that neural network predictions can expose a considerable variance, see [1] for example. As no code or data was provided along the paper, reproducing the results is impossible. [1] https://proceedings.mlsys.org/paper/2021/hash/cfecdb276f634854f3ef915e2e980c31-Abstract.html Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html in general, I feel that sections 1 and 2 are too long and could be cut substantially. Especially the theory section stands isolated and dives into too much detail. I observed that only equation 8 was used in subsequent text. So I wonder why the theory was discussed at this extent. page 2: the choice of words “important noise” is unclear and misleading, judging from the math, this is additive noise page 4, section 3.1: it remains unclear why the denoising has to be conducted inside the neural network, a comparison to a denoising during preprocessing would be interesting page 4, section 3.1: the design of the denoising layers let’s me wonder what the actual values of the weights are after training -&gt; I think with this choice, the weights are likely to be 1 always page 5, figure 1: it helps to detail out the shape and data type of the input and output of the network (especially with respect to the comparison to the excellent mathematical description) page 5/6, section 3.3: the text says that this activation is performed on RH coefficients only, I wonder how the SH coefficients are treated page 5/6, section 3.3: the activations in section 3.3 appear rather involved, a comment on how backprop is performed through them would be great page 6: section 4 -&gt; the language needs to be improved. page 7: “All models are trained over 200 epochs.” it might be helpful to plot the loss over number of epochs -&gt; if this study’s approach works well, this design should converge much faster than the others page 7: put more emphasis on the runtime invested for training or inference, in practice it might be super vital to have fast turnaround page 7: table 1 shows that all results overlap within 2 standard deviations to FCN and MEDN -&gt; this doesn’t warrant the line “that our proposed approach provides more accurate estimates of NODDI parameters.” (please rephrase) page 7: “Furthermore, to investigate rotation invariance of DL approaches, we have trained models on data whose diffusion tensor fit direction is in range [0, π 6 ) (or ( 5π6 , π)) and the quantitative results of the experiments are provided in Table 2 clearly indicating rotation invariance of our model.” -&gt; it would be essential to note if/how these ranges for the diffusion tensor fit direction are important for clinical practice Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given the quality and performance analysis in section 4 and 5, this study does indicate an interesting line of work which I encourage the authors to pursue. At this stage and given the display of results, I recommend studying more systematically the effects of the NN design using synthetic data and (if possible) more experimental data. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a spherical CNN with rotation equivariant Fourier domain convolutional and non-linear layers, where trainable kernels and biases are represented in the Fourier domain. They have performed the estimation of Neurite orientation dispersion and density imaging (NODDI) parameters from dMRI signals. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is reasonably written and clear enough to understand. The methodology is explained and reproducible. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty can be questionable. Using the pre-existing Spherical CNN’s. Authors need to justify the novelty and report proper ablation. The importance of the performance parameters without proper justification and inference is limited. The authors need to discuss the qualitative results properly. Comparative analysis with SOTA is required. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. Several other disease datasets like ABIDE and PPMI may also be included for showing results on disease subjects. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Results need more discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper introduced a rotation invariance spherical CNN in spectral domain, and applied the proposed network on dMRI signals. Due to the nature of dMRI signal, the proposed method suits well. Theoretically this paper introduced the way to compute the convolution of S^2 using SO(3) manifold operator. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Overall, this is a good paper. The method proposed suits the nature of dMRI well. As normally, CNN concerns about the translational invariance, while dMRI signal requires rotational invariance. The theory is sound and indeed rotational invariance. The convolution of two L^2 signals and the usage of SO(3) are quite interesting. Though from computational view point, this will increase the cost by much. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main concern I have is the size of the dataset. As far as I know, HCP contains more than 1000 subjects. But in this paper, the author only selected 50. This makes me doubt if the running speed is in fact an issue, or the memory cost. Otherwise, I wish the author can explain the reason of using such a small subset. And I would recommend to include the detailed ID/ demographic of the group of subjects in use in the final version. I want to double check that if equation (1)-(8) is novel, as the author didn’t provide any reference to these equations. If so, the rational behind is somewhat missing. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The experiment section is poor and hard to reproduce. The detail of the proposed model is missing, like the number of layers, weight shape, bias, any skip-connection, activation function, BN, etc. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please refer to the weakness points. I want to highlight: Dataset and demographic of the subjects. Rational behind equation (1)-(8). Any similarities with traditional convolution in Euclidean space/ normal signal/ frequency domain. The experiment section is poor. Please add more detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a good paper regarding to the theory contribution as well as the problem to be solved. The main concern comes from experiment which only used a small subset of the HCP. The introduction of new definition of convolution is novel and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors present a spherical convolutional neural network (CNN) with rotation-invariant Fourier-domain convolutional layers for diffusion-MRI model parameter estimation, and evaluate it by estimating NODDI parameters. The reviewers agree that the work is based on sound theoretical derivations, and that the proposed network architecture could be useful and interesting for the diffusion-MRI community. However, they have some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the novelty of their method, which – in my opinion – is sufficient for publication in MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The method approaches an application problem that is well-established in the computational diffusion MRI community, namely, the efficient and reliable estimation of NODDI parameters from diffusion MRI. It proposes a novel spherical CNN that has been specifically designed to achieve rotational invariance. Even though the presented results suggest that the practical benefit of the proposed method compared to previous ones are somewhat marginal, I agree with the majority of the reviewers and the authors’ rebuttal that the proposed architecture has enough novel and interesting aspects to be presented at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a technique to estimate diffusion MRI parameters, relying on rotation-invariant Fourier-domain convolutional layers and a spherical convolutional neural network. It is evaluated with the NODDI method (by estimating the parameters for subjections from the HCP cohort). The reviews agree in their assessment, that the major weakness is the potential lack of novelty and the lack of comparison to state of the art methods. However, they also highlight the strong and sound theory presented as a strength. The rebuttal highlights 3 distinct areas where the authors see novelty. The authors also state that they will include more subjects and more comparisons into future work. While the method is of interest for the diffusion MRI community, the lack of these in the paper in its current form might make it of less interest for the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback Dear Area Chair, We would like to thank you and the reviewers for the invested time to review our paper and constructive comments. In this work, we propose a rotation invariant model with thorough theoretical basis, which has great potential to address problems in dMRI analysis such as microstructure estimation, tissue segmentation, tissue analysis in the presence of neurological diseases. Please, find below the responses to the most critical comments of the reviewers. R1&amp;2&amp;MR: The study relies heavily on the incremental (re-)design of a neural network architecture […] Authors need to justify the novelty and report proper ablation. […] some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. A: The first novelty of the proposed method is the adaptation of the input layer to deal with positive S^2 signals affected by Rician noise and acquired at randomly uniformly distributed points. Compared to Cohen et al. (2018) and Esteves et al. (2018), the non-linearity is applied in Fourier domain, avoiding the conversions from spectral to signal domain to apply non-linearity which, in this way, gives raise to aliasing. In Kondor et al. (2018), Fourier domain quadratic non-linearity corresponds to concatenation of SO(3) covariant vectors obtained via Clebsch-Gordan decomposition of tensor product of input covariant vectors, resulting in quadratic increase of the number of output channels. In our work, non-linearity is channel-wise, preserves Fourier domain SO(3) representations and is defined as in Eq. 11. As a consequence the number of required trainable parameters is reduced. This is the second novelty. The third novelty is the rotation invariant feature vectors. In the work of Kondor et al. (2018), rotation invariant feature vector corresponds to the concatenation of covariant vectors of degree 0. We observe that power spectrum associated to any degree l, as defined in Eq. 12, is rotation invariant as well. Thus, we create rotation invariant feature vector as a concatenation of power spectra corresponding to all degrees, consequently boosting model’s performance. R2&amp;3: The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. The main concern comes from experiment which only used a small subset of the HCP. A: We agree that using more subjects can be beneficial, and indeed in the future work we will include more data. However, we would like to stress that for each subject in our experiment there is approximately 250k white matter voxels, leading as to 2.5M testing voxels (for 10 test subjects). We believe this to be sufficient to obtain significant statistical results. R1&amp;2&amp;3: The reproducibility of the presented results is unclear. Please add more detail for reproducibility. The detail of the proposed model is missing […] A: The model is composed of: (1) two densoising layers of size 60x60, (2) three convolutional layers of bandwidths 6, 4 and 2 with convolutional kernels of sizes 2x8x28, 8x16x165, 16x32x35, respectively, followed by quadratic non-linearity, and (3) four fully connected layers of sizes 128x128, 128x64, 64x32, 32x3 , followed by ReLU, except the last one which is followed by sigmoid activation. We will provide these information and more details in camera ready version, if the work is accepted. In addition, in order to preserve proper anonymization, we did not provide code, but we are willing to share it together with the model’s weights. R2: Comparative analysis with SOTA is required. A: We believe that comparing methods (FCN and MEDN) are still SOTA when voxel-wise input is considered. In the future work we will extend our method to take into account neighbourhood information as in Ye et al. (2019, 2020), for a fair and meaningful comparison. For all these reasons, we believe our paper will be of high interest to the MICCAI community. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Sara Sedlar, Abib Alimi, Theodore Papadopoulo, Rachid Deriche, Samuel Deslauriers-Gauthier Abstract Diffusion Magnetic Resonance Imaging (dMRI) is a powerful non-invasive and in-vivo imaging modality for probing brain white matter structure. Convolutional neural networks (CNNs) have been shown to be a powerful tool for many computer vision problems where the signals are acquired on a regular grid and where translational invariance is important. However, as we are considering dMRI signals that are acquired on a sphere, rotational invariance, rather than translational, is desired. In this work, we propose a spherical CNN model with fully spectral domain convolutional and non-linear layers. It provides rotational invariance and is adapted to the real nature of dMRI signals and uniform random distribution of sampling points. The proposed model is positively evaluated on the problem of estimation of neurite orientation dispersion and density imaging (NODDI) parameters on the data from Human Connectome Project (HCP). Link to paper https://doi.org/10.1007/978-3-030-87199-4_50 Link to the code repository https://gitlab.inria.fr/ssedlar/fourier_s2cnn Link to the dataset(s) https://db.humanconnectome.org Reviews Review #1 Please describe the contribution of the paper This study proposes a revised method to assess clinical parameters in dMRI data using a CNN architecture that relies on aspects of the geometry of the image aquisition. This method exploits mathematical properties of rotational symmetry groups S^2 and SO(3) in this domain which are integrated in a neural network. The paper discusses in great detail which motivations have lead to certain choices for layers and network architecture. The studies validate their approach with 50 subjects from the Human Connectome Project and compare accuracy in prediction for a NODDI task to methods in the field published about 5 years ago. The authors highlight that strengths of the proposed method with respect to computational effort required and quality of estimation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method is based on a rigorous mathematical understanding of symmetry groups which is used to process dMRI data. It is clear that the authors have invested a respectable amount of time to derive a mathematical basis for their network design choices. The paper discusses these in section 2 on theory and section 3 on the methods used. The article relies on prior work on equivariant neural networks and similar techniques to add information about these known symmetries in the training of the neural network. The clinical relevance of this work given the applications of dMRI in oncology and acute brain ischemia is undisputed. The application of this approach is restricted to regression, but lends itself for classification as well. Sections 4 contains hints to a reduced computational effort required by this method - which in turn can be beneficial in practice. In this vein, this work exposes an interesting line of architectural choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The study relies heavily on the incremental (re-)design of a neural network architecture to perform regression of dMRI data. The methods section relies predominantly on methods (two references, 21 and 23, out of 3 for this section) that are referenced as preprints only. It would have been important to run the same neural network architecture on (a) synthetic data that clearly exposes the mathematical propoerties the article aims for and (b) on a synthetic dataset that does NOT have these properties. Moreover, the denoising layers imposed in the first method section appear arbitrary and questionable as I would expect that they converge to a unity matrix. Denoising should perhaps be conducted as a preprocessing step in contrast to the design proposed. Finally, the article misses to highlight the advances made. From Table 1 in section 5, I learn that the proposed approach delivers comparable accuracy as methods published about 5 years ago. Figure 2 supports this notion. Table 2 shows clear improvements in accuracy for selected values of diffusion tensor fit directions. However without knowledge of other diffusion tensor fit direction domains or the clinical relevance of the 2 chosen domains, these numbers stand isolated and do not warrant a valid impression of novelty. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the presented results is unclear. First of all, the authors use preprint-based methods exclusively where it is unclear how these used methods perform under the observation that neural network predictions can expose a considerable variance, see [1] for example. As no code or data was provided along the paper, reproducing the results is impossible. [1] https://proceedings.mlsys.org/paper/2021/hash/cfecdb276f634854f3ef915e2e980c31-Abstract.html Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html in general, I feel that sections 1 and 2 are too long and could be cut substantially. Especially the theory section stands isolated and dives into too much detail. I observed that only equation 8 was used in subsequent text. So I wonder why the theory was discussed at this extent. page 2: the choice of words “important noise” is unclear and misleading, judging from the math, this is additive noise page 4, section 3.1: it remains unclear why the denoising has to be conducted inside the neural network, a comparison to a denoising during preprocessing would be interesting page 4, section 3.1: the design of the denoising layers let’s me wonder what the actual values of the weights are after training -&gt; I think with this choice, the weights are likely to be 1 always page 5, figure 1: it helps to detail out the shape and data type of the input and output of the network (especially with respect to the comparison to the excellent mathematical description) page 5/6, section 3.3: the text says that this activation is performed on RH coefficients only, I wonder how the SH coefficients are treated page 5/6, section 3.3: the activations in section 3.3 appear rather involved, a comment on how backprop is performed through them would be great page 6: section 4 -&gt; the language needs to be improved. page 7: “All models are trained over 200 epochs.” it might be helpful to plot the loss over number of epochs -&gt; if this study’s approach works well, this design should converge much faster than the others page 7: put more emphasis on the runtime invested for training or inference, in practice it might be super vital to have fast turnaround page 7: table 1 shows that all results overlap within 2 standard deviations to FCN and MEDN -&gt; this doesn’t warrant the line “that our proposed approach provides more accurate estimates of NODDI parameters.” (please rephrase) page 7: “Furthermore, to investigate rotation invariance of DL approaches, we have trained models on data whose diffusion tensor fit direction is in range [0, π 6 ) (or ( 5π6 , π)) and the quantitative results of the experiments are provided in Table 2 clearly indicating rotation invariance of our model.” -&gt; it would be essential to note if/how these ranges for the diffusion tensor fit direction are important for clinical practice Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given the quality and performance analysis in section 4 and 5, this study does indicate an interesting line of work which I encourage the authors to pursue. At this stage and given the display of results, I recommend studying more systematically the effects of the NN design using synthetic data and (if possible) more experimental data. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a spherical CNN with rotation equivariant Fourier domain convolutional and non-linear layers, where trainable kernels and biases are represented in the Fourier domain. They have performed the estimation of Neurite orientation dispersion and density imaging (NODDI) parameters from dMRI signals. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is reasonably written and clear enough to understand. The methodology is explained and reproducible. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty can be questionable. Using the pre-existing Spherical CNN’s. Authors need to justify the novelty and report proper ablation. The importance of the performance parameters without proper justification and inference is limited. The authors need to discuss the qualitative results properly. Comparative analysis with SOTA is required. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. Several other disease datasets like ABIDE and PPMI may also be included for showing results on disease subjects. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Results need more discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper introduced a rotation invariance spherical CNN in spectral domain, and applied the proposed network on dMRI signals. Due to the nature of dMRI signal, the proposed method suits well. Theoretically this paper introduced the way to compute the convolution of S^2 using SO(3) manifold operator. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Overall, this is a good paper. The method proposed suits the nature of dMRI well. As normally, CNN concerns about the translational invariance, while dMRI signal requires rotational invariance. The theory is sound and indeed rotational invariance. The convolution of two L^2 signals and the usage of SO(3) are quite interesting. Though from computational view point, this will increase the cost by much. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main concern I have is the size of the dataset. As far as I know, HCP contains more than 1000 subjects. But in this paper, the author only selected 50. This makes me doubt if the running speed is in fact an issue, or the memory cost. Otherwise, I wish the author can explain the reason of using such a small subset. And I would recommend to include the detailed ID/ demographic of the group of subjects in use in the final version. I want to double check that if equation (1)-(8) is novel, as the author didn’t provide any reference to these equations. If so, the rational behind is somewhat missing. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The experiment section is poor and hard to reproduce. The detail of the proposed model is missing, like the number of layers, weight shape, bias, any skip-connection, activation function, BN, etc. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please refer to the weakness points. I want to highlight: Dataset and demographic of the subjects. Rational behind equation (1)-(8). Any similarities with traditional convolution in Euclidean space/ normal signal/ frequency domain. The experiment section is poor. Please add more detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a good paper regarding to the theory contribution as well as the problem to be solved. The main concern comes from experiment which only used a small subset of the HCP. The introduction of new definition of convolution is novel and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors present a spherical convolutional neural network (CNN) with rotation-invariant Fourier-domain convolutional layers for diffusion-MRI model parameter estimation, and evaluate it by estimating NODDI parameters. The reviewers agree that the work is based on sound theoretical derivations, and that the proposed network architecture could be useful and interesting for the diffusion-MRI community. However, they have some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the novelty of their method, which – in my opinion – is sufficient for publication in MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The method approaches an application problem that is well-established in the computational diffusion MRI community, namely, the efficient and reliable estimation of NODDI parameters from diffusion MRI. It proposes a novel spherical CNN that has been specifically designed to achieve rotational invariance. Even though the presented results suggest that the practical benefit of the proposed method compared to previous ones are somewhat marginal, I agree with the majority of the reviewers and the authors’ rebuttal that the proposed architecture has enough novel and interesting aspects to be presented at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a technique to estimate diffusion MRI parameters, relying on rotation-invariant Fourier-domain convolutional layers and a spherical convolutional neural network. It is evaluated with the NODDI method (by estimating the parameters for subjections from the HCP cohort). The reviews agree in their assessment, that the major weakness is the potential lack of novelty and the lack of comparison to state of the art methods. However, they also highlight the strong and sound theory presented as a strength. The rebuttal highlights 3 distinct areas where the authors see novelty. The authors also state that they will include more subjects and more comparisons into future work. While the method is of interest for the diffusion MRI community, the lack of these in the paper in its current form might make it of less interest for the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback Dear Area Chair, We would like to thank you and the reviewers for the invested time to review our paper and constructive comments. In this work, we propose a rotation invariant model with thorough theoretical basis, which has great potential to address problems in dMRI analysis such as microstructure estimation, tissue segmentation, tissue analysis in the presence of neurological diseases. Please, find below the responses to the most critical comments of the reviewers. R1&amp;2&amp;MR: The study relies heavily on the incremental (re-)design of a neural network architecture […] Authors need to justify the novelty and report proper ablation. […] some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. A: The first novelty of the proposed method is the adaptation of the input layer to deal with positive S^2 signals affected by Rician noise and acquired at randomly uniformly distributed points. Compared to Cohen et al. (2018) and Esteves et al. (2018), the non-linearity is applied in Fourier domain, avoiding the conversions from spectral to signal domain to apply non-linearity which, in this way, gives raise to aliasing. In Kondor et al. (2018), Fourier domain quadratic non-linearity corresponds to concatenation of SO(3) covariant vectors obtained via Clebsch-Gordan decomposition of tensor product of input covariant vectors, resulting in quadratic increase of the number of output channels. In our work, non-linearity is channel-wise, preserves Fourier domain SO(3) representations and is defined as in Eq. 11. As a consequence the number of required trainable parameters is reduced. This is the second novelty. The third novelty is the rotation invariant feature vectors. In the work of Kondor et al. (2018), rotation invariant feature vector corresponds to the concatenation of covariant vectors of degree 0. We observe that power spectrum associated to any degree l, as defined in Eq. 12, is rotation invariant as well. Thus, we create rotation invariant feature vector as a concatenation of power spectra corresponding to all degrees, consequently boosting model’s performance. R2&amp;3: The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. The main concern comes from experiment which only used a small subset of the HCP. A: We agree that using more subjects can be beneficial, and indeed in the future work we will include more data. However, we would like to stress that for each subject in our experiment there is approximately 250k white matter voxels, leading as to 2.5M testing voxels (for 10 test subjects). We believe this to be sufficient to obtain significant statistical results. R1&amp;2&amp;3: The reproducibility of the presented results is unclear. Please add more detail for reproducibility. The detail of the proposed model is missing […] A: The model is composed of: (1) two densoising layers of size 60x60, (2) three convolutional layers of bandwidths 6, 4 and 2 with convolutional kernels of sizes 2x8x28, 8x16x165, 16x32x35, respectively, followed by quadratic non-linearity, and (3) four fully connected layers of sizes 128x128, 128x64, 64x32, 32x3 , followed by ReLU, except the last one which is followed by sigmoid activation. We will provide these information and more details in camera ready version, if the work is accepted. In addition, in order to preserve proper anonymization, we did not provide code, but we are willing to share it together with the model’s weights. R2: Comparative analysis with SOTA is required. A: We believe that comparing methods (FCN and MEDN) are still SOTA when voxel-wise input is considered. In the future work we will extend our method to take into account neighbourhood information as in Ye et al. (2019, 2020), for a fair and meaningful comparison. For all these reasons, we believe our paper will be of high interest to the MICCAI community. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0349/12/31/Paper2377" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0349/12/31/Paper2377" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0349-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A spherical convolutional neural network for white matter structure imaging via diffusion MRI" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0349/12/31/Paper2377"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0349/12/31/Paper2377","headline":"A spherical convolutional neural network for white matter structure imaging via diffusion MRI","dateModified":"0350-01-02T00:00:00-05:17","datePublished":"0349-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Sara Sedlar, Abib Alimi, Theodore Papadopoulo, Rachid Deriche, Samuel Deslauriers-Gauthier Abstract Diffusion Magnetic Resonance Imaging (dMRI) is a powerful non-invasive and in-vivo imaging modality for probing brain white matter structure. Convolutional neural networks (CNNs) have been shown to be a powerful tool for many computer vision problems where the signals are acquired on a regular grid and where translational invariance is important. However, as we are considering dMRI signals that are acquired on a sphere, rotational invariance, rather than translational, is desired. In this work, we propose a spherical CNN model with fully spectral domain convolutional and non-linear layers. It provides rotational invariance and is adapted to the real nature of dMRI signals and uniform random distribution of sampling points. The proposed model is positively evaluated on the problem of estimation of neurite orientation dispersion and density imaging (NODDI) parameters on the data from Human Connectome Project (HCP). Link to paper https://doi.org/10.1007/978-3-030-87199-4_50 Link to the code repository https://gitlab.inria.fr/ssedlar/fourier_s2cnn Link to the dataset(s) https://db.humanconnectome.org Reviews Review #1 Please describe the contribution of the paper This study proposes a revised method to assess clinical parameters in dMRI data using a CNN architecture that relies on aspects of the geometry of the image aquisition. This method exploits mathematical properties of rotational symmetry groups S^2 and SO(3) in this domain which are integrated in a neural network. The paper discusses in great detail which motivations have lead to certain choices for layers and network architecture. The studies validate their approach with 50 subjects from the Human Connectome Project and compare accuracy in prediction for a NODDI task to methods in the field published about 5 years ago. The authors highlight that strengths of the proposed method with respect to computational effort required and quality of estimation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method is based on a rigorous mathematical understanding of symmetry groups which is used to process dMRI data. It is clear that the authors have invested a respectable amount of time to derive a mathematical basis for their network design choices. The paper discusses these in section 2 on theory and section 3 on the methods used. The article relies on prior work on equivariant neural networks and similar techniques to add information about these known symmetries in the training of the neural network. The clinical relevance of this work given the applications of dMRI in oncology and acute brain ischemia is undisputed. The application of this approach is restricted to regression, but lends itself for classification as well. Sections 4 contains hints to a reduced computational effort required by this method - which in turn can be beneficial in practice. In this vein, this work exposes an interesting line of architectural choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The study relies heavily on the incremental (re-)design of a neural network architecture to perform regression of dMRI data. The methods section relies predominantly on methods (two references, 21 and 23, out of 3 for this section) that are referenced as preprints only. It would have been important to run the same neural network architecture on (a) synthetic data that clearly exposes the mathematical propoerties the article aims for and (b) on a synthetic dataset that does NOT have these properties. Moreover, the denoising layers imposed in the first method section appear arbitrary and questionable as I would expect that they converge to a unity matrix. Denoising should perhaps be conducted as a preprocessing step in contrast to the design proposed. Finally, the article misses to highlight the advances made. From Table 1 in section 5, I learn that the proposed approach delivers comparable accuracy as methods published about 5 years ago. Figure 2 supports this notion. Table 2 shows clear improvements in accuracy for selected values of diffusion tensor fit directions. However without knowledge of other diffusion tensor fit direction domains or the clinical relevance of the 2 chosen domains, these numbers stand isolated and do not warrant a valid impression of novelty. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the presented results is unclear. First of all, the authors use preprint-based methods exclusively where it is unclear how these used methods perform under the observation that neural network predictions can expose a considerable variance, see [1] for example. As no code or data was provided along the paper, reproducing the results is impossible. [1] https://proceedings.mlsys.org/paper/2021/hash/cfecdb276f634854f3ef915e2e980c31-Abstract.html Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html in general, I feel that sections 1 and 2 are too long and could be cut substantially. Especially the theory section stands isolated and dives into too much detail. I observed that only equation 8 was used in subsequent text. So I wonder why the theory was discussed at this extent. page 2: the choice of words “important noise” is unclear and misleading, judging from the math, this is additive noise page 4, section 3.1: it remains unclear why the denoising has to be conducted inside the neural network, a comparison to a denoising during preprocessing would be interesting page 4, section 3.1: the design of the denoising layers let’s me wonder what the actual values of the weights are after training -&gt; I think with this choice, the weights are likely to be 1 always page 5, figure 1: it helps to detail out the shape and data type of the input and output of the network (especially with respect to the comparison to the excellent mathematical description) page 5/6, section 3.3: the text says that this activation is performed on RH coefficients only, I wonder how the SH coefficients are treated page 5/6, section 3.3: the activations in section 3.3 appear rather involved, a comment on how backprop is performed through them would be great page 6: section 4 -&gt; the language needs to be improved. page 7: “All models are trained over 200 epochs.” it might be helpful to plot the loss over number of epochs -&gt; if this study’s approach works well, this design should converge much faster than the others page 7: put more emphasis on the runtime invested for training or inference, in practice it might be super vital to have fast turnaround page 7: table 1 shows that all results overlap within 2 standard deviations to FCN and MEDN -&gt; this doesn’t warrant the line “that our proposed approach provides more accurate estimates of NODDI parameters.” (please rephrase) page 7: “Furthermore, to investigate rotation invariance of DL approaches, we have trained models on data whose diffusion tensor fit direction is in range [0, π 6 ) (or ( 5π6 , π)) and the quantitative results of the experiments are provided in Table 2 clearly indicating rotation invariance of our model.” -&gt; it would be essential to note if/how these ranges for the diffusion tensor fit direction are important for clinical practice Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given the quality and performance analysis in section 4 and 5, this study does indicate an interesting line of work which I encourage the authors to pursue. At this stage and given the display of results, I recommend studying more systematically the effects of the NN design using synthetic data and (if possible) more experimental data. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a spherical CNN with rotation equivariant Fourier domain convolutional and non-linear layers, where trainable kernels and biases are represented in the Fourier domain. They have performed the estimation of Neurite orientation dispersion and density imaging (NODDI) parameters from dMRI signals. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is reasonably written and clear enough to understand. The methodology is explained and reproducible. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty can be questionable. Using the pre-existing Spherical CNN’s. Authors need to justify the novelty and report proper ablation. The importance of the performance parameters without proper justification and inference is limited. The authors need to discuss the qualitative results properly. Comparative analysis with SOTA is required. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. Several other disease datasets like ABIDE and PPMI may also be included for showing results on disease subjects. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Results need more discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper This paper introduced a rotation invariance spherical CNN in spectral domain, and applied the proposed network on dMRI signals. Due to the nature of dMRI signal, the proposed method suits well. Theoretically this paper introduced the way to compute the convolution of S^2 using SO(3) manifold operator. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Overall, this is a good paper. The method proposed suits the nature of dMRI well. As normally, CNN concerns about the translational invariance, while dMRI signal requires rotational invariance. The theory is sound and indeed rotational invariance. The convolution of two L^2 signals and the usage of SO(3) are quite interesting. Though from computational view point, this will increase the cost by much. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main concern I have is the size of the dataset. As far as I know, HCP contains more than 1000 subjects. But in this paper, the author only selected 50. This makes me doubt if the running speed is in fact an issue, or the memory cost. Otherwise, I wish the author can explain the reason of using such a small subset. And I would recommend to include the detailed ID/ demographic of the group of subjects in use in the final version. I want to double check that if equation (1)-(8) is novel, as the author didn’t provide any reference to these equations. If so, the rational behind is somewhat missing. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The experiment section is poor and hard to reproduce. The detail of the proposed model is missing, like the number of layers, weight shape, bias, any skip-connection, activation function, BN, etc. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please refer to the weakness points. I want to highlight: Dataset and demographic of the subjects. Rational behind equation (1)-(8). Any similarities with traditional convolution in Euclidean space/ normal signal/ frequency domain. The experiment section is poor. Please add more detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a good paper regarding to the theory contribution as well as the problem to be solved. The main concern comes from experiment which only used a small subset of the HCP. The introduction of new definition of convolution is novel and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors present a spherical convolutional neural network (CNN) with rotation-invariant Fourier-domain convolutional layers for diffusion-MRI model parameter estimation, and evaluate it by estimating NODDI parameters. The reviewers agree that the work is based on sound theoretical derivations, and that the proposed network architecture could be useful and interesting for the diffusion-MRI community. However, they have some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the novelty of their method, which – in my opinion – is sufficient for publication in MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The method approaches an application problem that is well-established in the computational diffusion MRI community, namely, the efficient and reliable estimation of NODDI parameters from diffusion MRI. It proposes a novel spherical CNN that has been specifically designed to achieve rotational invariance. Even though the presented results suggest that the practical benefit of the proposed method compared to previous ones are somewhat marginal, I agree with the majority of the reviewers and the authors’ rebuttal that the proposed architecture has enough novel and interesting aspects to be presented at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors present a technique to estimate diffusion MRI parameters, relying on rotation-invariant Fourier-domain convolutional layers and a spherical convolutional neural network. It is evaluated with the NODDI method (by estimating the parameters for subjections from the HCP cohort). The reviews agree in their assessment, that the major weakness is the potential lack of novelty and the lack of comparison to state of the art methods. However, they also highlight the strong and sound theory presented as a strength. The rebuttal highlights 3 distinct areas where the authors see novelty. The authors also state that they will include more subjects and more comparisons into future work. While the method is of interest for the diffusion MRI community, the lack of these in the paper in its current form might make it of less interest for the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback Dear Area Chair, We would like to thank you and the reviewers for the invested time to review our paper and constructive comments. In this work, we propose a rotation invariant model with thorough theoretical basis, which has great potential to address problems in dMRI analysis such as microstructure estimation, tissue segmentation, tissue analysis in the presence of neurological diseases. Please, find below the responses to the most critical comments of the reviewers. R1&amp;2&amp;MR: The study relies heavily on the incremental (re-)design of a neural network architecture […] Authors need to justify the novelty and report proper ablation. […] some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method. A: The first novelty of the proposed method is the adaptation of the input layer to deal with positive S^2 signals affected by Rician noise and acquired at randomly uniformly distributed points. Compared to Cohen et al. (2018) and Esteves et al. (2018), the non-linearity is applied in Fourier domain, avoiding the conversions from spectral to signal domain to apply non-linearity which, in this way, gives raise to aliasing. In Kondor et al. (2018), Fourier domain quadratic non-linearity corresponds to concatenation of SO(3) covariant vectors obtained via Clebsch-Gordan decomposition of tensor product of input covariant vectors, resulting in quadratic increase of the number of output channels. In our work, non-linearity is channel-wise, preserves Fourier domain SO(3) representations and is defined as in Eq. 11. As a consequence the number of required trainable parameters is reduced. This is the second novelty. The third novelty is the rotation invariant feature vectors. In the work of Kondor et al. (2018), rotation invariant feature vector corresponds to the concatenation of covariant vectors of degree 0. We observe that power spectrum associated to any degree l, as defined in Eq. 12, is rotation invariant as well. Thus, we create rotation invariant feature vector as a concatenation of power spectra corresponding to all degrees, consequently boosting model’s performance. R2&amp;3: The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. The main concern comes from experiment which only used a small subset of the HCP. A: We agree that using more subjects can be beneficial, and indeed in the future work we will include more data. However, we would like to stress that for each subject in our experiment there is approximately 250k white matter voxels, leading as to 2.5M testing voxels (for 10 test subjects). We believe this to be sufficient to obtain significant statistical results. R1&amp;2&amp;3: The reproducibility of the presented results is unclear. Please add more detail for reproducibility. The detail of the proposed model is missing […] A: The model is composed of: (1) two densoising layers of size 60x60, (2) three convolutional layers of bandwidths 6, 4 and 2 with convolutional kernels of sizes 2x8x28, 8x16x165, 16x32x35, respectively, followed by quadratic non-linearity, and (3) four fully connected layers of sizes 128x128, 128x64, 64x32, 32x3 , followed by ReLU, except the last one which is followed by sigmoid activation. We will provide these information and more details in camera ready version, if the work is accepted. In addition, in order to preserve proper anonymization, we did not provide code, but we are willing to share it together with the model’s weights. R2: Comparative analysis with SOTA is required. A: We believe that comparing methods (FCN and MEDN) are still SOTA when voxel-wise input is considered. In the future work we will extend our method to take into account neighbourhood information as in Ye et al. (2019, 2020), for a fair and meaningful comparison. For all these reasons, we believe our paper will be of high interest to the MICCAI community. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Sedlar, Sara,Alimi, Abib,Papadopoulo, Theodore,Deriche, Rachid,Deslauriers-Gauthier, Samuel" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>A spherical convolutional neural network for white matter structure imaging via diffusion MRI</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - DWI and Tractography"
+        class="post-category">
+        Clinical applications - Neuroimaging - DWI and Tractography
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Sedlar, Sara"
+        class="post-tags">
+        Sedlar, Sara
+      </a> |  
+      
+      <a href="kittywong/tags#Alimi, Abib"
+        class="post-tags">
+        Alimi, Abib
+      </a> |  
+      
+      <a href="kittywong/tags#Papadopoulo, Theodore"
+        class="post-tags">
+        Papadopoulo, Theodore
+      </a> |  
+      
+      <a href="kittywong/tags#Deriche, Rachid"
+        class="post-tags">
+        Deriche, Rachid
+      </a> |  
+      
+      <a href="kittywong/tags#Deslauriers-Gauthier, Samuel"
+        class="post-tags">
+        Deslauriers-Gauthier, Samuel
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Sara Sedlar, Abib Alimi, Theodore Papadopoulo, Rachid Deriche, Samuel Deslauriers-Gauthier
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Diffusion Magnetic Resonance Imaging (dMRI) is a powerful non-invasive and in-vivo imaging modality for probing brain white matter structure. Convolutional neural networks (CNNs) have been shown to be a powerful tool for many computer vision problems where the signals are acquired on a regular grid and where translational invariance is important. However, as we are considering dMRI signals that are acquired on a sphere,
+rotational invariance, rather than translational, is desired. In this work, we propose a spherical CNN model with fully spectral domain convolutional and non-linear layers. It provides rotational invariance and is adapted to the real nature of dMRI signals and uniform random distribution of sampling points. The proposed model is positively evaluated on the problem of estimation of neurite orientation dispersion and density imaging (NODDI)
+parameters on the data from Human Connectome Project (HCP).
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_50">https://doi.org/10.1007/978-3-030-87199-4_50</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://gitlab.inria.fr/ssedlar/fourier_s2cnn
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://db.humanconnectome.org
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This study proposes a revised method to assess clinical parameters in dMRI data using a CNN architecture that relies on aspects of the geometry of the image aquisition. This method exploits mathematical properties of rotational symmetry groups S^2 and SO(3) in this domain which are integrated in a neural network. The paper discusses in great detail which motivations have lead to certain choices for layers and network architecture. The studies validate their approach with 50 subjects from the Human Connectome Project and compare accuracy in prediction for a NODDI task to methods in the field published about 5 years ago. The authors highlight that strengths of the proposed method with respect to computational effort required and quality of estimation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The proposed method is based on a rigorous mathematical understanding of symmetry groups which is used to process dMRI data. It is clear that the authors have invested a respectable amount of time to derive a mathematical basis for their network design choices. The paper discusses these in section 2 on theory and section 3 on the methods used. The article relies on prior work on equivariant neural networks and similar techniques to add information about these known symmetries in the training of the neural network. The clinical relevance of this work given the applications of dMRI in oncology and acute brain ischemia is undisputed. The application of this approach is restricted to regression, but lends itself for classification as well. Sections 4 contains hints to a reduced computational effort required by this method - which in turn can be beneficial in practice. In this vein, this work exposes an interesting line of architectural choices.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The study relies heavily on the incremental (re-)design of a neural network architecture to perform regression of dMRI data. The methods section relies predominantly on methods (two references, 21 and 23, out of 3 for this section) that are referenced as preprints only. It would have been important to run the same neural network architecture on (a) synthetic data that clearly exposes the mathematical propoerties the article aims for and (b) on a synthetic dataset that does NOT have these properties. Moreover, the denoising layers imposed in the first method section appear arbitrary and questionable as I would expect that they converge to a unity matrix. Denoising should perhaps be conducted as a preprocessing step in contrast to the design proposed. Finally, the article misses to highlight the advances made. From Table 1 in section 5, I learn that the proposed approach delivers comparable accuracy as methods published about 5 years ago. Figure 2 supports this notion. Table 2 shows clear improvements in accuracy for selected values of diffusion tensor fit directions. However without knowledge of other diffusion tensor fit direction domains or the clinical relevance of the 2 chosen domains, these numbers stand isolated and do not warrant a valid impression of novelty.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility of the presented results is unclear. First of all, the authors use preprint-based methods exclusively where it is unclear how these used methods perform under the observation that neural network predictions can expose a considerable variance, see [1] for example. As no code or data was provided along the paper, reproducing the results is impossible.</p>
+
+      <p>[1] https://proceedings.mlsys.org/paper/2021/hash/cfecdb276f634854f3ef915e2e980c31-Abstract.html</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>in general, I feel that sections 1 and 2 are too long and could be cut substantially. Especially the theory section stands isolated and dives into too much detail. I observed that only equation 8 was used in subsequent text. So I wonder why the theory was discussed at this extent.</li>
+        <li>page 2: the choice of words “important noise” is unclear and misleading, judging from the math, this is additive noise</li>
+        <li>page 4, section 3.1: it remains unclear why the denoising has to be conducted inside the neural network, a comparison to a denoising during preprocessing would be interesting</li>
+        <li>page 4, section 3.1: the design of the denoising layers let’s me wonder what the actual values of the weights are after training -&gt; I think with this choice, the weights are likely to be 1 always</li>
+        <li>page 5, figure 1: it helps to detail out the shape and data type of the input and output of the network (especially with respect to the comparison to the excellent mathematical description)</li>
+        <li>page 5/6, section 3.3: the text says that this activation is performed on RH coefficients only, I wonder how the SH coefficients are treated</li>
+        <li>page 5/6, section 3.3: the activations in section 3.3 appear rather involved, a comment on how backprop is performed through them would be great</li>
+        <li>page 6: section 4 -&gt; the language needs to be improved.</li>
+        <li>page 7: “All models are trained over 200 epochs.” it might be helpful to plot the loss over number of epochs -&gt; if this study’s approach works well, this design should converge much faster than the others</li>
+        <li>page 7: put more emphasis on the runtime invested for training or inference, in practice it might be super vital to have fast turnaround</li>
+        <li>page 7: table 1 shows that all results overlap within 2 standard deviations to FCN and MEDN -&gt; this doesn’t warrant the line “that our proposed approach provides more accurate estimates of NODDI parameters.” (please rephrase)</li>
+        <li>page 7: “Furthermore, to investigate rotation invariance of DL approaches, we have trained models on data whose diffusion tensor fit direction is in range [0, π 6 ) (or ( 5π6 , π)) and the quantitative results of the experiments are provided in Table 2 clearly indicating rotation invariance of our model.” -&gt; it would be essential to note if/how these ranges for the diffusion tensor fit direction are important for clinical practice</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Given the quality and performance analysis in section 4 and 5, this study does indicate an interesting line of work which I encourage the authors to pursue. At this stage and given the display of results, I recommend studying more systematically the effects of the NN design using synthetic data and (if possible) more experimental data.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the authors present a spherical CNN with rotation equivariant Fourier domain convolutional and non-linear layers, where trainable kernels and biases are represented in the Fourier domain. They have performed the estimation of Neurite orientation dispersion and density imaging (NODDI) parameters from dMRI signals.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper is reasonably written and clear enough to understand.
+The methodology is explained and reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The novelty can be questionable. Using the pre-existing Spherical CNN’s.
+Authors need to justify the novelty and report proper ablation.
+The importance of the performance parameters without proper justification and inference is limited.
+The authors need to discuss the qualitative results properly.
+Comparative analysis with SOTA is required.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The author can consider more subjects from the HCP website for showing generalization of the model across the subjects.</p>
+
+      <p>Several other disease datasets like ABIDE and PPMI may also be included for showing results on disease subjects.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Results need more discussion.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper introduced a rotation invariance spherical CNN in spectral domain, and applied the proposed network on dMRI signals. Due to the nature of dMRI signal, the proposed method suits well. Theoretically this paper introduced the way to compute the convolution of S^2 using SO(3) manifold operator.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Overall, this is a good paper.</p>
+      <ol>
+        <li>The method proposed suits the nature of dMRI well. As normally, CNN concerns about the translational invariance, while dMRI signal requires rotational invariance.</li>
+        <li>The theory is sound and indeed rotational invariance. The convolution of two L^2 signals and the usage of SO(3) are quite interesting. Though from computational view point, this will increase the cost by much.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The main concern I have is the size of the dataset. As far as I know, HCP contains more than 1000 subjects. But in this paper, the author only selected 50. This makes me doubt if the running speed is in fact an issue, or the memory cost. Otherwise, I wish the author can explain the reason of using such a small subset. And I would recommend to include the detailed ID/ demographic of the group of subjects in use in the final version.</li>
+        <li>I want to double check that if equation (1)-(8) is novel, as the author didn’t provide any reference to these equations. If so, the rational behind is somewhat missing.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The experiment section is poor and hard to reproduce. 
+The detail of the proposed model is missing, like the number of layers, weight shape, bias, any skip-connection, activation function, BN, etc.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Please refer to the weakness points. 
+I want to highlight:</p>
+      <ol>
+        <li>Dataset and demographic of the subjects.</li>
+        <li>Rational behind equation (1)-(8). Any similarities with traditional convolution in Euclidean space/ normal signal/ frequency domain.</li>
+        <li>The experiment section is poor. Please add more detail for reproducibility.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This is a good paper regarding to the theory contribution as well as the problem to be solved. The main concern comes from experiment which only used a small subset of the HCP. 
+The introduction of new definition of convolution is novel and sound.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The authors present a spherical convolutional neural network (CNN) with rotation-invariant Fourier-domain convolutional layers for diffusion-MRI model parameter estimation, and evaluate it by estimating NODDI parameters. The reviewers agree that the work is based on sound theoretical derivations, and that the proposed network architecture could be useful and interesting for the diffusion-MRI community. However, they have some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have explained the novelty of their method, which – in my opinion – is sufficient for publication in MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The method approaches an application problem that is well-established in the computational diffusion MRI community, namely, the efficient and reliable estimation of NODDI parameters from diffusion MRI. It proposes a novel spherical CNN that has been specifically designed to achieve rotational invariance. Even though the presented results suggest that the practical benefit of the proposed method compared to previous ones are somewhat marginal, I agree with the majority of the reviewers and the authors’ rebuttal that the proposed architecture has enough novel and interesting aspects to be presented at MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors present a technique to estimate diffusion MRI parameters, relying on rotation-invariant Fourier-domain convolutional layers and a spherical convolutional neural network. It is evaluated with the NODDI method (by estimating the parameters for subjections from the HCP cohort). The reviews agree in their assessment, that the major weakness is the potential lack of novelty and the lack of comparison to state of the art methods. However, they also highlight the strong and sound theory presented as a strength.
+The rebuttal highlights 3 distinct areas where the authors see novelty. The authors also state that they will include more subjects and more comparisons into future work. While the method is of interest for the diffusion MRI community, the lack of these in the paper in its current form might make it of less interest for the MICCAI community.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>11</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Dear Area Chair,</p>
+
+  <p>We would like to thank you and the reviewers for the invested time to review our paper and constructive comments. In this work, we propose a rotation invariant model with thorough theoretical basis, which has great potential to address problems in dMRI analysis such as microstructure estimation, tissue segmentation, tissue analysis in the presence of neurological diseases. Please, find below the responses to the most critical comments of the reviewers.</p>
+
+  <p>R1&amp;2&amp;MR: The study relies heavily on the incremental (re-)design of a neural network architecture […] Authors need to justify the novelty and report proper ablation. […] some concerns that need to be clarified, namely the rigor of the prior art on which the proposed approach is based, and the extent of innovation in the new method.</p>
+
+  <p>A: The first novelty of the proposed method is the adaptation of the input layer to deal with positive S^2 signals affected by Rician noise and acquired at randomly uniformly distributed points. Compared to Cohen et al. (2018) and Esteves et al. (2018), the non-linearity is applied in Fourier domain, avoiding the conversions from spectral to signal domain to apply non-linearity which, in this way, gives raise to aliasing. In Kondor et al. (2018), Fourier domain quadratic non-linearity corresponds to concatenation of SO(3) covariant vectors obtained via Clebsch-Gordan decomposition of tensor product of input covariant vectors, resulting in quadratic increase of the number of output channels. In our work, non-linearity is channel-wise, preserves Fourier domain SO(3) representations and is defined as in Eq. 11. As a consequence the number of required trainable parameters is reduced. This is the second novelty. The third novelty is the rotation invariant feature vectors. In the work of Kondor et al. (2018), rotation invariant feature vector corresponds to the concatenation of covariant vectors of degree 0. We observe that power spectrum associated to any degree l, as defined in Eq. 12, is rotation invariant as well. Thus, we create rotation invariant feature vector as a concatenation of power spectra corresponding to all degrees, consequently boosting model’s performance.</p>
+
+  <p>R2&amp;3: The author can consider more subjects from the HCP website for showing generalization of the model across the subjects. The main concern comes from experiment which only used a small subset of the HCP.</p>
+
+  <p>A: We agree that using more subjects can be beneficial, and indeed in the future work we will include more data. However, we would like to stress that for each subject in our experiment there is approximately 250k white matter voxels, leading as to 2.5M testing voxels (for 10 test subjects). We believe this to be sufficient to obtain significant statistical results.</p>
+
+  <p>R1&amp;2&amp;3: The reproducibility of the presented results is unclear. Please add more detail for reproducibility. The detail of the proposed model is missing […]</p>
+
+  <p>A: The model is composed of: (1) two densoising layers of size 60x60, (2) three convolutional layers of bandwidths 6, 4 and 2 with convolutional kernels of sizes 2x8x28, 8x16x165, 16x32x35, respectively, followed by quadratic non-linearity, and (3) four fully connected layers of sizes 128x128, 128x64, 64x32, 32x3 , followed by ReLU, except the last one which is followed by sigmoid activation. We will provide these information and more details in camera ready version, if the work is accepted. In addition, in order to preserve proper anonymization, we did not provide code, but we are willing to share it together with the model’s weights.</p>
+
+  <p>R2: Comparative analysis with SOTA is required.</p>
+
+  <p>A: We believe that comparing methods (FCN and MEDN) are still SOTA when voxel-wise input is considered. In the future work we will extend our method to take into account neighbourhood information as in Ye et al. (2019, 2020), for a fair and meaningful comparison.</p>
+
+  <p>For all these reasons, we believe our paper will be of high interest to the MICCAI community.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0349-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0350-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - DWI and Tractography"
+        class="post-category">
+        Clinical applications - Neuroimaging - DWI and Tractography
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Sedlar, Sara"
+        class="post-category">
+        Sedlar, Sara
+      </a> |  
+      
+      <a href="kittywong/tags#Alimi, Abib"
+        class="post-category">
+        Alimi, Abib
+      </a> |  
+      
+      <a href="kittywong/tags#Papadopoulo, Theodore"
+        class="post-category">
+        Papadopoulo, Theodore
+      </a> |  
+      
+      <a href="kittywong/tags#Deriche, Rachid"
+        class="post-category">
+        Deriche, Rachid
+      </a> |  
+      
+      <a href="kittywong/tags#Deslauriers-Gauthier, Samuel"
+        class="post-category">
+        Deslauriers-Gauthier, Samuel
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0350/12/31/Paper2380">
+          Sharpening Local Interpretable Model-agnostic Explanations for Histopathology: Improved Understandability and Reliability
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0348/12/31/Paper1508">
+          Using Causal Analysis for Conceptual Deep Learning Explanation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

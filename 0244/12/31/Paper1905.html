@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Semi-supervised Contrastive Learning for Label-efficient Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Semi-supervised Contrastive Learning for Label-efficient Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xinrong Hu, Dewen Zeng, Xiaowei Xu, Yiyu Shi Abstract The success of deep learning methods in medical image seg-mentation tasks heavily depends on a large amount of labeled data tosupervise the training. On the other hand, the annotation of biomedi-cal images requires domain knowledge and can be laborious. Recently,contrastive learning has demonstrated great potential in learning latentrepresentation of images even without any label. Existing works haveexplored its application to biomedical image segmentation where onlya small portion of data is labeled, through a pre-training phase basedon self-supervised contrastive learning without using any labels followedby a supervised fine-tuning phase on the labeled portion of data only.In this paper, we establish that by including the limited label informa-tion in the pre-training phase, it is possible to boost the performance ofcontrastive learning. We propose a supervised local contrastive loss thatleverages limited pixel-wise annotation to force pixels with the same la-bel to gather around in the embedding space. Such loss needs pixel-wisecomputation which can be expensive for large images, and we furtherpropose two strategies, downsampling and block division, to address theissue. We evaluate our methods on two public biomedical image datasetsof different modalities. With different amounts of labeled data, our meth-ods consistently outperform the state-of-the-art contrast-based methodsand other semi-supervised learning techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_45 Link to the code repository https://github.com/xhu248/semi_cotrast_seg Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to integrate “local supervised contrastive learning” into a pipeline for semi-supervised image segmentation. Here, supervised contrastive learning basically means that the available semantic labels are used to sample the positive and negative examples (which are required for contrastive learning) from the predicted feature maps. Evaluation is performed on brain MRI slices and cardiac CT slices, using only a fraction of the available labels. Compared to training from scratch with mixup data augmentation, small improvements are reported. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors compare their approach on two datasets to several other algorithms, including also meaningful ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the paper is limited, because the authors basically replace one step in the semi-supervised pipeline presented by Chaitanya et al. [1]. Furthermore, a supervised version of contrastive learning for image classification has been proposed recently by Khosla et al [2] (at NeurIPS 2020). The method described here seems to be a straightforward application of [2] to modify the self-supervised local contrastive learning in [1]. Reference [2] is not cited in the paper though. [1] Chaitanya, K., Erdil, E., Karani, N., &amp; Konukoglu, E. (2020). Contrastive learning of global and local features for medical image segmentation with limited annotations. [2] Khosla, P., Teterwak, P., Wang, C., Sarna, A., Tian, Y., Isola, P., … &amp; Krishnan, D. (2020). Supervised contrastive learning Evaluation is performed on rather small datasets (260 volumes and 20 volumes each). Therefore, I find it hard to tell whether the self-supervised methods actually learn anything from the unlabelled data or whether they basically act as regularizers, thus improving the results of supervised finetuning a little bit. The reproducibility response does not match the actual paper content. While I don’t want to be too strict about reproducibility per se, I still think that it is not acceptable to make false claims in the reproducibility response. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Missing in the paper while stated otherwise in the reproducibility checklist: No statement in the paper whether source code will be made available No details regarding hyperparameter tuning, e.g. optimizer, learning rate, stopping criterion, … used for each training stage No details regarding baseline implementation and tuning No analysis of statistical significance, no description of the variation in results No info regarding the used hardware (GPU) and average runtimes for each result Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experiments: The variability of the results (e.g. standard deviation) regarding different samples in the dataset and different repetitions of one experiment should be reported Details regarding network training are missing The exact data splits should be specified (maybe in a supplementary) for reproducibility and future comparisons. Can slices from one MR/ CT volume appear in both test and training fold? The baselines Mixup and TCSM should be explained briefly. For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison? I recommend to include an experiment to test whether the supervised local contrastive learning can also be applied at the coarser feature maps (similarly to figure 1(b)). The semantic labels would be available after downsampling the ground truth. Section 2.3: Another strategy to reduce the size of Omega, P(u, v), N(u, v) would be to randomly draw a fixed number of “seed points” from Omega (after dropping the background pixels) and then, based on that, randomly draw a fixed number of positive examples from the candidates in P(u, v) and, analogously, a fixed number of negative examples (possibly more negative than positive examples) from candidates in N(u, v). Have you considered doing that? Can you compare? Writing: Section 2.2 should be revised to improve flow and clarity. At this point, I’d also suggest to make clearer that the sampling of positive and negative examples is a challenge of self-supervised learning, that previous approaches are limited with that regard, and that the incorporation of semantic annotations for sampling positive/ negative examples is the main contribution of this paper. See also detailed comments further below. Section 2.3 reads as if only P(u, v) and N(u, v) were affected by your sub-sampling strategies, but Fig. 2 implies that Omega is affected as well. Please clarify. —– Details —– Section 2.1: I recommend to directly state the name (SimCLR) of the employed method instead of mentioning a reference ([7]), just to make it easier for the reader. Fig. 2(a) –&gt; Fig. 1(a) Section 2.2.: What is “x_i snake” and is it necessary to introduce this variable? Why do you need the superscript l ? It’s also confusing to see l being re-used in another context in formula (3), where it most likely is used to abbreviate “local” Formula (2): I think it is confusing to denote the positive and negative examples using the point coordinates u_p, v_p (or u’, v’) because this implies that they come from the same feature map f(a_i). So I’d suggest defining P(u, v, a_i) = {f_p} and let the sum iterate over all f_p in P(u, v, a_i) (analogously for the negative examples). Then, you can specify in the next step that P(u, v, a_i) = {f_u,v(a_j(i))} in the self-supervised case, and N(u, v, a_i) = U_{a \in A} { f_{u,v}(a) | (u, v) \in \Omega(a) } \setminus P(u, v, a_i) Consequently, I would also write \Omega(a_i) instead of \Omega and f_u,v(a_i) instead of f_u,v for clarity. “Omega is the set of points in f_u,v” –&gt; “set of points (u, v) in the feature map f(a_i)” ? Fig. 2(b) –&gt; Fig. 1(b) References [9] and [16] are conference papers, thus information regarding the conference should be given in the bibliography instead of stating the arXiv ids. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Limited methodological innovation, but numerous experiments showing that the method seems to work. Unclear whether code will be available to reproduce the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes contrastive pretraining of a U-Net in a two-stage approach: (Optional) First, global pretraining of the encoder part. Second, full pretraining of the U-Net by circumventing the combinatorial explosion using only a fraction of positive-negative pairs using labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel idea in a semi-supervised contrastive setting to include the labels already in the pretraining to get better candidates Methods shows good results Nice and clearly written paper Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Using labels for pretraining, renders the pretraining dependent on the labels and as such loses some of the generalizability of the contrastive training and only makes the method applicable to semi-supervised segmentation No range/std of the results is presented and as global [7] already shows very good results it makes the benefit of the method more questionable Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance As of now, there is no description of the hyperparamters/ training regime and the exact data augmentation, and as such I would not believe I could reproduce the results presented in the papers. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I like the idea and the paper. However some points could further strengthen the points made in the paper: Major: As the authors already perform four runs, it would be great to report the range or std of the results and not just the average. This would make the comparison more reliable, especially given the small margins. Global [7] already performs quite well (~ on par with local only) and seems to sometimes be worsend by “self-supervised” local(self)[4] training. It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivually as well. (Overall the local(stride/block) training appears to be a good alternative &amp; addition to the local training, given that the ranges in the point mentioned before show that as well) Minor: A report of the training regime would be great, i.e. how long which part of the network was trained with which loss, was there stopping criterion, was the learning rate adapted during training,… Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is nicely written and shows, by using labels as a trade-off for performance, an incremental update the previous work [4]. However, since the only the average of four runs is reported and no range/std and no training details are given the results probably seem more questionable than they are. Due to this I can not fully recommend accpetance at this point. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper proposes two local contrastive learning strategies for medical image segmentation. First, the method extracts global features by training encoder using global contrastive loss as in previous works. Then, the proposed local contrastive losses are applied to the feature map at the highest decoder layer. In the first local strategy, the feature map is downsampled with a pre-defined stride and the feature vectors having same label are chosen as positive while the ones that have different labels are chosen as negative. In the second strategy, the feature map is divided into patches and positive/negative pairs are selected within each patches based on their labels and are averaged over patches. The experiments are conducted on 2 datasets and the results are compared with 5 methods random initialization, global loss, global+local loss in [4], the method in [13] and mixup [16], and with some variants of the proposed method. The results demonstrate improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper identifies a weakness of a recent work [4] about local contrastive loss and propose novel local contrasting strategies to mitigate the problems. The paper is well-written and easy to read. The paper is well motivated and most of the details of the methods are given clearly. The experiments on 2 medical datasets are sufficient. Also, the method is compared to SoTA methods that enables to well-position the paper within the relevant literature. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I don’t see any major weakness of the proposed method. However, there are a few points that must be clarified which I believe quite critical for the acceptance of the paper! 1 - The results of [4] presented in Table 1 are not consistent with the original paper. On MMWHS, [4] reports dice score of 0.569 with only 1 volume and 0.794 with 8 volumes. Is the difference due to choosing random 2D images instead of volumes in Table 1? In the last 2 lines of pg. 6, it is mentioned that [7] is trained with global loss and [4] is trained with global + local losses. The proposed method uses the global loss in [7], however the global loss in [4] uses a different global loss (different strategy when sampling positive/negative samples). I wonder if you are training [4] with the global loss proposed in the original paper? I think the global training of [4] should be done as in the original paper as it is the strongest part of [4] while the contribution of the local loss in [4] is less. The global strategy in [4] can also be applied to the proposed method which will probably leads to further boost. I wonder what will be the contribution of the proposed local strategies when a stronger global strategy is used. I think this is also very crucial because with a stronger global loss, the contribution of the local losses may not be at the same level. 2 - Both datasets are downsampled to apply the proposed method. Why this is necessary? Is it due to memory requirements to store negative pairs in local contrastive loss? How would the results change if you had processed full resolution images and set the stride/patch size accordingly to fit to memory in the proposed method. 3 - In the 1st paragraph of Sec 2.3, authors mention that the feature map size is same as the input image. This means that the local contrastive loss is applied at the uppermost layer in the decoder. However, on the other hand, in sec2, l is defined to represent the layer in which the local loss is applied. Are these results obtained by applying the loss at the uppermost layer? How would the performance change when it is applied at the previous layers? Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The filled reproducibility checklist is consistent with the details that authors provided. I think the description of the paper is clear enough to implement and reproduce the results. It would be nice to make the code available anyway for reproducibility and increase the impact of the work! Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see the weaknesses section for the major points. Here, I mention a few minor points: In pg 3 paragraph 2: “illustration in Fig. 2(a)” -&gt; “illustration in Fig. 1(a)” In pg 3 paragraph 2: it is mentioned that the global contrasting strategy that is used is same as the existing contrastive learning methods. Although the strategy is same as the one in [7] it is different than [4]. In pg 4 paragraph 3: I didn’t quite understand the sentence starting with “Yet in self-supervised setting…”. Why crop or cutout is not applicable in self-supervised setting? [7] is also a self-supervised setting where they apply these augmentations. Do you mean “Yet in local contrastive learning setting …”? pg 5 paragraph 1: piexls -&gt; pixels It would be nice to add upper bound results to Table 1 which are obtained by training the network by using all the available labeled samples. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper identifies a weakness of a recent previous work of [4] and addresses it by proposing local contrastive learning strategies. The paper is well motivated and well written. And the results are sufficient to demonstrate the effectiveness of the proposed method. Therefore, with the current form, I think the paper is ready for publication with a few minor changes. Having said that, the inconsistency between the results in [4] for MMWHS dataset must be clarified. And the performance should be evaluated as a function of the number of available labeled volumes as in [4] instead of random slices. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All three reviewers recommend acceptance of this paper although two of them borderline. The reviewers commend the writing style, and good experiments. There are also some concerns about the missing statistical analysis of the results, and inconsistencies with prior work as pointed out by R3. I follow the suggestion of the reviewers and recommend an early accept, with the request to the authors to incorporate answers to the reviewers points into the manuscript where reasonable. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Response to meta-review: –Regarding statistical analysis of results We did not report the standard deviation due to the limited space, and we will add the standard deviation in the supplementary material. –Regarding inconsistent results with previous works As can be seen, on MMWHS dataset with only 10% of labeled data used (same as using only 1 volume in paper [4]), our dice scores are already lower than their reported results under “random” setting (0.328 vs 0.451). We found the selection of the 10% volume for training and test set lead to variational dice scores, and our splits of CT volumes are not exactly the same. Response to R1: 1, Regarding the reproducibility Sorry for missing some details in the paper in terms of reproducibility. We will add the experimental details in the supplementary materials, and release the source code. 2, “For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison?” No, it is from the third upper-most decoder block for “global + local (self)” experiment. It is still a fair comparison to “global + local(block), because we tried to extract the features from different feature maps in the UNet, including the same feature maps as local(block) method, and reported the best performance, which is from the third upper-most decoder block (partially consistent with the results in paper [4]) 3, “Can slices from one MR/ CT volume appear in both test and training fold?” No, we divide the data volumes, not the slices, into training set, validation set, and test set. Response to R2: 1,” It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivisually as well” We did experiments for local(self) only and the performance is not very good even compared with “random” setting, which we believe was caused by the limitation of self-supervised contrastive learning we mentioned in the paper. Besides, in paper [4], they also did not report the results of only using local contrastive learning. Response to R3: 1, Regarding the different global losses in Simclr[7] and [4] We did not use the global loss defined in [4] because they assume slices at similar position in a volume are positive pairs, which only work for well-aligned dataset, like AC-DC, maybe MMWHS. However, this is not the case for the Hippocampus dataset. Hence, our methods can be applied to more general problems. Besides, there might be a potential issue in their algorithm, for example, two adjacent slices could be divided into different partitions and then become a false negative pair. 2, Regarding the preprocessing of the two datasets No, we did not do downsampling for both two datasets. The average slice size in Hippocampus is around 48x48, and the average size for MMWHS is 512x512. For MMWHS, did the downsampling due to memory requirements. We tried to process full resolution images, but found that the contrastive learning would take much longer, as there are roughly 9 times number of blocks as original setting considering local (block) strategy. What’s more, we also tried different strides and block size, and we reported the best performance among those settings, that is the minimum strides and maximum block size that did not cause OOM. 3, regarding the influence of on which layer the contrastive loss is applied For supervised local contrastive learning, local(block) and local(stride) can only be applied at the uppermost layer to have the same resolution as the annotation. For local(self), we tried different layer to extract the features, as discussed in R1.2. When extracting features from the third uppermost layer, we can get the best performance. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xinrong Hu, Dewen Zeng, Xiaowei Xu, Yiyu Shi Abstract The success of deep learning methods in medical image seg-mentation tasks heavily depends on a large amount of labeled data tosupervise the training. On the other hand, the annotation of biomedi-cal images requires domain knowledge and can be laborious. Recently,contrastive learning has demonstrated great potential in learning latentrepresentation of images even without any label. Existing works haveexplored its application to biomedical image segmentation where onlya small portion of data is labeled, through a pre-training phase basedon self-supervised contrastive learning without using any labels followedby a supervised fine-tuning phase on the labeled portion of data only.In this paper, we establish that by including the limited label informa-tion in the pre-training phase, it is possible to boost the performance ofcontrastive learning. We propose a supervised local contrastive loss thatleverages limited pixel-wise annotation to force pixels with the same la-bel to gather around in the embedding space. Such loss needs pixel-wisecomputation which can be expensive for large images, and we furtherpropose two strategies, downsampling and block division, to address theissue. We evaluate our methods on two public biomedical image datasetsof different modalities. With different amounts of labeled data, our meth-ods consistently outperform the state-of-the-art contrast-based methodsand other semi-supervised learning techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_45 Link to the code repository https://github.com/xhu248/semi_cotrast_seg Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to integrate “local supervised contrastive learning” into a pipeline for semi-supervised image segmentation. Here, supervised contrastive learning basically means that the available semantic labels are used to sample the positive and negative examples (which are required for contrastive learning) from the predicted feature maps. Evaluation is performed on brain MRI slices and cardiac CT slices, using only a fraction of the available labels. Compared to training from scratch with mixup data augmentation, small improvements are reported. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors compare their approach on two datasets to several other algorithms, including also meaningful ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the paper is limited, because the authors basically replace one step in the semi-supervised pipeline presented by Chaitanya et al. [1]. Furthermore, a supervised version of contrastive learning for image classification has been proposed recently by Khosla et al [2] (at NeurIPS 2020). The method described here seems to be a straightforward application of [2] to modify the self-supervised local contrastive learning in [1]. Reference [2] is not cited in the paper though. [1] Chaitanya, K., Erdil, E., Karani, N., &amp; Konukoglu, E. (2020). Contrastive learning of global and local features for medical image segmentation with limited annotations. [2] Khosla, P., Teterwak, P., Wang, C., Sarna, A., Tian, Y., Isola, P., … &amp; Krishnan, D. (2020). Supervised contrastive learning Evaluation is performed on rather small datasets (260 volumes and 20 volumes each). Therefore, I find it hard to tell whether the self-supervised methods actually learn anything from the unlabelled data or whether they basically act as regularizers, thus improving the results of supervised finetuning a little bit. The reproducibility response does not match the actual paper content. While I don’t want to be too strict about reproducibility per se, I still think that it is not acceptable to make false claims in the reproducibility response. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Missing in the paper while stated otherwise in the reproducibility checklist: No statement in the paper whether source code will be made available No details regarding hyperparameter tuning, e.g. optimizer, learning rate, stopping criterion, … used for each training stage No details regarding baseline implementation and tuning No analysis of statistical significance, no description of the variation in results No info regarding the used hardware (GPU) and average runtimes for each result Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experiments: The variability of the results (e.g. standard deviation) regarding different samples in the dataset and different repetitions of one experiment should be reported Details regarding network training are missing The exact data splits should be specified (maybe in a supplementary) for reproducibility and future comparisons. Can slices from one MR/ CT volume appear in both test and training fold? The baselines Mixup and TCSM should be explained briefly. For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison? I recommend to include an experiment to test whether the supervised local contrastive learning can also be applied at the coarser feature maps (similarly to figure 1(b)). The semantic labels would be available after downsampling the ground truth. Section 2.3: Another strategy to reduce the size of Omega, P(u, v), N(u, v) would be to randomly draw a fixed number of “seed points” from Omega (after dropping the background pixels) and then, based on that, randomly draw a fixed number of positive examples from the candidates in P(u, v) and, analogously, a fixed number of negative examples (possibly more negative than positive examples) from candidates in N(u, v). Have you considered doing that? Can you compare? Writing: Section 2.2 should be revised to improve flow and clarity. At this point, I’d also suggest to make clearer that the sampling of positive and negative examples is a challenge of self-supervised learning, that previous approaches are limited with that regard, and that the incorporation of semantic annotations for sampling positive/ negative examples is the main contribution of this paper. See also detailed comments further below. Section 2.3 reads as if only P(u, v) and N(u, v) were affected by your sub-sampling strategies, but Fig. 2 implies that Omega is affected as well. Please clarify. —– Details —– Section 2.1: I recommend to directly state the name (SimCLR) of the employed method instead of mentioning a reference ([7]), just to make it easier for the reader. Fig. 2(a) –&gt; Fig. 1(a) Section 2.2.: What is “x_i snake” and is it necessary to introduce this variable? Why do you need the superscript l ? It’s also confusing to see l being re-used in another context in formula (3), where it most likely is used to abbreviate “local” Formula (2): I think it is confusing to denote the positive and negative examples using the point coordinates u_p, v_p (or u’, v’) because this implies that they come from the same feature map f(a_i). So I’d suggest defining P(u, v, a_i) = {f_p} and let the sum iterate over all f_p in P(u, v, a_i) (analogously for the negative examples). Then, you can specify in the next step that P(u, v, a_i) = {f_u,v(a_j(i))} in the self-supervised case, and N(u, v, a_i) = U_{a \in A} { f_{u,v}(a) | (u, v) \in \Omega(a) } \setminus P(u, v, a_i) Consequently, I would also write \Omega(a_i) instead of \Omega and f_u,v(a_i) instead of f_u,v for clarity. “Omega is the set of points in f_u,v” –&gt; “set of points (u, v) in the feature map f(a_i)” ? Fig. 2(b) –&gt; Fig. 1(b) References [9] and [16] are conference papers, thus information regarding the conference should be given in the bibliography instead of stating the arXiv ids. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Limited methodological innovation, but numerous experiments showing that the method seems to work. Unclear whether code will be available to reproduce the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes contrastive pretraining of a U-Net in a two-stage approach: (Optional) First, global pretraining of the encoder part. Second, full pretraining of the U-Net by circumventing the combinatorial explosion using only a fraction of positive-negative pairs using labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel idea in a semi-supervised contrastive setting to include the labels already in the pretraining to get better candidates Methods shows good results Nice and clearly written paper Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Using labels for pretraining, renders the pretraining dependent on the labels and as such loses some of the generalizability of the contrastive training and only makes the method applicable to semi-supervised segmentation No range/std of the results is presented and as global [7] already shows very good results it makes the benefit of the method more questionable Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance As of now, there is no description of the hyperparamters/ training regime and the exact data augmentation, and as such I would not believe I could reproduce the results presented in the papers. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I like the idea and the paper. However some points could further strengthen the points made in the paper: Major: As the authors already perform four runs, it would be great to report the range or std of the results and not just the average. This would make the comparison more reliable, especially given the small margins. Global [7] already performs quite well (~ on par with local only) and seems to sometimes be worsend by “self-supervised” local(self)[4] training. It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivually as well. (Overall the local(stride/block) training appears to be a good alternative &amp; addition to the local training, given that the ranges in the point mentioned before show that as well) Minor: A report of the training regime would be great, i.e. how long which part of the network was trained with which loss, was there stopping criterion, was the learning rate adapted during training,… Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is nicely written and shows, by using labels as a trade-off for performance, an incremental update the previous work [4]. However, since the only the average of four runs is reported and no range/std and no training details are given the results probably seem more questionable than they are. Due to this I can not fully recommend accpetance at this point. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper proposes two local contrastive learning strategies for medical image segmentation. First, the method extracts global features by training encoder using global contrastive loss as in previous works. Then, the proposed local contrastive losses are applied to the feature map at the highest decoder layer. In the first local strategy, the feature map is downsampled with a pre-defined stride and the feature vectors having same label are chosen as positive while the ones that have different labels are chosen as negative. In the second strategy, the feature map is divided into patches and positive/negative pairs are selected within each patches based on their labels and are averaged over patches. The experiments are conducted on 2 datasets and the results are compared with 5 methods random initialization, global loss, global+local loss in [4], the method in [13] and mixup [16], and with some variants of the proposed method. The results demonstrate improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper identifies a weakness of a recent work [4] about local contrastive loss and propose novel local contrasting strategies to mitigate the problems. The paper is well-written and easy to read. The paper is well motivated and most of the details of the methods are given clearly. The experiments on 2 medical datasets are sufficient. Also, the method is compared to SoTA methods that enables to well-position the paper within the relevant literature. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I don’t see any major weakness of the proposed method. However, there are a few points that must be clarified which I believe quite critical for the acceptance of the paper! 1 - The results of [4] presented in Table 1 are not consistent with the original paper. On MMWHS, [4] reports dice score of 0.569 with only 1 volume and 0.794 with 8 volumes. Is the difference due to choosing random 2D images instead of volumes in Table 1? In the last 2 lines of pg. 6, it is mentioned that [7] is trained with global loss and [4] is trained with global + local losses. The proposed method uses the global loss in [7], however the global loss in [4] uses a different global loss (different strategy when sampling positive/negative samples). I wonder if you are training [4] with the global loss proposed in the original paper? I think the global training of [4] should be done as in the original paper as it is the strongest part of [4] while the contribution of the local loss in [4] is less. The global strategy in [4] can also be applied to the proposed method which will probably leads to further boost. I wonder what will be the contribution of the proposed local strategies when a stronger global strategy is used. I think this is also very crucial because with a stronger global loss, the contribution of the local losses may not be at the same level. 2 - Both datasets are downsampled to apply the proposed method. Why this is necessary? Is it due to memory requirements to store negative pairs in local contrastive loss? How would the results change if you had processed full resolution images and set the stride/patch size accordingly to fit to memory in the proposed method. 3 - In the 1st paragraph of Sec 2.3, authors mention that the feature map size is same as the input image. This means that the local contrastive loss is applied at the uppermost layer in the decoder. However, on the other hand, in sec2, l is defined to represent the layer in which the local loss is applied. Are these results obtained by applying the loss at the uppermost layer? How would the performance change when it is applied at the previous layers? Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The filled reproducibility checklist is consistent with the details that authors provided. I think the description of the paper is clear enough to implement and reproduce the results. It would be nice to make the code available anyway for reproducibility and increase the impact of the work! Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see the weaknesses section for the major points. Here, I mention a few minor points: In pg 3 paragraph 2: “illustration in Fig. 2(a)” -&gt; “illustration in Fig. 1(a)” In pg 3 paragraph 2: it is mentioned that the global contrasting strategy that is used is same as the existing contrastive learning methods. Although the strategy is same as the one in [7] it is different than [4]. In pg 4 paragraph 3: I didn’t quite understand the sentence starting with “Yet in self-supervised setting…”. Why crop or cutout is not applicable in self-supervised setting? [7] is also a self-supervised setting where they apply these augmentations. Do you mean “Yet in local contrastive learning setting …”? pg 5 paragraph 1: piexls -&gt; pixels It would be nice to add upper bound results to Table 1 which are obtained by training the network by using all the available labeled samples. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper identifies a weakness of a recent previous work of [4] and addresses it by proposing local contrastive learning strategies. The paper is well motivated and well written. And the results are sufficient to demonstrate the effectiveness of the proposed method. Therefore, with the current form, I think the paper is ready for publication with a few minor changes. Having said that, the inconsistency between the results in [4] for MMWHS dataset must be clarified. And the performance should be evaluated as a function of the number of available labeled volumes as in [4] instead of random slices. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All three reviewers recommend acceptance of this paper although two of them borderline. The reviewers commend the writing style, and good experiments. There are also some concerns about the missing statistical analysis of the results, and inconsistencies with prior work as pointed out by R3. I follow the suggestion of the reviewers and recommend an early accept, with the request to the authors to incorporate answers to the reviewers points into the manuscript where reasonable. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Response to meta-review: –Regarding statistical analysis of results We did not report the standard deviation due to the limited space, and we will add the standard deviation in the supplementary material. –Regarding inconsistent results with previous works As can be seen, on MMWHS dataset with only 10% of labeled data used (same as using only 1 volume in paper [4]), our dice scores are already lower than their reported results under “random” setting (0.328 vs 0.451). We found the selection of the 10% volume for training and test set lead to variational dice scores, and our splits of CT volumes are not exactly the same. Response to R1: 1, Regarding the reproducibility Sorry for missing some details in the paper in terms of reproducibility. We will add the experimental details in the supplementary materials, and release the source code. 2, “For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison?” No, it is from the third upper-most decoder block for “global + local (self)” experiment. It is still a fair comparison to “global + local(block), because we tried to extract the features from different feature maps in the UNet, including the same feature maps as local(block) method, and reported the best performance, which is from the third upper-most decoder block (partially consistent with the results in paper [4]) 3, “Can slices from one MR/ CT volume appear in both test and training fold?” No, we divide the data volumes, not the slices, into training set, validation set, and test set. Response to R2: 1,” It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivisually as well” We did experiments for local(self) only and the performance is not very good even compared with “random” setting, which we believe was caused by the limitation of self-supervised contrastive learning we mentioned in the paper. Besides, in paper [4], they also did not report the results of only using local contrastive learning. Response to R3: 1, Regarding the different global losses in Simclr[7] and [4] We did not use the global loss defined in [4] because they assume slices at similar position in a volume are positive pairs, which only work for well-aligned dataset, like AC-DC, maybe MMWHS. However, this is not the case for the Hippocampus dataset. Hence, our methods can be applied to more general problems. Besides, there might be a potential issue in their algorithm, for example, two adjacent slices could be divided into different partitions and then become a false negative pair. 2, Regarding the preprocessing of the two datasets No, we did not do downsampling for both two datasets. The average slice size in Hippocampus is around 48x48, and the average size for MMWHS is 512x512. For MMWHS, did the downsampling due to memory requirements. We tried to process full resolution images, but found that the contrastive learning would take much longer, as there are roughly 9 times number of blocks as original setting considering local (block) strategy. What’s more, we also tried different strides and block size, and we reported the best performance among those settings, that is the minimum strides and maximum block size that did not cause OOM. 3, regarding the influence of on which layer the contrastive loss is applied For supervised local contrastive learning, local(block) and local(stride) can only be applied at the uppermost layer to have the same resolution as the annotation. For local(self), we tried different layer to extract the features, as discussed in R1.2. When extracting features from the third uppermost layer, we can get the best performance. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0244/12/31/Paper1905" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0244/12/31/Paper1905" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0244-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Semi-supervised Contrastive Learning for Label-efficient Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0244/12/31/Paper1905"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0244/12/31/Paper1905","headline":"Semi-supervised Contrastive Learning for Label-efficient Medical Image Segmentation","dateModified":"0245-01-01T00:00:00-05:17","datePublished":"0244-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Xinrong Hu, Dewen Zeng, Xiaowei Xu, Yiyu Shi Abstract The success of deep learning methods in medical image seg-mentation tasks heavily depends on a large amount of labeled data tosupervise the training. On the other hand, the annotation of biomedi-cal images requires domain knowledge and can be laborious. Recently,contrastive learning has demonstrated great potential in learning latentrepresentation of images even without any label. Existing works haveexplored its application to biomedical image segmentation where onlya small portion of data is labeled, through a pre-training phase basedon self-supervised contrastive learning without using any labels followedby a supervised fine-tuning phase on the labeled portion of data only.In this paper, we establish that by including the limited label informa-tion in the pre-training phase, it is possible to boost the performance ofcontrastive learning. We propose a supervised local contrastive loss thatleverages limited pixel-wise annotation to force pixels with the same la-bel to gather around in the embedding space. Such loss needs pixel-wisecomputation which can be expensive for large images, and we furtherpropose two strategies, downsampling and block division, to address theissue. We evaluate our methods on two public biomedical image datasetsof different modalities. With different amounts of labeled data, our meth-ods consistently outperform the state-of-the-art contrast-based methodsand other semi-supervised learning techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_45 Link to the code repository https://github.com/xhu248/semi_cotrast_seg Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to integrate “local supervised contrastive learning” into a pipeline for semi-supervised image segmentation. Here, supervised contrastive learning basically means that the available semantic labels are used to sample the positive and negative examples (which are required for contrastive learning) from the predicted feature maps. Evaluation is performed on brain MRI slices and cardiac CT slices, using only a fraction of the available labels. Compared to training from scratch with mixup data augmentation, small improvements are reported. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors compare their approach on two datasets to several other algorithms, including also meaningful ablation experiments. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The novelty of the paper is limited, because the authors basically replace one step in the semi-supervised pipeline presented by Chaitanya et al. [1]. Furthermore, a supervised version of contrastive learning for image classification has been proposed recently by Khosla et al [2] (at NeurIPS 2020). The method described here seems to be a straightforward application of [2] to modify the self-supervised local contrastive learning in [1]. Reference [2] is not cited in the paper though. [1] Chaitanya, K., Erdil, E., Karani, N., &amp; Konukoglu, E. (2020). Contrastive learning of global and local features for medical image segmentation with limited annotations. [2] Khosla, P., Teterwak, P., Wang, C., Sarna, A., Tian, Y., Isola, P., … &amp; Krishnan, D. (2020). Supervised contrastive learning Evaluation is performed on rather small datasets (260 volumes and 20 volumes each). Therefore, I find it hard to tell whether the self-supervised methods actually learn anything from the unlabelled data or whether they basically act as regularizers, thus improving the results of supervised finetuning a little bit. The reproducibility response does not match the actual paper content. While I don’t want to be too strict about reproducibility per se, I still think that it is not acceptable to make false claims in the reproducibility response. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Missing in the paper while stated otherwise in the reproducibility checklist: No statement in the paper whether source code will be made available No details regarding hyperparameter tuning, e.g. optimizer, learning rate, stopping criterion, … used for each training stage No details regarding baseline implementation and tuning No analysis of statistical significance, no description of the variation in results No info regarding the used hardware (GPU) and average runtimes for each result Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experiments: The variability of the results (e.g. standard deviation) regarding different samples in the dataset and different repetitions of one experiment should be reported Details regarding network training are missing The exact data splits should be specified (maybe in a supplementary) for reproducibility and future comparisons. Can slices from one MR/ CT volume appear in both test and training fold? The baselines Mixup and TCSM should be explained briefly. For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison? I recommend to include an experiment to test whether the supervised local contrastive learning can also be applied at the coarser feature maps (similarly to figure 1(b)). The semantic labels would be available after downsampling the ground truth. Section 2.3: Another strategy to reduce the size of Omega, P(u, v), N(u, v) would be to randomly draw a fixed number of “seed points” from Omega (after dropping the background pixels) and then, based on that, randomly draw a fixed number of positive examples from the candidates in P(u, v) and, analogously, a fixed number of negative examples (possibly more negative than positive examples) from candidates in N(u, v). Have you considered doing that? Can you compare? Writing: Section 2.2 should be revised to improve flow and clarity. At this point, I’d also suggest to make clearer that the sampling of positive and negative examples is a challenge of self-supervised learning, that previous approaches are limited with that regard, and that the incorporation of semantic annotations for sampling positive/ negative examples is the main contribution of this paper. See also detailed comments further below. Section 2.3 reads as if only P(u, v) and N(u, v) were affected by your sub-sampling strategies, but Fig. 2 implies that Omega is affected as well. Please clarify. —– Details —– Section 2.1: I recommend to directly state the name (SimCLR) of the employed method instead of mentioning a reference ([7]), just to make it easier for the reader. Fig. 2(a) –&gt; Fig. 1(a) Section 2.2.: What is “x_i snake” and is it necessary to introduce this variable? Why do you need the superscript l ? It’s also confusing to see l being re-used in another context in formula (3), where it most likely is used to abbreviate “local” Formula (2): I think it is confusing to denote the positive and negative examples using the point coordinates u_p, v_p (or u’, v’) because this implies that they come from the same feature map f(a_i). So I’d suggest defining P(u, v, a_i) = {f_p} and let the sum iterate over all f_p in P(u, v, a_i) (analogously for the negative examples). Then, you can specify in the next step that P(u, v, a_i) = {f_u,v(a_j(i))} in the self-supervised case, and N(u, v, a_i) = U_{a \\in A} { f_{u,v}(a) | (u, v) \\in \\Omega(a) } \\setminus P(u, v, a_i) Consequently, I would also write \\Omega(a_i) instead of \\Omega and f_u,v(a_i) instead of f_u,v for clarity. “Omega is the set of points in f_u,v” –&gt; “set of points (u, v) in the feature map f(a_i)” ? Fig. 2(b) –&gt; Fig. 1(b) References [9] and [16] are conference papers, thus information regarding the conference should be given in the bibliography instead of stating the arXiv ids. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Limited methodological innovation, but numerous experiments showing that the method seems to work. Unclear whether code will be available to reproduce the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes contrastive pretraining of a U-Net in a two-stage approach: (Optional) First, global pretraining of the encoder part. Second, full pretraining of the U-Net by circumventing the combinatorial explosion using only a fraction of positive-negative pairs using labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel idea in a semi-supervised contrastive setting to include the labels already in the pretraining to get better candidates Methods shows good results Nice and clearly written paper Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Using labels for pretraining, renders the pretraining dependent on the labels and as such loses some of the generalizability of the contrastive training and only makes the method applicable to semi-supervised segmentation No range/std of the results is presented and as global [7] already shows very good results it makes the benefit of the method more questionable Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance As of now, there is no description of the hyperparamters/ training regime and the exact data augmentation, and as such I would not believe I could reproduce the results presented in the papers. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I like the idea and the paper. However some points could further strengthen the points made in the paper: Major: As the authors already perform four runs, it would be great to report the range or std of the results and not just the average. This would make the comparison more reliable, especially given the small margins. Global [7] already performs quite well (~ on par with local only) and seems to sometimes be worsend by “self-supervised” local(self)[4] training. It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivually as well. (Overall the local(stride/block) training appears to be a good alternative &amp; addition to the local training, given that the ranges in the point mentioned before show that as well) Minor: A report of the training regime would be great, i.e. how long which part of the network was trained with which loss, was there stopping criterion, was the learning rate adapted during training,… Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is nicely written and shows, by using labels as a trade-off for performance, an incremental update the previous work [4]. However, since the only the average of four runs is reported and no range/std and no training details are given the results probably seem more questionable than they are. Due to this I can not fully recommend accpetance at this point. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper proposes two local contrastive learning strategies for medical image segmentation. First, the method extracts global features by training encoder using global contrastive loss as in previous works. Then, the proposed local contrastive losses are applied to the feature map at the highest decoder layer. In the first local strategy, the feature map is downsampled with a pre-defined stride and the feature vectors having same label are chosen as positive while the ones that have different labels are chosen as negative. In the second strategy, the feature map is divided into patches and positive/negative pairs are selected within each patches based on their labels and are averaged over patches. The experiments are conducted on 2 datasets and the results are compared with 5 methods random initialization, global loss, global+local loss in [4], the method in [13] and mixup [16], and with some variants of the proposed method. The results demonstrate improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper identifies a weakness of a recent work [4] about local contrastive loss and propose novel local contrasting strategies to mitigate the problems. The paper is well-written and easy to read. The paper is well motivated and most of the details of the methods are given clearly. The experiments on 2 medical datasets are sufficient. Also, the method is compared to SoTA methods that enables to well-position the paper within the relevant literature. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I don’t see any major weakness of the proposed method. However, there are a few points that must be clarified which I believe quite critical for the acceptance of the paper! 1 - The results of [4] presented in Table 1 are not consistent with the original paper. On MMWHS, [4] reports dice score of 0.569 with only 1 volume and 0.794 with 8 volumes. Is the difference due to choosing random 2D images instead of volumes in Table 1? In the last 2 lines of pg. 6, it is mentioned that [7] is trained with global loss and [4] is trained with global + local losses. The proposed method uses the global loss in [7], however the global loss in [4] uses a different global loss (different strategy when sampling positive/negative samples). I wonder if you are training [4] with the global loss proposed in the original paper? I think the global training of [4] should be done as in the original paper as it is the strongest part of [4] while the contribution of the local loss in [4] is less. The global strategy in [4] can also be applied to the proposed method which will probably leads to further boost. I wonder what will be the contribution of the proposed local strategies when a stronger global strategy is used. I think this is also very crucial because with a stronger global loss, the contribution of the local losses may not be at the same level. 2 - Both datasets are downsampled to apply the proposed method. Why this is necessary? Is it due to memory requirements to store negative pairs in local contrastive loss? How would the results change if you had processed full resolution images and set the stride/patch size accordingly to fit to memory in the proposed method. 3 - In the 1st paragraph of Sec 2.3, authors mention that the feature map size is same as the input image. This means that the local contrastive loss is applied at the uppermost layer in the decoder. However, on the other hand, in sec2, l is defined to represent the layer in which the local loss is applied. Are these results obtained by applying the loss at the uppermost layer? How would the performance change when it is applied at the previous layers? Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The filled reproducibility checklist is consistent with the details that authors provided. I think the description of the paper is clear enough to implement and reproduce the results. It would be nice to make the code available anyway for reproducibility and increase the impact of the work! Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see the weaknesses section for the major points. Here, I mention a few minor points: In pg 3 paragraph 2: “illustration in Fig. 2(a)” -&gt; “illustration in Fig. 1(a)” In pg 3 paragraph 2: it is mentioned that the global contrasting strategy that is used is same as the existing contrastive learning methods. Although the strategy is same as the one in [7] it is different than [4]. In pg 4 paragraph 3: I didn’t quite understand the sentence starting with “Yet in self-supervised setting…”. Why crop or cutout is not applicable in self-supervised setting? [7] is also a self-supervised setting where they apply these augmentations. Do you mean “Yet in local contrastive learning setting …”? pg 5 paragraph 1: piexls -&gt; pixels It would be nice to add upper bound results to Table 1 which are obtained by training the network by using all the available labeled samples. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper identifies a weakness of a recent previous work of [4] and addresses it by proposing local contrastive learning strategies. The paper is well motivated and well written. And the results are sufficient to demonstrate the effectiveness of the proposed method. Therefore, with the current form, I think the paper is ready for publication with a few minor changes. Having said that, the inconsistency between the results in [4] for MMWHS dataset must be clarified. And the performance should be evaluated as a function of the number of available labeled volumes as in [4] instead of random slices. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All three reviewers recommend acceptance of this paper although two of them borderline. The reviewers commend the writing style, and good experiments. There are also some concerns about the missing statistical analysis of the results, and inconsistencies with prior work as pointed out by R3. I follow the suggestion of the reviewers and recommend an early accept, with the request to the authors to incorporate answers to the reviewers points into the manuscript where reasonable. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Response to meta-review: –Regarding statistical analysis of results We did not report the standard deviation due to the limited space, and we will add the standard deviation in the supplementary material. –Regarding inconsistent results with previous works As can be seen, on MMWHS dataset with only 10% of labeled data used (same as using only 1 volume in paper [4]), our dice scores are already lower than their reported results under “random” setting (0.328 vs 0.451). We found the selection of the 10% volume for training and test set lead to variational dice scores, and our splits of CT volumes are not exactly the same. Response to R1: 1, Regarding the reproducibility Sorry for missing some details in the paper in terms of reproducibility. We will add the experimental details in the supplementary materials, and release the source code. 2, “For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison?” No, it is from the third upper-most decoder block for “global + local (self)” experiment. It is still a fair comparison to “global + local(block), because we tried to extract the features from different feature maps in the UNet, including the same feature maps as local(block) method, and reported the best performance, which is from the third upper-most decoder block (partially consistent with the results in paper [4]) 3, “Can slices from one MR/ CT volume appear in both test and training fold?” No, we divide the data volumes, not the slices, into training set, validation set, and test set. Response to R2: 1,” It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivisually as well” We did experiments for local(self) only and the performance is not very good even compared with “random” setting, which we believe was caused by the limitation of self-supervised contrastive learning we mentioned in the paper. Besides, in paper [4], they also did not report the results of only using local contrastive learning. Response to R3: 1, Regarding the different global losses in Simclr[7] and [4] We did not use the global loss defined in [4] because they assume slices at similar position in a volume are positive pairs, which only work for well-aligned dataset, like AC-DC, maybe MMWHS. However, this is not the case for the Hippocampus dataset. Hence, our methods can be applied to more general problems. Besides, there might be a potential issue in their algorithm, for example, two adjacent slices could be divided into different partitions and then become a false negative pair. 2, Regarding the preprocessing of the two datasets No, we did not do downsampling for both two datasets. The average slice size in Hippocampus is around 48x48, and the average size for MMWHS is 512x512. For MMWHS, did the downsampling due to memory requirements. We tried to process full resolution images, but found that the contrastive learning would take much longer, as there are roughly 9 times number of blocks as original setting considering local (block) strategy. What’s more, we also tried different strides and block size, and we reported the best performance among those settings, that is the minimum strides and maximum block size that did not cause OOM. 3, regarding the influence of on which layer the contrastive loss is applied For supervised local contrastive learning, local(block) and local(stride) can only be applied at the uppermost layer to have the same resolution as the annotation. For local(self), we tried different layer to extract the features, as discussed in R1.2. When extracting features from the third uppermost layer, we can get the best performance. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Hu, Xinrong,Zeng, Dewen,Xu, Xiaowei,Shi, Yiyu" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Semi-supervised Contrastive Learning for Label-efficient Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Hu, Xinrong"
+        class="post-tags">
+        Hu, Xinrong
+      </a> |  
+      
+      <a href="kittywong/tags#Zeng, Dewen"
+        class="post-tags">
+        Zeng, Dewen
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Xiaowei"
+        class="post-tags">
+        Xu, Xiaowei
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Yiyu"
+        class="post-tags">
+        Shi, Yiyu
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Xinrong Hu, Dewen Zeng, Xiaowei Xu, Yiyu Shi
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The success of deep learning methods in medical image seg-mentation tasks heavily depends on a large amount of labeled data tosupervise the training. On the other hand, the annotation of biomedi-cal images requires domain knowledge and can be laborious. Recently,contrastive learning has demonstrated great potential in learning latentrepresentation  of  images  even  without  any  label.  Existing  works  haveexplored  its  application  to  biomedical  image  segmentation  where  onlya  small  portion  of  data  is  labeled,  through  a  pre-training  phase  basedon self-supervised contrastive learning without using any labels followedby a supervised fine-tuning phase on the labeled portion of data only.In this paper, we establish that by including the limited label informa-tion in the pre-training phase, it is possible to boost the performance ofcontrastive learning. We propose a supervised local contrastive loss thatleverages limited pixel-wise annotation to force pixels with the same la-bel to gather around in the embedding space. Such loss needs pixel-wisecomputation  which  can  be  expensive  for  large  images,  and  we  furtherpropose two strategies, downsampling and block division, to address theissue. We evaluate our methods on two public biomedical image datasetsof different modalities. With different amounts of labeled data, our meth-ods consistently outperform the state-of-the-art contrast-based methodsand other semi-supervised learning techniques.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_45">https://doi.org/10.1007/978-3-030-87196-3_45</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/xhu248/semi_cotrast_seg
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose to integrate “local supervised contrastive learning” into a pipeline for semi-supervised image segmentation. Here, supervised contrastive learning basically means that the available semantic labels are used to sample the positive and negative examples (which are required for contrastive learning) from the predicted feature maps. 
+Evaluation is performed on brain MRI slices and cardiac CT slices, using only a fraction of the available labels. Compared to training from scratch with mixup data augmentation, small improvements are reported.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The authors compare their approach on two datasets to several other algorithms, including also meaningful ablation experiments.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The novelty of the paper is limited, because the authors basically replace one step in the semi-supervised pipeline presented by Chaitanya et al. [1]. Furthermore, a supervised version of contrastive learning for image classification has been proposed recently by Khosla et al [2] (at NeurIPS 2020). The method described here seems to be a straightforward application of [2] to modify the self-supervised local contrastive learning in [1]. Reference [2] is not cited in the paper though.
+[1] Chaitanya, K., Erdil, E., Karani, N., &amp; Konukoglu, E. (2020). Contrastive learning of global and local features for medical image segmentation with limited annotations. 
+[2] Khosla, P., Teterwak, P., Wang, C., Sarna, A., Tian, Y., Isola, P., … &amp; Krishnan, D. (2020). Supervised contrastive learning</p>
+
+      <p>Evaluation is performed on rather small datasets (260 volumes and 20 volumes each). Therefore, I find it hard to tell whether the self-supervised methods actually learn anything from the unlabelled data or whether they basically act as regularizers, thus improving the results of supervised finetuning a little bit.</p>
+
+      <p>The reproducibility response does not match the actual paper content. While I don’t want to be too strict about reproducibility per se, I still think that it is not acceptable to make false claims in the reproducibility response.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Missing in the paper while stated otherwise in the reproducibility checklist:</p>
+      <ul>
+        <li>No statement in the paper whether source code will be made available</li>
+        <li>No details regarding hyperparameter tuning, e.g. optimizer, learning rate, stopping criterion, … used for each training stage</li>
+        <li>No details regarding baseline implementation and tuning</li>
+        <li>No analysis of statistical significance, no description of the variation in results</li>
+        <li>No info regarding the used hardware (GPU) and average runtimes for each result</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Experiments:</p>
+      <ul>
+        <li>The variability of the results (e.g. standard deviation) regarding different samples in the dataset and different repetitions of one experiment should be reported</li>
+        <li>Details regarding network training are missing</li>
+        <li>The exact data splits should be specified (maybe in a supplementary) for reproducibility and future comparisons.
+Can slices from one MR/ CT volume appear in both test and training fold?</li>
+        <li>The baselines Mixup and TCSM should be explained briefly.</li>
+        <li>For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison?</li>
+        <li>I recommend to include an experiment to test whether the supervised local contrastive learning can also be applied at the coarser feature maps (similarly to figure 1(b)). The semantic labels would be available after downsampling the ground truth.</li>
+      </ul>
+
+      <p>Section 2.3:
+Another strategy to reduce the size of Omega, P(u, v), N(u, v) would be to randomly draw a fixed number of “seed points” from Omega (after dropping the background pixels) and then, based on that, randomly draw a fixed number of positive examples from the candidates in P(u, v) and, analogously, a fixed number of negative examples (possibly more negative than positive examples) from candidates in N(u, v). Have you considered doing that? Can you compare?</p>
+
+      <p>Writing:</p>
+      <ul>
+        <li>Section 2.2 should be revised to improve flow and clarity. At this point, I’d also suggest to make clearer that the sampling of positive and negative examples is a challenge of self-supervised learning, that previous approaches are limited with that regard, and that the incorporation of semantic annotations for sampling positive/ negative examples is the main contribution of this paper. See also detailed comments further below.</li>
+        <li>Section 2.3 reads as if only P(u, v) and N(u, v) were affected by your sub-sampling strategies, but Fig. 2 implies that Omega is affected as well. Please clarify.</li>
+      </ul>
+
+      <p>—– Details —–</p>
+
+      <p>Section 2.1:</p>
+      <ul>
+        <li>I recommend to directly state the name (SimCLR) of the employed method instead of mentioning a reference ([7]), just to make it easier for the reader.</li>
+        <li>Fig. 2(a) –&gt; Fig. 1(a)
+Section 2.2.:</li>
+        <li>What is “x_i snake” and is it necessary to introduce this variable?</li>
+        <li>Why do you need the superscript l ? It’s also confusing to see l being re-used in another context in formula (3), where it most likely is used to abbreviate “local”</li>
+        <li>Formula (2): I think it is confusing to denote the positive and negative examples using the point coordinates u_p, v_p (or u’, v’) because this implies that they come from the same feature map f(a_i). So I’d suggest defining P(u, v, a_i) = {f_p} and let the sum iterate over all f_p in P(u, v, a_i) (analogously for the negative examples).
+Then, you can specify in the next step that P(u, v, a_i) = {f_u,v(a_j(i))} in the self-supervised case, and  N(u, v, a_i) = U_{a \in A} { f_{u,v}(a) | (u, v) \in \Omega(a) } \setminus P(u, v, a_i)</li>
+        <li>Consequently, I would also write \Omega(a_i) instead of \Omega and f_u,v(a_i) instead of f_u,v for clarity.</li>
+        <li>“Omega is the set of points in f_u,v” –&gt; “set of points (u, v) in the feature map f(a_i)” ?</li>
+        <li>Fig. 2(b) –&gt; Fig. 1(b)</li>
+      </ul>
+
+      <p>References [9] and [16] are conference papers, thus information regarding the conference should be given in the bibliography instead of stating the arXiv ids.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Limited methodological innovation, but numerous experiments showing that the method seems to work. Unclear whether code will be available to reproduce the results.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes contrastive pretraining of a U-Net in a two-stage approach: (Optional) First, global pretraining of the encoder part. Second, full pretraining of the U-Net by circumventing the combinatorial explosion using only a fraction of positive-negative pairs using labels.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Novel idea in a semi-supervised contrastive setting to include the labels already in the pretraining to get better candidates</li>
+        <li>Methods shows good results</li>
+        <li>Nice and clearly written paper</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Using labels for pretraining, renders the pretraining dependent on the labels and as such loses some of the generalizability of the contrastive training and only makes the method applicable to semi-supervised segmentation</li>
+        <li>No range/std of the results is presented and as global [7] already shows very good results it makes the benefit of the method more questionable</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>As of now, there is no description of the hyperparamters/ training regime and the exact data augmentation, and as such I would not believe I could reproduce the results presented in the papers.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall I like the idea and the paper. 
+However some points could further strengthen the points made in the paper:</p>
+
+      <p>Major:</p>
+      <ul>
+        <li>As the authors already perform four runs, it would be great to report the range or std of the results and not just the average. This would make the comparison more reliable, especially given the small margins.</li>
+        <li>Global [7] already performs quite well (~ on par with local only) and seems to sometimes be worsend by “self-supervised” local(self)[4] training. It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivually as well. (Overall the local(stride/block) training appears to be a good alternative &amp; addition to the local training, given that the ranges in the point mentioned before show that as well)</li>
+      </ul>
+
+      <p>Minor:</p>
+      <ul>
+        <li>A report of the training regime would be great, i.e. how long which part of the network was trained with which loss, was there stopping criterion, was the learning rate adapted during training,…</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper is nicely written and shows, by using labels as a trade-off for performance, an incremental update the previous work [4]. However, since the only the average of four runs is reported and no range/std and no training details are given the results probably seem more questionable than they are. Due to this I can not fully recommend accpetance at this point.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes two local contrastive learning strategies for medical image segmentation. First, the method extracts global features by training encoder using global contrastive loss as in previous works. Then, the proposed local contrastive losses are applied to the feature map at the highest decoder layer. In the first local strategy, the feature map is downsampled with a pre-defined stride and the feature vectors having same label are chosen as positive while the ones that have different labels are chosen as negative. In the second strategy, the feature map is divided into patches and positive/negative pairs are selected within each patches based on their labels and are averaged over patches. The experiments are conducted on 2 datasets and the results are compared with 5 methods random initialization, global loss, global+local loss in [4], the method in [13] and mixup [16], and with some variants of the proposed method. The results demonstrate improved performance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The paper identifies a weakness of a recent work [4] about local contrastive loss and propose novel local contrasting strategies to mitigate the problems.</li>
+        <li>The paper is well-written and easy to read. The paper is well motivated and most of the details of the methods are given clearly.</li>
+        <li>The experiments on 2 medical datasets are sufficient. Also, the method is compared to SoTA methods that enables to well-position the paper within the relevant literature.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>I don’t see any major weakness of the proposed method. However, there are a few points that must be clarified which I believe quite critical for the acceptance of the paper!</li>
+      </ul>
+
+      <p>1 - The results of [4] presented in Table 1 are not consistent with the original paper. On MMWHS, [4] reports dice score of 0.569 with only 1 volume and 0.794 with 8 volumes. Is the difference due to choosing random 2D images instead of volumes in Table 1?</p>
+
+      <p>In the last 2 lines of pg. 6, it is mentioned that [7] is trained with global loss and [4] is trained with global + local losses. The proposed method uses the global loss in [7], however the global loss in [4] uses a different global loss (different strategy when sampling positive/negative samples). I wonder if you are training [4] with the global loss proposed in the original paper? I think the global training of [4] should be done as in the original paper as it is the strongest part of [4] while the contribution of the local loss in [4] is less.</p>
+
+      <p>The global strategy in [4] can also be applied to the proposed method which will probably leads to further boost. I wonder what will be the contribution of the proposed local strategies when a stronger global strategy is used. I think this is also very crucial because with a stronger global loss, the contribution of the local losses may not be at the same level.</p>
+
+      <p>2 - Both datasets are downsampled to apply the proposed method. Why this is necessary? Is it due to memory requirements to store negative pairs in local contrastive loss? How would the results change if you had processed full resolution images and set the stride/patch size accordingly to fit to memory in the proposed method.</p>
+
+      <p>3 - In the 1st paragraph of Sec 2.3, authors mention that the feature map size is same as the input image. This means that the local contrastive loss is applied at the uppermost layer in the decoder. However, on the other hand, in sec2, l is defined to represent the layer in which the local loss is applied. Are these results obtained by applying the loss at the uppermost layer? How would the performance change when it is applied at the previous layers?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The filled reproducibility checklist is consistent with the details that authors provided. I think the description of the paper is clear enough to implement and reproduce the results. It would be nice to make the code available anyway for reproducibility and increase the impact of the work!</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Please see the weaknesses section for the major points. Here, I mention a few minor points:</p>
+      <ul>
+        <li>In pg 3 paragraph 2: “illustration in Fig. 2(a)” -&gt; “illustration in Fig. 1(a)”</li>
+        <li>In pg 3 paragraph 2: it is mentioned that the global contrasting strategy that is used is same as the existing contrastive learning methods. Although the strategy is same as the one in [7] it is different than [4].</li>
+        <li>In pg 4 paragraph 3: I didn’t quite understand the sentence starting with “Yet in self-supervised setting…”. Why crop or cutout is not applicable in self-supervised setting? [7] is also a self-supervised setting where they apply these augmentations. Do you mean “Yet in local contrastive learning setting …”?</li>
+        <li>pg 5 paragraph 1: piexls -&gt; pixels</li>
+        <li>It would be nice to add upper bound results to Table 1 which are obtained by training the network by using all the available labeled samples.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper identifies a weakness of a recent previous work of [4] and addresses it by proposing local contrastive learning strategies. The paper is well motivated and well written. And the results are sufficient to demonstrate the effectiveness of the proposed method. Therefore, with the current form, I think the paper is ready for publication with a few minor changes.</p>
+
+      <p>Having said that, the inconsistency between the results in [4] for MMWHS dataset  must be clarified. And the performance should be evaluated as a function of the number of available labeled volumes as in [4] instead of random slices.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>All three reviewers recommend acceptance of this paper although two of them borderline. The reviewers commend the writing style, and good experiments. There are also some concerns about the missing statistical analysis of the results, and inconsistencies with prior work as pointed out by R3.</p>
+
+      <p>I follow the suggestion of the reviewers and recommend an early accept, with the request to the authors to incorporate answers to the reviewers points into the manuscript where reasonable.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Response to meta-review: 
+–Regarding statistical analysis of results 
+We did not report the standard deviation due to the limited space, and we will add the standard deviation in the supplementary material.</p>
+
+  <p>–Regarding inconsistent results with previous works
+As can be seen, on MMWHS dataset with only 10% of labeled data used (same as using only 1 volume in paper [4]), our dice scores are already lower than their reported results under “random” setting (0.328 vs 0.451). We found the selection of the 10% volume for training and test set lead to variational dice scores, and our splits of CT volumes are not exactly the same.</p>
+
+  <p>Response to R1:<br />
+1, Regarding the reproducibility 
+Sorry for missing some details in the paper in terms of reproducibility. We will add the experimental details in the supplementary materials, and release the source code. 
+2, “For the “global + local(self)” experiment: Do you extract the features from the same feature map as in “global + local(block)” in order to conduct a fair comparison?” 
+No, it is from the third upper-most decoder block for “global + local (self)” experiment. It is still a fair comparison to “global + local(block), because we tried to extract the features from different feature maps in the UNet, including the same feature maps as local(block) method, and reported the best performance, which is from the third upper-most decoder block (partially consistent with the results in paper [4])<br />
+3, “Can slices from one MR/ CT volume appear in both test and training fold?” 
+No, we divide the data volumes, not the slices, into training set, validation set, and test set.</p>
+
+  <p>Response to R2: 
+1,” It would be a great addition if the authors discuss this and perhaps present a local(self) only training to compare the local training-methods indivisually as well” 
+We did experiments for local(self) only and the performance is not very good even compared with “random” setting, which we believe was caused by the limitation of self-supervised contrastive learning we mentioned in the paper. Besides, in paper [4], they also did not report the results of only using local contrastive learning.</p>
+
+  <p>Response to R3: 
+1, Regarding the different global losses in Simclr[7] and [4] 
+We did not use the global loss defined in [4] because they assume slices at similar position in a volume are positive pairs, which only work for well-aligned dataset, like AC-DC, maybe MMWHS. However, this is not the case for the Hippocampus dataset. Hence, our methods can be applied to more general problems. Besides, there might be a potential issue in their algorithm, for example, two adjacent slices could be divided into different partitions and then become a false negative pair.</p>
+
+  <p>2, Regarding the preprocessing of the two datasets 
+No, we did not do downsampling for both two datasets. The average slice size in Hippocampus is around 48x48, and the average size for MMWHS is 512x512. For MMWHS, did the downsampling due to memory requirements. We tried to process full resolution images, but found that the contrastive learning would take much longer, as there are roughly 9 times number of blocks as original setting considering local (block) strategy.  What’s more, we also tried different strides and block size, and we reported the best performance among those settings, that is the minimum strides and maximum block size that did not cause OOM.</p>
+
+  <p>3, regarding the influence of on which layer the contrastive loss is applied 
+For supervised local contrastive learning, local(block) and local(stride) can only be applied at the uppermost layer to have the same resolution as the annotation. For local(self), we tried different layer to extract the features, as discussed in R1.2. When extracting features from the third uppermost layer, we can get the best performance.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0244-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0245-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Hu, Xinrong"
+        class="post-category">
+        Hu, Xinrong
+      </a> |  
+      
+      <a href="kittywong/tags#Zeng, Dewen"
+        class="post-category">
+        Zeng, Dewen
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Xiaowei"
+        class="post-category">
+        Xu, Xiaowei
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Yiyu"
+        class="post-category">
+        Shi, Yiyu
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0245/12/31/Paper2229">
+          Functional Magnetic Resonance Imaging data augmentation through conditional ICA
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0243/12/31/Paper1718">
+          Order-Guided Disentangled Representation Learning for Ulcerative Colitis Classification with Limited Labels
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Simultaneous Alignment and Surface Regression Using Hybrid 2D-3D Networks for 3D Coherent Layer Segmentation of Retina OCT Images | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Simultaneous Alignment and Surface Regression Using Hybrid 2D-3D Networks for 3D Coherent Layer Segmentation of Retina OCT Images" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hong Liu, Dong Wei, Donghuan Lu, Yuexiang Li, Kai Ma, Liansheng Wang, Yefeng Zheng Abstract Automated surface segmentation of retinal layer is important and challenging in analyzing optical coherence tomography (OCT). Recently, many deep learning based methods have been developed for this task and yield remarkable performance. However, due to large spatial gap and potential mismatch between the B-scans of OCT data, all of them are based on 2D segmentation of individual B-scans, which may loss the continuity information across the B-scans. In addition, 3D surface of the retina layers can provide more diagnostic information, which is crucial in quantitative image analysis. In this study, a novel framework based on hybrid 2D-3D convolutional neural networks (CNNs) is proposed to obtain continuous 3D retinal layer surfaces from OCT. The 2D features of individual B-scans are extracted by an encoder consisting of 2D convolutions. These 2D features are then used to produce the alignment displacement field and layer segmentation by two 3D decoders, which are coupled via a spatial transformer module. The entire framework is trained end-to-end. To the best of our knowledge, this is the first study that attempts 3D retinal layer segmentation in volumetric OCT images based on CNNs. Experiments on a publicly available dataset show that our framework achieves superior results to state-of-the-art 2D methods in terms of both layer segmentation accuracy and cross-B-scan 3D continuity, thus offering more clinical values than previous works. Link to paper https://doi.org/10.1007/978-3-030-87237-3_11 Link to the code repository https://github.com/ccarliu/Retinal-OCT-LayerSeg.git Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors use 2D encoders to extract features from OCT B-scans. The 2D features are feed through 3D decoders which align the 2D features and generate the layer segmentation for the OCT data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is interesting work. I have lots of clarifying questions that I go through below. I think the idea of the quasi 3D framework is a nice addition to the field and has considerable benefits for OCT image processing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. “Earlier explorations … [17, 2] methods.” There are levelset based methods [Carass2014, Liu2019, Novosel2015, Novosel2017] that I am not sure neatly fit into any of these three categories. Maybe, I draw an unnecessary distinction between “contour modeling” and “levelsets”. However, there is clearly a fourth category as both [2, 17] are graph based methods that use machine learning based features. Whereas [9] is a pure graph based method. Maybe this fourth category is “Hybrid Methods”. “independent 2D images, despite … area of the eye” This is all completely factual. However, what is being ignored is the fact that the inter B-scan distance is orders of magnitude bigger than the intra B-scan distance. That is the distance between B-scans is much larger than the distance between A-scans within any single B-scan. In such a scenario, it is not unreasonable (maybe even desirable) to regard B-scans as independent. “[5] and [9] were the minority that attempted 3D OCT segmentation.” This is simply not true. [Carass2014, Novosel2015] are examples of 3D based methods that have been around for some time and have derivative works that build upon them [Novosel2017]. Unless I am mistaken [2, 17] are also 3D methods as they have graph connections between B-scans ensuring 3D smoothness. “the surface intersects with each A-scan exactly once.” This is a common assumption in OCT work. However, it is only valid in macula imaging as in optic nerve head imaging the surface can bend back on itself around the nerve head. The authors should note this. “Although it is feasible to add an alignment step while preprocessing, we believe that a comprehensive framework that couples the B-scan alignment and layer segmentation would mutually benefit each other” Maybe I am in the minority in thinking this about MICCAI, but it is a Scientific Conference, not a Religious One. So “believe” is not really important. Cold hard scientific facts are. You should demonstrate your belief with some experiments. Equation 1, says “(b_i, b_j) \in \mathcal{N}{B}” which would imply any two B-scans of the image. But the text says “(b_i , b_j) denotes two adjacent B-Scans”. Would it not make more sense to just write “(b_i , b{i + 1})”. Or better yet B-scan “b” and its neighbor “b \pm 1”, why even introduce i and j? Particularly, given that “b \in [1, N_B]” s introduced before i and j. Why the notation? B-scan alignment is useful, but the reality is that A-scans are misaligned as well, due to eye (and patient) motion, tracking failure, “floaters” in the Aqueous humor, etc. Why not deal with that as well? There is a disconnect in going from G_f to G_a. Do the authors run an entire volume through G_f and then do pairwise B-scans through G_a? I have to assume that is the case. The lack of clarity here makes this confusing and the wasted space on extra (superfluous) notation could have been put to better use providing some clarity. CONTINUED IN QUESTION 7. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No comment. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figure 2, the right-most image is described in the caption as “ours”. It is not clear to me if this is after the flattening to the Bruch’s membrane or after G_a? In either case there is an image missing, either the result after flattening or after G_a. Figure 2 features three colours (yellow, green, and blue), we are not told what these refer to. Table 1 lacks units, standard deviations, and any statistical analysis. Figure 3 is confusing. There is a ground-truth (light blue) and then four other bars. The FCBR method (yellow) appears to be closer to the ground-truth than the proposed method (dark blue). Yet the authors say “As shown in Fig. 3, surfaces segmented by our method has better cross-B-scan connectivity than those by FCBR [10] even with pre-alignment, as indicated by the more conspicuous spikes clustered around 0.” The spike may well be “conspicuous” but surely you want the results to match the “ground-truth”. Is “ground-truth” in Fig. 3, not really ground truth in the traditional (human) sense of the phrase? The authors seem to allude to this with “human annotators work with one B-scan at a time”, in which case maybe it should not be called “ground-truth”? References Numbered references are from the authors paper. [Carass2014] Carass et al., “Boundary classification driven multiple object deformable model segmentation of macular OCT”, Biomedical Optics Express, 5(4):1062–1074, 2014. [Liu2019] Liu et al., “A layer boundary evolution method for macular OCT layer segmentation”, Biomedical Optics Express, 10(3):1064-1080, 2019. [Novosel2015] Novosel et al., “Loosely coupled level sets for simultaneous 3D retinal layer segmentation in optical coherence tomography”, Medical Image Analysis, 26(1):146-158, 2015. [Novosel2017] Novosel et al., “Joint segmentation of retinal layers and focal lesions in 3-D OCT data of topologically disrupted retinas”, IEEE Trans. Med. Imag. 36(6):1276-1286, 2017. [Roy2017] Roy et al., “ReLayNet: Retinal Layer and Fluid Segmentation of Macular Optical Coherence Tomography using Fully Convolutional Network”, Biomedical Optics Express, 8(8):3627-3642, 2017. Some typos the authors should correct: “DCNN” -&gt; “CNN” “superiority toward existing” -&gt; “superiority over existing” OR “superiority with respect to existing” “consisting 2D CNN” -&gt; “consisting of 2D CNN” “interested reader to [10]” -&gt; “interested readers to [10]” “Bruch’s memvbrane” -&gt; “Bruch’s membrane” Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See responses to questions 3, 4, 5, and 7. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed a new framework for simultaneous B-scan alignment and 3D retinal layer segmentation for OCT image, and two losses. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors novely combined the alignment and segmentation together. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments do not show the segmentation results in vision comparison. The proposed algorithm is only compared with FCBR. There is not ablation study in the part. The flowchart in figure 1 is a little confused, such as the line in the Ga(3D). There are some grammar errors in the paper. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Fair Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please add some ablation study and comparison experiments. Please add some segmentation images for visual comparison. The flow chart should be revised. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The experiments and the explanation of the algorithms are not enough. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose an Optical Coherence Tomography (OCT) layer segmentation of the retina using a DCNN-based hybrid 2D-3D multi-task network that in addition to segmentation perform an alignment of slices (B-scans) and enforces a smoothness of layers between B-scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The multi-task approach of aligning scans and segmentation with smoothness constraints within one single model is interesting. The authors nicely tackle major challenges of retinal OCT analysis: 1.) the highly anisotropic structure with large between slice distance, by using a 2D encoder to extract features from B-scans and 3D later-on to incorporate the relationship of features between slices. 2.) Motion between B-scans, by aligning b-scans guided by intensity values and smoothness of layers. The alignment is incorporated into the segmentation model by a spatial transformer module (STN) transforming feature maps of all scales. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Evaluation dataset: The algorithm was evaluated on an intermediate AMD and healthy case dataset, where layers are relatively smooth, and neighboring B-scans are sufficient similar to allow an alignment via NCC. This assumption may not hold on more severe cases, such as late-stage AMD, and/or for a large slice-distance where B-scans are too different to allow a proper alignment. Hyper-parameter tweaking: The smoothness parameter lambda has been tweaked in preliminary experiments. If the experiments were done on the same dataset, the results might be biased. No comparison with other state-of-the-art layer segmentation algorithms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance If the code is published, as hinted in the paper and stated in the checklist, reproducibility should be high. Model and experiments are well described and evaluated. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is unclear how the smoothness loss (L_SmoothS) is computed. Is the gradient function considering the 3D surface or 2D surface only. Is it considering the B-scan alignment as well? If not, you may not assume smoothness between B-scans due to motion. Minor Please provide information from which OCT device the scans are. There are significant differences in image properties and quality between scanner devices. Typo: Page 6 center: Bruch’s memvbrane Suggestions for journal paper: —— It would be interesting to see an evaluation on additional datasets with more severe diseases in the sense of disrupting layer structures, and furthermore on more layers. Compare with other b-scan alignment methods, such as [1] Add comparison with other layer segmentation algorithms. [1]A. Montuoro et al. „Motion Artefact Correction in Retinal Optical Coherence Tomography Using Local Symmetry“, in MICCAI 2014, Proceedings, Part II, Cham, 2014, S. 130–137, doi: 10.1007/978-3-319-10470-6_17. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The approach of handling the high anisotropy, and the alignment of B-Scans in combination with enforcing smoothness is a nice approach. In particular parts of the developed method may also be applied on different tasks in OCT image analysis to better incorporate 3D information into their model and improve their results. The concept may also be used for other modalities with high anisotropy. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers have recognized that the authors proposed a novel and interesting methodology to solve an important problem of simultaneously segmenting retinal layers and aligning the adjacent B-scans. Nevertheless there are a few items raised by the reviewers that could help improve the clarity of the paper. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback N/A back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hong Liu, Dong Wei, Donghuan Lu, Yuexiang Li, Kai Ma, Liansheng Wang, Yefeng Zheng Abstract Automated surface segmentation of retinal layer is important and challenging in analyzing optical coherence tomography (OCT). Recently, many deep learning based methods have been developed for this task and yield remarkable performance. However, due to large spatial gap and potential mismatch between the B-scans of OCT data, all of them are based on 2D segmentation of individual B-scans, which may loss the continuity information across the B-scans. In addition, 3D surface of the retina layers can provide more diagnostic information, which is crucial in quantitative image analysis. In this study, a novel framework based on hybrid 2D-3D convolutional neural networks (CNNs) is proposed to obtain continuous 3D retinal layer surfaces from OCT. The 2D features of individual B-scans are extracted by an encoder consisting of 2D convolutions. These 2D features are then used to produce the alignment displacement field and layer segmentation by two 3D decoders, which are coupled via a spatial transformer module. The entire framework is trained end-to-end. To the best of our knowledge, this is the first study that attempts 3D retinal layer segmentation in volumetric OCT images based on CNNs. Experiments on a publicly available dataset show that our framework achieves superior results to state-of-the-art 2D methods in terms of both layer segmentation accuracy and cross-B-scan 3D continuity, thus offering more clinical values than previous works. Link to paper https://doi.org/10.1007/978-3-030-87237-3_11 Link to the code repository https://github.com/ccarliu/Retinal-OCT-LayerSeg.git Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors use 2D encoders to extract features from OCT B-scans. The 2D features are feed through 3D decoders which align the 2D features and generate the layer segmentation for the OCT data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is interesting work. I have lots of clarifying questions that I go through below. I think the idea of the quasi 3D framework is a nice addition to the field and has considerable benefits for OCT image processing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. “Earlier explorations … [17, 2] methods.” There are levelset based methods [Carass2014, Liu2019, Novosel2015, Novosel2017] that I am not sure neatly fit into any of these three categories. Maybe, I draw an unnecessary distinction between “contour modeling” and “levelsets”. However, there is clearly a fourth category as both [2, 17] are graph based methods that use machine learning based features. Whereas [9] is a pure graph based method. Maybe this fourth category is “Hybrid Methods”. “independent 2D images, despite … area of the eye” This is all completely factual. However, what is being ignored is the fact that the inter B-scan distance is orders of magnitude bigger than the intra B-scan distance. That is the distance between B-scans is much larger than the distance between A-scans within any single B-scan. In such a scenario, it is not unreasonable (maybe even desirable) to regard B-scans as independent. “[5] and [9] were the minority that attempted 3D OCT segmentation.” This is simply not true. [Carass2014, Novosel2015] are examples of 3D based methods that have been around for some time and have derivative works that build upon them [Novosel2017]. Unless I am mistaken [2, 17] are also 3D methods as they have graph connections between B-scans ensuring 3D smoothness. “the surface intersects with each A-scan exactly once.” This is a common assumption in OCT work. However, it is only valid in macula imaging as in optic nerve head imaging the surface can bend back on itself around the nerve head. The authors should note this. “Although it is feasible to add an alignment step while preprocessing, we believe that a comprehensive framework that couples the B-scan alignment and layer segmentation would mutually benefit each other” Maybe I am in the minority in thinking this about MICCAI, but it is a Scientific Conference, not a Religious One. So “believe” is not really important. Cold hard scientific facts are. You should demonstrate your belief with some experiments. Equation 1, says “(b_i, b_j) \in \mathcal{N}{B}” which would imply any two B-scans of the image. But the text says “(b_i , b_j) denotes two adjacent B-Scans”. Would it not make more sense to just write “(b_i , b{i + 1})”. Or better yet B-scan “b” and its neighbor “b \pm 1”, why even introduce i and j? Particularly, given that “b \in [1, N_B]” s introduced before i and j. Why the notation? B-scan alignment is useful, but the reality is that A-scans are misaligned as well, due to eye (and patient) motion, tracking failure, “floaters” in the Aqueous humor, etc. Why not deal with that as well? There is a disconnect in going from G_f to G_a. Do the authors run an entire volume through G_f and then do pairwise B-scans through G_a? I have to assume that is the case. The lack of clarity here makes this confusing and the wasted space on extra (superfluous) notation could have been put to better use providing some clarity. CONTINUED IN QUESTION 7. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No comment. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figure 2, the right-most image is described in the caption as “ours”. It is not clear to me if this is after the flattening to the Bruch’s membrane or after G_a? In either case there is an image missing, either the result after flattening or after G_a. Figure 2 features three colours (yellow, green, and blue), we are not told what these refer to. Table 1 lacks units, standard deviations, and any statistical analysis. Figure 3 is confusing. There is a ground-truth (light blue) and then four other bars. The FCBR method (yellow) appears to be closer to the ground-truth than the proposed method (dark blue). Yet the authors say “As shown in Fig. 3, surfaces segmented by our method has better cross-B-scan connectivity than those by FCBR [10] even with pre-alignment, as indicated by the more conspicuous spikes clustered around 0.” The spike may well be “conspicuous” but surely you want the results to match the “ground-truth”. Is “ground-truth” in Fig. 3, not really ground truth in the traditional (human) sense of the phrase? The authors seem to allude to this with “human annotators work with one B-scan at a time”, in which case maybe it should not be called “ground-truth”? References Numbered references are from the authors paper. [Carass2014] Carass et al., “Boundary classification driven multiple object deformable model segmentation of macular OCT”, Biomedical Optics Express, 5(4):1062–1074, 2014. [Liu2019] Liu et al., “A layer boundary evolution method for macular OCT layer segmentation”, Biomedical Optics Express, 10(3):1064-1080, 2019. [Novosel2015] Novosel et al., “Loosely coupled level sets for simultaneous 3D retinal layer segmentation in optical coherence tomography”, Medical Image Analysis, 26(1):146-158, 2015. [Novosel2017] Novosel et al., “Joint segmentation of retinal layers and focal lesions in 3-D OCT data of topologically disrupted retinas”, IEEE Trans. Med. Imag. 36(6):1276-1286, 2017. [Roy2017] Roy et al., “ReLayNet: Retinal Layer and Fluid Segmentation of Macular Optical Coherence Tomography using Fully Convolutional Network”, Biomedical Optics Express, 8(8):3627-3642, 2017. Some typos the authors should correct: “DCNN” -&gt; “CNN” “superiority toward existing” -&gt; “superiority over existing” OR “superiority with respect to existing” “consisting 2D CNN” -&gt; “consisting of 2D CNN” “interested reader to [10]” -&gt; “interested readers to [10]” “Bruch’s memvbrane” -&gt; “Bruch’s membrane” Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See responses to questions 3, 4, 5, and 7. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed a new framework for simultaneous B-scan alignment and 3D retinal layer segmentation for OCT image, and two losses. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors novely combined the alignment and segmentation together. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments do not show the segmentation results in vision comparison. The proposed algorithm is only compared with FCBR. There is not ablation study in the part. The flowchart in figure 1 is a little confused, such as the line in the Ga(3D). There are some grammar errors in the paper. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Fair Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please add some ablation study and comparison experiments. Please add some segmentation images for visual comparison. The flow chart should be revised. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The experiments and the explanation of the algorithms are not enough. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose an Optical Coherence Tomography (OCT) layer segmentation of the retina using a DCNN-based hybrid 2D-3D multi-task network that in addition to segmentation perform an alignment of slices (B-scans) and enforces a smoothness of layers between B-scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The multi-task approach of aligning scans and segmentation with smoothness constraints within one single model is interesting. The authors nicely tackle major challenges of retinal OCT analysis: 1.) the highly anisotropic structure with large between slice distance, by using a 2D encoder to extract features from B-scans and 3D later-on to incorporate the relationship of features between slices. 2.) Motion between B-scans, by aligning b-scans guided by intensity values and smoothness of layers. The alignment is incorporated into the segmentation model by a spatial transformer module (STN) transforming feature maps of all scales. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Evaluation dataset: The algorithm was evaluated on an intermediate AMD and healthy case dataset, where layers are relatively smooth, and neighboring B-scans are sufficient similar to allow an alignment via NCC. This assumption may not hold on more severe cases, such as late-stage AMD, and/or for a large slice-distance where B-scans are too different to allow a proper alignment. Hyper-parameter tweaking: The smoothness parameter lambda has been tweaked in preliminary experiments. If the experiments were done on the same dataset, the results might be biased. No comparison with other state-of-the-art layer segmentation algorithms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance If the code is published, as hinted in the paper and stated in the checklist, reproducibility should be high. Model and experiments are well described and evaluated. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is unclear how the smoothness loss (L_SmoothS) is computed. Is the gradient function considering the 3D surface or 2D surface only. Is it considering the B-scan alignment as well? If not, you may not assume smoothness between B-scans due to motion. Minor Please provide information from which OCT device the scans are. There are significant differences in image properties and quality between scanner devices. Typo: Page 6 center: Bruch’s memvbrane Suggestions for journal paper: —— It would be interesting to see an evaluation on additional datasets with more severe diseases in the sense of disrupting layer structures, and furthermore on more layers. Compare with other b-scan alignment methods, such as [1] Add comparison with other layer segmentation algorithms. [1]A. Montuoro et al. „Motion Artefact Correction in Retinal Optical Coherence Tomography Using Local Symmetry“, in MICCAI 2014, Proceedings, Part II, Cham, 2014, S. 130–137, doi: 10.1007/978-3-319-10470-6_17. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The approach of handling the high anisotropy, and the alignment of B-Scans in combination with enforcing smoothness is a nice approach. In particular parts of the developed method may also be applied on different tasks in OCT image analysis to better incorporate 3D information into their model and improve their results. The concept may also be used for other modalities with high anisotropy. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers have recognized that the authors proposed a novel and interesting methodology to solve an important problem of simultaneously segmenting retinal layers and aligning the adjacent B-scans. Nevertheless there are a few items raised by the reviewers that could help improve the clarity of the paper. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback N/A back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0810/12/31/Paper1968" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0810/12/31/Paper1968" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0810-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Simultaneous Alignment and Surface Regression Using Hybrid 2D-3D Networks for 3D Coherent Layer Segmentation of Retina OCT Images" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0810/12/31/Paper1968"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0810/12/31/Paper1968","headline":"Simultaneous Alignment and Surface Regression Using Hybrid 2D-3D Networks for 3D Coherent Layer Segmentation of Retina OCT Images","dateModified":"0811-01-05T00:00:00-05:17","datePublished":"0810-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Hong Liu, Dong Wei, Donghuan Lu, Yuexiang Li, Kai Ma, Liansheng Wang, Yefeng Zheng Abstract Automated surface segmentation of retinal layer is important and challenging in analyzing optical coherence tomography (OCT). Recently, many deep learning based methods have been developed for this task and yield remarkable performance. However, due to large spatial gap and potential mismatch between the B-scans of OCT data, all of them are based on 2D segmentation of individual B-scans, which may loss the continuity information across the B-scans. In addition, 3D surface of the retina layers can provide more diagnostic information, which is crucial in quantitative image analysis. In this study, a novel framework based on hybrid 2D-3D convolutional neural networks (CNNs) is proposed to obtain continuous 3D retinal layer surfaces from OCT. The 2D features of individual B-scans are extracted by an encoder consisting of 2D convolutions. These 2D features are then used to produce the alignment displacement field and layer segmentation by two 3D decoders, which are coupled via a spatial transformer module. The entire framework is trained end-to-end. To the best of our knowledge, this is the first study that attempts 3D retinal layer segmentation in volumetric OCT images based on CNNs. Experiments on a publicly available dataset show that our framework achieves superior results to state-of-the-art 2D methods in terms of both layer segmentation accuracy and cross-B-scan 3D continuity, thus offering more clinical values than previous works. Link to paper https://doi.org/10.1007/978-3-030-87237-3_11 Link to the code repository https://github.com/ccarliu/Retinal-OCT-LayerSeg.git Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors use 2D encoders to extract features from OCT B-scans. The 2D features are feed through 3D decoders which align the 2D features and generate the layer segmentation for the OCT data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is interesting work. I have lots of clarifying questions that I go through below. I think the idea of the quasi 3D framework is a nice addition to the field and has considerable benefits for OCT image processing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. “Earlier explorations … [17, 2] methods.” There are levelset based methods [Carass2014, Liu2019, Novosel2015, Novosel2017] that I am not sure neatly fit into any of these three categories. Maybe, I draw an unnecessary distinction between “contour modeling” and “levelsets”. However, there is clearly a fourth category as both [2, 17] are graph based methods that use machine learning based features. Whereas [9] is a pure graph based method. Maybe this fourth category is “Hybrid Methods”. “independent 2D images, despite … area of the eye” This is all completely factual. However, what is being ignored is the fact that the inter B-scan distance is orders of magnitude bigger than the intra B-scan distance. That is the distance between B-scans is much larger than the distance between A-scans within any single B-scan. In such a scenario, it is not unreasonable (maybe even desirable) to regard B-scans as independent. “[5] and [9] were the minority that attempted 3D OCT segmentation.” This is simply not true. [Carass2014, Novosel2015] are examples of 3D based methods that have been around for some time and have derivative works that build upon them [Novosel2017]. Unless I am mistaken [2, 17] are also 3D methods as they have graph connections between B-scans ensuring 3D smoothness. “the surface intersects with each A-scan exactly once.” This is a common assumption in OCT work. However, it is only valid in macula imaging as in optic nerve head imaging the surface can bend back on itself around the nerve head. The authors should note this. “Although it is feasible to add an alignment step while preprocessing, we believe that a comprehensive framework that couples the B-scan alignment and layer segmentation would mutually benefit each other” Maybe I am in the minority in thinking this about MICCAI, but it is a Scientific Conference, not a Religious One. So “believe” is not really important. Cold hard scientific facts are. You should demonstrate your belief with some experiments. Equation 1, says “(b_i, b_j) \\in \\mathcal{N}{B}” which would imply any two B-scans of the image. But the text says “(b_i , b_j) denotes two adjacent B-Scans”. Would it not make more sense to just write “(b_i , b{i + 1})”. Or better yet B-scan “b” and its neighbor “b \\pm 1”, why even introduce i and j? Particularly, given that “b \\in [1, N_B]” s introduced before i and j. Why the notation? B-scan alignment is useful, but the reality is that A-scans are misaligned as well, due to eye (and patient) motion, tracking failure, “floaters” in the Aqueous humor, etc. Why not deal with that as well? There is a disconnect in going from G_f to G_a. Do the authors run an entire volume through G_f and then do pairwise B-scans through G_a? I have to assume that is the case. The lack of clarity here makes this confusing and the wasted space on extra (superfluous) notation could have been put to better use providing some clarity. CONTINUED IN QUESTION 7. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No comment. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Figure 2, the right-most image is described in the caption as “ours”. It is not clear to me if this is after the flattening to the Bruch’s membrane or after G_a? In either case there is an image missing, either the result after flattening or after G_a. Figure 2 features three colours (yellow, green, and blue), we are not told what these refer to. Table 1 lacks units, standard deviations, and any statistical analysis. Figure 3 is confusing. There is a ground-truth (light blue) and then four other bars. The FCBR method (yellow) appears to be closer to the ground-truth than the proposed method (dark blue). Yet the authors say “As shown in Fig. 3, surfaces segmented by our method has better cross-B-scan connectivity than those by FCBR [10] even with pre-alignment, as indicated by the more conspicuous spikes clustered around 0.” The spike may well be “conspicuous” but surely you want the results to match the “ground-truth”. Is “ground-truth” in Fig. 3, not really ground truth in the traditional (human) sense of the phrase? The authors seem to allude to this with “human annotators work with one B-scan at a time”, in which case maybe it should not be called “ground-truth”? References Numbered references are from the authors paper. [Carass2014] Carass et al., “Boundary classification driven multiple object deformable model segmentation of macular OCT”, Biomedical Optics Express, 5(4):1062–1074, 2014. [Liu2019] Liu et al., “A layer boundary evolution method for macular OCT layer segmentation”, Biomedical Optics Express, 10(3):1064-1080, 2019. [Novosel2015] Novosel et al., “Loosely coupled level sets for simultaneous 3D retinal layer segmentation in optical coherence tomography”, Medical Image Analysis, 26(1):146-158, 2015. [Novosel2017] Novosel et al., “Joint segmentation of retinal layers and focal lesions in 3-D OCT data of topologically disrupted retinas”, IEEE Trans. Med. Imag. 36(6):1276-1286, 2017. [Roy2017] Roy et al., “ReLayNet: Retinal Layer and Fluid Segmentation of Macular Optical Coherence Tomography using Fully Convolutional Network”, Biomedical Optics Express, 8(8):3627-3642, 2017. Some typos the authors should correct: “DCNN” -&gt; “CNN” “superiority toward existing” -&gt; “superiority over existing” OR “superiority with respect to existing” “consisting 2D CNN” -&gt; “consisting of 2D CNN” “interested reader to [10]” -&gt; “interested readers to [10]” “Bruch’s memvbrane” -&gt; “Bruch’s membrane” Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? See responses to questions 3, 4, 5, and 7. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors proposed a new framework for simultaneous B-scan alignment and 3D retinal layer segmentation for OCT image, and two losses. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors novely combined the alignment and segmentation together. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments do not show the segmentation results in vision comparison. The proposed algorithm is only compared with FCBR. There is not ablation study in the part. The flowchart in figure 1 is a little confused, such as the line in the Ga(3D). There are some grammar errors in the paper. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Fair Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please add some ablation study and comparison experiments. Please add some segmentation images for visual comparison. The flow chart should be revised. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The experiments and the explanation of the algorithms are not enough. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose an Optical Coherence Tomography (OCT) layer segmentation of the retina using a DCNN-based hybrid 2D-3D multi-task network that in addition to segmentation perform an alignment of slices (B-scans) and enforces a smoothness of layers between B-scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The multi-task approach of aligning scans and segmentation with smoothness constraints within one single model is interesting. The authors nicely tackle major challenges of retinal OCT analysis: 1.) the highly anisotropic structure with large between slice distance, by using a 2D encoder to extract features from B-scans and 3D later-on to incorporate the relationship of features between slices. 2.) Motion between B-scans, by aligning b-scans guided by intensity values and smoothness of layers. The alignment is incorporated into the segmentation model by a spatial transformer module (STN) transforming feature maps of all scales. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Evaluation dataset: The algorithm was evaluated on an intermediate AMD and healthy case dataset, where layers are relatively smooth, and neighboring B-scans are sufficient similar to allow an alignment via NCC. This assumption may not hold on more severe cases, such as late-stage AMD, and/or for a large slice-distance where B-scans are too different to allow a proper alignment. Hyper-parameter tweaking: The smoothness parameter lambda has been tweaked in preliminary experiments. If the experiments were done on the same dataset, the results might be biased. No comparison with other state-of-the-art layer segmentation algorithms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance If the code is published, as hinted in the paper and stated in the checklist, reproducibility should be high. Model and experiments are well described and evaluated. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is unclear how the smoothness loss (L_SmoothS) is computed. Is the gradient function considering the 3D surface or 2D surface only. Is it considering the B-scan alignment as well? If not, you may not assume smoothness between B-scans due to motion. Minor Please provide information from which OCT device the scans are. There are significant differences in image properties and quality between scanner devices. Typo: Page 6 center: Bruch’s memvbrane Suggestions for journal paper: —— It would be interesting to see an evaluation on additional datasets with more severe diseases in the sense of disrupting layer structures, and furthermore on more layers. Compare with other b-scan alignment methods, such as [1] Add comparison with other layer segmentation algorithms. [1]A. Montuoro et al. „Motion Artefact Correction in Retinal Optical Coherence Tomography Using Local Symmetry“, in MICCAI 2014, Proceedings, Part II, Cham, 2014, S. 130–137, doi: 10.1007/978-3-319-10470-6_17. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The approach of handling the high anisotropy, and the alignment of B-Scans in combination with enforcing smoothness is a nice approach. In particular parts of the developed method may also be applied on different tasks in OCT image analysis to better incorporate 3D information into their model and improve their results. The concept may also be used for other modalities with high anisotropy. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers have recognized that the authors proposed a novel and interesting methodology to solve an important problem of simultaneously segmenting retinal layers and aligning the adjacent B-scans. Nevertheless there are a few items raised by the reviewers that could help improve the clarity of the paper. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback N/A back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Liu, Hong,Wei, Dong,Lu, Donghuan,Li, Yuexiang,Ma, Kai,Wang, Liansheng,Zheng, Yefeng" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Simultaneous Alignment and Surface Regression Using Hybrid 2D-3D Networks for 3D Coherent Layer Segmentation of Retina OCT Images</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Ophthalmology"
+        class="post-category">
+        Clinical applications - Ophthalmology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Liu, Hong"
+        class="post-tags">
+        Liu, Hong
+      </a> |  
+      
+      <a href="kittywong/tags#Wei, Dong"
+        class="post-tags">
+        Wei, Dong
+      </a> |  
+      
+      <a href="kittywong/tags#Lu, Donghuan"
+        class="post-tags">
+        Lu, Donghuan
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yuexiang"
+        class="post-tags">
+        Li, Yuexiang
+      </a> |  
+      
+      <a href="kittywong/tags#Ma, Kai"
+        class="post-tags">
+        Ma, Kai
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Liansheng"
+        class="post-tags">
+        Wang, Liansheng
+      </a> |  
+      
+      <a href="kittywong/tags#Zheng, Yefeng"
+        class="post-tags">
+        Zheng, Yefeng
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Hong Liu, Dong Wei, Donghuan Lu, Yuexiang Li, Kai Ma, Liansheng Wang, Yefeng Zheng
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Automated surface segmentation of retinal layer is important and challenging in analyzing optical coherence tomography (OCT). Recently, many deep learning based methods have been developed for this task and yield remarkable performance. However, due to large spatial gap and potential mismatch between the B-scans of OCT data, all of them are based on 2D segmentation of individual B-scans, which may loss the continuity information across the B-scans. In addition, 3D surface of the retina layers can provide more diagnostic information, which is crucial in quantitative image analysis. In this study, a novel framework based on hybrid 2D-3D convolutional neural networks (CNNs) is proposed to obtain continuous 3D retinal layer surfaces from OCT. The 2D features of individual B-scans are extracted by an encoder consisting of 2D convolutions. These 2D features are then used to produce the alignment displacement field and layer segmentation by two 3D decoders, which are coupled via a spatial transformer module. The entire framework is trained end-to-end. To the best of our knowledge, this is the first study that attempts 3D retinal layer segmentation in volumetric OCT images based on CNNs. Experiments on a publicly available dataset show that our framework achieves superior results to state-of-the-art 2D methods in terms of both layer segmentation accuracy and cross-B-scan 3D continuity, thus offering more clinical values than previous works.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87237-3_11">https://doi.org/10.1007/978-3-030-87237-3_11</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/ccarliu/Retinal-OCT-LayerSeg.git
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors use 2D encoders to extract features from OCT B-scans. The 
+2D features are feed through 3D decoders which align the 2D features
+and generate the layer segmentation for the OCT data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>It is interesting work. I have lots of clarifying questions that I go through below.</p>
+
+      <p>I think the idea of the quasi 3D framework is a nice addition to the field and has considerable benefits for OCT image processing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>“Earlier explorations … [17, 2] methods.” There are levelset based
+methods [Carass2014, Liu2019, Novosel2015, Novosel2017] that I am not 
+sure neatly fit into any of these three categories. Maybe, I draw an
+unnecessary distinction between “contour modeling” and “levelsets”.
+However, there is clearly a fourth category as both [2, 17] are graph
+based methods that use machine learning based features. Whereas [9] is
+a pure graph based method.  Maybe this fourth category is “Hybrid
+Methods”.</p>
+
+      <p>“independent 2D images, despite … area of the eye”</p>
+
+      <p>This is all completely factual. However, what is being ignored is the
+fact that the inter B-scan distance is orders of magnitude bigger than
+the intra B-scan distance. That is the distance between B-scans is
+much larger than the distance between A-scans within any single
+B-scan. In such a scenario, it is not unreasonable (maybe even
+desirable) to regard B-scans as independent.</p>
+
+      <p>“[5] and [9] were the minority that attempted 3D OCT segmentation.”
+This is simply not true. [Carass2014, Novosel2015] are examples of 3D
+based methods that have been around for some time and have derivative
+works that build upon them [Novosel2017]. Unless I am mistaken [2, 17]
+are also 3D methods as they have graph connections between B-scans
+ensuring 3D smoothness.</p>
+
+      <p>“the surface intersects with each A-scan exactly once.” This is a
+common assumption in OCT work. However, it is only valid in macula
+imaging as in optic nerve head imaging the surface can bend back on
+itself around the nerve head. The authors should note this.</p>
+
+      <p>“Although it is feasible to add an alignment step while preprocessing,
+we believe that a comprehensive framework that couples the B-scan
+alignment and layer segmentation would mutually benefit each other”
+Maybe I am in the minority in thinking this about MICCAI, but it is a
+Scientific Conference, not a Religious One. So “believe” is not really
+important. Cold hard scientific facts are. You should demonstrate your
+belief with some experiments.</p>
+
+      <p>Equation 1, says “(b_i, b_j) \in \mathcal{N}<em>{B}” which would imply
+any two B-scans of the image. But the text says “(b_i , b_j) denotes
+two adjacent B-Scans”. Would it not make more sense to just write
+“(b_i , b</em>{i + 1})”. Or better yet B-scan “b” and its neighbor “b \pm 1”,
+why even introduce i and j?</p>
+
+      <p>Particularly, given that “b \in [1, N_B]” s introduced before i and j.
+Why the notation?</p>
+
+      <p>B-scan alignment is useful, but the reality is that A-scans are
+misaligned as well, due to eye (and patient) motion, tracking failure,
+“floaters” in the Aqueous humor, etc. Why not deal with that as well?</p>
+
+      <p>There is a disconnect in going from G_f to G_a. Do the authors run an
+entire volume through G_f and then do pairwise B-scans through G_a?</p>
+
+      <p>I have to assume that is the case. The lack of clarity here makes this
+confusing and the wasted space on extra (superfluous) notation could
+have been put to better use providing some clarity.</p>
+
+      <p>CONTINUED IN QUESTION 7.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>No comment.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Figure 2, the right-most image is described in the caption as “ours”.
+It is not clear to me if this is after the flattening to the Bruch’s
+membrane or after G_a? In either case there is an image missing,
+either the result after flattening or after G_a.</p>
+
+      <p>Figure 2 features three colours (yellow, green, and blue), we are not
+told what these refer to.</p>
+
+      <p>Table 1 lacks units, standard deviations, and any statistical
+analysis.</p>
+
+      <p>Figure 3 is confusing. There is a ground-truth (light blue) and then
+four other bars. The FCBR method (yellow) appears to be closer to the
+ground-truth than the proposed method (dark blue).</p>
+
+      <p>Yet the authors say “As shown in Fig. 3, surfaces segmented by our
+method has better cross-B-scan connectivity than those by FCBR [10]
+even with pre-alignment, as indicated by the more conspicuous spikes
+clustered around 0.” The spike may well be “conspicuous” but surely
+you want the results to match the “ground-truth”. Is “ground-truth” in
+Fig. 3, not really ground truth in the traditional (human) sense of
+the phrase?</p>
+
+      <p>The authors seem to allude to this with “human annotators work with
+one B-scan at a time”, in which case maybe it should not be called
+“ground-truth”?</p>
+
+      <h1 id="references">References</h1>
+      <p>Numbered references are from the authors paper.</p>
+
+      <p>[Carass2014]   Carass et al., “Boundary classification driven multiple
+              object deformable model segmentation of macular OCT”,
+              Biomedical Optics Express, 5(4):1062–1074, 2014.</p>
+
+      <p>[Liu2019]   Liu et al., “A layer boundary evolution method for macular
+           OCT layer segmentation”, Biomedical Optics Express,
+           10(3):1064-1080, 2019.</p>
+
+      <p>[Novosel2015]   Novosel et al., “Loosely coupled level sets for
+               simultaneous 3D retinal layer segmentation in optical
+               coherence tomography”, Medical Image Analysis,
+               26(1):146-158, 2015.</p>
+
+      <p>[Novosel2017]   Novosel et al., “Joint segmentation of retinal layers
+               and focal lesions in 3-D OCT data of topologically
+               disrupted retinas”, IEEE Trans. Med. Imag.
+               36(6):1276-1286, 2017.</p>
+
+      <p>[Roy2017]   Roy et al., “ReLayNet: Retinal Layer and Fluid
+           Segmentation of Macular Optical Coherence Tomography using
+           Fully Convolutional Network”, Biomedical Optics Express,
+           8(8):3627-3642, 2017.</p>
+
+      <p>Some typos the authors should correct:
+“DCNN” -&gt; “CNN”</p>
+
+      <p>“superiority toward existing” -&gt; “superiority over existing” OR “superiority with respect to existing”</p>
+
+      <p>“consisting 2D CNN” -&gt; “consisting of 2D CNN”</p>
+
+      <p>“interested reader to [10]” -&gt; “interested readers to [10]”</p>
+
+      <p>“Bruch’s memvbrane” -&gt; “Bruch’s membrane”</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>See responses to questions 3, 4, 5, and 7.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors proposed a new framework for simultaneous B-scan alignment and 3D retinal layer segmentation for OCT image, and two losses.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The authors novely combined the alignment and segmentation together.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The experiments do not show the segmentation results in vision comparison. The proposed algorithm is only compared with FCBR. There is not ablation study in the part.</li>
+        <li>The flowchart in figure 1 is a little confused, such as the line in the Ga(3D).</li>
+        <li>There are some grammar errors in the paper.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Fair</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>Please add some ablation study and comparison experiments.</li>
+        <li>Please add some segmentation images for visual comparison.</li>
+        <li>The flow chart should be revised.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The experiments and the explanation of the algorithms are not enough.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an Optical Coherence Tomography (OCT) layer segmentation of the retina using a DCNN-based hybrid 2D-3D multi-task network that in addition to segmentation perform an alignment of slices (B-scans)  and enforces a smoothness of layers between B-scans.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The multi-task approach of aligning scans and segmentation with smoothness constraints within one single model is interesting.</p>
+
+      <p>The authors nicely tackle major challenges of retinal OCT analysis: 
+1.) the highly anisotropic structure with large between slice distance, by using a 2D encoder to extract features from B-scans and 3D later-on to incorporate the relationship of features between slices.<br />
+2.) Motion between B-scans, by aligning b-scans guided by intensity values and smoothness of layers. The alignment is incorporated into the segmentation model by a spatial transformer module (STN) transforming feature maps of all scales.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>Evaluation dataset: The algorithm was evaluated on an intermediate  AMD and healthy case dataset, where layers are relatively smooth, and neighboring B-scans are sufficient similar to allow an alignment via NCC. This assumption may not hold on more severe cases, such as late-stage AMD, and/or for a large slice-distance where B-scans are too different to allow a proper alignment.</p>
+        </li>
+        <li>
+          <p>Hyper-parameter tweaking: The smoothness parameter lambda has been tweaked in preliminary experiments. If the experiments were done on the same dataset, the results might be biased.</p>
+        </li>
+        <li>
+          <p>No comparison with other state-of-the-art layer segmentation algorithms.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>If the code is published, as hinted in the paper and stated in the checklist, reproducibility should be high. 
+Model and experiments are well described and evaluated.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>It is unclear how the smoothness loss (L_SmoothS) is computed. Is the gradient function considering the 3D surface or 2D surface only. Is it considering the B-scan alignment as well? If not, you may not assume smoothness between B-scans due to motion.</li>
+      </ol>
+
+      <h2 id="minor">Minor</h2>
+      <ol>
+        <li>
+          <p>Please provide information from which OCT device the scans are. There are significant differences in image properties and quality between scanner devices.</p>
+        </li>
+        <li>Typo: Page 6 center: Bruch’s memvbrane
+Suggestions for journal paper:
+——</li>
+        <li>It would be interesting to see an evaluation on additional datasets with more severe diseases in the sense of disrupting layer structures, and furthermore on more layers.</li>
+        <li>Compare with other b-scan alignment methods, such as [1]</li>
+        <li>Add comparison with other layer segmentation algorithms.</li>
+      </ol>
+
+      <p>[1]A. Montuoro et al. „Motion Artefact Correction in Retinal Optical Coherence Tomography Using Local Symmetry“, in MICCAI 2014, Proceedings, Part II, Cham, 2014, S. 130–137, doi: 10.1007/978-3-319-10470-6_17.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The approach of handling the high anisotropy, and the alignment of B-Scans in combination with enforcing smoothness is a nice approach. 
+In particular parts of the developed method may also be applied on different tasks in OCT image analysis to better incorporate 3D information into their model and improve their results. The concept may also be used for other modalities with high anisotropy.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The reviewers have recognized that the authors proposed a novel and interesting methodology to solve an important problem of simultaneously segmenting retinal layers and aligning the adjacent B-scans. Nevertheless there are a few items raised by the reviewers that could help improve the clarity of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>N/A</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0810-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0811-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Ophthalmology"
+        class="post-category">
+        Clinical applications - Ophthalmology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Liu, Hong"
+        class="post-category">
+        Liu, Hong
+      </a> |  
+      
+      <a href="kittywong/tags#Wei, Dong"
+        class="post-category">
+        Wei, Dong
+      </a> |  
+      
+      <a href="kittywong/tags#Lu, Donghuan"
+        class="post-category">
+        Lu, Donghuan
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yuexiang"
+        class="post-category">
+        Li, Yuexiang
+      </a> |  
+      
+      <a href="kittywong/tags#Ma, Kai"
+        class="post-category">
+        Ma, Kai
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Liansheng"
+        class="post-category">
+        Wang, Liansheng
+      </a> |  
+      
+      <a href="kittywong/tags#Zheng, Yefeng"
+        class="post-category">
+        Zheng, Yefeng
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0811/12/31/Paper0047">
+          GQ-GCN: Group Quadratic Graph Convolutional Network for Classification of Histopathological Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0809/12/31/Paper1864">
+          Few-shot Transfer Learning for Hereditary Retinal Diseases Recognition
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

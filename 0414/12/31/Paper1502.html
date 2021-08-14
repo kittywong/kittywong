@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Nesterov Accelerated ADMM for Fast Diffeomorphic Image Registration | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Nesterov Accelerated ADMM for Fast Diffeomorphic Image Registration" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Alexander Thorley, Xi Jia, Hyung Jin Chang, Boyang Liu, Karina Bunting, Victoria Stoll, Antonio de Marvao, Declan P. O’Regan, Georgios Gkoutos, Dipak Kotecha, Jinming Duan Abstract Deterministic approaches using iterative optimisation have been historically successful in diffeomorphic image registration (DiffIR). Although these approaches are highly accurate, they typically carry a significant computational burden. Recent developments in stochastic approaches based on deep learning have achieved sub-second runtimes for DiffIR with competitive registration accuracy, offering a fast alternative to conventional iterative methods. In this paper, we attempt to reduce this difference in speed whilst retaining the performance advantage of iterative approaches in DiffIR. We first propose a simple iterative scheme that functionally composes intermediate non-stationary velocity fields to handle large deformations in images whilst guaranteeing diffeomorphisms in the resultant deformation. We then propose a convex optimisation model that uses a regularisation term of arbitrary order to impose smoothness on these velocity fields and solve this model with a fast algorithm that combines Nesterov gradient descent and the alternating direction method of multipliers (ADMM). Finally, we leverage the computational power of GPU to implement this accelerated ADMM solver on a 3D cardiac MRI dataset, further reducing runtime to less than 2 seconds. In addition to producing strictly diffeomorphic deformations, our methods outperform both state-of-the-art deep learning-based and iterative DiffIR approaches in terms of dice and Hausdorff scores, with speed approaching the inference time of deep learning-based methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_15 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper propose to use Nesterov accelerated ADMM algorithm to solve the diffeomorphic image registration problem. Specifically, the registration model is decomposed into a multi-step optical flow subproblem. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is clearly written and properly motivated. The proposed method is interesting and results are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no major weaknesses of the paper, for some small issues, please find in section 7 and correct/comment them in camera-ready revision. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the paper is clearly presented for reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, I think this paper is okay for acceptance. There are some minor issues that the author can take into consideration for minor revision. citation 4 and 5 are repetitive. For Table 1, it is better to do a statistical significance analysis. It is hard to compare methods that the performance are close to each other. What is the definition of HSV_{\phi}? It looks like velocity or displacement map. But as the methods iterate several times, which iteration it is? or it is composition? I feel like it is hard to interpret because there is no context in the paper. The proposed method is not theoretically guaranteed to be diffeomorphic. Actually I am surprised that the author can achieve 0 folding in all their methods. The proposed method is sort-of piece-wise stationary velocity field over unit time. Maybe because the author add strong regularization over velocity, otherwise I am confused. Hausdorff distance usually contains outliers. It is better to substitute it with 95% hausdorff distance to remove outliers. The speed-gain is majorly due to the simplified model. I am not surprised to see solving a optical flow model is much faster than previous traditional optimization approaches like LDDMM or Demons or ANTs. However, I am very surprised to see that the performance is much better than Demons and ANTs. Previously, VoxelMorph and Diff-Voxelmorph can not greatly suppress Demons and ANTs. But the results in this paper is a little shocking to me. I recommend the author to carefully fine-tuning the parameters of Demons and ANTs to ensure it is fair comparisons. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper explores using optimization based approach to solve diffeomorphic image registration. The number of such optimization papers is relatively small compared with deep learning based approaches. It would be good to include this paper for MICCAI-2021. The writing of the paper and presentation are clear and straightforward. This method simplified the diffeomorphic image registration model as a multi-step optical flow problem and using ADMM to solve the problem. The design is reasonable and interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This article proposes a model-based method for diffeomorphic registration that is claimed to perform with competing efficiency to the inference phase of recently proposed learning-based methods. The method uses a small deformation parameterization and deformation is achieved using a greedy compositive approach. This greedy compositive approach to diffeomorphisms takes the ideas from Christensen et al. TIP 1996 and Vercauteren et al. Neuroimage 2009. The image similarity energy comes from a first-order Taylor approximation to the L2 energy, originally proposed by Horn and Schunk. Both the L1 and L2 versions of the energy are considered in this work. The regularization constrains the L2 norm of the n-th derivative of the displacement velocity. Optimization is performed using the alternating direction method of multipliers (ADDMM). The resulting equations are computed in closed form in order to reduce the problem to a point-wise matricial problem highly paralelizable in the GPU. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. The experiments have shown a competitive accuracy while the overall total run time is less than two seconds. Smart approximations to the different ingredients of the diffeomorphic registration problem could be worth more than collecting massive amounts of data for training sophisticated architectures with not-well understood underlying models. The closed form solution given in Equation (6) is the key for a fast optimization. This idea may be extended to other diffeomorphic registration methods for fast optimization. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed methods is based in ideas previously published in the literature. These ideas have not been properly given credit in the manuscript. Similar methods based on primal-dual optimization for diffeomorphic registration have not been cited and discussed. The greedy approach to diffeomorphism parameterization provides solutions outside the ideal LDDMM paradigm, where solutions are given in the tangent space of the manifold of diffeomorphisms. Therefore, the proposed method cannot be used in Computational Anatomy applications requiring the velocity fields. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The datasets used for evaluation are not publicly available. I believe that the proposed method can be re-implemented with some work. Starting from some available diffeomorphic registration library would accelerate the process. The parameter values were provided. For the evaluation, the authors provided a clear description of metrics and tendency. Statistical significance was not stated. Memory footprint was not provided. This makes me doubt whether the method would be so memory expensive. The clinical significance of the method is not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As I said above, the main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. Therefore, it is still worth making efforts improving the different parts of model-based approaches for diffeomorphic registration in order to obtain a competitive efficiency. I believe that this message is very important, and it should be said in a conference such as Miccai. The main weakness of the manuscript is that the proposed method is based in ideas previously published in the literature. For example, the greedy compositive approach was first proposed with diffeomorphic Demons in Vercauteren et al., Neuroimage 2009, and it is mostly inspired in the original idea by Christensen et al. TIP 1996. I believe that the authors should give credit to the place where these ideas came from for those readers unfamiliar with the topic and interesting in building knowledge based on current state of the art. In this sense, the authors failed to cite and properly discuss some works closely related to the proposal of the manuscript which pioneered the use of L1 metrics and primal-dual optimization in diffeomorphic registration, namely, M Hernandez et al., Primal-dual convex optimization in large deformation diffeomorphic metric mapping: LDDMM meets robust regularizers, 2017 and the companion paper published in BMVC 2015. I miss also some citations to works on optical flow using primal-dual optimization such as A. Chambolle et al., A First-Order Primal-Dual Algorithm for Convex Problems with Applications to Imaging, JMIV 2011 or R Garg et al., A variational approach to video registration with subspace constraints, IJCV 2013, or the improvements performed in M. Hernandez, Primal-dual optimization strategies in Huber-L1 optical flow with temporal subspace constraints for non-rigid sequence registration, IMAVIS 2018. . I have several comments I am going to raise point by point following the manuscript flow. 1) I believe that the state of the art in accelerating diffeomorphic registration is missing important milestones such as Gauss-Newton-Krylov methods proposed in Mang et al. in SIIMS 2015, 2016. These authors have successfully performed a multi-GPU implementation (Claire), presented in Mang et al. SIIMS 2019 and a GPU version of Claire. 2) The claim “As Quicksilver and DeepFLASH need to be trained using the numerical solutions of LDDMM as ground truth, their performance is unlikely to outperform LDDMM”. The given citation does not support this claim. Did the authors proofed experimentally this assertion? I could not say whether this is true. 3) The claim “However, apart from the fast inference speed, there is no strong evidence indicating the stochastic learning-based approaches have outperformed the deterministic approaches using iterative optimisation reviewed above.” According to my own experience, Quicksilver is a really good-performing method… I don’t have a strong evidence, but I maybe could build one… I advise hedging these assertions. 4) The sentence “Decompose a diffeomorphic transformation into the compositions of a series of small non-stationary velocity fields…” it seems that the transformation is decomposed in small velocity fields and each one is non-stationary. This is not exactly reflected in Equation 1. Please, rephrase accurately. 5) Section 2. Equation 1. The differences between Equation (1) and the greedy compositive approach from diffeomorphic Demons should be stated here. Personally, I would prefer a method with a solution in the tangent space, not in the small-deformation setting (i.e. v_i are displacement fields!). However, then the closed form solution may be probably lost. May the author elaborate on why selecting the small-deformation greedy approach? Why not Exp(vtN-1)o … o Exp(v0)? 6) What is the advantage of selecting the linearized version of HS image similarity term with respect to the standard I1 o phi – I0? 7) The authors claim that Equation 2 is new but I believe that it is basically a tuned Horn-Schunk energy. 8) For those readers unfamiliar with these kind of optimization metrics, may the authors detail where in the equations intervenes Nesterov acceleration? A small derivation in the supplementary material would be great. 9) Section 4. The authors performed the selection of the method parameters using a validation set. I believe that the Dice criterion may not be good for choosing parameters yielding diffeomorphic transformations. I would combine the Dice criterion with a criterion based on the smoothness of the transformations. The authors obtained diffeomorphic transformations, yes, but it may be due the selection of a narrow interval for lambda [0,60] where maybe all transformations are diffeomorphic. 10) I liked the selected experiment. It would be worth mentioning the differences on transformation smoothness and the nasty Jacobians for DD and VM. It also would be worth mentioning that the selected experiment is amenable for greey methods and that diffeomorphic Demons did not perform very accurately. 11) Regarding the results in Table 1, why is Dice from SyN so low? According to my experience, since SyN was run with NCC and not SSD, the method running with the default parameters would outperform at least VM. What is happenigng? 12) 6 seconds for diffeomorphic Demons is pretty fast. 13) What is the memory footprint of the proposed method compared with the other methods? I believe it should not be particularly efficient in this aspect, shouldn’t it? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that the message of the article should be said in a conference such as Miccai. Model-based methods can be approached in a way that the resulting methods is fast and competitve with learning-based modern approaches. Having said this, the proposed method is built upon previous ideas that should be properly cited and discussed. I expect that the authors make the effort to properly recognize this previous work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors proposed a new iterative optimisation approach for diffeomorphic registration. The convex optimisation problem is resolved using the alternating direction method of multipliers and GPU calculation, giving a calculation time inferior to 2 sec. Experiments are performed on cardiac MRI datasets and compared with iterative registration and deep learning-based registration. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the method is its novelty and mostly the GPU implementation of an iterative registration algorithm. Indeed, previous methods such as SyN had superior calculation time than deep learning methods, but the authors achieve comparable calculation time. The authors also implement their metho using a three-level pyramid scheme, split their dataset into train/validation/test for the search of hyperparameters (not always done with non-deep learning methods) and have a diffeomorphic solution (no negative Jacobian are reported on the experiments). Finally the method is well described with all the equations required to understand and reproduce it. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The calculation time is under 2 sec and better than other iterative approaches, but it is still ten times longer than deep learning methods ( approximatively 1 sec vs approximatively 0.1 sec). Comparison with multi-scale deep learning approaches is not given (Hering et al. 2019, Mok et al., 2020), while the proposed method uses a pyramid 3 level scheme. Compared with methods using segmentation masks would have been interesting, even if the proposed method is not using the mask. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reviewer didn’t find information if the used dataset is public or private. Most of the chosen hyperparameters are given. However, the choice of lambda and theta for the results are not given (curves with dice in function of lambda/theta is given in Suppl. Material). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Part 3: the reviewer does not understand how the value of w0 and b0 are chosen. Also, the reviewer would appreciate more details on the use of b (augmented Lagrangian multiplier). For an extension, the reviewer suggests giving more details on the three-level pyramid scheme and experiment with the proposed method without the pyramid scheme to study its influence. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the method, the clarity and organisation of the paper and the performed experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses diffeomorphic registration via a greedy fluid-like algorithm. The main contribution is a very fast solution approach based on a Nesterov ADMM-decoupling of regularization and similarity. In particular, the approach is fast, because it allows (in conjunction with a linearized similarity measure) for closed-form solutions of the ADMM substeps. In consequence, the algorithm achieves very fast registration performance (on the order of 2s on a GPU for a 3D image volume) with good accuracy thereby demonstrating that also optimization-based solutions can be very fast. All reviewers liked this work. However, there were some concerns that should be addressed for a final version: 1) the literature review should be strengthened to properly credit prior work, 2) some of the speculative statements (e.g., regarding the performance of deep registration networks) in the paper should be softened or backed up by empirical evidence or citations, 3) concerns regarding some of the competing methods (e.g., the performance of ANTs) should be addressed. This should include explanations or clear statements regarding the use of different similarity measures or regularizers for the registration methods. In particular, using a higher order regularizer appears to improve the performance of the proposed method significantly. Such a regularizer was not used for some of the other approaches, though it could have resulted in more comparable results. For example. VoxelMorph (or any other deep registration model) could have been trained with the same regularizer to disentangle effects from loss choice from differences caused by optimization versus a deep learning strategy. As a side note (from the AE) the Horn and Schunck (HS) formulation given in the paper (embedded in the text on page 3) is not the one of the original HS paper where they propose to minimize the squared Laplacian for the regularizer. Hence, this appears to be much more akin to the second order model of the MICCAI submission rather than the first order one or curvature regularization. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We would first like to thank the reviewers for their time providing constructive comments, we will endeavour to incorporate these suggestions in our revised paper. We will firstly address the three main concerns raised in the meta-review: We will strengthen our literature review and sufficiently cite related work in our revised paper. Specifically with regards to the comments from reviewer two, we will include further citations covering areas such as the greedy composite approach proposed by Christensen et al. TIP 1996. In our original submission, we have cited the demons paper by Vercauteren et al. Neuroimage 2009. We will detail the differences between our method and the greedy approach and diffeomorphic demons in Section 2. Our method has no direct link to the works of A. Chambolle et al, R Garg et al, and M Hernandez et al, because primal dual is often used to address non-smooth total-variation-like problems, while our regularization is smooth and thus directly differentiable. Following the comments from all three reviewers and the AE, it is clear we need to revisit our ANTs implementation to ensure a fair comparison. We will provide updated results for these methods in our revised manuscript, along with a thorough explanation of similarity measures and hyperparameters used. We will also reword and soften the language used in discussing Quicksilver and DeepFlash given we do not have empirical evidence to support our claim that its performance is unlikely to outperform LDDMM. We will also look at rewording our comments discussing the lack of strong evidence to support stochastic learning-based approaches outperforming deterministic approaches and where appropriate provide further citations. Regarding the Horn and Schunck (HS) model, we are confident this method is a first-order approach. Though in their paper the authors claimed they minimized the squared Laplacian for the regularizer, this second-order Laplacian was actually used in the resulting evolution (iterative) equations (Sec. 9 Minimisation on Page 9 of their paper). Therefore, in essence the HS model is a first-order method, which is similar to our formulation (embedded in the text on page 3). Finally to address a selection of the specific questions from reviewers, the HSV is the final composition of each iterative velocity field, we will be clarifying the definition for the HSV visualisation in the revised paper. We believe the speed gain was not due to the limiting iterations alone, the point wise closed-form solutions in our method are very efficiently calculated on a GPU and the inclusion of Nesterov’s acceleration reduces the convergence rate to O(1/k^2). We believe our method is very memory efficient as we do not need to save any intermediate velocity fields. We also believe our method provides geodesic paths between images and thus can be used in Computational Anatomy applications. This is due to two reasons: (1) our regularization term constrains the solution on the tangent space of the Riemannian structure at the identity diffeomorphism; and (2) we handled the ODE explicitly using the Euler integration. Or from another perspective, Exp(VtN-1)o … o Exp(v0) will be approximately our Eq.(1) because velocity fields in our models are very small (due to linearization of data term) and therefore we can approximate the exponential function using the first-order Taylor expansion. As a result, the composition of Exp(VtN-1)o … o Exp(v0) will be equivalent to Eq.(1) in our paper. Lastly, we will provide further clarification on the selection of w0 and b0 (both were set to zero) in the revised version of the paper. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Alexander Thorley, Xi Jia, Hyung Jin Chang, Boyang Liu, Karina Bunting, Victoria Stoll, Antonio de Marvao, Declan P. O’Regan, Georgios Gkoutos, Dipak Kotecha, Jinming Duan Abstract Deterministic approaches using iterative optimisation have been historically successful in diffeomorphic image registration (DiffIR). Although these approaches are highly accurate, they typically carry a significant computational burden. Recent developments in stochastic approaches based on deep learning have achieved sub-second runtimes for DiffIR with competitive registration accuracy, offering a fast alternative to conventional iterative methods. In this paper, we attempt to reduce this difference in speed whilst retaining the performance advantage of iterative approaches in DiffIR. We first propose a simple iterative scheme that functionally composes intermediate non-stationary velocity fields to handle large deformations in images whilst guaranteeing diffeomorphisms in the resultant deformation. We then propose a convex optimisation model that uses a regularisation term of arbitrary order to impose smoothness on these velocity fields and solve this model with a fast algorithm that combines Nesterov gradient descent and the alternating direction method of multipliers (ADMM). Finally, we leverage the computational power of GPU to implement this accelerated ADMM solver on a 3D cardiac MRI dataset, further reducing runtime to less than 2 seconds. In addition to producing strictly diffeomorphic deformations, our methods outperform both state-of-the-art deep learning-based and iterative DiffIR approaches in terms of dice and Hausdorff scores, with speed approaching the inference time of deep learning-based methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_15 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper propose to use Nesterov accelerated ADMM algorithm to solve the diffeomorphic image registration problem. Specifically, the registration model is decomposed into a multi-step optical flow subproblem. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is clearly written and properly motivated. The proposed method is interesting and results are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no major weaknesses of the paper, for some small issues, please find in section 7 and correct/comment them in camera-ready revision. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the paper is clearly presented for reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, I think this paper is okay for acceptance. There are some minor issues that the author can take into consideration for minor revision. citation 4 and 5 are repetitive. For Table 1, it is better to do a statistical significance analysis. It is hard to compare methods that the performance are close to each other. What is the definition of HSV_{\phi}? It looks like velocity or displacement map. But as the methods iterate several times, which iteration it is? or it is composition? I feel like it is hard to interpret because there is no context in the paper. The proposed method is not theoretically guaranteed to be diffeomorphic. Actually I am surprised that the author can achieve 0 folding in all their methods. The proposed method is sort-of piece-wise stationary velocity field over unit time. Maybe because the author add strong regularization over velocity, otherwise I am confused. Hausdorff distance usually contains outliers. It is better to substitute it with 95% hausdorff distance to remove outliers. The speed-gain is majorly due to the simplified model. I am not surprised to see solving a optical flow model is much faster than previous traditional optimization approaches like LDDMM or Demons or ANTs. However, I am very surprised to see that the performance is much better than Demons and ANTs. Previously, VoxelMorph and Diff-Voxelmorph can not greatly suppress Demons and ANTs. But the results in this paper is a little shocking to me. I recommend the author to carefully fine-tuning the parameters of Demons and ANTs to ensure it is fair comparisons. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper explores using optimization based approach to solve diffeomorphic image registration. The number of such optimization papers is relatively small compared with deep learning based approaches. It would be good to include this paper for MICCAI-2021. The writing of the paper and presentation are clear and straightforward. This method simplified the diffeomorphic image registration model as a multi-step optical flow problem and using ADMM to solve the problem. The design is reasonable and interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This article proposes a model-based method for diffeomorphic registration that is claimed to perform with competing efficiency to the inference phase of recently proposed learning-based methods. The method uses a small deformation parameterization and deformation is achieved using a greedy compositive approach. This greedy compositive approach to diffeomorphisms takes the ideas from Christensen et al. TIP 1996 and Vercauteren et al. Neuroimage 2009. The image similarity energy comes from a first-order Taylor approximation to the L2 energy, originally proposed by Horn and Schunk. Both the L1 and L2 versions of the energy are considered in this work. The regularization constrains the L2 norm of the n-th derivative of the displacement velocity. Optimization is performed using the alternating direction method of multipliers (ADDMM). The resulting equations are computed in closed form in order to reduce the problem to a point-wise matricial problem highly paralelizable in the GPU. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. The experiments have shown a competitive accuracy while the overall total run time is less than two seconds. Smart approximations to the different ingredients of the diffeomorphic registration problem could be worth more than collecting massive amounts of data for training sophisticated architectures with not-well understood underlying models. The closed form solution given in Equation (6) is the key for a fast optimization. This idea may be extended to other diffeomorphic registration methods for fast optimization. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed methods is based in ideas previously published in the literature. These ideas have not been properly given credit in the manuscript. Similar methods based on primal-dual optimization for diffeomorphic registration have not been cited and discussed. The greedy approach to diffeomorphism parameterization provides solutions outside the ideal LDDMM paradigm, where solutions are given in the tangent space of the manifold of diffeomorphisms. Therefore, the proposed method cannot be used in Computational Anatomy applications requiring the velocity fields. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The datasets used for evaluation are not publicly available. I believe that the proposed method can be re-implemented with some work. Starting from some available diffeomorphic registration library would accelerate the process. The parameter values were provided. For the evaluation, the authors provided a clear description of metrics and tendency. Statistical significance was not stated. Memory footprint was not provided. This makes me doubt whether the method would be so memory expensive. The clinical significance of the method is not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As I said above, the main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. Therefore, it is still worth making efforts improving the different parts of model-based approaches for diffeomorphic registration in order to obtain a competitive efficiency. I believe that this message is very important, and it should be said in a conference such as Miccai. The main weakness of the manuscript is that the proposed method is based in ideas previously published in the literature. For example, the greedy compositive approach was first proposed with diffeomorphic Demons in Vercauteren et al., Neuroimage 2009, and it is mostly inspired in the original idea by Christensen et al. TIP 1996. I believe that the authors should give credit to the place where these ideas came from for those readers unfamiliar with the topic and interesting in building knowledge based on current state of the art. In this sense, the authors failed to cite and properly discuss some works closely related to the proposal of the manuscript which pioneered the use of L1 metrics and primal-dual optimization in diffeomorphic registration, namely, M Hernandez et al., Primal-dual convex optimization in large deformation diffeomorphic metric mapping: LDDMM meets robust regularizers, 2017 and the companion paper published in BMVC 2015. I miss also some citations to works on optical flow using primal-dual optimization such as A. Chambolle et al., A First-Order Primal-Dual Algorithm for Convex Problems with Applications to Imaging, JMIV 2011 or R Garg et al., A variational approach to video registration with subspace constraints, IJCV 2013, or the improvements performed in M. Hernandez, Primal-dual optimization strategies in Huber-L1 optical flow with temporal subspace constraints for non-rigid sequence registration, IMAVIS 2018. . I have several comments I am going to raise point by point following the manuscript flow. 1) I believe that the state of the art in accelerating diffeomorphic registration is missing important milestones such as Gauss-Newton-Krylov methods proposed in Mang et al. in SIIMS 2015, 2016. These authors have successfully performed a multi-GPU implementation (Claire), presented in Mang et al. SIIMS 2019 and a GPU version of Claire. 2) The claim “As Quicksilver and DeepFLASH need to be trained using the numerical solutions of LDDMM as ground truth, their performance is unlikely to outperform LDDMM”. The given citation does not support this claim. Did the authors proofed experimentally this assertion? I could not say whether this is true. 3) The claim “However, apart from the fast inference speed, there is no strong evidence indicating the stochastic learning-based approaches have outperformed the deterministic approaches using iterative optimisation reviewed above.” According to my own experience, Quicksilver is a really good-performing method… I don’t have a strong evidence, but I maybe could build one… I advise hedging these assertions. 4) The sentence “Decompose a diffeomorphic transformation into the compositions of a series of small non-stationary velocity fields…” it seems that the transformation is decomposed in small velocity fields and each one is non-stationary. This is not exactly reflected in Equation 1. Please, rephrase accurately. 5) Section 2. Equation 1. The differences between Equation (1) and the greedy compositive approach from diffeomorphic Demons should be stated here. Personally, I would prefer a method with a solution in the tangent space, not in the small-deformation setting (i.e. v_i are displacement fields!). However, then the closed form solution may be probably lost. May the author elaborate on why selecting the small-deformation greedy approach? Why not Exp(vtN-1)o … o Exp(v0)? 6) What is the advantage of selecting the linearized version of HS image similarity term with respect to the standard I1 o phi – I0? 7) The authors claim that Equation 2 is new but I believe that it is basically a tuned Horn-Schunk energy. 8) For those readers unfamiliar with these kind of optimization metrics, may the authors detail where in the equations intervenes Nesterov acceleration? A small derivation in the supplementary material would be great. 9) Section 4. The authors performed the selection of the method parameters using a validation set. I believe that the Dice criterion may not be good for choosing parameters yielding diffeomorphic transformations. I would combine the Dice criterion with a criterion based on the smoothness of the transformations. The authors obtained diffeomorphic transformations, yes, but it may be due the selection of a narrow interval for lambda [0,60] where maybe all transformations are diffeomorphic. 10) I liked the selected experiment. It would be worth mentioning the differences on transformation smoothness and the nasty Jacobians for DD and VM. It also would be worth mentioning that the selected experiment is amenable for greey methods and that diffeomorphic Demons did not perform very accurately. 11) Regarding the results in Table 1, why is Dice from SyN so low? According to my experience, since SyN was run with NCC and not SSD, the method running with the default parameters would outperform at least VM. What is happenigng? 12) 6 seconds for diffeomorphic Demons is pretty fast. 13) What is the memory footprint of the proposed method compared with the other methods? I believe it should not be particularly efficient in this aspect, shouldn’t it? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that the message of the article should be said in a conference such as Miccai. Model-based methods can be approached in a way that the resulting methods is fast and competitve with learning-based modern approaches. Having said this, the proposed method is built upon previous ideas that should be properly cited and discussed. I expect that the authors make the effort to properly recognize this previous work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors proposed a new iterative optimisation approach for diffeomorphic registration. The convex optimisation problem is resolved using the alternating direction method of multipliers and GPU calculation, giving a calculation time inferior to 2 sec. Experiments are performed on cardiac MRI datasets and compared with iterative registration and deep learning-based registration. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the method is its novelty and mostly the GPU implementation of an iterative registration algorithm. Indeed, previous methods such as SyN had superior calculation time than deep learning methods, but the authors achieve comparable calculation time. The authors also implement their metho using a three-level pyramid scheme, split their dataset into train/validation/test for the search of hyperparameters (not always done with non-deep learning methods) and have a diffeomorphic solution (no negative Jacobian are reported on the experiments). Finally the method is well described with all the equations required to understand and reproduce it. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The calculation time is under 2 sec and better than other iterative approaches, but it is still ten times longer than deep learning methods ( approximatively 1 sec vs approximatively 0.1 sec). Comparison with multi-scale deep learning approaches is not given (Hering et al. 2019, Mok et al., 2020), while the proposed method uses a pyramid 3 level scheme. Compared with methods using segmentation masks would have been interesting, even if the proposed method is not using the mask. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reviewer didn’t find information if the used dataset is public or private. Most of the chosen hyperparameters are given. However, the choice of lambda and theta for the results are not given (curves with dice in function of lambda/theta is given in Suppl. Material). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Part 3: the reviewer does not understand how the value of w0 and b0 are chosen. Also, the reviewer would appreciate more details on the use of b (augmented Lagrangian multiplier). For an extension, the reviewer suggests giving more details on the three-level pyramid scheme and experiment with the proposed method without the pyramid scheme to study its influence. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the method, the clarity and organisation of the paper and the performed experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses diffeomorphic registration via a greedy fluid-like algorithm. The main contribution is a very fast solution approach based on a Nesterov ADMM-decoupling of regularization and similarity. In particular, the approach is fast, because it allows (in conjunction with a linearized similarity measure) for closed-form solutions of the ADMM substeps. In consequence, the algorithm achieves very fast registration performance (on the order of 2s on a GPU for a 3D image volume) with good accuracy thereby demonstrating that also optimization-based solutions can be very fast. All reviewers liked this work. However, there were some concerns that should be addressed for a final version: 1) the literature review should be strengthened to properly credit prior work, 2) some of the speculative statements (e.g., regarding the performance of deep registration networks) in the paper should be softened or backed up by empirical evidence or citations, 3) concerns regarding some of the competing methods (e.g., the performance of ANTs) should be addressed. This should include explanations or clear statements regarding the use of different similarity measures or regularizers for the registration methods. In particular, using a higher order regularizer appears to improve the performance of the proposed method significantly. Such a regularizer was not used for some of the other approaches, though it could have resulted in more comparable results. For example. VoxelMorph (or any other deep registration model) could have been trained with the same regularizer to disentangle effects from loss choice from differences caused by optimization versus a deep learning strategy. As a side note (from the AE) the Horn and Schunck (HS) formulation given in the paper (embedded in the text on page 3) is not the one of the original HS paper where they propose to minimize the squared Laplacian for the regularizer. Hence, this appears to be much more akin to the second order model of the MICCAI submission rather than the first order one or curvature regularization. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We would first like to thank the reviewers for their time providing constructive comments, we will endeavour to incorporate these suggestions in our revised paper. We will firstly address the three main concerns raised in the meta-review: We will strengthen our literature review and sufficiently cite related work in our revised paper. Specifically with regards to the comments from reviewer two, we will include further citations covering areas such as the greedy composite approach proposed by Christensen et al. TIP 1996. In our original submission, we have cited the demons paper by Vercauteren et al. Neuroimage 2009. We will detail the differences between our method and the greedy approach and diffeomorphic demons in Section 2. Our method has no direct link to the works of A. Chambolle et al, R Garg et al, and M Hernandez et al, because primal dual is often used to address non-smooth total-variation-like problems, while our regularization is smooth and thus directly differentiable. Following the comments from all three reviewers and the AE, it is clear we need to revisit our ANTs implementation to ensure a fair comparison. We will provide updated results for these methods in our revised manuscript, along with a thorough explanation of similarity measures and hyperparameters used. We will also reword and soften the language used in discussing Quicksilver and DeepFlash given we do not have empirical evidence to support our claim that its performance is unlikely to outperform LDDMM. We will also look at rewording our comments discussing the lack of strong evidence to support stochastic learning-based approaches outperforming deterministic approaches and where appropriate provide further citations. Regarding the Horn and Schunck (HS) model, we are confident this method is a first-order approach. Though in their paper the authors claimed they minimized the squared Laplacian for the regularizer, this second-order Laplacian was actually used in the resulting evolution (iterative) equations (Sec. 9 Minimisation on Page 9 of their paper). Therefore, in essence the HS model is a first-order method, which is similar to our formulation (embedded in the text on page 3). Finally to address a selection of the specific questions from reviewers, the HSV is the final composition of each iterative velocity field, we will be clarifying the definition for the HSV visualisation in the revised paper. We believe the speed gain was not due to the limiting iterations alone, the point wise closed-form solutions in our method are very efficiently calculated on a GPU and the inclusion of Nesterov’s acceleration reduces the convergence rate to O(1/k^2). We believe our method is very memory efficient as we do not need to save any intermediate velocity fields. We also believe our method provides geodesic paths between images and thus can be used in Computational Anatomy applications. This is due to two reasons: (1) our regularization term constrains the solution on the tangent space of the Riemannian structure at the identity diffeomorphism; and (2) we handled the ODE explicitly using the Euler integration. Or from another perspective, Exp(VtN-1)o … o Exp(v0) will be approximately our Eq.(1) because velocity fields in our models are very small (due to linearization of data term) and therefore we can approximate the exponential function using the first-order Taylor expansion. As a result, the composition of Exp(VtN-1)o … o Exp(v0) will be equivalent to Eq.(1) in our paper. Lastly, we will provide further clarification on the selection of w0 and b0 (both were set to zero) in the revised version of the paper. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0414/12/31/Paper1502" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0414/12/31/Paper1502" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0414-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Nesterov Accelerated ADMM for Fast Diffeomorphic Image Registration" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0414/12/31/Paper1502"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0414/12/31/Paper1502","headline":"Nesterov Accelerated ADMM for Fast Diffeomorphic Image Registration","dateModified":"0415-01-02T00:00:00-05:17","datePublished":"0414-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Alexander Thorley, Xi Jia, Hyung Jin Chang, Boyang Liu, Karina Bunting, Victoria Stoll, Antonio de Marvao, Declan P. O’Regan, Georgios Gkoutos, Dipak Kotecha, Jinming Duan Abstract Deterministic approaches using iterative optimisation have been historically successful in diffeomorphic image registration (DiffIR). Although these approaches are highly accurate, they typically carry a significant computational burden. Recent developments in stochastic approaches based on deep learning have achieved sub-second runtimes for DiffIR with competitive registration accuracy, offering a fast alternative to conventional iterative methods. In this paper, we attempt to reduce this difference in speed whilst retaining the performance advantage of iterative approaches in DiffIR. We first propose a simple iterative scheme that functionally composes intermediate non-stationary velocity fields to handle large deformations in images whilst guaranteeing diffeomorphisms in the resultant deformation. We then propose a convex optimisation model that uses a regularisation term of arbitrary order to impose smoothness on these velocity fields and solve this model with a fast algorithm that combines Nesterov gradient descent and the alternating direction method of multipliers (ADMM). Finally, we leverage the computational power of GPU to implement this accelerated ADMM solver on a 3D cardiac MRI dataset, further reducing runtime to less than 2 seconds. In addition to producing strictly diffeomorphic deformations, our methods outperform both state-of-the-art deep learning-based and iterative DiffIR approaches in terms of dice and Hausdorff scores, with speed approaching the inference time of deep learning-based methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_15 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper propose to use Nesterov accelerated ADMM algorithm to solve the diffeomorphic image registration problem. Specifically, the registration model is decomposed into a multi-step optical flow subproblem. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is clearly written and properly motivated. The proposed method is interesting and results are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no major weaknesses of the paper, for some small issues, please find in section 7 and correct/comment them in camera-ready revision. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the paper is clearly presented for reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, I think this paper is okay for acceptance. There are some minor issues that the author can take into consideration for minor revision. citation 4 and 5 are repetitive. For Table 1, it is better to do a statistical significance analysis. It is hard to compare methods that the performance are close to each other. What is the definition of HSV_{\\phi}? It looks like velocity or displacement map. But as the methods iterate several times, which iteration it is? or it is composition? I feel like it is hard to interpret because there is no context in the paper. The proposed method is not theoretically guaranteed to be diffeomorphic. Actually I am surprised that the author can achieve 0 folding in all their methods. The proposed method is sort-of piece-wise stationary velocity field over unit time. Maybe because the author add strong regularization over velocity, otherwise I am confused. Hausdorff distance usually contains outliers. It is better to substitute it with 95% hausdorff distance to remove outliers. The speed-gain is majorly due to the simplified model. I am not surprised to see solving a optical flow model is much faster than previous traditional optimization approaches like LDDMM or Demons or ANTs. However, I am very surprised to see that the performance is much better than Demons and ANTs. Previously, VoxelMorph and Diff-Voxelmorph can not greatly suppress Demons and ANTs. But the results in this paper is a little shocking to me. I recommend the author to carefully fine-tuning the parameters of Demons and ANTs to ensure it is fair comparisons. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper explores using optimization based approach to solve diffeomorphic image registration. The number of such optimization papers is relatively small compared with deep learning based approaches. It would be good to include this paper for MICCAI-2021. The writing of the paper and presentation are clear and straightforward. This method simplified the diffeomorphic image registration model as a multi-step optical flow problem and using ADMM to solve the problem. The design is reasonable and interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This article proposes a model-based method for diffeomorphic registration that is claimed to perform with competing efficiency to the inference phase of recently proposed learning-based methods. The method uses a small deformation parameterization and deformation is achieved using a greedy compositive approach. This greedy compositive approach to diffeomorphisms takes the ideas from Christensen et al. TIP 1996 and Vercauteren et al. Neuroimage 2009. The image similarity energy comes from a first-order Taylor approximation to the L2 energy, originally proposed by Horn and Schunk. Both the L1 and L2 versions of the energy are considered in this work. The regularization constrains the L2 norm of the n-th derivative of the displacement velocity. Optimization is performed using the alternating direction method of multipliers (ADDMM). The resulting equations are computed in closed form in order to reduce the problem to a point-wise matricial problem highly paralelizable in the GPU. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. The experiments have shown a competitive accuracy while the overall total run time is less than two seconds. Smart approximations to the different ingredients of the diffeomorphic registration problem could be worth more than collecting massive amounts of data for training sophisticated architectures with not-well understood underlying models. The closed form solution given in Equation (6) is the key for a fast optimization. This idea may be extended to other diffeomorphic registration methods for fast optimization. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed methods is based in ideas previously published in the literature. These ideas have not been properly given credit in the manuscript. Similar methods based on primal-dual optimization for diffeomorphic registration have not been cited and discussed. The greedy approach to diffeomorphism parameterization provides solutions outside the ideal LDDMM paradigm, where solutions are given in the tangent space of the manifold of diffeomorphisms. Therefore, the proposed method cannot be used in Computational Anatomy applications requiring the velocity fields. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The datasets used for evaluation are not publicly available. I believe that the proposed method can be re-implemented with some work. Starting from some available diffeomorphic registration library would accelerate the process. The parameter values were provided. For the evaluation, the authors provided a clear description of metrics and tendency. Statistical significance was not stated. Memory footprint was not provided. This makes me doubt whether the method would be so memory expensive. The clinical significance of the method is not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As I said above, the main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. Therefore, it is still worth making efforts improving the different parts of model-based approaches for diffeomorphic registration in order to obtain a competitive efficiency. I believe that this message is very important, and it should be said in a conference such as Miccai. The main weakness of the manuscript is that the proposed method is based in ideas previously published in the literature. For example, the greedy compositive approach was first proposed with diffeomorphic Demons in Vercauteren et al., Neuroimage 2009, and it is mostly inspired in the original idea by Christensen et al. TIP 1996. I believe that the authors should give credit to the place where these ideas came from for those readers unfamiliar with the topic and interesting in building knowledge based on current state of the art. In this sense, the authors failed to cite and properly discuss some works closely related to the proposal of the manuscript which pioneered the use of L1 metrics and primal-dual optimization in diffeomorphic registration, namely, M Hernandez et al., Primal-dual convex optimization in large deformation diffeomorphic metric mapping: LDDMM meets robust regularizers, 2017 and the companion paper published in BMVC 2015. I miss also some citations to works on optical flow using primal-dual optimization such as A. Chambolle et al., A First-Order Primal-Dual Algorithm for Convex Problems with Applications to Imaging, JMIV 2011 or R Garg et al., A variational approach to video registration with subspace constraints, IJCV 2013, or the improvements performed in M. Hernandez, Primal-dual optimization strategies in Huber-L1 optical flow with temporal subspace constraints for non-rigid sequence registration, IMAVIS 2018. . I have several comments I am going to raise point by point following the manuscript flow. 1) I believe that the state of the art in accelerating diffeomorphic registration is missing important milestones such as Gauss-Newton-Krylov methods proposed in Mang et al. in SIIMS 2015, 2016. These authors have successfully performed a multi-GPU implementation (Claire), presented in Mang et al. SIIMS 2019 and a GPU version of Claire. 2) The claim “As Quicksilver and DeepFLASH need to be trained using the numerical solutions of LDDMM as ground truth, their performance is unlikely to outperform LDDMM”. The given citation does not support this claim. Did the authors proofed experimentally this assertion? I could not say whether this is true. 3) The claim “However, apart from the fast inference speed, there is no strong evidence indicating the stochastic learning-based approaches have outperformed the deterministic approaches using iterative optimisation reviewed above.” According to my own experience, Quicksilver is a really good-performing method… I don’t have a strong evidence, but I maybe could build one… I advise hedging these assertions. 4) The sentence “Decompose a diffeomorphic transformation into the compositions of a series of small non-stationary velocity fields…” it seems that the transformation is decomposed in small velocity fields and each one is non-stationary. This is not exactly reflected in Equation 1. Please, rephrase accurately. 5) Section 2. Equation 1. The differences between Equation (1) and the greedy compositive approach from diffeomorphic Demons should be stated here. Personally, I would prefer a method with a solution in the tangent space, not in the small-deformation setting (i.e. v_i are displacement fields!). However, then the closed form solution may be probably lost. May the author elaborate on why selecting the small-deformation greedy approach? Why not Exp(vtN-1)o … o Exp(v0)? 6) What is the advantage of selecting the linearized version of HS image similarity term with respect to the standard I1 o phi – I0? 7) The authors claim that Equation 2 is new but I believe that it is basically a tuned Horn-Schunk energy. 8) For those readers unfamiliar with these kind of optimization metrics, may the authors detail where in the equations intervenes Nesterov acceleration? A small derivation in the supplementary material would be great. 9) Section 4. The authors performed the selection of the method parameters using a validation set. I believe that the Dice criterion may not be good for choosing parameters yielding diffeomorphic transformations. I would combine the Dice criterion with a criterion based on the smoothness of the transformations. The authors obtained diffeomorphic transformations, yes, but it may be due the selection of a narrow interval for lambda [0,60] where maybe all transformations are diffeomorphic. 10) I liked the selected experiment. It would be worth mentioning the differences on transformation smoothness and the nasty Jacobians for DD and VM. It also would be worth mentioning that the selected experiment is amenable for greey methods and that diffeomorphic Demons did not perform very accurately. 11) Regarding the results in Table 1, why is Dice from SyN so low? According to my experience, since SyN was run with NCC and not SSD, the method running with the default parameters would outperform at least VM. What is happenigng? 12) 6 seconds for diffeomorphic Demons is pretty fast. 13) What is the memory footprint of the proposed method compared with the other methods? I believe it should not be particularly efficient in this aspect, shouldn’t it? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe that the message of the article should be said in a conference such as Miccai. Model-based methods can be approached in a way that the resulting methods is fast and competitve with learning-based modern approaches. Having said this, the proposed method is built upon previous ideas that should be properly cited and discussed. I expect that the authors make the effort to properly recognize this previous work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors proposed a new iterative optimisation approach for diffeomorphic registration. The convex optimisation problem is resolved using the alternating direction method of multipliers and GPU calculation, giving a calculation time inferior to 2 sec. Experiments are performed on cardiac MRI datasets and compared with iterative registration and deep learning-based registration. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the method is its novelty and mostly the GPU implementation of an iterative registration algorithm. Indeed, previous methods such as SyN had superior calculation time than deep learning methods, but the authors achieve comparable calculation time. The authors also implement their metho using a three-level pyramid scheme, split their dataset into train/validation/test for the search of hyperparameters (not always done with non-deep learning methods) and have a diffeomorphic solution (no negative Jacobian are reported on the experiments). Finally the method is well described with all the equations required to understand and reproduce it. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The calculation time is under 2 sec and better than other iterative approaches, but it is still ten times longer than deep learning methods ( approximatively 1 sec vs approximatively 0.1 sec). Comparison with multi-scale deep learning approaches is not given (Hering et al. 2019, Mok et al., 2020), while the proposed method uses a pyramid 3 level scheme. Compared with methods using segmentation masks would have been interesting, even if the proposed method is not using the mask. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reviewer didn’t find information if the used dataset is public or private. Most of the chosen hyperparameters are given. However, the choice of lambda and theta for the results are not given (curves with dice in function of lambda/theta is given in Suppl. Material). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Part 3: the reviewer does not understand how the value of w0 and b0 are chosen. Also, the reviewer would appreciate more details on the use of b (augmented Lagrangian multiplier). For an extension, the reviewer suggests giving more details on the three-level pyramid scheme and experiment with the proposed method without the pyramid scheme to study its influence. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The novelty of the method, the clarity and organisation of the paper and the performed experiments. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses diffeomorphic registration via a greedy fluid-like algorithm. The main contribution is a very fast solution approach based on a Nesterov ADMM-decoupling of regularization and similarity. In particular, the approach is fast, because it allows (in conjunction with a linearized similarity measure) for closed-form solutions of the ADMM substeps. In consequence, the algorithm achieves very fast registration performance (on the order of 2s on a GPU for a 3D image volume) with good accuracy thereby demonstrating that also optimization-based solutions can be very fast. All reviewers liked this work. However, there were some concerns that should be addressed for a final version: 1) the literature review should be strengthened to properly credit prior work, 2) some of the speculative statements (e.g., regarding the performance of deep registration networks) in the paper should be softened or backed up by empirical evidence or citations, 3) concerns regarding some of the competing methods (e.g., the performance of ANTs) should be addressed. This should include explanations or clear statements regarding the use of different similarity measures or regularizers for the registration methods. In particular, using a higher order regularizer appears to improve the performance of the proposed method significantly. Such a regularizer was not used for some of the other approaches, though it could have resulted in more comparable results. For example. VoxelMorph (or any other deep registration model) could have been trained with the same regularizer to disentangle effects from loss choice from differences caused by optimization versus a deep learning strategy. As a side note (from the AE) the Horn and Schunck (HS) formulation given in the paper (embedded in the text on page 3) is not the one of the original HS paper where they propose to minimize the squared Laplacian for the regularizer. Hence, this appears to be much more akin to the second order model of the MICCAI submission rather than the first order one or curvature regularization. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We would first like to thank the reviewers for their time providing constructive comments, we will endeavour to incorporate these suggestions in our revised paper. We will firstly address the three main concerns raised in the meta-review: We will strengthen our literature review and sufficiently cite related work in our revised paper. Specifically with regards to the comments from reviewer two, we will include further citations covering areas such as the greedy composite approach proposed by Christensen et al. TIP 1996. In our original submission, we have cited the demons paper by Vercauteren et al. Neuroimage 2009. We will detail the differences between our method and the greedy approach and diffeomorphic demons in Section 2. Our method has no direct link to the works of A. Chambolle et al, R Garg et al, and M Hernandez et al, because primal dual is often used to address non-smooth total-variation-like problems, while our regularization is smooth and thus directly differentiable. Following the comments from all three reviewers and the AE, it is clear we need to revisit our ANTs implementation to ensure a fair comparison. We will provide updated results for these methods in our revised manuscript, along with a thorough explanation of similarity measures and hyperparameters used. We will also reword and soften the language used in discussing Quicksilver and DeepFlash given we do not have empirical evidence to support our claim that its performance is unlikely to outperform LDDMM. We will also look at rewording our comments discussing the lack of strong evidence to support stochastic learning-based approaches outperforming deterministic approaches and where appropriate provide further citations. Regarding the Horn and Schunck (HS) model, we are confident this method is a first-order approach. Though in their paper the authors claimed they minimized the squared Laplacian for the regularizer, this second-order Laplacian was actually used in the resulting evolution (iterative) equations (Sec. 9 Minimisation on Page 9 of their paper). Therefore, in essence the HS model is a first-order method, which is similar to our formulation (embedded in the text on page 3). Finally to address a selection of the specific questions from reviewers, the HSV is the final composition of each iterative velocity field, we will be clarifying the definition for the HSV visualisation in the revised paper. We believe the speed gain was not due to the limiting iterations alone, the point wise closed-form solutions in our method are very efficiently calculated on a GPU and the inclusion of Nesterov’s acceleration reduces the convergence rate to O(1/k^2). We believe our method is very memory efficient as we do not need to save any intermediate velocity fields. We also believe our method provides geodesic paths between images and thus can be used in Computational Anatomy applications. This is due to two reasons: (1) our regularization term constrains the solution on the tangent space of the Riemannian structure at the identity diffeomorphism; and (2) we handled the ODE explicitly using the Euler integration. Or from another perspective, Exp(VtN-1)o … o Exp(v0) will be approximately our Eq.(1) because velocity fields in our models are very small (due to linearization of data term) and therefore we can approximate the exponential function using the first-order Taylor expansion. As a result, the composition of Exp(VtN-1)o … o Exp(v0) will be equivalent to Eq.(1) in our paper. Lastly, we will provide further clarification on the selection of w0 and b0 (both were set to zero) in the revised version of the paper. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Thorley, Alexander,Jia, Xi,Chang, Hyung Jin,Liu, Boyang,Bunting, Karina,Stoll, Victoria,de Marvao, Antonio,O'Regan, Declan P.,Gkoutos, Georgios,Kotecha, Dipak,Duan, Jinming" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Nesterov Accelerated ADMM for Fast Diffeomorphic Image Registration</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Thorley, Alexander"
+        class="post-tags">
+        Thorley, Alexander
+      </a> |  
+      
+      <a href="kittywong/tags#Jia, Xi"
+        class="post-tags">
+        Jia, Xi
+      </a> |  
+      
+      <a href="kittywong/tags#Chang, Hyung Jin"
+        class="post-tags">
+        Chang, Hyung Jin
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Boyang"
+        class="post-tags">
+        Liu, Boyang
+      </a> |  
+      
+      <a href="kittywong/tags#Bunting, Karina"
+        class="post-tags">
+        Bunting, Karina
+      </a> |  
+      
+      <a href="kittywong/tags#Stoll, Victoria"
+        class="post-tags">
+        Stoll, Victoria
+      </a> |  
+      
+      <a href="kittywong/tags#de Marvao, Antonio"
+        class="post-tags">
+        de Marvao, Antonio
+      </a> |  
+      
+      <a href="kittywong/tags#O'Regan, Declan P."
+        class="post-tags">
+        O'Regan, Declan P.
+      </a> |  
+      
+      <a href="kittywong/tags#Gkoutos, Georgios"
+        class="post-tags">
+        Gkoutos, Georgios
+      </a> |  
+      
+      <a href="kittywong/tags#Kotecha, Dipak"
+        class="post-tags">
+        Kotecha, Dipak
+      </a> |  
+      
+      <a href="kittywong/tags#Duan, Jinming"
+        class="post-tags">
+        Duan, Jinming
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Alexander Thorley, Xi Jia, Hyung Jin Chang, Boyang Liu, Karina Bunting, Victoria Stoll, Antonio de Marvao, Declan P. O’Regan, Georgios Gkoutos, Dipak Kotecha, Jinming Duan
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Deterministic approaches using iterative optimisation have been historically successful in diffeomorphic image registration (DiffIR). Although these approaches are highly accurate, they typically carry a significant computational burden. Recent developments in stochastic approaches based on deep learning have achieved sub-second runtimes for DiffIR with competitive registration accuracy, offering a fast alternative to conventional iterative methods. In this paper, we attempt to reduce this difference in speed whilst retaining the performance advantage of iterative approaches in DiffIR. We first propose a simple iterative scheme that functionally composes intermediate non-stationary velocity fields to handle large deformations in images whilst guaranteeing diffeomorphisms in the resultant deformation. We then propose a convex optimisation model that uses a regularisation term of arbitrary order to impose smoothness on these velocity fields and solve this model with a fast algorithm that combines Nesterov gradient descent and the alternating direction method of multipliers (ADMM). Finally, we leverage the computational power of GPU to implement this accelerated ADMM solver on a 3D cardiac MRI dataset, further reducing runtime to less than 2 seconds. In addition to producing strictly diffeomorphic deformations, our methods outperform both state-of-the-art deep learning-based and iterative DiffIR approaches in terms of dice and Hausdorff scores, with speed approaching the inference time of deep learning-based methods.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_15">https://doi.org/10.1007/978-3-030-87202-1_15</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper propose to use Nesterov accelerated ADMM algorithm to solve the diffeomorphic image registration problem. Specifically, the registration model is decomposed into a multi-step optical flow subproblem.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The paper is clearly written and properly motivated.</p>
+        </li>
+        <li>
+          <p>The proposed method is interesting and results are promising.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>There is no major weaknesses of the paper, for some small issues, please find in section 7 and correct/comment them in camera-ready revision.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>I think the paper is clearly presented for reproducibility.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall, I think this paper is okay for acceptance. There are some minor issues that the author can take into consideration for minor revision.</p>
+
+      <ol>
+        <li>
+          <p>citation 4 and 5 are repetitive.</p>
+        </li>
+        <li>
+          <p>For Table 1, it is better to do a statistical significance analysis. It is hard to compare methods that the performance are close to each other.</p>
+        </li>
+        <li>
+          <p>What is the definition of HSV_{\phi}? It looks like velocity or displacement map. But as the methods iterate several times, which iteration it is? or it is composition? I feel like it is hard to interpret because there is no context in the paper.</p>
+        </li>
+        <li>
+          <p>The proposed method is not theoretically guaranteed to be diffeomorphic. Actually I am surprised that the author can achieve 0 folding in all their methods. The proposed method is sort-of piece-wise stationary velocity field over unit time. Maybe because the author add strong regularization over velocity, otherwise I am confused.</p>
+        </li>
+        <li>
+          <p>Hausdorff distance usually contains outliers. It is better to substitute it with 95% hausdorff distance to remove outliers.</p>
+        </li>
+        <li>
+          <p>The speed-gain is majorly due to the simplified model. I am not surprised to see solving a optical flow model is much faster than previous traditional optimization approaches like LDDMM or Demons or ANTs. However, I am very surprised to see that the performance is much better than Demons and ANTs. Previously, VoxelMorph and Diff-Voxelmorph can not greatly suppress Demons and ANTs. But the results in this paper is a little shocking to me. I recommend the author to carefully fine-tuning the parameters of Demons and ANTs to ensure it is fair comparisons.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>This paper explores using optimization based approach to solve diffeomorphic image registration. The number of such optimization papers is relatively small compared with deep learning based approaches. It would be good to include this paper for MICCAI-2021.</p>
+        </li>
+        <li>
+          <p>The writing of the paper and presentation are clear and straightforward.</p>
+        </li>
+        <li>
+          <p>This method simplified the diffeomorphic image registration model as a multi-step optical flow problem and using ADMM to solve the problem. The design is reasonable and interesting.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This article proposes a model-based method for diffeomorphic registration that is claimed to perform with competing efficiency to the inference phase of recently proposed learning-based methods. The method uses a small deformation parameterization and deformation is achieved using a greedy compositive approach. This greedy compositive approach to diffeomorphisms takes the ideas from Christensen et al. TIP 1996 and Vercauteren et al. Neuroimage 2009. The image similarity energy comes from a first-order Taylor approximation to the L2 energy, originally proposed by Horn and Schunk. Both the L1 and L2 versions of the energy are considered in this work. The regularization constrains the L2 norm of the n-th derivative of the displacement velocity. Optimization is performed using the alternating direction method of multipliers (ADDMM). The resulting equations are computed in closed form in order to reduce the problem to a point-wise  matricial problem highly paralelizable in the GPU.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. The experiments have shown a competitive accuracy while the overall total run time is less than two seconds. Smart approximations to the different ingredients of the diffeomorphic registration problem could be worth more than collecting massive amounts of data for training sophisticated architectures with not-well understood underlying models.</p>
+        </li>
+        <li>
+          <p>The closed form solution given in Equation (6) is the key for a fast optimization. This idea may be extended to other diffeomorphic registration methods for fast optimization.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The proposed methods is based in ideas previously published in the literature. These ideas have not been properly given credit in the manuscript. Similar methods based on primal-dual optimization for diffeomorphic registration have not been cited and discussed.</p>
+        </li>
+        <li>
+          <p>The greedy approach to diffeomorphism parameterization provides solutions outside the ideal LDDMM paradigm, where solutions are given in the tangent space of the manifold of diffeomorphisms. Therefore, the proposed method cannot be used in Computational Anatomy applications requiring the velocity fields.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The datasets used for evaluation are not publicly available.</p>
+
+      <p>I believe that the proposed method can be re-implemented with some work. Starting from some available diffeomorphic registration library would accelerate the process.</p>
+
+      <p>The parameter values were provided.</p>
+
+      <p>For the evaluation, the authors provided a clear description of metrics and tendency. Statistical significance was not stated.</p>
+
+      <p>Memory footprint was not provided. This makes me doubt whether the method would be so memory expensive.</p>
+
+      <p>The clinical significance of the method is not provided.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>As I said above, the main message in this article is that model-based methods can be as fast as the inference phase of learning-based approaches. Therefore, it is still worth making efforts improving the different parts of model-based approaches for diffeomorphic registration in order to obtain a competitive efficiency. I believe that this message is very important, and it should be said in a conference such as Miccai.</p>
+
+      <p>The main weakness of the manuscript is that the proposed method is based in ideas previously published in the literature. For example, the  greedy compositive approach was first proposed with diffeomorphic Demons in Vercauteren et al., Neuroimage 2009, and it is mostly inspired in the original idea by Christensen et al. TIP 1996. I believe that the authors should give credit to the place where these ideas came from for those readers unfamiliar with the topic and interesting in building knowledge  based on current state of the art. In this sense, the authors failed to cite and properly discuss some works closely related to the proposal of the manuscript which pioneered the use of L1 metrics and primal-dual optimization in diffeomorphic registration, namely, M Hernandez et al., Primal-dual convex optimization in large deformation diffeomorphic metric mapping: LDDMM meets robust regularizers, 2017 and the companion paper published in BMVC 2015. I miss also some citations to works on optical flow using primal-dual optimization such as A. Chambolle et al., A First-Order Primal-Dual Algorithm for Convex Problems with Applications to Imaging, JMIV 2011 or R Garg et al., A variational approach to video registration with subspace constraints, IJCV 2013, or the improvements performed in M. Hernandez, Primal-dual optimization strategies in Huber-L1 optical flow with temporal subspace constraints for non-rigid sequence registration, IMAVIS 2018.
+.
+I have several comments I am going to raise point by point following the manuscript flow.</p>
+
+      <p>1) I believe that the state of the art in accelerating diffeomorphic registration is missing important milestones such as Gauss-Newton-Krylov methods proposed in Mang et al. in SIIMS 2015, 2016. These authors have successfully performed a multi-GPU implementation (Claire), presented in Mang et al. SIIMS 2019 and a GPU version of Claire.</p>
+
+      <p>2) The claim “As Quicksilver and DeepFLASH need to be trained using the numerical solutions of LDDMM as ground truth, their performance is unlikely to outperform LDDMM”. The given citation does not support this claim. Did the authors proofed experimentally this assertion? I could not say whether this is true.</p>
+
+      <p>3) The claim “However, apart from the fast inference speed, there is no strong evidence indicating the stochastic learning-based approaches have outperformed the deterministic approaches using iterative optimisation reviewed above.” According to my own experience, Quicksilver is a really good-performing method… I don’t have a strong evidence, but I maybe could build one… I advise hedging these assertions.</p>
+
+      <p>4) The sentence “Decompose a diffeomorphic transformation into the compositions of a series of small non-stationary velocity fields…” it seems that the transformation is decomposed in small velocity fields and each one is non-stationary. This is not exactly reflected in Equation 1. Please, rephrase accurately.</p>
+
+      <p>5) Section 2. Equation 1. The differences between Equation (1) and the greedy compositive approach from diffeomorphic Demons should be stated here. Personally, I would prefer a method with a solution in the tangent space, not in the small-deformation setting (i.e. v_i are displacement fields!). However, then the closed form solution may be probably lost. May the author elaborate on why selecting the small-deformation greedy approach? Why not Exp(vtN-1)o … o Exp(v0)?</p>
+
+      <p>6) What is the advantage of selecting the linearized version of HS image similarity term with respect to the standard I1 o phi – I0?</p>
+
+      <p>7) The authors claim that Equation 2 is new but I believe that it is basically a tuned Horn-Schunk energy.</p>
+
+      <p>8) For those readers unfamiliar with these kind of optimization metrics, may the authors detail where in the equations intervenes Nesterov acceleration? A small derivation in the supplementary material would be great.</p>
+
+      <p>9) Section 4. The authors performed the selection of the method parameters using a validation set. I believe that the Dice criterion may not be good for choosing parameters yielding diffeomorphic transformations. I would combine the Dice criterion with a criterion based on the smoothness of the transformations. The authors obtained diffeomorphic transformations, yes, but it may be due the selection of a narrow interval for lambda [0,60] where maybe all transformations are diffeomorphic.</p>
+
+      <p>10) I liked the selected experiment. It would be worth mentioning the differences on transformation smoothness and the nasty Jacobians for DD and VM. It also would be worth mentioning that the selected experiment is amenable for greey methods and that diffeomorphic Demons did not perform very accurately.</p>
+
+      <p>11) Regarding the results in Table 1, why is Dice from SyN so low? According to my experience, since SyN was run with NCC and not SSD, the method running with the default parameters would outperform at least VM. What is happenigng?</p>
+
+      <p>12) 6 seconds for diffeomorphic Demons is pretty fast.</p>
+
+      <p>13) What is the memory footprint of the proposed method compared with the other methods? I believe it should not be particularly efficient in this aspect, shouldn’t it?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I believe that the message of the article should be said in a conference such as Miccai. Model-based methods can be approached in a way that the resulting methods is fast and competitve with learning-based modern approaches. Having said this, the proposed method is built upon previous ideas that should be properly cited and discussed. I expect that the authors make the effort to properly recognize this previous work.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors proposed a new iterative optimisation approach for diffeomorphic registration. The convex optimisation problem is resolved using the alternating direction method of multipliers and GPU calculation, giving a calculation time inferior to 2 sec. Experiments are performed on cardiac MRI datasets and compared with iterative registration and deep learning-based registration.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength of the method is its novelty and mostly the GPU implementation of an iterative registration algorithm. Indeed, previous methods such as SyN had superior calculation time than deep learning methods, but the authors achieve comparable calculation time. 
+The authors also implement their metho using a three-level pyramid scheme, split their dataset into train/validation/test for the search of hyperparameters (not always done with non-deep learning methods) and have a diffeomorphic solution (no negative Jacobian are reported on the experiments).
+Finally the method is well described with all the equations required to understand and reproduce it.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The calculation time is under 2 sec and better than other iterative approaches, but it is still ten times longer than deep learning methods ( approximatively 1 sec vs approximatively 0.1 sec). 
+Comparison with multi-scale deep learning approaches is not given (Hering et al. 2019, Mok et al., 2020), while the proposed method uses a pyramid 3 level scheme. Compared with methods using segmentation masks would have been interesting, even if the proposed method is not using the mask.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reviewer didn’t find information if the used dataset is public or private. Most of the chosen hyperparameters are given. However, the choice of lambda and theta for the results are not given (curves with dice in function of lambda/theta is given in Suppl. Material).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Part 3: the reviewer does not understand how the value of w0 and b0 are chosen. Also, the reviewer would appreciate more details on the use of b (augmented Lagrangian multiplier).</p>
+        </li>
+        <li>
+          <p>For an extension, the reviewer suggests giving more details on the three-level pyramid scheme and experiment with the proposed method without the pyramid scheme to study its influence.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The novelty of the method, the clarity and organisation of the paper and the performed experiments.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper addresses diffeomorphic registration via a greedy fluid-like algorithm. The main contribution is a very fast solution approach based on a Nesterov ADMM-decoupling of regularization and similarity. In particular, the approach is fast, because it allows (in conjunction with a linearized similarity measure) for closed-form solutions of the ADMM substeps. In consequence, the algorithm achieves very fast registration performance (on the order of 2s on a GPU for a 3D image volume) with good accuracy thereby demonstrating that also optimization-based solutions can be very fast. All reviewers liked this work. However, there were some concerns that should be addressed for a final version: 1) the literature review should be strengthened to properly credit prior work, 2) some of the speculative statements (e.g., regarding the performance of deep registration networks)  in the paper should be softened or backed up by empirical evidence or citations, 3) concerns regarding some of the competing methods (e.g., the performance of ANTs) should be addressed. This should include explanations or clear statements regarding the use of different similarity measures or regularizers for the registration methods. In particular, using a higher order regularizer appears to improve the performance of the proposed method significantly. Such a regularizer was not used for some of the other approaches, though it could have resulted in more comparable results. For example. VoxelMorph (or any other deep registration model) could have been trained with the same regularizer to disentangle effects from loss choice from differences caused by optimization versus a deep learning strategy. As a side note (from the AE) the Horn and Schunck (HS) formulation given in the paper (embedded in the text on page 3) is not the one of the original HS paper where they propose to minimize the squared Laplacian for the regularizer. Hence, this appears to be much more akin to the second order model of the MICCAI submission rather than the first order one or curvature regularization.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+
+  <p>We would first like to thank the reviewers for their time providing constructive comments, we will endeavour to incorporate these suggestions in our revised paper. We will firstly address the three main concerns raised in the meta-review:</p>
+
+  <p>We will strengthen our literature review and sufficiently cite related work in our revised paper. Specifically with regards to the comments from reviewer two, we will include further citations covering areas such as the greedy composite approach proposed by Christensen et al. TIP 1996. In our original submission, we have cited the demons paper by Vercauteren et al. Neuroimage 2009. We will detail the differences between our method and the greedy approach and diffeomorphic demons in Section 2. Our method has no direct link to the works of A. Chambolle et al, R Garg et al, and M Hernandez et al, because primal dual is often used to address non-smooth total-variation-like problems, while our regularization is smooth and thus directly differentiable.</p>
+
+  <p>Following the comments from all three reviewers and the AE, it is clear we need to revisit our ANTs implementation to ensure a fair comparison. We will provide updated results for these methods in our revised manuscript, along with a thorough explanation of similarity measures and hyperparameters used. We will also reword and soften the language used in discussing Quicksilver and DeepFlash given we do not have empirical evidence to support our claim that its performance is unlikely to outperform LDDMM. We will also look at rewording our comments discussing the lack of strong evidence to support stochastic learning-based approaches outperforming deterministic approaches and where appropriate provide further citations. Regarding the Horn and Schunck (HS) model, we are confident this method is a first-order approach. Though in their paper the authors claimed they minimized the squared Laplacian for the regularizer, this second-order Laplacian was actually used in the resulting evolution (iterative) equations (Sec. 9 Minimisation on Page 9 of their paper). Therefore, in essence the HS model is a first-order method, which is similar to our formulation (embedded in the text on page 3).</p>
+
+  <p>Finally to address a selection of the specific questions from reviewers, the HSV is the final composition of each iterative velocity field, we will be clarifying the definition for the HSV visualisation in the revised paper. We believe the speed gain was not due to the limiting iterations alone, the point wise closed-form solutions in our method are very efficiently calculated on a GPU and the inclusion of Nesterov’s acceleration reduces the convergence rate to O(1/k^2). We believe our method is very memory efficient as we do not need to save any intermediate velocity fields. We also believe our method provides geodesic paths between images and thus can be used in Computational Anatomy applications. This is due to two reasons: (1) our regularization term constrains the solution on the tangent space of the Riemannian structure at the identity diffeomorphism; and (2) we handled the ODE explicitly using the Euler integration. Or from another perspective, Exp(VtN-1)o … o Exp(v0) will be approximately our Eq.(1) because velocity fields in our models are very small (due to linearization of data term) and therefore we can approximate the exponential function using the first-order Taylor expansion. As a result, the composition of Exp(VtN-1)o … o Exp(v0) will be equivalent to Eq.(1) in our paper. Lastly, we will provide further clarification on the selection of w0 and b0 (both were set to zero) in the revised version of the paper.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0414-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0415-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Thorley, Alexander"
+        class="post-category">
+        Thorley, Alexander
+      </a> |  
+      
+      <a href="kittywong/tags#Jia, Xi"
+        class="post-category">
+        Jia, Xi
+      </a> |  
+      
+      <a href="kittywong/tags#Chang, Hyung Jin"
+        class="post-category">
+        Chang, Hyung Jin
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Boyang"
+        class="post-category">
+        Liu, Boyang
+      </a> |  
+      
+      <a href="kittywong/tags#Bunting, Karina"
+        class="post-category">
+        Bunting, Karina
+      </a> |  
+      
+      <a href="kittywong/tags#Stoll, Victoria"
+        class="post-category">
+        Stoll, Victoria
+      </a> |  
+      
+      <a href="kittywong/tags#de Marvao, Antonio"
+        class="post-category">
+        de Marvao, Antonio
+      </a> |  
+      
+      <a href="kittywong/tags#O'Regan, Declan P."
+        class="post-category">
+        O'Regan, Declan P.
+      </a> |  
+      
+      <a href="kittywong/tags#Gkoutos, Georgios"
+        class="post-category">
+        Gkoutos, Georgios
+      </a> |  
+      
+      <a href="kittywong/tags#Kotecha, Dipak"
+        class="post-category">
+        Kotecha, Dipak
+      </a> |  
+      
+      <a href="kittywong/tags#Duan, Jinming"
+        class="post-category">
+        Duan, Jinming
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0415/12/31/Paper1738">
+          Spectral Embedding Approximation and Descriptor Learning for Craniofacial Volumetric Image Correspondence
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0413/12/31/Paper1416">
+          Construction of Longitudinally Consistent 4D Infant Cerebellum Atlases based on Deep Learning
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Longitudinal self-supervision to disentangle inter-patient variability from disease progression | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Longitudinal self-supervision to disentangle inter-patient variability from disease progression" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Raphaël Couronné, Paul Vernhet, Stanley Durrleman Abstract The problem of building disease progression models with longitudinal data has long been addressed with parametric mixed-effect models. They provide interpretable models at the cost of modeling assumptions on the progression profiles and their variability across subjects. Their deep learning counterparts, on the other hand, strive on flexible data-driven modeling, and additional interpretability - or, as far as generative models are involved, \emph{disentanglement} of latent variables with respect to generative factors - comes from additional constraints. In this work, we propose a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. We do not seek for an explicit mapping between age and disease stage, but to learn the latter solely from the ordering between visits using a differentiable ranking loss. Furthermore, we encourage inter-patient variability to be encoded in a separate latent space, where for each patient a single representation is learned from its set of visits, with a constraint of invariance under permutation of the visits. The modularity of the network architecture allows us to apply our model on various data types: a synthetic image dataset with known generative factors, cognitive assessments and neuroimaging data. We show that, combined with our patient encoder, the ranking loss for visits helps to exceed models with supervision, in particular in terms of disease staging. Link to paper https://doi.org/10.1007/978-3-030-87196-3_22 Link to the code repository https://github.com/RaphaelCouronne/longitudinal_autoencoder Link to the dataset(s) http://doi.org/10.5281/zenodo.5081988 http://adni.loni.usc.edu/ Reviews Review #1 Please describe the contribution of the paper This work proposes a generic deep longitudinal model. It disentangles the changes due to disease progression from the changes due to phenotypic differences across subjects and explores the latent representation of data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work employs the DeepSet encoder network to encourage inter-patient variability to a separate latent space, since DeepSet network is acting on any unordered subset of visits for set-invariant representation. It considers a ranking-based regularization constraint as a disease progression constraint to learn the relation between age and disease stage, which seem quite interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incorrect notations (presumably typos). For example, (1) in section “Generative disease progression model”, since different patient’s records have their own point-wise latent representation, so x_ij should depend on z_i^s and z_ij^psi rather than z_i^s and z_j^psi which assumes that the point-wise latent variables are shared by all individual; (2) in the section “Final objective”, authors do not define z_ij. Does it mean z_ij = (z_i^s, z_j^psi)? If so, authors should write the regularization term as KL(q(z^psi, z^s_i x_i)   p(z_i)) which cannot be factored with respect to the individual index i. Moreover, the final loss function misses the sum operator for time index j; (3) in the Fig1, z_ij^s should be z_i^s. This model employs CNN with a ranking-based loss function to encode the time progression variability. Since CNN cannot learn any relation between age and disease stage, only ranking-loss function encourage to learn the time progression variability. But authors do not explore how the loss function driven the learning capability, and how to select the gamma wight in the loss function, and if there is any thumb rule for the selection of gamma or just through cross validation. Also, because the number of visits for individual are different, should the weight depend on the number of individual visits? This work use the correlation between the estimated staging and latent space code to measure the independence. It is not clear to me how do authors employ PLS to measure the correlations, probably give some references. For the better staging performance seems to be naïve, since this work employ the ranking-based regularization loss function in the objectives. It is necessary to show the generalization of the model on testing data rather than training data. Also, nonlinear true disease progression is closer to the reality and more interesting to explore. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors plan to make code for training public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The temporal relation in the simulation is less convincible because it only discusses a monotonic case. It is better to propose a way to visualize the temporal relation in experimental section. Some notations are not clear. See the Final objective section. There is a typo in subscript in the KL-divergence as well. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work provides novelty and sufficient experiments to validate core ideas. However, many typos exist, and it lacks the model validation in the synthetic experiment which is also important. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposed a longitudinal analysis method using a variational auto-encoder. The encoder part consisted of a “space encoder” and a “point-wise time encoder”. The space encoder encodes the inter-patient variability using the permutation-invariant DeepSet. The point-wise time encoder encodes the variability caused by a progression. The proposed method was evaluated on a synthetic example, a cognitive score example, and a T1 MR slice example. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed architecture has many interesting, and novel in my knowledge, components for the longitudinal analysis. The usage of the permutation-invariant DeepSet to model inter-subject variability and the loosened temporal regularization for the point-wise time encoder seem to be valid and interesting. The evaluation on the synthetic example showed the importance of the longitudinal modeling well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments on real data need to be improved. The claims on disease progression modeling and the modularity are not well-supported by actual implementations and experiments in the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the proposed method seems to be okay. The proposed architecture was well-explained and a public dataset (ADNI) was used. However, implementation details, computational environments and costs were not given in the paper that may harm the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper presented a VAE-based longitudinal analysis method that can potentially disentangle the inter-subject variability and temporal variability of observed data. The pair of the space encoder and the point-wise temporal encoder encodes those variabilities in separate latent spaces (Z^s and Z_psi). Then the latent vectors were concatenated and fed to the decoder to generate images. The proposed method is novel and well-motivated to tackle an important problem in longitudinal analysis. The choice of the permutation-invariant DeepSet to model the inter-patient variability was interesting. I think it would have been great if an ablation study on the DeepSet and a conventional encoder architecture was included to see the benefit of using the DeepSet architecture. It may be one of the previous methods that were evaluated in the paper already. If so, it would be great if it were explained in the experiments section. The other choices of the soft ranking scores and the objective function were also valid and well-motivated. The synthetic example showed the benefit of incorporating the longitudinal information on modeling comprehensibly. I think Section 2.2 Modularity fit better in the discussion section as a future direction since it was not implemented and evaluated in the paper. I understand that the extension would not be too complicated. But, it was misleading since the synthetic example was generated using diffeomorphic transformations, but the validated architecture seemed to use a general image-level decoder. My biggest concern for this paper is the experiment on real images. The ventricle volume ratio was used as an indicator of disease progression for MCI. There are two reasons that I would be cautious on using the ventricle volume ratio as an indicator of disease progression. First, the ventricle volume change is highly correlated with aging. Because the point-wise time encoder uses time point information (although in a softer way), it is not surprising that the ventricle volume change was encoded in the Z^psi of the point-wise time encoder. This is concerning because this effect of aging on the ventricle is cross-sectional and not only related to the disease progression. As shown in Figure 5 (a), the CN, MCI, and AD groups were not separated well with respect to the ventricle volume. I think the claim on the disease progression modeling needs to be stated more clearly. The proposed method seemed to disentangle the temporal variability and the other variability from image data in the experiment. This is already very interesting. It doesn’t need to be overstated in my opinion. The second reason is that the ventricle volume ratio is a marker extracted from images. Also, the ventricle change is one of the major changes of a human brain over time which is likely to be captured by the first principal component (or, the first latent vector element) of the other non-longitudinal latent analysis methods. I believe there are more direct and non-imaging markers on disease progression or the cognitive ability of a patient. I think the experiment would support the claims better if a non-imaging marker (e.g., a clinical cognitive score) were used as an indicator. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is interesting as a longitudinal analysis method and includes interesting and novel approaches. However, the experiment on real image data needs to be improved and statements on disease progression modeling needs to be clarified. I recommend borderline accept. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The article proposes a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. They do so by learning the procession of a disease solely from the ordering between visits using a differentiable ranking loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The topic is interesting as neuroscience studies generally rely on markers related the physical age of subject to analyze disease progression. However the age of a subject is only a very crude metric for the aging of the brain. The proposed model is good even though it is quite similar to LSSL[25]. However, the cosine loss in [25] is replaced with a rank loss and Set-invariant learning The method is tested on three different data sets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments are missing many details (parameter gamma, # of layers, feature dimension, parameters used for data synthesis). Due to the incompleteness, it is difficult to interpret Table 1 (synthetic experiment). What is the difference between the generic iconic form on pixels and its diffeomorphic version (wD)? Is Ours(wD) a fair comparison to the baselines,e.g., would a diffeomorphic version of the baseline methods produce better results ? Why does Ours produce a relative bad MSE score ? How do the authors come to the conclusion that “Among all methods, ours performs best” given that not a single implementation produces the best score in all three categories? The description of the cognitive score experiments (1st part of Section 3.3) is vague and difficult to follow . Not clear what figure 4 is plotting. Minor comment: Many of the references are outdated, i.e, arXiv versions are cited instead of the corresponding peer reviewed articles (e.g. the very first one in the references is [7], which should be replaced with the NeuroIPS version) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance two of the three experiments are based on publicly available data. Source code does not seem publicly available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html carefully revise experimental section Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? model and application is interesting but experiments fail to convince as the description is difficult to follow What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission develops deep models for disease progression with longitudinal data by disentangling disease progression timeline from inter-patient variability which is encoded in a separate latent space. The submission works on an interesting topic, and the proposed model seems to be promising. But the reviewers have concerns about the proposed model, like the ranking loss function, and the experiments for disease progression and on real images. The reviewers also question about the experimental results. The authors are suggested to address those concerns and questions in the rebuttal letter, and others as well if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal letter. Updates should be made in the final version accordingly. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed all reviewer concerns. One of the concerns is that the experiments are not convincing. However it presents novel and interesting ideas. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers voted borderline/probably accept. Authors have stated that they will correct typos, and clarify those areas that need further clarification. Code will be released upon acceptance. The authors did not address some possible weaknesses of their experiments (disentanglement between aging and disease progression). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). x Author Feedback We warmly thank the reviewers for their insightful comments. They all stress the relevance and novelty of our visit ranking approach for longitudinal analysis with deep learning, applied on synthetic and real data. Reviewers 2 and 3 raised concerns about design choices of the method. We used a standard convolutional architecture for the encoders and decoders. We will add the precise architecture in supplementary material of the paper. Importantly, the same architecture was used for all benchmarked methods. Reviewer 1 and 3 asked details on the hyperparameter gamma, which balances temporal variability and data reconstruction. In practice we set gamma=0.1. A too small gamma leads to potential ambiguation: the wrong temporal direction, as a byproduct of deepset only, may be captured (see WoR in the benchmark). As pointed out by reviewer 1, the ranking loss does depend on the number of visits. We found it practical to choose a fixed number of 3 visits per patient at each iteration. The stochastic gradient descent randomly selects these visits at each iteration, which amounts to taking all visits into account at convergence. We will clarify this point in the revised version of the paper. Reviewer 1 raised the question of the limitations of our monotonicity assumption. This assumption holds for most neurodegenerative diseases, which is our application focus. We agree that it may limit the applications of the method in other areas. Nevertheless, the ranking is only a weak constraint, unlike other approaches that consider explicit age reparameterization. Our experiment on cognitive scores shows the ability of the method to capture average monotonicity in presence of noisy, non monotonic data (see Fig. 4). Extending our method to account for non-monotonic progression priors will be highlighted as future work. Reviewers 2 raised concerns about real data experiments. We agree that we indeed addressed the already challenging disentangling of time-variability with inter-patient variability. We did not address the temporal disentangling between disease progression and normal ageing, which is another topic. We argue that this is inherent to our unsupervised approach. Because additional labels are not always easily available, the fact that our model still manages to extract a consistent temporal marker is essential. As mentioned, while its effect is indeed close to the first direction of PCA, we captured it in a single temporal dimension, which by itself is a disambiguation. More importantly, we showed in the synthetic experiment that our method also works when time is not the first direction of the PCA. We take advantage of reviewer 1 and 3 comments to clarify further our evaluation framework. We computed our metrics from validation sets in a patient-wise 5 cross validation. We used a Spearman correlation between estimated and real stages at all visits to assess the global temporal realignment. For data without exact disease progression label, we used PLS to get the direction in the patient part of the latent space that is most correlated with the time index, to then assess both quantitatively and visually its disentanglement with time. We look for the best trade-off between reconstruction, staging and space-time disentanglement. Lastly, we thank reviewer 1 for the thorough remarks on ambiguities in notation, that we will rectify accordingly: indeed, x_ij depends on z_{i,j}=(z_i^s, z_{i,j}^psi), with per-individual stages z_{i,j}^psi. Thus, the KL can be factored with respect to individual i, as in MLVAE. To conclude, we propose to correct typos, clarify the choice of gamma and our time-variability statement, as well as include the specifics of network architecture experimental design in the supplementary material. Our code - including synthetic data set generation - will be released upon acceptance on our lab GitLab repository. We hope that these changes will address the reservations that reviewers might have about our paper. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Raphaël Couronné, Paul Vernhet, Stanley Durrleman Abstract The problem of building disease progression models with longitudinal data has long been addressed with parametric mixed-effect models. They provide interpretable models at the cost of modeling assumptions on the progression profiles and their variability across subjects. Their deep learning counterparts, on the other hand, strive on flexible data-driven modeling, and additional interpretability - or, as far as generative models are involved, \emph{disentanglement} of latent variables with respect to generative factors - comes from additional constraints. In this work, we propose a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. We do not seek for an explicit mapping between age and disease stage, but to learn the latter solely from the ordering between visits using a differentiable ranking loss. Furthermore, we encourage inter-patient variability to be encoded in a separate latent space, where for each patient a single representation is learned from its set of visits, with a constraint of invariance under permutation of the visits. The modularity of the network architecture allows us to apply our model on various data types: a synthetic image dataset with known generative factors, cognitive assessments and neuroimaging data. We show that, combined with our patient encoder, the ranking loss for visits helps to exceed models with supervision, in particular in terms of disease staging. Link to paper https://doi.org/10.1007/978-3-030-87196-3_22 Link to the code repository https://github.com/RaphaelCouronne/longitudinal_autoencoder Link to the dataset(s) http://doi.org/10.5281/zenodo.5081988 http://adni.loni.usc.edu/ Reviews Review #1 Please describe the contribution of the paper This work proposes a generic deep longitudinal model. It disentangles the changes due to disease progression from the changes due to phenotypic differences across subjects and explores the latent representation of data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work employs the DeepSet encoder network to encourage inter-patient variability to a separate latent space, since DeepSet network is acting on any unordered subset of visits for set-invariant representation. It considers a ranking-based regularization constraint as a disease progression constraint to learn the relation between age and disease stage, which seem quite interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incorrect notations (presumably typos). For example, (1) in section “Generative disease progression model”, since different patient’s records have their own point-wise latent representation, so x_ij should depend on z_i^s and z_ij^psi rather than z_i^s and z_j^psi which assumes that the point-wise latent variables are shared by all individual; (2) in the section “Final objective”, authors do not define z_ij. Does it mean z_ij = (z_i^s, z_j^psi)? If so, authors should write the regularization term as KL(q(z^psi, z^s_i x_i)   p(z_i)) which cannot be factored with respect to the individual index i. Moreover, the final loss function misses the sum operator for time index j; (3) in the Fig1, z_ij^s should be z_i^s. This model employs CNN with a ranking-based loss function to encode the time progression variability. Since CNN cannot learn any relation between age and disease stage, only ranking-loss function encourage to learn the time progression variability. But authors do not explore how the loss function driven the learning capability, and how to select the gamma wight in the loss function, and if there is any thumb rule for the selection of gamma or just through cross validation. Also, because the number of visits for individual are different, should the weight depend on the number of individual visits? This work use the correlation between the estimated staging and latent space code to measure the independence. It is not clear to me how do authors employ PLS to measure the correlations, probably give some references. For the better staging performance seems to be naïve, since this work employ the ranking-based regularization loss function in the objectives. It is necessary to show the generalization of the model on testing data rather than training data. Also, nonlinear true disease progression is closer to the reality and more interesting to explore. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors plan to make code for training public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The temporal relation in the simulation is less convincible because it only discusses a monotonic case. It is better to propose a way to visualize the temporal relation in experimental section. Some notations are not clear. See the Final objective section. There is a typo in subscript in the KL-divergence as well. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work provides novelty and sufficient experiments to validate core ideas. However, many typos exist, and it lacks the model validation in the synthetic experiment which is also important. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposed a longitudinal analysis method using a variational auto-encoder. The encoder part consisted of a “space encoder” and a “point-wise time encoder”. The space encoder encodes the inter-patient variability using the permutation-invariant DeepSet. The point-wise time encoder encodes the variability caused by a progression. The proposed method was evaluated on a synthetic example, a cognitive score example, and a T1 MR slice example. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed architecture has many interesting, and novel in my knowledge, components for the longitudinal analysis. The usage of the permutation-invariant DeepSet to model inter-subject variability and the loosened temporal regularization for the point-wise time encoder seem to be valid and interesting. The evaluation on the synthetic example showed the importance of the longitudinal modeling well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments on real data need to be improved. The claims on disease progression modeling and the modularity are not well-supported by actual implementations and experiments in the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the proposed method seems to be okay. The proposed architecture was well-explained and a public dataset (ADNI) was used. However, implementation details, computational environments and costs were not given in the paper that may harm the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper presented a VAE-based longitudinal analysis method that can potentially disentangle the inter-subject variability and temporal variability of observed data. The pair of the space encoder and the point-wise temporal encoder encodes those variabilities in separate latent spaces (Z^s and Z_psi). Then the latent vectors were concatenated and fed to the decoder to generate images. The proposed method is novel and well-motivated to tackle an important problem in longitudinal analysis. The choice of the permutation-invariant DeepSet to model the inter-patient variability was interesting. I think it would have been great if an ablation study on the DeepSet and a conventional encoder architecture was included to see the benefit of using the DeepSet architecture. It may be one of the previous methods that were evaluated in the paper already. If so, it would be great if it were explained in the experiments section. The other choices of the soft ranking scores and the objective function were also valid and well-motivated. The synthetic example showed the benefit of incorporating the longitudinal information on modeling comprehensibly. I think Section 2.2 Modularity fit better in the discussion section as a future direction since it was not implemented and evaluated in the paper. I understand that the extension would not be too complicated. But, it was misleading since the synthetic example was generated using diffeomorphic transformations, but the validated architecture seemed to use a general image-level decoder. My biggest concern for this paper is the experiment on real images. The ventricle volume ratio was used as an indicator of disease progression for MCI. There are two reasons that I would be cautious on using the ventricle volume ratio as an indicator of disease progression. First, the ventricle volume change is highly correlated with aging. Because the point-wise time encoder uses time point information (although in a softer way), it is not surprising that the ventricle volume change was encoded in the Z^psi of the point-wise time encoder. This is concerning because this effect of aging on the ventricle is cross-sectional and not only related to the disease progression. As shown in Figure 5 (a), the CN, MCI, and AD groups were not separated well with respect to the ventricle volume. I think the claim on the disease progression modeling needs to be stated more clearly. The proposed method seemed to disentangle the temporal variability and the other variability from image data in the experiment. This is already very interesting. It doesn’t need to be overstated in my opinion. The second reason is that the ventricle volume ratio is a marker extracted from images. Also, the ventricle change is one of the major changes of a human brain over time which is likely to be captured by the first principal component (or, the first latent vector element) of the other non-longitudinal latent analysis methods. I believe there are more direct and non-imaging markers on disease progression or the cognitive ability of a patient. I think the experiment would support the claims better if a non-imaging marker (e.g., a clinical cognitive score) were used as an indicator. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is interesting as a longitudinal analysis method and includes interesting and novel approaches. However, the experiment on real image data needs to be improved and statements on disease progression modeling needs to be clarified. I recommend borderline accept. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The article proposes a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. They do so by learning the procession of a disease solely from the ordering between visits using a differentiable ranking loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The topic is interesting as neuroscience studies generally rely on markers related the physical age of subject to analyze disease progression. However the age of a subject is only a very crude metric for the aging of the brain. The proposed model is good even though it is quite similar to LSSL[25]. However, the cosine loss in [25] is replaced with a rank loss and Set-invariant learning The method is tested on three different data sets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments are missing many details (parameter gamma, # of layers, feature dimension, parameters used for data synthesis). Due to the incompleteness, it is difficult to interpret Table 1 (synthetic experiment). What is the difference between the generic iconic form on pixels and its diffeomorphic version (wD)? Is Ours(wD) a fair comparison to the baselines,e.g., would a diffeomorphic version of the baseline methods produce better results ? Why does Ours produce a relative bad MSE score ? How do the authors come to the conclusion that “Among all methods, ours performs best” given that not a single implementation produces the best score in all three categories? The description of the cognitive score experiments (1st part of Section 3.3) is vague and difficult to follow . Not clear what figure 4 is plotting. Minor comment: Many of the references are outdated, i.e, arXiv versions are cited instead of the corresponding peer reviewed articles (e.g. the very first one in the references is [7], which should be replaced with the NeuroIPS version) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance two of the three experiments are based on publicly available data. Source code does not seem publicly available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html carefully revise experimental section Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? model and application is interesting but experiments fail to convince as the description is difficult to follow What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission develops deep models for disease progression with longitudinal data by disentangling disease progression timeline from inter-patient variability which is encoded in a separate latent space. The submission works on an interesting topic, and the proposed model seems to be promising. But the reviewers have concerns about the proposed model, like the ranking loss function, and the experiments for disease progression and on real images. The reviewers also question about the experimental results. The authors are suggested to address those concerns and questions in the rebuttal letter, and others as well if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal letter. Updates should be made in the final version accordingly. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed all reviewer concerns. One of the concerns is that the experiments are not convincing. However it presents novel and interesting ideas. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers voted borderline/probably accept. Authors have stated that they will correct typos, and clarify those areas that need further clarification. Code will be released upon acceptance. The authors did not address some possible weaknesses of their experiments (disentanglement between aging and disease progression). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). x Author Feedback We warmly thank the reviewers for their insightful comments. They all stress the relevance and novelty of our visit ranking approach for longitudinal analysis with deep learning, applied on synthetic and real data. Reviewers 2 and 3 raised concerns about design choices of the method. We used a standard convolutional architecture for the encoders and decoders. We will add the precise architecture in supplementary material of the paper. Importantly, the same architecture was used for all benchmarked methods. Reviewer 1 and 3 asked details on the hyperparameter gamma, which balances temporal variability and data reconstruction. In practice we set gamma=0.1. A too small gamma leads to potential ambiguation: the wrong temporal direction, as a byproduct of deepset only, may be captured (see WoR in the benchmark). As pointed out by reviewer 1, the ranking loss does depend on the number of visits. We found it practical to choose a fixed number of 3 visits per patient at each iteration. The stochastic gradient descent randomly selects these visits at each iteration, which amounts to taking all visits into account at convergence. We will clarify this point in the revised version of the paper. Reviewer 1 raised the question of the limitations of our monotonicity assumption. This assumption holds for most neurodegenerative diseases, which is our application focus. We agree that it may limit the applications of the method in other areas. Nevertheless, the ranking is only a weak constraint, unlike other approaches that consider explicit age reparameterization. Our experiment on cognitive scores shows the ability of the method to capture average monotonicity in presence of noisy, non monotonic data (see Fig. 4). Extending our method to account for non-monotonic progression priors will be highlighted as future work. Reviewers 2 raised concerns about real data experiments. We agree that we indeed addressed the already challenging disentangling of time-variability with inter-patient variability. We did not address the temporal disentangling between disease progression and normal ageing, which is another topic. We argue that this is inherent to our unsupervised approach. Because additional labels are not always easily available, the fact that our model still manages to extract a consistent temporal marker is essential. As mentioned, while its effect is indeed close to the first direction of PCA, we captured it in a single temporal dimension, which by itself is a disambiguation. More importantly, we showed in the synthetic experiment that our method also works when time is not the first direction of the PCA. We take advantage of reviewer 1 and 3 comments to clarify further our evaluation framework. We computed our metrics from validation sets in a patient-wise 5 cross validation. We used a Spearman correlation between estimated and real stages at all visits to assess the global temporal realignment. For data without exact disease progression label, we used PLS to get the direction in the patient part of the latent space that is most correlated with the time index, to then assess both quantitatively and visually its disentanglement with time. We look for the best trade-off between reconstruction, staging and space-time disentanglement. Lastly, we thank reviewer 1 for the thorough remarks on ambiguities in notation, that we will rectify accordingly: indeed, x_ij depends on z_{i,j}=(z_i^s, z_{i,j}^psi), with per-individual stages z_{i,j}^psi. Thus, the KL can be factored with respect to individual i, as in MLVAE. To conclude, we propose to correct typos, clarify the choice of gamma and our time-variability statement, as well as include the specifics of network architecture experimental design in the supplementary material. Our code - including synthetic data set generation - will be released upon acceptance on our lab GitLab repository. We hope that these changes will address the reservations that reviewers might have about our paper. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0221/12/31/Paper1497" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0221/12/31/Paper1497" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0221-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Longitudinal self-supervision to disentangle inter-patient variability from disease progression" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0221/12/31/Paper1497"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0221/12/31/Paper1497","headline":"Longitudinal self-supervision to disentangle inter-patient variability from disease progression","dateModified":"0222-01-01T00:00:00-05:17","datePublished":"0221-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Raphaël Couronné, Paul Vernhet, Stanley Durrleman Abstract The problem of building disease progression models with longitudinal data has long been addressed with parametric mixed-effect models. They provide interpretable models at the cost of modeling assumptions on the progression profiles and their variability across subjects. Their deep learning counterparts, on the other hand, strive on flexible data-driven modeling, and additional interpretability - or, as far as generative models are involved, \\emph{disentanglement} of latent variables with respect to generative factors - comes from additional constraints. In this work, we propose a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. We do not seek for an explicit mapping between age and disease stage, but to learn the latter solely from the ordering between visits using a differentiable ranking loss. Furthermore, we encourage inter-patient variability to be encoded in a separate latent space, where for each patient a single representation is learned from its set of visits, with a constraint of invariance under permutation of the visits. The modularity of the network architecture allows us to apply our model on various data types: a synthetic image dataset with known generative factors, cognitive assessments and neuroimaging data. We show that, combined with our patient encoder, the ranking loss for visits helps to exceed models with supervision, in particular in terms of disease staging. Link to paper https://doi.org/10.1007/978-3-030-87196-3_22 Link to the code repository https://github.com/RaphaelCouronne/longitudinal_autoencoder Link to the dataset(s) http://doi.org/10.5281/zenodo.5081988 http://adni.loni.usc.edu/ Reviews Review #1 Please describe the contribution of the paper This work proposes a generic deep longitudinal model. It disentangles the changes due to disease progression from the changes due to phenotypic differences across subjects and explores the latent representation of data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work employs the DeepSet encoder network to encourage inter-patient variability to a separate latent space, since DeepSet network is acting on any unordered subset of visits for set-invariant representation. It considers a ranking-based regularization constraint as a disease progression constraint to learn the relation between age and disease stage, which seem quite interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Incorrect notations (presumably typos). For example, (1) in section “Generative disease progression model”, since different patient’s records have their own point-wise latent representation, so x_ij should depend on z_i^s and z_ij^psi rather than z_i^s and z_j^psi which assumes that the point-wise latent variables are shared by all individual; (2) in the section “Final objective”, authors do not define z_ij. Does it mean z_ij = (z_i^s, z_j^psi)? If so, authors should write the regularization term as KL(q(z^psi, z^s_i x_i)   p(z_i)) which cannot be factored with respect to the individual index i. Moreover, the final loss function misses the sum operator for time index j; (3) in the Fig1, z_ij^s should be z_i^s. This model employs CNN with a ranking-based loss function to encode the time progression variability. Since CNN cannot learn any relation between age and disease stage, only ranking-loss function encourage to learn the time progression variability. But authors do not explore how the loss function driven the learning capability, and how to select the gamma wight in the loss function, and if there is any thumb rule for the selection of gamma or just through cross validation. Also, because the number of visits for individual are different, should the weight depend on the number of individual visits? This work use the correlation between the estimated staging and latent space code to measure the independence. It is not clear to me how do authors employ PLS to measure the correlations, probably give some references. For the better staging performance seems to be naïve, since this work employ the ranking-based regularization loss function in the objectives. It is necessary to show the generalization of the model on testing data rather than training data. Also, nonlinear true disease progression is closer to the reality and more interesting to explore. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors plan to make code for training public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The temporal relation in the simulation is less convincible because it only discusses a monotonic case. It is better to propose a way to visualize the temporal relation in experimental section. Some notations are not clear. See the Final objective section. There is a typo in subscript in the KL-divergence as well. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work provides novelty and sufficient experiments to validate core ideas. However, many typos exist, and it lacks the model validation in the synthetic experiment which is also important. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposed a longitudinal analysis method using a variational auto-encoder. The encoder part consisted of a “space encoder” and a “point-wise time encoder”. The space encoder encodes the inter-patient variability using the permutation-invariant DeepSet. The point-wise time encoder encodes the variability caused by a progression. The proposed method was evaluated on a synthetic example, a cognitive score example, and a T1 MR slice example. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed architecture has many interesting, and novel in my knowledge, components for the longitudinal analysis. The usage of the permutation-invariant DeepSet to model inter-subject variability and the loosened temporal regularization for the point-wise time encoder seem to be valid and interesting. The evaluation on the synthetic example showed the importance of the longitudinal modeling well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments on real data need to be improved. The claims on disease progression modeling and the modularity are not well-supported by actual implementations and experiments in the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the proposed method seems to be okay. The proposed architecture was well-explained and a public dataset (ADNI) was used. However, implementation details, computational environments and costs were not given in the paper that may harm the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper presented a VAE-based longitudinal analysis method that can potentially disentangle the inter-subject variability and temporal variability of observed data. The pair of the space encoder and the point-wise temporal encoder encodes those variabilities in separate latent spaces (Z^s and Z_psi). Then the latent vectors were concatenated and fed to the decoder to generate images. The proposed method is novel and well-motivated to tackle an important problem in longitudinal analysis. The choice of the permutation-invariant DeepSet to model the inter-patient variability was interesting. I think it would have been great if an ablation study on the DeepSet and a conventional encoder architecture was included to see the benefit of using the DeepSet architecture. It may be one of the previous methods that were evaluated in the paper already. If so, it would be great if it were explained in the experiments section. The other choices of the soft ranking scores and the objective function were also valid and well-motivated. The synthetic example showed the benefit of incorporating the longitudinal information on modeling comprehensibly. I think Section 2.2 Modularity fit better in the discussion section as a future direction since it was not implemented and evaluated in the paper. I understand that the extension would not be too complicated. But, it was misleading since the synthetic example was generated using diffeomorphic transformations, but the validated architecture seemed to use a general image-level decoder. My biggest concern for this paper is the experiment on real images. The ventricle volume ratio was used as an indicator of disease progression for MCI. There are two reasons that I would be cautious on using the ventricle volume ratio as an indicator of disease progression. First, the ventricle volume change is highly correlated with aging. Because the point-wise time encoder uses time point information (although in a softer way), it is not surprising that the ventricle volume change was encoded in the Z^psi of the point-wise time encoder. This is concerning because this effect of aging on the ventricle is cross-sectional and not only related to the disease progression. As shown in Figure 5 (a), the CN, MCI, and AD groups were not separated well with respect to the ventricle volume. I think the claim on the disease progression modeling needs to be stated more clearly. The proposed method seemed to disentangle the temporal variability and the other variability from image data in the experiment. This is already very interesting. It doesn’t need to be overstated in my opinion. The second reason is that the ventricle volume ratio is a marker extracted from images. Also, the ventricle change is one of the major changes of a human brain over time which is likely to be captured by the first principal component (or, the first latent vector element) of the other non-longitudinal latent analysis methods. I believe there are more direct and non-imaging markers on disease progression or the cognitive ability of a patient. I think the experiment would support the claims better if a non-imaging marker (e.g., a clinical cognitive score) were used as an indicator. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is interesting as a longitudinal analysis method and includes interesting and novel approaches. However, the experiment on real image data needs to be improved and statements on disease progression modeling needs to be clarified. I recommend borderline accept. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The article proposes a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. They do so by learning the procession of a disease solely from the ordering between visits using a differentiable ranking loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The topic is interesting as neuroscience studies generally rely on markers related the physical age of subject to analyze disease progression. However the age of a subject is only a very crude metric for the aging of the brain. The proposed model is good even though it is quite similar to LSSL[25]. However, the cosine loss in [25] is replaced with a rank loss and Set-invariant learning The method is tested on three different data sets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experiments are missing many details (parameter gamma, # of layers, feature dimension, parameters used for data synthesis). Due to the incompleteness, it is difficult to interpret Table 1 (synthetic experiment). What is the difference between the generic iconic form on pixels and its diffeomorphic version (wD)? Is Ours(wD) a fair comparison to the baselines,e.g., would a diffeomorphic version of the baseline methods produce better results ? Why does Ours produce a relative bad MSE score ? How do the authors come to the conclusion that “Among all methods, ours performs best” given that not a single implementation produces the best score in all three categories? The description of the cognitive score experiments (1st part of Section 3.3) is vague and difficult to follow . Not clear what figure 4 is plotting. Minor comment: Many of the references are outdated, i.e, arXiv versions are cited instead of the corresponding peer reviewed articles (e.g. the very first one in the references is [7], which should be replaced with the NeuroIPS version) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance two of the three experiments are based on publicly available data. Source code does not seem publicly available Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html carefully revise experimental section Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? model and application is interesting but experiments fail to convince as the description is difficult to follow What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The submission develops deep models for disease progression with longitudinal data by disentangling disease progression timeline from inter-patient variability which is encoded in a separate latent space. The submission works on an interesting topic, and the proposed model seems to be promising. But the reviewers have concerns about the proposed model, like the ranking loss function, and the experiments for disease progression and on real images. The reviewers also question about the experimental results. The authors are suggested to address those concerns and questions in the rebuttal letter, and others as well if space allows. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors addressed most of the conerns raised by the reviewers in the rebuttal letter. Updates should be made in the final version accordingly. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed all reviewer concerns. One of the concerns is that the experiments are not convincing. However it presents novel and interesting ideas. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers voted borderline/probably accept. Authors have stated that they will correct typos, and clarify those areas that need further clarification. Code will be released upon acceptance. The authors did not address some possible weaknesses of their experiments (disentanglement between aging and disease progression). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). x Author Feedback We warmly thank the reviewers for their insightful comments. They all stress the relevance and novelty of our visit ranking approach for longitudinal analysis with deep learning, applied on synthetic and real data. Reviewers 2 and 3 raised concerns about design choices of the method. We used a standard convolutional architecture for the encoders and decoders. We will add the precise architecture in supplementary material of the paper. Importantly, the same architecture was used for all benchmarked methods. Reviewer 1 and 3 asked details on the hyperparameter gamma, which balances temporal variability and data reconstruction. In practice we set gamma=0.1. A too small gamma leads to potential ambiguation: the wrong temporal direction, as a byproduct of deepset only, may be captured (see WoR in the benchmark). As pointed out by reviewer 1, the ranking loss does depend on the number of visits. We found it practical to choose a fixed number of 3 visits per patient at each iteration. The stochastic gradient descent randomly selects these visits at each iteration, which amounts to taking all visits into account at convergence. We will clarify this point in the revised version of the paper. Reviewer 1 raised the question of the limitations of our monotonicity assumption. This assumption holds for most neurodegenerative diseases, which is our application focus. We agree that it may limit the applications of the method in other areas. Nevertheless, the ranking is only a weak constraint, unlike other approaches that consider explicit age reparameterization. Our experiment on cognitive scores shows the ability of the method to capture average monotonicity in presence of noisy, non monotonic data (see Fig. 4). Extending our method to account for non-monotonic progression priors will be highlighted as future work. Reviewers 2 raised concerns about real data experiments. We agree that we indeed addressed the already challenging disentangling of time-variability with inter-patient variability. We did not address the temporal disentangling between disease progression and normal ageing, which is another topic. We argue that this is inherent to our unsupervised approach. Because additional labels are not always easily available, the fact that our model still manages to extract a consistent temporal marker is essential. As mentioned, while its effect is indeed close to the first direction of PCA, we captured it in a single temporal dimension, which by itself is a disambiguation. More importantly, we showed in the synthetic experiment that our method also works when time is not the first direction of the PCA. We take advantage of reviewer 1 and 3 comments to clarify further our evaluation framework. We computed our metrics from validation sets in a patient-wise 5 cross validation. We used a Spearman correlation between estimated and real stages at all visits to assess the global temporal realignment. For data without exact disease progression label, we used PLS to get the direction in the patient part of the latent space that is most correlated with the time index, to then assess both quantitatively and visually its disentanglement with time. We look for the best trade-off between reconstruction, staging and space-time disentanglement. Lastly, we thank reviewer 1 for the thorough remarks on ambiguities in notation, that we will rectify accordingly: indeed, x_ij depends on z_{i,j}=(z_i^s, z_{i,j}^psi), with per-individual stages z_{i,j}^psi. Thus, the KL can be factored with respect to individual i, as in MLVAE. To conclude, we propose to correct typos, clarify the choice of gamma and our time-variability statement, as well as include the specifics of network architecture experimental design in the supplementary material. Our code - including synthetic data set generation - will be released upon acceptance on our lab GitLab repository. We hope that these changes will address the reservations that reviewers might have about our paper. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Couronné, Raphaël,Vernhet, Paul,Durrleman, Stanley" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Longitudinal self-supervision to disentangle inter-patient variability from disease progression</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Others"
+        class="post-category">
+        Clinical applications - Neuroimaging - Others
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computational Anatomy and Physiology"
+        class="post-category">
+        Computational Anatomy and Physiology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Couronné, Raphaël"
+        class="post-tags">
+        Couronné, Raphaël
+      </a> |  
+      
+      <a href="kittywong/tags#Vernhet, Paul"
+        class="post-tags">
+        Vernhet, Paul
+      </a> |  
+      
+      <a href="kittywong/tags#Durrleman, Stanley"
+        class="post-tags">
+        Durrleman, Stanley
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Raphaël Couronné, Paul Vernhet, Stanley Durrleman
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The problem of building disease progression models with longitudinal data has long been addressed with parametric mixed-effect models. They provide interpretable models at the cost of modeling assumptions on the progression profiles and their variability across subjects. Their deep learning counterparts, on the other hand, strive on flexible data-driven modeling, and additional interpretability - or, as far as generative models are involved, \emph{disentanglement} of latent variables with respect to generative factors - comes from additional constraints.
+In this work, we propose a deep longitudinal model designed to disentangle inter-patient variability from an estimated disease progression timeline. 
+We do not seek for an explicit mapping between age and disease stage, but to learn the latter solely from the ordering between visits using a differentiable ranking loss.
+Furthermore, we encourage inter-patient variability to be encoded in a separate latent space, where for each patient a single representation is learned from its set of visits, with a constraint of invariance under permutation of the visits.
+The modularity of the network architecture allows us to apply  our  model  on  various  data  types:  a  synthetic  image  dataset with known generative factors, cognitive assessments and neuroimaging data.
+We show that, combined with our patient encoder, the ranking loss for visits helps to exceed models with supervision, in particular in terms of disease staging.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_22">https://doi.org/10.1007/978-3-030-87196-3_22</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/RaphaelCouronne/longitudinal_autoencoder
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>http://doi.org/10.5281/zenodo.5081988
+http://adni.loni.usc.edu/
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work proposes a generic deep longitudinal model. It disentangles the changes due to disease progression from the changes due to phenotypic differences across subjects and explores the latent representation of data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>This work employs the DeepSet encoder network to encourage inter-patient variability to a separate latent space, since DeepSet network is acting on any unordered subset of visits for set-invariant representation.</p>
+        </li>
+        <li>
+          <p>It considers a ranking-based regularization constraint as a disease progression constraint to learn the relation between age and disease stage, which seem quite interesting.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>Incorrect notations (presumably typos). For example, (1) in section “Generative disease progression model”, since different patient’s records have their own point-wise latent representation, so x_ij should depend on z_i^s and z_ij^psi rather than z_i^s and z_j^psi which assumes that the point-wise latent variables are shared by all individual; (2) in the section “Final objective”, authors do not define z_ij. Does it mean z_ij = (z_i^s, z_j^psi)? If so, authors should write the regularization term as KL(q(z^psi, z^s_i</td>
+                <td>x_i)</td>
+                <td> </td>
+                <td>p(z_i)) which cannot be factored with respect to the individual index i. Moreover, the final loss function misses the sum operator for time index j; (3) in the Fig1, z_ij^s should be z_i^s.</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>
+          <p>This model employs CNN with a ranking-based loss function to encode the time progression variability. Since CNN cannot learn any relation between age and disease stage, only ranking-loss function encourage to learn the time progression variability. But authors do not explore how the loss function driven the learning capability, and how to select the gamma wight in the loss function, and if there is any thumb rule for the selection of gamma or just through cross validation. Also, because the number of visits for individual are different, should the weight depend on the number of individual visits?</p>
+        </li>
+        <li>
+          <p>This work use the correlation between the estimated staging and latent space code to measure the independence. It is not clear to me how do authors employ PLS to measure the correlations, probably give some references.</p>
+        </li>
+        <li>For the better staging performance seems to be naïve, since this work employ the ranking-based regularization loss function in the objectives. It is necessary to show the generalization of the model on testing data rather than training data. Also, nonlinear true disease progression is closer to the reality and more interesting to explore.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors plan to make code for training public.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The temporal relation in the simulation is less convincible because it only discusses a monotonic case. It is better to propose a way to visualize the temporal relation in experimental section.</p>
+        </li>
+        <li>
+          <p>Some notations are not clear. See the Final objective section. There is a typo in subscript in the KL-divergence as well.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This work provides novelty and sufficient experiments to validate core ideas. However, many typos exist, and it lacks the model validation in the synthetic experiment which is also important.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposed a longitudinal analysis method using a variational auto-encoder. The encoder part consisted of a “space encoder” and a “point-wise time encoder”. The space encoder encodes the inter-patient variability using the permutation-invariant DeepSet. The point-wise time encoder encodes the variability caused by a progression. The proposed method was evaluated on a synthetic example, a cognitive score example, and a T1 MR slice example.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The proposed architecture has many interesting, and novel in my knowledge, components for the longitudinal analysis.</p>
+        </li>
+        <li>
+          <p>The usage of the permutation-invariant DeepSet to model inter-subject variability and the loosened temporal regularization for the point-wise time encoder seem to be valid and interesting.</p>
+        </li>
+        <li>
+          <p>The evaluation on the synthetic example showed the importance of the longitudinal modeling well.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The experiments on real data need to be improved.</p>
+        </li>
+        <li>
+          <p>The claims on disease progression modeling and the modularity are not well-supported by actual implementations and experiments in the paper.</p>
+        </li>
+        <li></li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility of the proposed method seems to be okay. The proposed architecture was well-explained and a public dataset (ADNI) was used. However, implementation details, computational environments and costs were not given in the paper that may harm the reproducibility.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper presented a VAE-based longitudinal analysis method that can potentially disentangle the inter-subject variability and temporal variability of observed data. The pair of the space encoder and the point-wise temporal encoder encodes those variabilities in separate latent spaces (Z^s and Z_psi). Then the latent vectors were concatenated and fed to the decoder to generate images.</p>
+
+      <p>The proposed method is novel and well-motivated to tackle an important problem in longitudinal analysis.</p>
+
+      <p>The choice of the permutation-invariant DeepSet to model the inter-patient variability was interesting. I think it would have been great if an ablation study on the DeepSet and a conventional encoder architecture was included to see the benefit of using the DeepSet architecture. It may be one of the previous methods that were evaluated in the paper already. If so, it would be great if it were explained in the experiments section.</p>
+
+      <p>The other choices of the soft ranking scores and the objective function were also valid and well-motivated.</p>
+
+      <p>The synthetic example showed the benefit of incorporating the longitudinal information on modeling comprehensibly.</p>
+
+      <p>I think Section 2.2 Modularity fit better in the discussion section as a future direction since it was not implemented and evaluated in the paper. I understand that the extension would not be too complicated. But, it was misleading since the synthetic example was generated using diffeomorphic transformations, but the validated architecture seemed to use a general image-level decoder.</p>
+
+      <p>My biggest concern for this paper is the experiment on real images. The ventricle volume ratio was used as an indicator of disease progression for MCI. There are two reasons that I would be cautious on using the ventricle volume ratio as an indicator of disease progression. First, the ventricle volume change is highly correlated with aging. Because the point-wise time encoder uses time point information (although in a softer way), it is not surprising that the ventricle volume change was encoded in the Z^psi of the point-wise time encoder. This is concerning because this effect of aging on the ventricle is cross-sectional and not only related to the disease progression. As shown in Figure 5 (a), the CN, MCI, and AD groups were not separated well with respect to the ventricle volume. I think the claim on the disease progression modeling needs to be stated more clearly. The proposed method seemed to disentangle the temporal variability and the other variability from image data in the experiment. This is already very interesting. It doesn’t need to be overstated in my opinion. 
+The second reason is that the ventricle volume ratio is a marker extracted from images. Also, the ventricle change is one of the major changes of a human brain over time which is likely to be captured by the first principal component (or, the first latent vector element) of the other non-longitudinal latent analysis methods. I believe there are more direct and non-imaging markers on disease progression or the cognitive ability of a patient. I think the experiment would support the claims better if a non-imaging marker (e.g., a clinical cognitive score) were used as an indicator.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The proposed method is interesting as a longitudinal analysis method and includes interesting and novel approaches. However, the experiment on real image data needs to be improved and statements on disease progression modeling needs to be clarified. I recommend borderline accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The article proposes a deep longitudinal model designed to disentangle
+inter-patient variability from an estimated disease progression timeline. They do so by learning the procession of a disease solely from the ordering between visits using a differentiable ranking loss function.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The topic is interesting as neuroscience studies generally rely on markers related the physical age of subject to analyze disease progression. However the age of a subject is only a very crude metric for the aging of the brain.</p>
+
+      <p>The proposed model is good even though it is quite similar to LSSL[25]. However, the cosine loss in [25] is replaced with a rank loss and Set-invariant learning</p>
+
+      <p>The method is tested on three different data sets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The experiments are missing many details (parameter gamma, # of layers, feature dimension, parameters used for data synthesis).</p>
+
+      <p>Due to the incompleteness, it is difficult to interpret Table 1 (synthetic experiment). What is the difference between the generic iconic form
+on pixels and its diffeomorphic version (wD)? Is Ours(wD) a fair comparison to the baselines,e.g., would a diffeomorphic version of the baseline methods produce better results ?   Why does Ours produce a relative bad MSE score ?  How do the authors come to the conclusion that “Among all methods, ours performs best” given that not a single implementation produces the best score in all three categories?</p>
+
+      <p>The description of the cognitive score experiments (1st part of Section 3.3) is vague and difficult to follow . Not clear what figure 4 is plotting.</p>
+
+      <p>Minor comment: Many of the references are outdated, i.e, arXiv versions are cited instead of the corresponding peer reviewed articles (e.g. the very first one  in the references is [7], which should be replaced with the NeuroIPS version)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>two of the three experiments are based on publicly available data. Source code  does not seem publicly available</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>carefully revise experimental section</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>model and application is interesting but experiments fail to convince as the description is difficult to follow</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The submission develops deep models for disease progression with longitudinal data by disentangling disease progression timeline from inter-patient variability which is encoded in a separate latent space. The submission works on an interesting topic, and the proposed model seems to be promising. But the reviewers have concerns about the proposed model, like the ranking loss function, and the experiments for disease progression and on real images. The reviewers also question about the experimental results. The authors are suggested to address those concerns and questions in the rebuttal letter, and others as well if space allows.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors addressed most of the conerns raised by the reviewers in the rebuttal letter. Updates should be made in the final version accordingly.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have addressed all reviewer concerns. One of the concerns is that the experiments are not convincing. However it presents novel and interesting ideas.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>All reviewers voted borderline/probably accept. Authors have stated that they will correct typos, and clarify those areas that need further clarification. Code will be released upon acceptance. The authors did not address some possible weaknesses of their experiments (disentanglement between aging and disease progression).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>x</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We warmly thank the reviewers for their insightful comments. They all stress the relevance and novelty of our visit ranking approach for longitudinal analysis with deep learning, applied on synthetic and real data.</p>
+
+  <p>Reviewers 2 and 3 raised concerns about design choices of the method. We used a standard convolutional architecture for the encoders and decoders. We will add the precise architecture in supplementary material of the paper. Importantly, the same architecture was used for all benchmarked methods.</p>
+
+  <p>Reviewer 1 and 3 asked details on the hyperparameter gamma, which balances temporal variability and data reconstruction. In practice we set gamma=0.1. A too small gamma leads to potential ambiguation: the wrong temporal direction, as a byproduct of deepset only, may be captured (see WoR in the benchmark). As pointed out by reviewer 1, the ranking loss does depend on the number of visits. We found it practical to choose a fixed number of 3 visits per patient at each iteration. The stochastic gradient descent randomly selects these visits at each iteration, which amounts to taking all visits into account at convergence. We will clarify this point in the revised version of the paper.</p>
+
+  <p>Reviewer 1 raised the question of the limitations of our monotonicity assumption. This assumption holds for most neurodegenerative diseases, which is our application focus. We agree that it may limit the applications of the method in other areas. Nevertheless, the ranking is only a weak constraint, unlike other approaches that consider explicit age reparameterization. Our experiment on cognitive scores shows the ability of the method to capture average monotonicity in presence of noisy, non monotonic data (see Fig. 4). Extending our method to account for non-monotonic progression priors will be highlighted as future work.</p>
+
+  <p>Reviewers 2 raised concerns about real data experiments. We agree that we indeed addressed the already challenging disentangling of time-variability with inter-patient variability. We did not address the temporal disentangling between disease progression and normal ageing, which is another topic. We argue that this is inherent to our unsupervised approach. Because additional labels are not always easily available, the fact that our model still manages to extract a consistent temporal marker is essential. As mentioned, while its effect is indeed close to the first direction of PCA, we captured it in a single temporal dimension, which by itself is a disambiguation. More importantly, we showed in the synthetic experiment that our method also works when time is not the first direction of the PCA.</p>
+
+  <p>We take advantage of reviewer 1 and 3 comments to clarify further our evaluation framework. We computed our metrics from validation sets in a patient-wise 5 cross validation. We used a Spearman correlation between estimated and real stages at all visits to assess the global temporal realignment. For data without exact disease progression label, we used PLS to get the direction in the patient part of the latent space that is most correlated with the time index, to then assess both quantitatively and visually its disentanglement with time. We look for the best trade-off between reconstruction, staging and space-time disentanglement.</p>
+
+  <p>Lastly, we thank reviewer 1 for the thorough remarks on ambiguities in notation, that we will rectify accordingly: indeed, x_ij depends on z_{i,j}=(z_i^s, z_{i,j}^psi), with per-individual stages z_{i,j}^psi. Thus, the KL can be factored with respect to individual i, as in MLVAE.</p>
+
+  <p>To conclude, we propose to correct typos, clarify the choice of gamma and our time-variability statement, as well as include the specifics of network architecture experimental design in the supplementary material. Our code - including synthetic data set generation - will be released upon acceptance on our lab GitLab repository. We hope that these changes will address the reservations that reviewers might have about our paper.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0221-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0222-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Others"
+        class="post-category">
+        Clinical applications - Neuroimaging - Others
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computational Anatomy and Physiology"
+        class="post-category">
+        Computational Anatomy and Physiology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Couronné, Raphaël"
+        class="post-category">
+        Couronné, Raphaël
+      </a> |  
+      
+      <a href="kittywong/tags#Vernhet, Paul"
+        class="post-category">
+        Vernhet, Paul
+      </a> |  
+      
+      <a href="kittywong/tags#Durrleman, Stanley"
+        class="post-category">
+        Durrleman, Stanley
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0222/12/31/Paper1526">
+          Self-Supervised Vessel Enhancement Using Flow-Based Consistencies
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0220/12/31/Paper1432">
+          Positional Contrastive Learning for Volumetric Medical Image Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

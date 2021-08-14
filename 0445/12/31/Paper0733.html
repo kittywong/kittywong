@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>DLLNet: An Attention-based Deep Learning Method for Dental Landmark Localization on High-Resolution 3D Digital Dental Models | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="DLLNet: An Attention-based Deep Learning Method for Dental Landmark Localization on High-Resolution 3D Digital Dental Models" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yankun Lang, Hannah H. Deng, Deqiang Xiao, Chunfeng Lian, Tianshu Kuang, Jaime Gateno, Pew-Thian Yap, James J. Xia Abstract Dental landmark localization is a fundamental step to analyzing dental models in the planning of orthodontic or orthognathic surgery. However, current clinical practices require clinicians to manually digitize more than 60 landmarks on 3D dental models. Automatic methods to detect landmarks can release clinicians from the tedious labor of manual annotation and improve localization accuracy. Most existing landmark detection methods fail to capture local geometric contexts, causing large errors and misdetections. We propose an end-to-end learning framework to automatically localize 68 landmarks on high-resolution dental surfaces. Our network hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area-of-interest segmentation path. Higher-level features are learned by combining local-to-global features from the two paths by feature fusion to predict the landmark heatmap and the landmark area segmentation map. An attention mechanism is then applied to the two maps to refine the landmark position. We evaluated our framework on a real-patient dataset consisting of 77 high-resolution dental surfaces. Our approach achieves an average localization error of 0.42 mm, significantly outperforming related start-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_46 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This papers presents some improvements of the MeshSegNet method (described in [11]) in order to better localize anatomical landmarks on 3D mesh representing dental models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Interesting results, especially on patients with defect. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results are not directly reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction Digitalization is not localization: in general, digitization gives a 3D mesh. One way to get dental model is also to scan a dental cast. What is a “standard” care which requires to localize 60 landmarks? What is the “training” you mention in “consumption during training”? Detail the modalities of “medical images” (2D/3D, US, CT, X-ray…). Another ways to localize landmarks is 1) to map a template (i.e. an atlas or an average model) on the dental model by using a non-rigid registration algorithm. If you have previously identified landmarks of the template, you can transfer them on your data (see for example https://www.pnas.org/content/108/45/18221 ) 2) to analyze the local shape of the 3D mesh, in general by using curvature values (see for example http://www.cad-journal.net/files/vol_9/CAD_9(6)_2012_747-769.pdf ). Did you analyze this kind of methods? The recent reference https://arxiv.org/pdf/2012.12946.pdf could be of interest. Method In fact, you work is an improvement of the MeshSegNet architecture. You should emphasize this point by: Showing in Figure 2, the differences with Figure 1 of [11]. Discussing the improvements. In 2.1, you add Gaussian, maximum and minimum curvatures. But, is Gaussian curvature useful as it is the product of maximum and minimum curvatures? How do you compute precisely these values? In 2.1, you talk about the localization path which is new. Explain its interest. We can understand what are A_S1 and A_S2 by referring to [11] but A_L1 and A_L2 are new and we only know that A is an “adjacent matrix” without any explanation about how to compute it. 2.2 is new and should be justified: detail what is the objective (we have only one sentence about it at the end of section 1) and after you can give all the technical details. Experiments Why do you perform data augmentation? How do you choose the rotation, translation and scaling parameter ranges? Why do you normalize the feature matrix? What is GNC? Explain precisely your evaluation parameters: is RMSE computed between corresponding landmarks (estimated and true ones). What is “misdetection”? Figure 5 is very interesting but the discussion is much too short. How do you detect the absence of some teeth? Is it possible that some landmarks are missing on a tooth (for example a cusp which was broken) and how do you process it? Conclusion This part is uninteresting as there is neither perspective, nor future work. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a method for dental landmark localization named DLLNet. It hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area segmentation path. It uses a coarse-to-fine framework to first conduct coarse detection followed by refined detection. The coarse detection is built upon a published work named MeshSegNet for teeth segmentation. The main contribution from the paper is the proposition of DLLNet, which claims to extract multi-scale local contextual features. The authors concluded that the addition of curvature features and attention mechanism had led to improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strengths of the paper are as follows: the proposition of DLLNet the use of Gaussian curvatures, in addition to regular geometric features use of attention mechanism results are convincing (quantitatively and qualitatively) through ablation study and visual presentations Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This paper lacks clarity in certain areas. In particular, there are questions arising from reading the paper: Although the DLLNet is proposed to work on meshes with different number of cells, it is unclear what the DLLNet models are trained on. In particular for Fig. 1, the first DLLNet seems to be trained and then applied on the teeth partitions, whereas the second DLLNet seems to be trained and then applied on the sampled meshes (obtained from the coarse detected landmarks). Are the two DLLNet models separate and different from each other? Is it possible to train a DLLNet for individual tooth, rather than one for all? In Fig. 1, what do the rectangles mean above “Teeth partition”? Robustness of the proposed approach. The 3D scan seems to be smooth and complete. In reality, 3D scans are noisy and may contain holes and complex geometries. How will these complications affect the model performance? If there is one or more teeth missing, will the method be able to recognize that? 3D scans can have texture information recorded (e.g., color). How will that information be potentially integrated into the proposed framework for improving performance? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The network structure seems to be clearly presented. There are questions on what data are used for training the two DLLNet models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors can provide discussions on robustness and generalization capability of their method related to more practical data scenarios (e.g., imperfect input scans, missing teeth, teeth from different ages of population, etc.). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Built upon a known work (MeshSegNet), the paper proposes the DLLNet through integrating data features including curvature information and attention schemes, and conducted cross validation and ablation studies in comparing with other approaches in the field. Results are promising quantitatively and visually. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work targets at the landmark localization on 3D intraoral surface models. The task is meaningful for automating the preprocessing procedure of orthognathic surgeries, while challenging for the high data resolution and the nature of landmarks. While there have been a few existing works on the task, the work proposes a novel, simple yet seemingly effective method to tackle the challenges. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work proposes a novel method for the landmark localization on 3D intraoral surface meshes. To localize on high-resolution data, the method utilizes two cascaded steps, where a the first step localize regions of interest on low resolution, and the second steps take the regions and attentions to produce accurate local predictions on high resolution. The idea is reasonable, and seems effective according to experiments. The method is compared with serveral recent landmark regression works, and outperforms them with a large margin. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the Table 1, the proposed method and all its variants are way better than existing methods in accuracy. What is the main contribution to such advantage? More explanation in the ablation study is needed. There is also reproducibility concerns about the work. See below. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance What are the inputs to other methods included in the comparison? Are they working on the low resolution or high resolution? What is the highest resolution those methods can work with? How the other methods were trained? More details on the training setup can help improve the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html More details on experiment and training setup for the baseline models should be added. More explanations on the performance boost of the proposed method (and its variants) than the existing methods should be better explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work proposes a novel method on the landmark localization on 3D intraoral surface meshes. The ideas of low-to-high resolution and attention mechanism look reasonable, and the experimental results show their effectivess. However, there are certain reproducibility issues, and more detailed explanations on performance boost can help readers. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Dear authors, your work has intrigued the reviewers, however further clarifications of the method as well as results are needed. Given that your approach relies heavily on MeshSegNet [11], it is important that the comparison to MeshSegNet and other SOTA methods is fair and clearly explained. The limitations of the method should also be mentioned, e.g. how robust the method is. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In the rebuttal, the authors clarified the important points of the reviewers’ criticism. Namely, the authors clarified the extension of the MeschSegNet such that an accurate landmark localization can be archived. Although the method is evaluated on a relatively small dataset of 77 images, the improvement over baseline methods is clear. The approach is sensitive on missing tooth, which can be seen as a limitation, however, I see this as a future work which can be tackle with a pre-processing step as authors indicated. I find the manuscript acceptable for publication, however, the authors should include the first three rebuttal points into the camera-ready version of the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors’ extended the original MeshSegnet by incorporating the ‘multi-scale’ and ‘attention mechanism’. The results show that these additional common techniques futher improved the landmark localization accuracy. I am still not fully convinced that these additions are novel enough but its clinical usefulness for patiets with defect was good. Overall, the paper has limited novelty but could be interesting to MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper shows a landmark localization approach for dental 3D scans, which is heavily inspired by recent works, but experimentally shows a step forward in prediction performance. Reviewer concerns regarding the explanation of the performance improvement and the lack of details in the experimental setup have been addressed in the rebuttal. Unfortunately authors have not responded on how they will improve their manuscript to incorporate clarifications to the raised concerns. In case of acceptance, authors are encouraged to shorten the introduction to make room for the missing details in the experimental setup. Authors also should use the conclusion section not just as a pure summary of the approach, and make sure that the references section is formatted according to MICCAI standards (no use of et al., there is no problem with having another page of references this year!). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback Improvements over MeshSegNet are not clearly presented. (From Reviewer #1) A: DLLNet extended MeshSegNet to a multi-scale landmark detection network. The segmentation path in Fig. 2 detects areas where landmarks may exist (landmark RoI). With the same modules but different receptive fields, the localization path detects landmarks from these areas. By concatenation, the two paths collaboratively explore multi-scale contextual feature vectors, and output a landmark area segmentation map S and a coarse regressed heatmap H. Then, an attention mechanism is performed to further refine initial landmark localization results, where S is used as an attention map. By performing Hadamard product on H with S, the refined heatmap \hat{H} forces landmarks localized in landmark areas to eliminate misdetection due to feature similarities. This procedure also constrains the training of S and H by each other. Finally, the landmark localization results are determined by \hat{H} as the coordinates of the mesh cell with the largest probability value. Additionally, computing \hat{H} can be regarded as a local coarse-to-fine processing since S can be viewed as a coarse landmark detection result. Lack of explanations on performance. (From Reviewer #1, Reviewer #2, Reviewer #3) A: DLL-C outperforms MeshSegNet and other compared methods partly due to the curvature features, which are added into the input matrix by considering that landmarks are located on cusps or fossa. DLL-CS further improves the accuracy by collaboratively performing multi-scale landmark detection via the landmark area segmentation path. For DLL-SA, its overall performance is slightly worse than the other two variants, because curvatures are not considered. However, DLL-SA still outperforms the other compared methods via local coarse-to-fine processing, where the landmark area segmentation results are used as attention maps, forcing each landmark to be localized within the landmark area, thus reducing misdetections. By integrating all these strategies into our framework, DLLNet ultimately achieves the highest accuracy and the lowest misdetection rate when compared to related methods. Lack of discussion on the robustness of proposed approach. (From Reviewer #1, Reviewer #2) A: Our approach has been successfully tested on 77 patients. For the 15 patients who are partially edentulous, tooth absence can be directly detected from the pre-segmentation results. How do you choose the rotation, translation and scaling parameter ranges? (From Reviewer #1) A: Each case has 50% possibility to be rotated, translated or rescaled along the X, Y, and Z axis with a random parameter sampled between the range mentioned in Section 3.1. More details on experiments and training setups for the baseline models should be added. (From Reviewer #1, Reviewer #3) A: The architectures of the compared methods were implemented following their original papers. For PointNet++ and PointConv, the input is a N × 9 matrix, each row containing 3D coordinates of a mesh cell. N is the total number of cells. For MeshSegNet, the input is a N × 15 matrix as described in the original paper. All the compared methods were trained in the same way: In the coarse stage, each teeth partition was down-sampled to get 3000 mesh cells (N = 3000) as an input and the network was trained for 30 epochs with the mini-batch size set as 10; In the refinement stage, 150 mesh cells around each predicted landmark with various offsets (≤ 0.5mm) were sampled and all sampled mesh cells are then taken as input. The network was trained for 25 epochs with mini-batch size 10. All networks in the coarse and refinement stages have the same architecture. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yankun Lang, Hannah H. Deng, Deqiang Xiao, Chunfeng Lian, Tianshu Kuang, Jaime Gateno, Pew-Thian Yap, James J. Xia Abstract Dental landmark localization is a fundamental step to analyzing dental models in the planning of orthodontic or orthognathic surgery. However, current clinical practices require clinicians to manually digitize more than 60 landmarks on 3D dental models. Automatic methods to detect landmarks can release clinicians from the tedious labor of manual annotation and improve localization accuracy. Most existing landmark detection methods fail to capture local geometric contexts, causing large errors and misdetections. We propose an end-to-end learning framework to automatically localize 68 landmarks on high-resolution dental surfaces. Our network hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area-of-interest segmentation path. Higher-level features are learned by combining local-to-global features from the two paths by feature fusion to predict the landmark heatmap and the landmark area segmentation map. An attention mechanism is then applied to the two maps to refine the landmark position. We evaluated our framework on a real-patient dataset consisting of 77 high-resolution dental surfaces. Our approach achieves an average localization error of 0.42 mm, significantly outperforming related start-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_46 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This papers presents some improvements of the MeshSegNet method (described in [11]) in order to better localize anatomical landmarks on 3D mesh representing dental models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Interesting results, especially on patients with defect. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results are not directly reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction Digitalization is not localization: in general, digitization gives a 3D mesh. One way to get dental model is also to scan a dental cast. What is a “standard” care which requires to localize 60 landmarks? What is the “training” you mention in “consumption during training”? Detail the modalities of “medical images” (2D/3D, US, CT, X-ray…). Another ways to localize landmarks is 1) to map a template (i.e. an atlas or an average model) on the dental model by using a non-rigid registration algorithm. If you have previously identified landmarks of the template, you can transfer them on your data (see for example https://www.pnas.org/content/108/45/18221 ) 2) to analyze the local shape of the 3D mesh, in general by using curvature values (see for example http://www.cad-journal.net/files/vol_9/CAD_9(6)_2012_747-769.pdf ). Did you analyze this kind of methods? The recent reference https://arxiv.org/pdf/2012.12946.pdf could be of interest. Method In fact, you work is an improvement of the MeshSegNet architecture. You should emphasize this point by: Showing in Figure 2, the differences with Figure 1 of [11]. Discussing the improvements. In 2.1, you add Gaussian, maximum and minimum curvatures. But, is Gaussian curvature useful as it is the product of maximum and minimum curvatures? How do you compute precisely these values? In 2.1, you talk about the localization path which is new. Explain its interest. We can understand what are A_S1 and A_S2 by referring to [11] but A_L1 and A_L2 are new and we only know that A is an “adjacent matrix” without any explanation about how to compute it. 2.2 is new and should be justified: detail what is the objective (we have only one sentence about it at the end of section 1) and after you can give all the technical details. Experiments Why do you perform data augmentation? How do you choose the rotation, translation and scaling parameter ranges? Why do you normalize the feature matrix? What is GNC? Explain precisely your evaluation parameters: is RMSE computed between corresponding landmarks (estimated and true ones). What is “misdetection”? Figure 5 is very interesting but the discussion is much too short. How do you detect the absence of some teeth? Is it possible that some landmarks are missing on a tooth (for example a cusp which was broken) and how do you process it? Conclusion This part is uninteresting as there is neither perspective, nor future work. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a method for dental landmark localization named DLLNet. It hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area segmentation path. It uses a coarse-to-fine framework to first conduct coarse detection followed by refined detection. The coarse detection is built upon a published work named MeshSegNet for teeth segmentation. The main contribution from the paper is the proposition of DLLNet, which claims to extract multi-scale local contextual features. The authors concluded that the addition of curvature features and attention mechanism had led to improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strengths of the paper are as follows: the proposition of DLLNet the use of Gaussian curvatures, in addition to regular geometric features use of attention mechanism results are convincing (quantitatively and qualitatively) through ablation study and visual presentations Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This paper lacks clarity in certain areas. In particular, there are questions arising from reading the paper: Although the DLLNet is proposed to work on meshes with different number of cells, it is unclear what the DLLNet models are trained on. In particular for Fig. 1, the first DLLNet seems to be trained and then applied on the teeth partitions, whereas the second DLLNet seems to be trained and then applied on the sampled meshes (obtained from the coarse detected landmarks). Are the two DLLNet models separate and different from each other? Is it possible to train a DLLNet for individual tooth, rather than one for all? In Fig. 1, what do the rectangles mean above “Teeth partition”? Robustness of the proposed approach. The 3D scan seems to be smooth and complete. In reality, 3D scans are noisy and may contain holes and complex geometries. How will these complications affect the model performance? If there is one or more teeth missing, will the method be able to recognize that? 3D scans can have texture information recorded (e.g., color). How will that information be potentially integrated into the proposed framework for improving performance? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The network structure seems to be clearly presented. There are questions on what data are used for training the two DLLNet models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors can provide discussions on robustness and generalization capability of their method related to more practical data scenarios (e.g., imperfect input scans, missing teeth, teeth from different ages of population, etc.). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Built upon a known work (MeshSegNet), the paper proposes the DLLNet through integrating data features including curvature information and attention schemes, and conducted cross validation and ablation studies in comparing with other approaches in the field. Results are promising quantitatively and visually. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work targets at the landmark localization on 3D intraoral surface models. The task is meaningful for automating the preprocessing procedure of orthognathic surgeries, while challenging for the high data resolution and the nature of landmarks. While there have been a few existing works on the task, the work proposes a novel, simple yet seemingly effective method to tackle the challenges. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work proposes a novel method for the landmark localization on 3D intraoral surface meshes. To localize on high-resolution data, the method utilizes two cascaded steps, where a the first step localize regions of interest on low resolution, and the second steps take the regions and attentions to produce accurate local predictions on high resolution. The idea is reasonable, and seems effective according to experiments. The method is compared with serveral recent landmark regression works, and outperforms them with a large margin. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the Table 1, the proposed method and all its variants are way better than existing methods in accuracy. What is the main contribution to such advantage? More explanation in the ablation study is needed. There is also reproducibility concerns about the work. See below. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance What are the inputs to other methods included in the comparison? Are they working on the low resolution or high resolution? What is the highest resolution those methods can work with? How the other methods were trained? More details on the training setup can help improve the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html More details on experiment and training setup for the baseline models should be added. More explanations on the performance boost of the proposed method (and its variants) than the existing methods should be better explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work proposes a novel method on the landmark localization on 3D intraoral surface meshes. The ideas of low-to-high resolution and attention mechanism look reasonable, and the experimental results show their effectivess. However, there are certain reproducibility issues, and more detailed explanations on performance boost can help readers. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Dear authors, your work has intrigued the reviewers, however further clarifications of the method as well as results are needed. Given that your approach relies heavily on MeshSegNet [11], it is important that the comparison to MeshSegNet and other SOTA methods is fair and clearly explained. The limitations of the method should also be mentioned, e.g. how robust the method is. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In the rebuttal, the authors clarified the important points of the reviewers’ criticism. Namely, the authors clarified the extension of the MeschSegNet such that an accurate landmark localization can be archived. Although the method is evaluated on a relatively small dataset of 77 images, the improvement over baseline methods is clear. The approach is sensitive on missing tooth, which can be seen as a limitation, however, I see this as a future work which can be tackle with a pre-processing step as authors indicated. I find the manuscript acceptable for publication, however, the authors should include the first three rebuttal points into the camera-ready version of the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors’ extended the original MeshSegnet by incorporating the ‘multi-scale’ and ‘attention mechanism’. The results show that these additional common techniques futher improved the landmark localization accuracy. I am still not fully convinced that these additions are novel enough but its clinical usefulness for patiets with defect was good. Overall, the paper has limited novelty but could be interesting to MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper shows a landmark localization approach for dental 3D scans, which is heavily inspired by recent works, but experimentally shows a step forward in prediction performance. Reviewer concerns regarding the explanation of the performance improvement and the lack of details in the experimental setup have been addressed in the rebuttal. Unfortunately authors have not responded on how they will improve their manuscript to incorporate clarifications to the raised concerns. In case of acceptance, authors are encouraged to shorten the introduction to make room for the missing details in the experimental setup. Authors also should use the conclusion section not just as a pure summary of the approach, and make sure that the references section is formatted according to MICCAI standards (no use of et al., there is no problem with having another page of references this year!). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback Improvements over MeshSegNet are not clearly presented. (From Reviewer #1) A: DLLNet extended MeshSegNet to a multi-scale landmark detection network. The segmentation path in Fig. 2 detects areas where landmarks may exist (landmark RoI). With the same modules but different receptive fields, the localization path detects landmarks from these areas. By concatenation, the two paths collaboratively explore multi-scale contextual feature vectors, and output a landmark area segmentation map S and a coarse regressed heatmap H. Then, an attention mechanism is performed to further refine initial landmark localization results, where S is used as an attention map. By performing Hadamard product on H with S, the refined heatmap \hat{H} forces landmarks localized in landmark areas to eliminate misdetection due to feature similarities. This procedure also constrains the training of S and H by each other. Finally, the landmark localization results are determined by \hat{H} as the coordinates of the mesh cell with the largest probability value. Additionally, computing \hat{H} can be regarded as a local coarse-to-fine processing since S can be viewed as a coarse landmark detection result. Lack of explanations on performance. (From Reviewer #1, Reviewer #2, Reviewer #3) A: DLL-C outperforms MeshSegNet and other compared methods partly due to the curvature features, which are added into the input matrix by considering that landmarks are located on cusps or fossa. DLL-CS further improves the accuracy by collaboratively performing multi-scale landmark detection via the landmark area segmentation path. For DLL-SA, its overall performance is slightly worse than the other two variants, because curvatures are not considered. However, DLL-SA still outperforms the other compared methods via local coarse-to-fine processing, where the landmark area segmentation results are used as attention maps, forcing each landmark to be localized within the landmark area, thus reducing misdetections. By integrating all these strategies into our framework, DLLNet ultimately achieves the highest accuracy and the lowest misdetection rate when compared to related methods. Lack of discussion on the robustness of proposed approach. (From Reviewer #1, Reviewer #2) A: Our approach has been successfully tested on 77 patients. For the 15 patients who are partially edentulous, tooth absence can be directly detected from the pre-segmentation results. How do you choose the rotation, translation and scaling parameter ranges? (From Reviewer #1) A: Each case has 50% possibility to be rotated, translated or rescaled along the X, Y, and Z axis with a random parameter sampled between the range mentioned in Section 3.1. More details on experiments and training setups for the baseline models should be added. (From Reviewer #1, Reviewer #3) A: The architectures of the compared methods were implemented following their original papers. For PointNet++ and PointConv, the input is a N × 9 matrix, each row containing 3D coordinates of a mesh cell. N is the total number of cells. For MeshSegNet, the input is a N × 15 matrix as described in the original paper. All the compared methods were trained in the same way: In the coarse stage, each teeth partition was down-sampled to get 3000 mesh cells (N = 3000) as an input and the network was trained for 30 epochs with the mini-batch size set as 10; In the refinement stage, 150 mesh cells around each predicted landmark with various offsets (≤ 0.5mm) were sampled and all sampled mesh cells are then taken as input. The network was trained for 25 epochs with mini-batch size 10. All networks in the coarse and refinement stages have the same architecture. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0445/12/31/Paper0733" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0445/12/31/Paper0733" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0445-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="DLLNet: An Attention-based Deep Learning Method for Dental Landmark Localization on High-Resolution 3D Digital Dental Models" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0445/12/31/Paper0733"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0445/12/31/Paper0733","headline":"DLLNet: An Attention-based Deep Learning Method for Dental Landmark Localization on High-Resolution 3D Digital Dental Models","dateModified":"0446-01-02T00:00:00-05:17","datePublished":"0445-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yankun Lang, Hannah H. Deng, Deqiang Xiao, Chunfeng Lian, Tianshu Kuang, Jaime Gateno, Pew-Thian Yap, James J. Xia Abstract Dental landmark localization is a fundamental step to analyzing dental models in the planning of orthodontic or orthognathic surgery. However, current clinical practices require clinicians to manually digitize more than 60 landmarks on 3D dental models. Automatic methods to detect landmarks can release clinicians from the tedious labor of manual annotation and improve localization accuracy. Most existing landmark detection methods fail to capture local geometric contexts, causing large errors and misdetections. We propose an end-to-end learning framework to automatically localize 68 landmarks on high-resolution dental surfaces. Our network hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area-of-interest segmentation path. Higher-level features are learned by combining local-to-global features from the two paths by feature fusion to predict the landmark heatmap and the landmark area segmentation map. An attention mechanism is then applied to the two maps to refine the landmark position. We evaluated our framework on a real-patient dataset consisting of 77 high-resolution dental surfaces. Our approach achieves an average localization error of 0.42 mm, significantly outperforming related start-of-the-art methods. Link to paper https://doi.org/10.1007/978-3-030-87202-1_46 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This papers presents some improvements of the MeshSegNet method (described in [11]) in order to better localize anatomical landmarks on 3D mesh representing dental models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Interesting results, especially on patients with defect. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results are not directly reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction Digitalization is not localization: in general, digitization gives a 3D mesh. One way to get dental model is also to scan a dental cast. What is a “standard” care which requires to localize 60 landmarks? What is the “training” you mention in “consumption during training”? Detail the modalities of “medical images” (2D/3D, US, CT, X-ray…). Another ways to localize landmarks is 1) to map a template (i.e. an atlas or an average model) on the dental model by using a non-rigid registration algorithm. If you have previously identified landmarks of the template, you can transfer them on your data (see for example https://www.pnas.org/content/108/45/18221 ) 2) to analyze the local shape of the 3D mesh, in general by using curvature values (see for example http://www.cad-journal.net/files/vol_9/CAD_9(6)_2012_747-769.pdf ). Did you analyze this kind of methods? The recent reference https://arxiv.org/pdf/2012.12946.pdf could be of interest. Method In fact, you work is an improvement of the MeshSegNet architecture. You should emphasize this point by: Showing in Figure 2, the differences with Figure 1 of [11]. Discussing the improvements. In 2.1, you add Gaussian, maximum and minimum curvatures. But, is Gaussian curvature useful as it is the product of maximum and minimum curvatures? How do you compute precisely these values? In 2.1, you talk about the localization path which is new. Explain its interest. We can understand what are A_S1 and A_S2 by referring to [11] but A_L1 and A_L2 are new and we only know that A is an “adjacent matrix” without any explanation about how to compute it. 2.2 is new and should be justified: detail what is the objective (we have only one sentence about it at the end of section 1) and after you can give all the technical details. Experiments Why do you perform data augmentation? How do you choose the rotation, translation and scaling parameter ranges? Why do you normalize the feature matrix? What is GNC? Explain precisely your evaluation parameters: is RMSE computed between corresponding landmarks (estimated and true ones). What is “misdetection”? Figure 5 is very interesting but the discussion is much too short. How do you detect the absence of some teeth? Is it possible that some landmarks are missing on a tooth (for example a cusp which was broken) and how do you process it? Conclusion This part is uninteresting as there is neither perspective, nor future work. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The improvements of the MeshSegNet method are not very clearly presented. Evaluation of results in too short. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a method for dental landmark localization named DLLNet. It hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area segmentation path. It uses a coarse-to-fine framework to first conduct coarse detection followed by refined detection. The coarse detection is built upon a published work named MeshSegNet for teeth segmentation. The main contribution from the paper is the proposition of DLLNet, which claims to extract multi-scale local contextual features. The authors concluded that the addition of curvature features and attention mechanism had led to improved performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strengths of the paper are as follows: the proposition of DLLNet the use of Gaussian curvatures, in addition to regular geometric features use of attention mechanism results are convincing (quantitatively and qualitatively) through ablation study and visual presentations Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. This paper lacks clarity in certain areas. In particular, there are questions arising from reading the paper: Although the DLLNet is proposed to work on meshes with different number of cells, it is unclear what the DLLNet models are trained on. In particular for Fig. 1, the first DLLNet seems to be trained and then applied on the teeth partitions, whereas the second DLLNet seems to be trained and then applied on the sampled meshes (obtained from the coarse detected landmarks). Are the two DLLNet models separate and different from each other? Is it possible to train a DLLNet for individual tooth, rather than one for all? In Fig. 1, what do the rectangles mean above “Teeth partition”? Robustness of the proposed approach. The 3D scan seems to be smooth and complete. In reality, 3D scans are noisy and may contain holes and complex geometries. How will these complications affect the model performance? If there is one or more teeth missing, will the method be able to recognize that? 3D scans can have texture information recorded (e.g., color). How will that information be potentially integrated into the proposed framework for improving performance? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The network structure seems to be clearly presented. There are questions on what data are used for training the two DLLNet models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors can provide discussions on robustness and generalization capability of their method related to more practical data scenarios (e.g., imperfect input scans, missing teeth, teeth from different ages of population, etc.). Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Built upon a known work (MeshSegNet), the paper proposes the DLLNet through integrating data features including curvature information and attention schemes, and conducted cross validation and ablation studies in comparing with other approaches in the field. Results are promising quantitatively and visually. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work targets at the landmark localization on 3D intraoral surface models. The task is meaningful for automating the preprocessing procedure of orthognathic surgeries, while challenging for the high data resolution and the nature of landmarks. While there have been a few existing works on the task, the work proposes a novel, simple yet seemingly effective method to tackle the challenges. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The work proposes a novel method for the landmark localization on 3D intraoral surface meshes. To localize on high-resolution data, the method utilizes two cascaded steps, where a the first step localize regions of interest on low resolution, and the second steps take the regions and attentions to produce accurate local predictions on high resolution. The idea is reasonable, and seems effective according to experiments. The method is compared with serveral recent landmark regression works, and outperforms them with a large margin. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. In the Table 1, the proposed method and all its variants are way better than existing methods in accuracy. What is the main contribution to such advantage? More explanation in the ablation study is needed. There is also reproducibility concerns about the work. See below. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance What are the inputs to other methods included in the comparison? Are they working on the low resolution or high resolution? What is the highest resolution those methods can work with? How the other methods were trained? More details on the training setup can help improve the reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html More details on experiment and training setup for the baseline models should be added. More explanations on the performance boost of the proposed method (and its variants) than the existing methods should be better explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work proposes a novel method on the landmark localization on 3D intraoral surface meshes. The ideas of low-to-high resolution and attention mechanism look reasonable, and the experimental results show their effectivess. However, there are certain reproducibility issues, and more detailed explanations on performance boost can help readers. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Dear authors, your work has intrigued the reviewers, however further clarifications of the method as well as results are needed. Given that your approach relies heavily on MeshSegNet [11], it is important that the comparison to MeshSegNet and other SOTA methods is fair and clearly explained. The limitations of the method should also be mentioned, e.g. how robust the method is. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In the rebuttal, the authors clarified the important points of the reviewers’ criticism. Namely, the authors clarified the extension of the MeschSegNet such that an accurate landmark localization can be archived. Although the method is evaluated on a relatively small dataset of 77 images, the improvement over baseline methods is clear. The approach is sensitive on missing tooth, which can be seen as a limitation, however, I see this as a future work which can be tackle with a pre-processing step as authors indicated. I find the manuscript acceptable for publication, however, the authors should include the first three rebuttal points into the camera-ready version of the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. In this paper, the authors’ extended the original MeshSegnet by incorporating the ‘multi-scale’ and ‘attention mechanism’. The results show that these additional common techniques futher improved the landmark localization accuracy. I am still not fully convinced that these additions are novel enough but its clinical usefulness for patiets with defect was good. Overall, the paper has limited novelty but could be interesting to MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper shows a landmark localization approach for dental 3D scans, which is heavily inspired by recent works, but experimentally shows a step forward in prediction performance. Reviewer concerns regarding the explanation of the performance improvement and the lack of details in the experimental setup have been addressed in the rebuttal. Unfortunately authors have not responded on how they will improve their manuscript to incorporate clarifications to the raised concerns. In case of acceptance, authors are encouraged to shorten the introduction to make room for the missing details in the experimental setup. Authors also should use the conclusion section not just as a pure summary of the approach, and make sure that the references section is formatted according to MICCAI standards (no use of et al., there is no problem with having another page of references this year!). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback Improvements over MeshSegNet are not clearly presented. (From Reviewer #1) A: DLLNet extended MeshSegNet to a multi-scale landmark detection network. The segmentation path in Fig. 2 detects areas where landmarks may exist (landmark RoI). With the same modules but different receptive fields, the localization path detects landmarks from these areas. By concatenation, the two paths collaboratively explore multi-scale contextual feature vectors, and output a landmark area segmentation map S and a coarse regressed heatmap H. Then, an attention mechanism is performed to further refine initial landmark localization results, where S is used as an attention map. By performing Hadamard product on H with S, the refined heatmap \\hat{H} forces landmarks localized in landmark areas to eliminate misdetection due to feature similarities. This procedure also constrains the training of S and H by each other. Finally, the landmark localization results are determined by \\hat{H} as the coordinates of the mesh cell with the largest probability value. Additionally, computing \\hat{H} can be regarded as a local coarse-to-fine processing since S can be viewed as a coarse landmark detection result. Lack of explanations on performance. (From Reviewer #1, Reviewer #2, Reviewer #3) A: DLL-C outperforms MeshSegNet and other compared methods partly due to the curvature features, which are added into the input matrix by considering that landmarks are located on cusps or fossa. DLL-CS further improves the accuracy by collaboratively performing multi-scale landmark detection via the landmark area segmentation path. For DLL-SA, its overall performance is slightly worse than the other two variants, because curvatures are not considered. However, DLL-SA still outperforms the other compared methods via local coarse-to-fine processing, where the landmark area segmentation results are used as attention maps, forcing each landmark to be localized within the landmark area, thus reducing misdetections. By integrating all these strategies into our framework, DLLNet ultimately achieves the highest accuracy and the lowest misdetection rate when compared to related methods. Lack of discussion on the robustness of proposed approach. (From Reviewer #1, Reviewer #2) A: Our approach has been successfully tested on 77 patients. For the 15 patients who are partially edentulous, tooth absence can be directly detected from the pre-segmentation results. How do you choose the rotation, translation and scaling parameter ranges? (From Reviewer #1) A: Each case has 50% possibility to be rotated, translated or rescaled along the X, Y, and Z axis with a random parameter sampled between the range mentioned in Section 3.1. More details on experiments and training setups for the baseline models should be added. (From Reviewer #1, Reviewer #3) A: The architectures of the compared methods were implemented following their original papers. For PointNet++ and PointConv, the input is a N × 9 matrix, each row containing 3D coordinates of a mesh cell. N is the total number of cells. For MeshSegNet, the input is a N × 15 matrix as described in the original paper. All the compared methods were trained in the same way: In the coarse stage, each teeth partition was down-sampled to get 3000 mesh cells (N = 3000) as an input and the network was trained for 30 epochs with the mini-batch size set as 10; In the refinement stage, 150 mesh cells around each predicted landmark with various offsets (≤ 0.5mm) were sampled and all sampled mesh cells are then taken as input. The network was trained for 25 epochs with mini-batch size 10. All networks in the coarse and refinement stages have the same architecture. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Lang, Yankun,Deng, Hannah H.,Xiao, Deqiang,Lian, Chunfeng,Kuang, Tianshu,Gateno, Jaime,Yap, Pew-Thian,Xia, James J." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>DLLNet: An Attention-based Deep Learning Method for Dental Landmark Localization on High-Resolution 3D Digital Dental Models</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Surgical Planning and Simulation"
+        class="post-category">
+        Surgical Planning and Simulation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Lang, Yankun"
+        class="post-tags">
+        Lang, Yankun
+      </a> |  
+      
+      <a href="kittywong/tags#Deng, Hannah H."
+        class="post-tags">
+        Deng, Hannah H.
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Deqiang"
+        class="post-tags">
+        Xiao, Deqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Lian, Chunfeng"
+        class="post-tags">
+        Lian, Chunfeng
+      </a> |  
+      
+      <a href="kittywong/tags#Kuang, Tianshu"
+        class="post-tags">
+        Kuang, Tianshu
+      </a> |  
+      
+      <a href="kittywong/tags#Gateno, Jaime"
+        class="post-tags">
+        Gateno, Jaime
+      </a> |  
+      
+      <a href="kittywong/tags#Yap, Pew-Thian"
+        class="post-tags">
+        Yap, Pew-Thian
+      </a> |  
+      
+      <a href="kittywong/tags#Xia, James J."
+        class="post-tags">
+        Xia, James J.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yankun Lang, Hannah H. Deng, Deqiang Xiao, Chunfeng Lian, Tianshu Kuang, Jaime Gateno, Pew-Thian Yap, James J. Xia
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Dental landmark localization is a fundamental step to analyzing dental models in the planning of orthodontic or orthognathic surgery.  However, current clinical practices require clinicians to manually digitize more than 60 landmarks on 3D dental models. Automatic methods to detect landmarks can release clinicians from the tedious labor of manual annotation and improve localization accuracy. Most existing landmark detection methods fail to capture local geometric contexts, causing large errors and misdetections. We propose an end-to-end learning framework to automatically localize 68 landmarks on high-resolution dental surfaces. Our network hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area-of-interest segmentation path. Higher-level features are learned by combining local-to-global features from the two paths by feature fusion to predict the landmark heatmap and the landmark area segmentation map. An attention mechanism is then applied to the two maps to refine  the landmark position. We evaluated our framework on a real-patient dataset consisting of 77 high-resolution dental surfaces. Our approach achieves an average localization error of 0.42 mm, significantly outperforming related start-of-the-art methods. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_46">https://doi.org/10.1007/978-3-030-87202-1_46</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This papers presents some improvements of the MeshSegNet method (described in [11]) in order to better localize anatomical landmarks on 3D mesh representing dental models.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Interesting results, especially on patients with defect.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The improvements of the MeshSegNet method are not very clearly presented.
+Evaluation of results in too short.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The results are not directly reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>Introduction</li>
+      </ol>
+
+      <ul>
+        <li>Digitalization is not localization: in general, digitization gives a 3D mesh.</li>
+        <li>One way to get dental model is also to scan a dental cast.</li>
+        <li>What is a “standard” care which requires to localize 60 landmarks?</li>
+        <li>What is the “training” you mention in “consumption during training”?</li>
+        <li>Detail the modalities of “medical images” (2D/3D, US, CT, X-ray…).</li>
+        <li>Another ways to localize landmarks is 
+ 1) to map a template (i.e. an atlas or an average model) on the dental model by using a non-rigid registration algorithm. If you have previously identified landmarks of the template, you can transfer them on your data (see for example https://www.pnas.org/content/108/45/18221 )
+ 2) to analyze the local shape of the 3D mesh, in general by using curvature values (see for example http://www.cad-journal.net/files/vol_9/CAD_9(6)_2012_747-769.pdf ). 
+ Did you analyze this kind of methods?</li>
+        <li>The recent reference https://arxiv.org/pdf/2012.12946.pdf could be of interest.</li>
+      </ul>
+
+      <ol>
+        <li>Method</li>
+      </ol>
+
+      <ul>
+        <li>In fact, you work is an improvement of the MeshSegNet architecture. You should emphasize this point by:
+          <ul>
+            <li>Showing in Figure 2, the differences with Figure 1 of [11].</li>
+            <li>Discussing the improvements. 
+  In 2.1, you add Gaussian, maximum and minimum curvatures. But, is Gaussian curvature useful as it is the product of maximum and minimum curvatures? How do you compute precisely these values?
+  In 2.1, you talk about the localization path which is new. Explain its interest. We can understand what are A_S1 and A_S2 by referring to [11] but A_L1 and A_L2 are new and we only know that A is an “adjacent matrix” without  any explanation about how to compute it.
+  2.2 is new and should be justified: detail what is the objective (we have only one sentence about it at the end of section 1) and after you can give all the technical details.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <ol>
+        <li>Experiments</li>
+      </ol>
+
+      <ul>
+        <li>Why do you perform data augmentation? How do you choose the rotation, translation and scaling parameter ranges?</li>
+        <li>Why do you normalize the feature matrix? What is GNC?</li>
+        <li>Explain precisely your evaluation parameters: is RMSE computed between corresponding landmarks (estimated and true ones). What is “misdetection”?</li>
+        <li>Figure 5 is very interesting but the discussion is much too short. How do you detect the absence of some teeth? Is it possible that some landmarks are missing on a tooth (for example a cusp which was broken) and how do you process it?</li>
+      </ul>
+
+      <ol>
+        <li>Conclusion</li>
+      </ol>
+
+      <p>This part is uninteresting as there is neither perspective, nor future work.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The improvements of the MeshSegNet method are not very clearly presented.
+Evaluation of results in too short.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a method for dental landmark localization named DLLNet. It hierarchically extracts multi-scale local contextual features along two paths: a landmark localization path and a landmark area segmentation path. It uses a coarse-to-fine framework to first conduct coarse detection followed by refined detection. The coarse detection is built upon a published work named MeshSegNet for teeth segmentation. The main contribution from the paper is the proposition of DLLNet, which claims to extract multi-scale local contextual features. The authors concluded that the addition of curvature features and attention mechanism had led to improved performance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strengths of the paper are as follows:</p>
+      <ul>
+        <li>the proposition of DLLNet</li>
+        <li>the use of Gaussian curvatures, in addition to regular geometric features</li>
+        <li>use of attention mechanism</li>
+        <li>results are convincing (quantitatively and qualitatively) through ablation study and visual presentations</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>This paper lacks clarity in certain areas. In particular, there are questions arising from reading the paper:</p>
+      <ol>
+        <li>Although the DLLNet is proposed to work on meshes with different number of cells, it is unclear what the DLLNet models are trained on. In particular for Fig. 1, the first DLLNet seems to be trained and then applied on the teeth partitions, whereas the second DLLNet seems to be trained and then applied on the sampled meshes (obtained from the coarse detected landmarks). Are the two DLLNet models separate and different from each other? Is it possible to train a DLLNet for individual tooth, rather than one for all? In Fig. 1, what do the rectangles mean above “Teeth partition”?</li>
+        <li>Robustness of the proposed approach. The 3D scan seems to be smooth and complete. In reality, 3D scans are noisy and may contain holes and complex geometries. How will these complications affect the model performance? If there is one or more teeth missing, will the method be able to recognize that?</li>
+        <li>3D scans can have texture information recorded (e.g., color). How will that information be potentially integrated into the proposed framework for improving performance?</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The network structure seems to be clearly presented. There are questions on what data are used for training the two DLLNet models.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The authors can provide discussions on robustness and generalization capability of their method related to more practical data scenarios (e.g., imperfect input scans, missing teeth, teeth from different ages of population, etc.).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Built upon a known work (MeshSegNet), the paper proposes the DLLNet through integrating data features including curvature information and attention schemes, and conducted cross validation and ablation studies in comparing with other approaches in the field. Results are promising quantitatively and visually.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work targets at the landmark localization on 3D intraoral surface models. 
+The task is meaningful for automating the preprocessing procedure of orthognathic surgeries, while challenging for the high data resolution and the nature of landmarks. 
+While there have been a few existing works on the task, the work proposes a novel, simple yet seemingly effective method to tackle the challenges.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The work proposes a novel method for the landmark localization on 3D intraoral surface meshes. 
+To localize on high-resolution data, the method utilizes two cascaded steps, where a the first step localize regions of interest on low resolution, and the second steps take the regions and attentions to produce accurate local predictions on high resolution. 
+The idea is reasonable, and seems effective according to experiments. 
+The method is compared with serveral recent landmark regression works, and outperforms them with a large margin.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>In the Table 1, the proposed method and all its variants are way better than existing methods in accuracy. 
+What is the main contribution to such advantage? 
+More explanation in the ablation study is needed.</p>
+        </li>
+        <li>
+          <p>There is also reproducibility concerns about the work. See below.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>What are the inputs to other methods included in the comparison? 
+Are they working on the low resolution or high resolution? 
+What is the highest resolution those methods can work with?</p>
+        </li>
+        <li>
+          <p>How the other methods were trained? 
+More details on the training setup can help improve the reproducibility.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>More details on experiment and training setup for the baseline models should be added. 
+More explanations on the performance boost of the proposed method (and its variants) than the existing methods should be better explained.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The work proposes a novel method on the landmark localization on 3D intraoral surface meshes. 
+The ideas of low-to-high resolution and attention mechanism look reasonable, and the experimental results show their effectivess. 
+However, there are certain reproducibility issues, and more detailed explanations on performance boost can help readers.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Dear authors, your work has intrigued the reviewers, however further clarifications of the method as well as results are needed. Given that your approach relies heavily on MeshSegNet [11], it is important that the comparison to MeshSegNet and other SOTA methods is fair and clearly explained. The limitations of the method should also be mentioned, e.g. how robust the method is.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>In the rebuttal, the authors clarified the important points of the reviewers’ criticism. Namely, the authors clarified the extension of the MeschSegNet such that an accurate landmark localization can be archived. Although the method is evaluated on a relatively small dataset of 77 images, the improvement over baseline methods is clear. The approach is sensitive on missing tooth, which can be seen as a limitation, however, I see this as a future work which can be tackle with a pre-processing step as authors indicated.
+I find the manuscript acceptable for publication, however, the authors should include the first three rebuttal points into the camera-ready version of the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>In this paper, the authors’ extended the original MeshSegnet by incorporating the ‘multi-scale’ and ‘attention mechanism’. The results show that these additional common techniques futher improved the landmark localization accuracy. I am still not fully convinced that these additions are novel enough but its clinical usefulness for patiets with defect was good. Overall, the paper has limited novelty but could be interesting to MICCAI community.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper shows a landmark localization approach for dental 3D scans, which is heavily inspired by recent works, but experimentally shows a step forward in prediction performance. Reviewer concerns regarding the explanation of the performance improvement and the lack of details in the experimental setup have been addressed in the rebuttal. Unfortunately authors have not responded on how they will improve their manuscript to incorporate clarifications to the raised concerns. In case of acceptance, authors are encouraged to shorten the introduction to make room for the missing details in the experimental setup. Authors also should use the conclusion section not just as a pure summary of the approach, and make sure that the references section is formatted according to MICCAI standards (no use of et al., there is no problem with having another page of references this year!).</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <ol>
+    <li>
+      <p>Improvements over MeshSegNet are not clearly presented. (From Reviewer #1)
+A: DLLNet extended MeshSegNet to a multi-scale landmark detection network. The segmentation path in Fig. 2 detects areas where landmarks may exist (landmark RoI). With the same modules but different receptive fields, the localization path detects landmarks from these areas. By concatenation, the two paths collaboratively explore multi-scale contextual feature vectors, and output a landmark area segmentation map S and a coarse regressed heatmap H. Then, an attention mechanism is performed to further refine initial landmark localization results, where S is used as an attention map. By performing Hadamard product on H with S, the refined heatmap \hat{H} forces landmarks localized in landmark areas to eliminate misdetection due to feature similarities. This procedure also constrains the training of S and H by each other. Finally, the landmark localization results are determined by \hat{H} as the coordinates of the mesh cell with the largest probability value. Additionally, computing \hat{H} can be regarded as a local coarse-to-fine processing since S can be viewed as a coarse landmark detection result.</p>
+    </li>
+    <li>
+      <p>Lack of explanations on performance. (From Reviewer #1, Reviewer #2, Reviewer #3)
+A: DLL-C outperforms MeshSegNet and other compared methods partly due to the curvature features, which are added into the input matrix by considering that landmarks are located on cusps or fossa. DLL-CS further improves the accuracy by collaboratively performing multi-scale landmark detection via the landmark area segmentation path. For DLL-SA, its overall performance is slightly worse than the other two variants, because curvatures are not considered. However, DLL-SA still outperforms the other compared methods via local coarse-to-fine processing, where the landmark area segmentation results are used as attention maps, forcing each landmark to be localized within the landmark area, thus reducing misdetections. By integrating all these strategies into our framework, DLLNet ultimately achieves the highest accuracy and the lowest misdetection rate when compared to related methods.</p>
+    </li>
+    <li>
+      <p>Lack of discussion on the robustness of proposed approach. (From Reviewer #1, Reviewer #2)
+A: Our approach has been successfully tested on 77 patients. For the 15 patients who are partially edentulous, tooth absence can be directly detected from the pre-segmentation results.</p>
+    </li>
+    <li>
+      <p>How do you choose the rotation, translation and scaling parameter ranges? (From Reviewer #1)
+A: Each case has 50% possibility to be rotated, translated or rescaled along the X, Y, and Z axis with a random parameter sampled between the range mentioned in Section 3.1.</p>
+    </li>
+    <li>
+      <p>More details on experiments and training setups for the baseline models should be added. (From Reviewer #1, Reviewer #3)
+A: The architectures of the compared methods were implemented following their original papers. For PointNet++ and PointConv, the input is a N × 9 matrix, each row containing 3D coordinates of a mesh cell. N is the total number of cells. For MeshSegNet, the input is a N × 15 matrix as described in the original paper. All the compared methods were trained in the same way: In the coarse stage, each teeth partition was down-sampled to get 3000 mesh cells (N = 3000) as an input and the network was trained for 30 epochs with the mini-batch size set as 10; In the refinement stage, 150 mesh cells around each predicted landmark with various offsets (≤ 0.5mm) were sampled and all sampled mesh cells are then taken as input. The network was trained for 25 epochs with mini-batch size 10. All networks in the coarse and refinement stages have the same architecture.</p>
+    </li>
+  </ol>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0445-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0446-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Surgical Planning and Simulation"
+        class="post-category">
+        Surgical Planning and Simulation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Lang, Yankun"
+        class="post-category">
+        Lang, Yankun
+      </a> |  
+      
+      <a href="kittywong/tags#Deng, Hannah H."
+        class="post-category">
+        Deng, Hannah H.
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Deqiang"
+        class="post-category">
+        Xiao, Deqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Lian, Chunfeng"
+        class="post-category">
+        Lian, Chunfeng
+      </a> |  
+      
+      <a href="kittywong/tags#Kuang, Tianshu"
+        class="post-category">
+        Kuang, Tianshu
+      </a> |  
+      
+      <a href="kittywong/tags#Gateno, Jaime"
+        class="post-category">
+        Gateno, Jaime
+      </a> |  
+      
+      <a href="kittywong/tags#Yap, Pew-Thian"
+        class="post-category">
+        Yap, Pew-Thian
+      </a> |  
+      
+      <a href="kittywong/tags#Xia, James J."
+        class="post-category">
+        Xia, James J.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0446/12/31/Paper1001">
+          Personalized CT Organ Dose Estimation from Scout Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0444/12/31/Paper0731">
+          A self-supervised deep framework for reference bony shape estimation in orthognathic surgical planning
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

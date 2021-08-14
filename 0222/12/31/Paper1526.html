@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Self-Supervised Vessel Enhancement Using Flow-Based Consistencies | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Self-Supervised Vessel Enhancement Using Flow-Based Consistencies" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Rohit Jena, Sumedha Singla, Kayhan Batmanghelich Abstract Vessel segmentation is an essential task in many clinical applications. Although supervised methods have achieved state-of-art performance, acquiring expert annotation is laborious and mostly limited for two-dimensional datasets with a small sample size. On the contrary, unsupervised methods rely on handcrafted features to detect tube-like structures such as vessels. However, those methods require complex pipelines involving several hyper-parameters and design choices rendering the procedure sensitive, dataset-specific, and not generalizable. We propose a self-supervised method with a limited number of hyper-parameters that is generalizable across modalities. Our method uses tube-like structure properties, such as connectivity, profile consistency, and bifurcation, to introduce inductive bias into a learning algorithm. To model those properties, we generate a vector field that we refer to as a flow. Our experiments on various public datasets in 2D and 3D show that our method performs better than unsupervised methods while learning useful transferable features from unlabeled data. Unlike generic self-supervised methods, the learned features learn vessel-relevant features that are transferable for supervised approaches, which is essential when the number of annotated data is limited. Link to paper https://doi.org/10.1007/978-3-030-87196-3_23 Link to the code repository https://github.com/batmanlab/vessel-flow-consistency-ssl Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel self-supervised training method that is designed for vascular structure segmentation. The method is applicable for many tubular structures. The efficacy was validated with several kinds of open datasets including 2D retinal vessel, 3D CT / MRI. The performance comparisons with the conventional methods show that the proposed method can achieves higher scores in DICE metrics. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel formulation: The method models vessels with a few parameters of template image, radius, flow direction, and so on. The U-net like neural networks are trained to predict those parameters without labels by minimizing the similarity loss (Normalized cross correlation) between the training image and the predicted image. Segmentation performance: The advantage of the method is that the method can achieve a high DICE score without labels, since it can model tubular structure’s thickness or extent, compared to the conventional methods. A wide range of vascular applications regarding volumetry purposes would benefit from this research. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear that the method is also applicable for diseased vessels with different appearances, for instance clogged vessels with soft / hard plaques. The method seems to fail segmenting such vessels, because it uses a template image representing an ideal vessel (disk/tube). Centerline detection performance is not improved significantly. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The idea is clearly given in the paper. The reproducibility seems relatively high. Furthermore, the authors show wills to provide the codes in public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The approach is unique, but its potential is limited by using a few parameters and single template image. It is interesting to provide the authors’s opinions about using multiples template images, or trainable (parameterized) template. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel and general approach for vascular structure segmentation. A wide range of vascular applications would benefit from this work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Propose a self-supervised method for vessel segmentation taking consideration of tube-like structure properties such as connectivity, profi le consistency, and bifurcation. It is generalizable across modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Claimed to be first unsupervised deep learning method that takes a raw image as input and outputs per-pixel vessel statistics as output. A clever way to incorporate vessel properties in the design but not directly as hand crafted features. Comprehensive evaluation on multiple datasets, both 2D and 3D, with multiple modalities. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Unclear descriptions on key components, causing confusions for readers. Possible design flaw for the loss. Unclear value of this method compared with existing supervised methods which have much better performance Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Public dataset. No link for their code provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There are three directions at a bifurcation where one larger branch splits into two smaller branches. Since the larger branch is unknown in prediction, how can ensure the two vectors (b1, b2) are exactly pointing to the smaller branches? In other words, without special constraints on branch sizes, u, b1 and b2 are interchangeable during prediction. Assuming vessel profile as a unit disk, and use it to match the profiles along the artery might not cover the abnormal situations when for example, at bifurcation, artery is stenotic or there are flow artifacts. Profiles at opposite directions should be the same, so the matching with the template Lm should also be the same. In the absence of bifurcation, why b1(p)=b2(p)=-u(p) minimizes the loss, b1 b2 can also be the same as u? Fig 1 is the most important figure in this paper, but it is misleading. 1) fƟ() is misleading. You used a U-Net here, but the plot looks like fƟ() is an encoder only. The final network output size needs to be mentioned, which is the same size as the image input? 2) the plot for r is also misleading. It should have a radius for all the pixels. But the image shows grid-wise small radius predictions on backgrounds and non-grid radius on arteries. Why r on artery region can be at non-grid positions exactly on the artery centerline? How did you deal with overlapping radius predictions (for arteries with more than 1 pixel thickness). 3) r map has a much wider gap than u map, b map has a much wider grid than u map. Are the output sizes really the same? There is a lack of information for the bifurcation loss, causing my many confusions about your design, although there is an ablation study to prove its usefulness. 1) There seems a lack of constraint for b1 and b2 to be different from u. For the cases with bifurcations, b1 and b2 can still be the same or opposite directions with u to minimize the loss. If u is at the larger branch, and it bifurcates into b1, b2 two smaller branches, Lm(b,r;I,T) is even smaller when b=+-u. 2) the radius r used for three Lm calculations is the same? If that is the case, it is unfair for the similarity metric calculation on b1, b2. As the real radius for branched out arteries are much smaller than the radius at the bifurcation. 3) the cause of the performance improvement using bifurcation loss is really from taking advantage of the bifurcation structure? Or this is just because of a heavier weight on Lm loss. As the majority of the pixels are not bifurcations. The final total loss is more close to (1+ λ2) Lm+ λ1Lf. The ablation study should not just taking λ2 Lb away, but rather comparing with (1+ λ2) Lm+ λ1Lf The weights λi for combining three losses need more investigations, as the choice for λi might be critical. Lm directs the vector to best match the disk template, but Lf does not allow vector direction to change along the artery, which is a natural conflict requiring a careful selection of weights to find the optimal results. Why the evaluation on segmentation is only on a manually annotated bounding boxes at bifurcation region instead of the whole image? Fig 3 (a) why no false positives are shown? I suppose your method will have a lot of noise branches, as the current loss design does not penalize false positives. There are negative signs for Lm and Lf, so any noise detections will lead to lower losses. Is there a threshold to select valid vessels in the design? The section of “efficacy of the representation” is unclear. 1) I am not sure what the author means for “efficacy of the representation“. 2) Faster convergence does not mean the feature representations for your model is better. 3) the authors only report their method achieves the best validation dice score, without showing quantitative/qualitative results on the test set, like table 1 and 2 and fig 3. The potential usage of the method is unclear. The current performance on OCT image is better than traditional image processing methods, but still far away from supervised methods. If the aim is for better downstream tasks like segmentation, there is a lack of evidence that using this method as a pretrained model improves the overall performance compared with state-of-the-art supervised methods. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Interesting and explorative ideas, but lack of clear explainations and maybe flaws in design and experiments. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This article proposes an unsupervised vessel enhancement filter using self-supervised learning. This approach is based on geometric properties of the vessels such as profile consistency, connectivity and bifurcation. This approach provides three very interesting features to characterize blood vessels in the image: the vesselness (probability of a pixel to belong to a vessel), the direction of the vessels and the radius of putative vessels at each point. Extensive experiments have been conducted both in 2D and 3D images and comparisons with classic vessel enhancement strategies have been performed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. I thank the authors for this interesting article. Unsupervised vessel enhancement is of great interest for vascular-related clinical applications and, to the best of my knowledge, it is indeed the first unsupervised deep learning-based approach in the literature. The article is well written and the method is clearly explained. I also appreciated the extensive experiments that have been conducted on several datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern regards how the authors set the parameters of the compared methods. This can dramatically affect the comparison results. I am surprised by the results obtained for Frangi in Figure 3 (d). The Frangi filter usually yields many false positives due to border issues or close curvilinear structures. However, in the results shown on Figure 3 (d), the errors seem to come from a large overestimation of the size of the structures, as well as from detections of large structures that are not curvilinear at all. I am not used to seeing that in Frangi results. In Figure 4 in the supplementary materials, Frangi detects bright structures whereas the structures of interest are dark. Normally by choosing the sign of the eigenvalues and the contrast parameter correctly this should be prevented. The optimization strategy for setting the parameters of the compared methods should be explained to convince the reader that a fair comparison was performed. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the method could be reproduced, however the authors did not provide all the hyperparameters they used (see detailed comments) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Regarding the profile consistency, the authors should explain in more details what their resizing transform $\Phi(u,r)$ is, as it seems that this is a crucial point of the method. This transform seems to be position-dependent, as the value of r can be different for every pixel. How is it applied in practice ? How is it included in the UNet architecture ? In Equation 2, I do not understand why the authors specify $\dot{q}_p = u(p)$. It seems that this relation is not used in the equation nor later in the paper. If this is important, please clarify, otherwise please remove. It is not clear for me why $b_1(p) = b_2(p) = -u(p)$. Why is there a minus sign ? The associated sentence is also not very clear. Please rephrase it: “Note that, in the absence of bifurcation, $b_1 (p) = b_2 (p) = −u(p)$ minimizes the same loss as $L_m$ . in the opposite direction of the vessel flow”. The authors should specify the value of the loss hyperparameters $\lambda_1$ and $\lambda_2$ they used. I assume that the results highly depend on these parameters. Therefore, a discussion on how to set them would be interesting. The authors used a batch size of 1. Is this because of memory issues ? Or did they obtain the best results with this value ? Did they observe training instability ? The authors should consider performing cross validation to improve the statistical significance of their results. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is interesting and new. Even though I am not convinced that the comparison with other methods is totally fair, I still think the approach is interesting for the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel enhancement in medical images. The method uses self-supervised learning and is developed based on the geometric properties of the vessels. Overall, the method is interesting. The method has been compared with the closely related methods. The reviewers are all positive about the paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their detailed feedback. Here are some common concerns: R1: “It is not clear that the method is also applicable for diseased vessels…” R2: “Assuming vessel profile as a unit disk, …” A: This is a valid limitation of our method. There is only so much we can detect using a single template, our idea behind the paper is to show that vessel properties can be “baked” into a neural network using novel loss functions without ground truth. Further work can use sparse amounts of labeled anomalies which can be used to extend our method to increase its detection for vessel segments that do not conform to the template. R1: “The approach is unique, but its potential…” A: we certainly considered experimenting with different templates, or alternatively, using a richer set of parameters (for non-rigid deformation of the template) for each pixel instead of a rigid scaling and rotation of the template, thus allowing a richer set of vessels. However, without ground truth data, the networks with so many parameters are susceptible to overfitting by “hallucinating” other regions of the image as vessels. Using a sparse amount of ground truth to tackle this problem can be the basis for future work. R2: “There are three directions at a bifurcation … interchangeable during prediction.” A: There is no “preference” towards “u” being the larger branch. Consider three points each on the 3 splits near the bifurcation, each point should have its corresponding split as u and the other two branches as b1 and b2. This is done to extend the “template” at the bifurcation locations because a single template gives a poor response due to the branches not overlapping with the bifurcation. “Profiles at opposite directions …” A: We do this by construction. In 2D, we output half-angles \theta_1 \in [0, \pi/2] and \theta_2 \in [-\pi/2, 0] and rotate -u by these angles, making b1 and b2 face opposite to u. In the case of 3D, we multiply b1 and b2 by the sign of dot products &lt;b1, -u&gt; and &lt;b2, -u&gt;. “Fig 1 is the most important figure in this paper, but it is misleading …” A: The figure is illustrative. 1) In principle, any encoder-decoder architecture which outputs maps of the same spatial dimensions can be used 2) We used this diagram rather than a per-pixel heatmap to show what we’re trying to predict. A per-pixel prediction will be the most accurate where it matches the template (centerline of the artery) resulting in the maximal vesselness at those locations and gradually falling off. A suitable threshold on this vesselness gives a segmentation. 3) Yes, the outputs are of the same size, we used subsampling and quiver plots to illustrate the different outputs we’re predicting (radius, arrows for directions). “Fig 3 (a) why no false … in the design?” A: Adding another color made the figure cluttery, so we stuck with TPs and FNs, the both of which make up the ground truth. Any of the unsupervised methods do not have any method to penalize FPs. To select a threshold, we use a small validation set and find the threshold which maximizes the dice score on the validation set. “The section of “efficacy of the representation” … fig 3.” A: Due to space constraints, we were unable to include all qualitative results. R3: “My main concern regards how the authors set … A: We use a standard implementation of the Frangi filter [1]. To convert the continuous-valued output to a binary threshold, we find the best threshold using a small validation set on which we maximize the dice score. For Figure 4, Frangi detects regions which are dark and surrounded by bright regions, which looks like a ridge (see FPs on left side of Figures 4(c)). “The authors should specify the value of the loss hyperparameters…” A: In our case we set $\lambda_1 = 0.5, \lambda_2 = 1$. Due to space constraints, we didn’t include an analysis on hyperparameter setting. [1] https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.frangi back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Rohit Jena, Sumedha Singla, Kayhan Batmanghelich Abstract Vessel segmentation is an essential task in many clinical applications. Although supervised methods have achieved state-of-art performance, acquiring expert annotation is laborious and mostly limited for two-dimensional datasets with a small sample size. On the contrary, unsupervised methods rely on handcrafted features to detect tube-like structures such as vessels. However, those methods require complex pipelines involving several hyper-parameters and design choices rendering the procedure sensitive, dataset-specific, and not generalizable. We propose a self-supervised method with a limited number of hyper-parameters that is generalizable across modalities. Our method uses tube-like structure properties, such as connectivity, profile consistency, and bifurcation, to introduce inductive bias into a learning algorithm. To model those properties, we generate a vector field that we refer to as a flow. Our experiments on various public datasets in 2D and 3D show that our method performs better than unsupervised methods while learning useful transferable features from unlabeled data. Unlike generic self-supervised methods, the learned features learn vessel-relevant features that are transferable for supervised approaches, which is essential when the number of annotated data is limited. Link to paper https://doi.org/10.1007/978-3-030-87196-3_23 Link to the code repository https://github.com/batmanlab/vessel-flow-consistency-ssl Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel self-supervised training method that is designed for vascular structure segmentation. The method is applicable for many tubular structures. The efficacy was validated with several kinds of open datasets including 2D retinal vessel, 3D CT / MRI. The performance comparisons with the conventional methods show that the proposed method can achieves higher scores in DICE metrics. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel formulation: The method models vessels with a few parameters of template image, radius, flow direction, and so on. The U-net like neural networks are trained to predict those parameters without labels by minimizing the similarity loss (Normalized cross correlation) between the training image and the predicted image. Segmentation performance: The advantage of the method is that the method can achieve a high DICE score without labels, since it can model tubular structure’s thickness or extent, compared to the conventional methods. A wide range of vascular applications regarding volumetry purposes would benefit from this research. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear that the method is also applicable for diseased vessels with different appearances, for instance clogged vessels with soft / hard plaques. The method seems to fail segmenting such vessels, because it uses a template image representing an ideal vessel (disk/tube). Centerline detection performance is not improved significantly. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The idea is clearly given in the paper. The reproducibility seems relatively high. Furthermore, the authors show wills to provide the codes in public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The approach is unique, but its potential is limited by using a few parameters and single template image. It is interesting to provide the authors’s opinions about using multiples template images, or trainable (parameterized) template. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel and general approach for vascular structure segmentation. A wide range of vascular applications would benefit from this work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Propose a self-supervised method for vessel segmentation taking consideration of tube-like structure properties such as connectivity, profi le consistency, and bifurcation. It is generalizable across modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Claimed to be first unsupervised deep learning method that takes a raw image as input and outputs per-pixel vessel statistics as output. A clever way to incorporate vessel properties in the design but not directly as hand crafted features. Comprehensive evaluation on multiple datasets, both 2D and 3D, with multiple modalities. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Unclear descriptions on key components, causing confusions for readers. Possible design flaw for the loss. Unclear value of this method compared with existing supervised methods which have much better performance Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Public dataset. No link for their code provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There are three directions at a bifurcation where one larger branch splits into two smaller branches. Since the larger branch is unknown in prediction, how can ensure the two vectors (b1, b2) are exactly pointing to the smaller branches? In other words, without special constraints on branch sizes, u, b1 and b2 are interchangeable during prediction. Assuming vessel profile as a unit disk, and use it to match the profiles along the artery might not cover the abnormal situations when for example, at bifurcation, artery is stenotic or there are flow artifacts. Profiles at opposite directions should be the same, so the matching with the template Lm should also be the same. In the absence of bifurcation, why b1(p)=b2(p)=-u(p) minimizes the loss, b1 b2 can also be the same as u? Fig 1 is the most important figure in this paper, but it is misleading. 1) fƟ() is misleading. You used a U-Net here, but the plot looks like fƟ() is an encoder only. The final network output size needs to be mentioned, which is the same size as the image input? 2) the plot for r is also misleading. It should have a radius for all the pixels. But the image shows grid-wise small radius predictions on backgrounds and non-grid radius on arteries. Why r on artery region can be at non-grid positions exactly on the artery centerline? How did you deal with overlapping radius predictions (for arteries with more than 1 pixel thickness). 3) r map has a much wider gap than u map, b map has a much wider grid than u map. Are the output sizes really the same? There is a lack of information for the bifurcation loss, causing my many confusions about your design, although there is an ablation study to prove its usefulness. 1) There seems a lack of constraint for b1 and b2 to be different from u. For the cases with bifurcations, b1 and b2 can still be the same or opposite directions with u to minimize the loss. If u is at the larger branch, and it bifurcates into b1, b2 two smaller branches, Lm(b,r;I,T) is even smaller when b=+-u. 2) the radius r used for three Lm calculations is the same? If that is the case, it is unfair for the similarity metric calculation on b1, b2. As the real radius for branched out arteries are much smaller than the radius at the bifurcation. 3) the cause of the performance improvement using bifurcation loss is really from taking advantage of the bifurcation structure? Or this is just because of a heavier weight on Lm loss. As the majority of the pixels are not bifurcations. The final total loss is more close to (1+ λ2) Lm+ λ1Lf. The ablation study should not just taking λ2 Lb away, but rather comparing with (1+ λ2) Lm+ λ1Lf The weights λi for combining three losses need more investigations, as the choice for λi might be critical. Lm directs the vector to best match the disk template, but Lf does not allow vector direction to change along the artery, which is a natural conflict requiring a careful selection of weights to find the optimal results. Why the evaluation on segmentation is only on a manually annotated bounding boxes at bifurcation region instead of the whole image? Fig 3 (a) why no false positives are shown? I suppose your method will have a lot of noise branches, as the current loss design does not penalize false positives. There are negative signs for Lm and Lf, so any noise detections will lead to lower losses. Is there a threshold to select valid vessels in the design? The section of “efficacy of the representation” is unclear. 1) I am not sure what the author means for “efficacy of the representation“. 2) Faster convergence does not mean the feature representations for your model is better. 3) the authors only report their method achieves the best validation dice score, without showing quantitative/qualitative results on the test set, like table 1 and 2 and fig 3. The potential usage of the method is unclear. The current performance on OCT image is better than traditional image processing methods, but still far away from supervised methods. If the aim is for better downstream tasks like segmentation, there is a lack of evidence that using this method as a pretrained model improves the overall performance compared with state-of-the-art supervised methods. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Interesting and explorative ideas, but lack of clear explainations and maybe flaws in design and experiments. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This article proposes an unsupervised vessel enhancement filter using self-supervised learning. This approach is based on geometric properties of the vessels such as profile consistency, connectivity and bifurcation. This approach provides three very interesting features to characterize blood vessels in the image: the vesselness (probability of a pixel to belong to a vessel), the direction of the vessels and the radius of putative vessels at each point. Extensive experiments have been conducted both in 2D and 3D images and comparisons with classic vessel enhancement strategies have been performed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. I thank the authors for this interesting article. Unsupervised vessel enhancement is of great interest for vascular-related clinical applications and, to the best of my knowledge, it is indeed the first unsupervised deep learning-based approach in the literature. The article is well written and the method is clearly explained. I also appreciated the extensive experiments that have been conducted on several datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern regards how the authors set the parameters of the compared methods. This can dramatically affect the comparison results. I am surprised by the results obtained for Frangi in Figure 3 (d). The Frangi filter usually yields many false positives due to border issues or close curvilinear structures. However, in the results shown on Figure 3 (d), the errors seem to come from a large overestimation of the size of the structures, as well as from detections of large structures that are not curvilinear at all. I am not used to seeing that in Frangi results. In Figure 4 in the supplementary materials, Frangi detects bright structures whereas the structures of interest are dark. Normally by choosing the sign of the eigenvalues and the contrast parameter correctly this should be prevented. The optimization strategy for setting the parameters of the compared methods should be explained to convince the reader that a fair comparison was performed. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the method could be reproduced, however the authors did not provide all the hyperparameters they used (see detailed comments) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Regarding the profile consistency, the authors should explain in more details what their resizing transform $\Phi(u,r)$ is, as it seems that this is a crucial point of the method. This transform seems to be position-dependent, as the value of r can be different for every pixel. How is it applied in practice ? How is it included in the UNet architecture ? In Equation 2, I do not understand why the authors specify $\dot{q}_p = u(p)$. It seems that this relation is not used in the equation nor later in the paper. If this is important, please clarify, otherwise please remove. It is not clear for me why $b_1(p) = b_2(p) = -u(p)$. Why is there a minus sign ? The associated sentence is also not very clear. Please rephrase it: “Note that, in the absence of bifurcation, $b_1 (p) = b_2 (p) = −u(p)$ minimizes the same loss as $L_m$ . in the opposite direction of the vessel flow”. The authors should specify the value of the loss hyperparameters $\lambda_1$ and $\lambda_2$ they used. I assume that the results highly depend on these parameters. Therefore, a discussion on how to set them would be interesting. The authors used a batch size of 1. Is this because of memory issues ? Or did they obtain the best results with this value ? Did they observe training instability ? The authors should consider performing cross validation to improve the statistical significance of their results. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is interesting and new. Even though I am not convinced that the comparison with other methods is totally fair, I still think the approach is interesting for the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel enhancement in medical images. The method uses self-supervised learning and is developed based on the geometric properties of the vessels. Overall, the method is interesting. The method has been compared with the closely related methods. The reviewers are all positive about the paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their detailed feedback. Here are some common concerns: R1: “It is not clear that the method is also applicable for diseased vessels…” R2: “Assuming vessel profile as a unit disk, …” A: This is a valid limitation of our method. There is only so much we can detect using a single template, our idea behind the paper is to show that vessel properties can be “baked” into a neural network using novel loss functions without ground truth. Further work can use sparse amounts of labeled anomalies which can be used to extend our method to increase its detection for vessel segments that do not conform to the template. R1: “The approach is unique, but its potential…” A: we certainly considered experimenting with different templates, or alternatively, using a richer set of parameters (for non-rigid deformation of the template) for each pixel instead of a rigid scaling and rotation of the template, thus allowing a richer set of vessels. However, without ground truth data, the networks with so many parameters are susceptible to overfitting by “hallucinating” other regions of the image as vessels. Using a sparse amount of ground truth to tackle this problem can be the basis for future work. R2: “There are three directions at a bifurcation … interchangeable during prediction.” A: There is no “preference” towards “u” being the larger branch. Consider three points each on the 3 splits near the bifurcation, each point should have its corresponding split as u and the other two branches as b1 and b2. This is done to extend the “template” at the bifurcation locations because a single template gives a poor response due to the branches not overlapping with the bifurcation. “Profiles at opposite directions …” A: We do this by construction. In 2D, we output half-angles \theta_1 \in [0, \pi/2] and \theta_2 \in [-\pi/2, 0] and rotate -u by these angles, making b1 and b2 face opposite to u. In the case of 3D, we multiply b1 and b2 by the sign of dot products &lt;b1, -u&gt; and &lt;b2, -u&gt;. “Fig 1 is the most important figure in this paper, but it is misleading …” A: The figure is illustrative. 1) In principle, any encoder-decoder architecture which outputs maps of the same spatial dimensions can be used 2) We used this diagram rather than a per-pixel heatmap to show what we’re trying to predict. A per-pixel prediction will be the most accurate where it matches the template (centerline of the artery) resulting in the maximal vesselness at those locations and gradually falling off. A suitable threshold on this vesselness gives a segmentation. 3) Yes, the outputs are of the same size, we used subsampling and quiver plots to illustrate the different outputs we’re predicting (radius, arrows for directions). “Fig 3 (a) why no false … in the design?” A: Adding another color made the figure cluttery, so we stuck with TPs and FNs, the both of which make up the ground truth. Any of the unsupervised methods do not have any method to penalize FPs. To select a threshold, we use a small validation set and find the threshold which maximizes the dice score on the validation set. “The section of “efficacy of the representation” … fig 3.” A: Due to space constraints, we were unable to include all qualitative results. R3: “My main concern regards how the authors set … A: We use a standard implementation of the Frangi filter [1]. To convert the continuous-valued output to a binary threshold, we find the best threshold using a small validation set on which we maximize the dice score. For Figure 4, Frangi detects regions which are dark and surrounded by bright regions, which looks like a ridge (see FPs on left side of Figures 4(c)). “The authors should specify the value of the loss hyperparameters…” A: In our case we set $\lambda_1 = 0.5, \lambda_2 = 1$. Due to space constraints, we didn’t include an analysis on hyperparameter setting. [1] https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.frangi back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0222/12/31/Paper1526" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0222/12/31/Paper1526" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0222-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Self-Supervised Vessel Enhancement Using Flow-Based Consistencies" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0222/12/31/Paper1526"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0222/12/31/Paper1526","headline":"Self-Supervised Vessel Enhancement Using Flow-Based Consistencies","dateModified":"0223-01-01T00:00:00-05:17","datePublished":"0222-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Rohit Jena, Sumedha Singla, Kayhan Batmanghelich Abstract Vessel segmentation is an essential task in many clinical applications. Although supervised methods have achieved state-of-art performance, acquiring expert annotation is laborious and mostly limited for two-dimensional datasets with a small sample size. On the contrary, unsupervised methods rely on handcrafted features to detect tube-like structures such as vessels. However, those methods require complex pipelines involving several hyper-parameters and design choices rendering the procedure sensitive, dataset-specific, and not generalizable. We propose a self-supervised method with a limited number of hyper-parameters that is generalizable across modalities. Our method uses tube-like structure properties, such as connectivity, profile consistency, and bifurcation, to introduce inductive bias into a learning algorithm. To model those properties, we generate a vector field that we refer to as a flow. Our experiments on various public datasets in 2D and 3D show that our method performs better than unsupervised methods while learning useful transferable features from unlabeled data. Unlike generic self-supervised methods, the learned features learn vessel-relevant features that are transferable for supervised approaches, which is essential when the number of annotated data is limited. Link to paper https://doi.org/10.1007/978-3-030-87196-3_23 Link to the code repository https://github.com/batmanlab/vessel-flow-consistency-ssl Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a novel self-supervised training method that is designed for vascular structure segmentation. The method is applicable for many tubular structures. The efficacy was validated with several kinds of open datasets including 2D retinal vessel, 3D CT / MRI. The performance comparisons with the conventional methods show that the proposed method can achieves higher scores in DICE metrics. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel formulation: The method models vessels with a few parameters of template image, radius, flow direction, and so on. The U-net like neural networks are trained to predict those parameters without labels by minimizing the similarity loss (Normalized cross correlation) between the training image and the predicted image. Segmentation performance: The advantage of the method is that the method can achieve a high DICE score without labels, since it can model tubular structure’s thickness or extent, compared to the conventional methods. A wide range of vascular applications regarding volumetry purposes would benefit from this research. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear that the method is also applicable for diseased vessels with different appearances, for instance clogged vessels with soft / hard plaques. The method seems to fail segmenting such vessels, because it uses a template image representing an ideal vessel (disk/tube). Centerline detection performance is not improved significantly. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The idea is clearly given in the paper. The reproducibility seems relatively high. Furthermore, the authors show wills to provide the codes in public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The approach is unique, but its potential is limited by using a few parameters and single template image. It is interesting to provide the authors’s opinions about using multiples template images, or trainable (parameterized) template. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel and general approach for vascular structure segmentation. A wide range of vascular applications would benefit from this work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Propose a self-supervised method for vessel segmentation taking consideration of tube-like structure properties such as connectivity, profi le consistency, and bifurcation. It is generalizable across modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Claimed to be first unsupervised deep learning method that takes a raw image as input and outputs per-pixel vessel statistics as output. A clever way to incorporate vessel properties in the design but not directly as hand crafted features. Comprehensive evaluation on multiple datasets, both 2D and 3D, with multiple modalities. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Unclear descriptions on key components, causing confusions for readers. Possible design flaw for the loss. Unclear value of this method compared with existing supervised methods which have much better performance Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Public dataset. No link for their code provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There are three directions at a bifurcation where one larger branch splits into two smaller branches. Since the larger branch is unknown in prediction, how can ensure the two vectors (b1, b2) are exactly pointing to the smaller branches? In other words, without special constraints on branch sizes, u, b1 and b2 are interchangeable during prediction. Assuming vessel profile as a unit disk, and use it to match the profiles along the artery might not cover the abnormal situations when for example, at bifurcation, artery is stenotic or there are flow artifacts. Profiles at opposite directions should be the same, so the matching with the template Lm should also be the same. In the absence of bifurcation, why b1(p)=b2(p)=-u(p) minimizes the loss, b1 b2 can also be the same as u? Fig 1 is the most important figure in this paper, but it is misleading. 1) fƟ() is misleading. You used a U-Net here, but the plot looks like fƟ() is an encoder only. The final network output size needs to be mentioned, which is the same size as the image input? 2) the plot for r is also misleading. It should have a radius for all the pixels. But the image shows grid-wise small radius predictions on backgrounds and non-grid radius on arteries. Why r on artery region can be at non-grid positions exactly on the artery centerline? How did you deal with overlapping radius predictions (for arteries with more than 1 pixel thickness). 3) r map has a much wider gap than u map, b map has a much wider grid than u map. Are the output sizes really the same? There is a lack of information for the bifurcation loss, causing my many confusions about your design, although there is an ablation study to prove its usefulness. 1) There seems a lack of constraint for b1 and b2 to be different from u. For the cases with bifurcations, b1 and b2 can still be the same or opposite directions with u to minimize the loss. If u is at the larger branch, and it bifurcates into b1, b2 two smaller branches, Lm(b,r;I,T) is even smaller when b=+-u. 2) the radius r used for three Lm calculations is the same? If that is the case, it is unfair for the similarity metric calculation on b1, b2. As the real radius for branched out arteries are much smaller than the radius at the bifurcation. 3) the cause of the performance improvement using bifurcation loss is really from taking advantage of the bifurcation structure? Or this is just because of a heavier weight on Lm loss. As the majority of the pixels are not bifurcations. The final total loss is more close to (1+ λ2) Lm+ λ1Lf. The ablation study should not just taking λ2 Lb away, but rather comparing with (1+ λ2) Lm+ λ1Lf The weights λi for combining three losses need more investigations, as the choice for λi might be critical. Lm directs the vector to best match the disk template, but Lf does not allow vector direction to change along the artery, which is a natural conflict requiring a careful selection of weights to find the optimal results. Why the evaluation on segmentation is only on a manually annotated bounding boxes at bifurcation region instead of the whole image? Fig 3 (a) why no false positives are shown? I suppose your method will have a lot of noise branches, as the current loss design does not penalize false positives. There are negative signs for Lm and Lf, so any noise detections will lead to lower losses. Is there a threshold to select valid vessels in the design? The section of “efficacy of the representation” is unclear. 1) I am not sure what the author means for “efficacy of the representation“. 2) Faster convergence does not mean the feature representations for your model is better. 3) the authors only report their method achieves the best validation dice score, without showing quantitative/qualitative results on the test set, like table 1 and 2 and fig 3. The potential usage of the method is unclear. The current performance on OCT image is better than traditional image processing methods, but still far away from supervised methods. If the aim is for better downstream tasks like segmentation, there is a lack of evidence that using this method as a pretrained model improves the overall performance compared with state-of-the-art supervised methods. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Interesting and explorative ideas, but lack of clear explainations and maybe flaws in design and experiments. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This article proposes an unsupervised vessel enhancement filter using self-supervised learning. This approach is based on geometric properties of the vessels such as profile consistency, connectivity and bifurcation. This approach provides three very interesting features to characterize blood vessels in the image: the vesselness (probability of a pixel to belong to a vessel), the direction of the vessels and the radius of putative vessels at each point. Extensive experiments have been conducted both in 2D and 3D images and comparisons with classic vessel enhancement strategies have been performed. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. I thank the authors for this interesting article. Unsupervised vessel enhancement is of great interest for vascular-related clinical applications and, to the best of my knowledge, it is indeed the first unsupervised deep learning-based approach in the literature. The article is well written and the method is clearly explained. I also appreciated the extensive experiments that have been conducted on several datasets. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern regards how the authors set the parameters of the compared methods. This can dramatically affect the comparison results. I am surprised by the results obtained for Frangi in Figure 3 (d). The Frangi filter usually yields many false positives due to border issues or close curvilinear structures. However, in the results shown on Figure 3 (d), the errors seem to come from a large overestimation of the size of the structures, as well as from detections of large structures that are not curvilinear at all. I am not used to seeing that in Frangi results. In Figure 4 in the supplementary materials, Frangi detects bright structures whereas the structures of interest are dark. Normally by choosing the sign of the eigenvalues and the contrast parameter correctly this should be prevented. The optimization strategy for setting the parameters of the compared methods should be explained to convince the reader that a fair comparison was performed. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I think the method could be reproduced, however the authors did not provide all the hyperparameters they used (see detailed comments) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Regarding the profile consistency, the authors should explain in more details what their resizing transform $\\Phi(u,r)$ is, as it seems that this is a crucial point of the method. This transform seems to be position-dependent, as the value of r can be different for every pixel. How is it applied in practice ? How is it included in the UNet architecture ? In Equation 2, I do not understand why the authors specify $\\dot{q}_p = u(p)$. It seems that this relation is not used in the equation nor later in the paper. If this is important, please clarify, otherwise please remove. It is not clear for me why $b_1(p) = b_2(p) = -u(p)$. Why is there a minus sign ? The associated sentence is also not very clear. Please rephrase it: “Note that, in the absence of bifurcation, $b_1 (p) = b_2 (p) = −u(p)$ minimizes the same loss as $L_m$ . in the opposite direction of the vessel flow”. The authors should specify the value of the loss hyperparameters $\\lambda_1$ and $\\lambda_2$ they used. I assume that the results highly depend on these parameters. Therefore, a discussion on how to set them would be interesting. The authors used a batch size of 1. Is this because of memory issues ? Or did they obtain the best results with this value ? Did they observe training instability ? The authors should consider performing cross validation to improve the statistical significance of their results. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is interesting and new. Even though I am not convinced that the comparison with other methods is totally fair, I still think the approach is interesting for the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel enhancement in medical images. The method uses self-supervised learning and is developed based on the geometric properties of the vessels. Overall, the method is interesting. The method has been compared with the closely related methods. The reviewers are all positive about the paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Author Feedback We thank the reviewers for their detailed feedback. Here are some common concerns: R1: “It is not clear that the method is also applicable for diseased vessels…” R2: “Assuming vessel profile as a unit disk, …” A: This is a valid limitation of our method. There is only so much we can detect using a single template, our idea behind the paper is to show that vessel properties can be “baked” into a neural network using novel loss functions without ground truth. Further work can use sparse amounts of labeled anomalies which can be used to extend our method to increase its detection for vessel segments that do not conform to the template. R1: “The approach is unique, but its potential…” A: we certainly considered experimenting with different templates, or alternatively, using a richer set of parameters (for non-rigid deformation of the template) for each pixel instead of a rigid scaling and rotation of the template, thus allowing a richer set of vessels. However, without ground truth data, the networks with so many parameters are susceptible to overfitting by “hallucinating” other regions of the image as vessels. Using a sparse amount of ground truth to tackle this problem can be the basis for future work. R2: “There are three directions at a bifurcation … interchangeable during prediction.” A: There is no “preference” towards “u” being the larger branch. Consider three points each on the 3 splits near the bifurcation, each point should have its corresponding split as u and the other two branches as b1 and b2. This is done to extend the “template” at the bifurcation locations because a single template gives a poor response due to the branches not overlapping with the bifurcation. “Profiles at opposite directions …” A: We do this by construction. In 2D, we output half-angles \\theta_1 \\in [0, \\pi/2] and \\theta_2 \\in [-\\pi/2, 0] and rotate -u by these angles, making b1 and b2 face opposite to u. In the case of 3D, we multiply b1 and b2 by the sign of dot products &lt;b1, -u&gt; and &lt;b2, -u&gt;. “Fig 1 is the most important figure in this paper, but it is misleading …” A: The figure is illustrative. 1) In principle, any encoder-decoder architecture which outputs maps of the same spatial dimensions can be used 2) We used this diagram rather than a per-pixel heatmap to show what we’re trying to predict. A per-pixel prediction will be the most accurate where it matches the template (centerline of the artery) resulting in the maximal vesselness at those locations and gradually falling off. A suitable threshold on this vesselness gives a segmentation. 3) Yes, the outputs are of the same size, we used subsampling and quiver plots to illustrate the different outputs we’re predicting (radius, arrows for directions). “Fig 3 (a) why no false … in the design?” A: Adding another color made the figure cluttery, so we stuck with TPs and FNs, the both of which make up the ground truth. Any of the unsupervised methods do not have any method to penalize FPs. To select a threshold, we use a small validation set and find the threshold which maximizes the dice score on the validation set. “The section of “efficacy of the representation” … fig 3.” A: Due to space constraints, we were unable to include all qualitative results. R3: “My main concern regards how the authors set … A: We use a standard implementation of the Frangi filter [1]. To convert the continuous-valued output to a binary threshold, we find the best threshold using a small validation set on which we maximize the dice score. For Figure 4, Frangi detects regions which are dark and surrounded by bright regions, which looks like a ridge (see FPs on left side of Figures 4(c)). “The authors should specify the value of the loss hyperparameters…” A: In our case we set $\\lambda_1 = 0.5, \\lambda_2 = 1$. Due to space constraints, we didn’t include an analysis on hyperparameter setting. [1] https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.frangi back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Jena, Rohit,Singla, Sumedha,Batmanghelich, Kayhan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Self-Supervised Vessel Enhancement Using Flow-Based Consistencies</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Vascular"
+        class="post-category">
+        Clinical applications - Vascular
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Jena, Rohit"
+        class="post-tags">
+        Jena, Rohit
+      </a> |  
+      
+      <a href="kittywong/tags#Singla, Sumedha"
+        class="post-tags">
+        Singla, Sumedha
+      </a> |  
+      
+      <a href="kittywong/tags#Batmanghelich, Kayhan"
+        class="post-tags">
+        Batmanghelich, Kayhan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Rohit Jena, Sumedha Singla, Kayhan Batmanghelich
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Vessel segmentation is an essential task in many clinical applications. Although supervised methods have achieved state-of-art performance, acquiring expert annotation is laborious and mostly limited for two-dimensional datasets with a small sample size. On the contrary, unsupervised methods rely on handcrafted features to detect tube-like structures such as vessels. However, those methods require complex pipelines involving several hyper-parameters and design choices rendering the procedure sensitive, dataset-specific, and not generalizable. We propose a self-supervised method with a limited number of hyper-parameters that is generalizable across modalities. Our method uses tube-like structure properties, such as connectivity, profile consistency, and bifurcation, to introduce inductive bias into a learning algorithm. To model those properties, we generate a vector field that we refer to as a flow. Our experiments on various public datasets in 2D and 3D show that our method performs better than unsupervised methods while learning useful transferable features from unlabeled data. Unlike generic self-supervised methods, the learned features learn vessel-relevant features that are transferable for supervised approaches, which is essential when the number of annotated data is limited. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_23">https://doi.org/10.1007/978-3-030-87196-3_23</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/batmanlab/vessel-flow-consistency-ssl
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel self-supervised training method that is designed for vascular structure segmentation. The method is applicable for many tubular structures. The efficacy was validated with several kinds of open datasets including 2D retinal vessel, 3D CT / MRI. The performance comparisons with the conventional methods show that the proposed method can achieves higher scores in DICE metrics.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Novel formulation: The method models vessels with a few parameters of template image, radius, flow direction, and so on. The U-net like neural networks are trained to predict those parameters without labels by minimizing the similarity loss (Normalized cross correlation) between the training image and the predicted image.</p>
+
+      <p>Segmentation performance: The advantage of the method is that the method can achieve a high DICE score without labels, since it can model tubular structure’s thickness or extent, compared to the conventional methods. A wide range of vascular applications regarding volumetry purposes would benefit from this research.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>It is not clear that the method is also applicable for diseased vessels with different appearances, for instance clogged vessels with soft / hard plaques.  The method seems to fail segmenting such vessels, because it uses a template image representing an ideal vessel (disk/tube).
+Centerline detection performance is not improved significantly.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The idea is clearly given in the paper. The reproducibility seems relatively high. Furthermore, the authors show wills to provide the codes in public.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The approach is unique, but its potential is limited by using a few parameters and single template image. It is interesting to provide the authors’s opinions about using multiples template images, or trainable (parameterized) template.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper proposes a novel and general approach for vascular structure segmentation. A wide range of vascular applications would benefit from this work.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Propose a self-supervised method for vessel segmentation taking consideration of tube-like structure properties such as connectivity, profile consistency, and bifurcation. It is generalizable across modalities.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Claimed to be first unsupervised deep learning method that takes a raw image
+as input and outputs per-pixel vessel statistics as output.
+A clever way to incorporate vessel properties in the design but not directly as hand crafted features.
+Comprehensive evaluation on multiple datasets, both 2D and 3D, with multiple modalities.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Unclear descriptions on key components, causing confusions for readers. 
+Possible design flaw for the loss.
+Unclear value of this method compared with existing supervised methods which have much better performance</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Public dataset. No link for their code provided in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>There are three directions at a bifurcation where one larger branch splits into two smaller branches. Since the larger branch is unknown in prediction, how can ensure the two vectors (b1, b2) are exactly pointing to the smaller branches? In other words, without special constraints on branch sizes, u, b1 and b2 are interchangeable during prediction.
+Assuming vessel profile as a unit disk, and use it to match the profiles along the artery might not cover the abnormal situations when for example, at bifurcation, artery is stenotic or there are flow artifacts. 
+Profiles at opposite directions should be the same, so the matching with the template Lm should also be the same. In the absence of bifurcation, why b1(p)=b2(p)=-u(p) minimizes the loss, b1 b2 can also be the same as u?
+Fig 1 is the most important figure in this paper, but it is misleading. 1) fƟ() is misleading. You used a U-Net here, but the plot looks like fƟ() is an encoder only. The final network output size needs to be mentioned, which is the same size as the image input? 2) the plot for r is also misleading.  It should have a radius for all the pixels. But the image shows grid-wise small radius predictions on backgrounds and non-grid radius on arteries. Why r on artery region can be at non-grid positions exactly on the artery centerline? How did you deal with overlapping radius predictions (for arteries with more than 1 pixel thickness). 3) r map has a much wider gap than u map, b map has a much wider grid than u map. Are the output sizes really the same?
+There is a lack of information for the bifurcation loss, causing my many confusions about your design, although there is an ablation study to prove its usefulness. 1) There seems a lack of constraint for b1 and b2 to be different from u. For the cases with bifurcations, b1 and b2 can still be the same or opposite directions with u to minimize the loss. If u is at the larger branch, and it bifurcates into b1, b2 two smaller branches, Lm(b,r;I,T) is even smaller when b=+-u. 2) the radius r used for three Lm calculations is the same? If that is the case, it is unfair for the similarity metric calculation on b1, b2. As the real radius for branched out arteries are much smaller than the radius at the bifurcation.  3) the cause of the performance improvement using bifurcation loss is really from taking advantage of the bifurcation structure? Or this is just because of a heavier weight on Lm loss. As the majority of the pixels are not bifurcations. The final total loss is more close to (1+ λ2) Lm+ λ1Lf. The ablation study should not just taking λ2 Lb away, but rather comparing with (1+ λ2) Lm+ λ1Lf
+The weights λi for combining three losses need more investigations, as the choice for λi might be critical. Lm directs the vector to best match the disk template, but Lf does not allow vector direction to change along the artery, which is a natural conflict requiring a careful selection of weights to find the optimal results. 
+Why the evaluation on segmentation is only on a manually annotated bounding boxes at bifurcation region instead of the whole image?
+Fig 3 (a) why no false positives are shown? I suppose your method will have a lot of noise branches, as the current loss design does not penalize false positives. There are negative signs for Lm and Lf, so any noise detections will lead to lower losses. Is there a threshold to select valid vessels in the design?
+The section of “efficacy of the representation” is unclear. 1) I am not sure what the author means for “efficacy of the representation“. 2) Faster convergence does not mean the feature representations for your model is better. 3) the authors only report their method achieves the best validation dice score, without showing quantitative/qualitative results on the test set, like table 1 and 2 and fig 3.
+The potential usage of the method is unclear. The current performance on OCT image is better than traditional image processing methods, but still far away from supervised methods. If the aim is for better downstream tasks like segmentation, there is a lack of evidence that using this method as a pretrained model improves the overall performance compared with state-of-the-art supervised methods.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Interesting and explorative ideas, but lack of clear explainations and maybe flaws in design and experiments.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This article proposes an unsupervised vessel enhancement filter using self-supervised learning. This approach is based on geometric properties of the vessels such as profile consistency, connectivity and bifurcation. This approach provides three very interesting features to characterize blood vessels in the image: the vesselness (probability of a pixel to belong to a vessel), the direction of the vessels and the radius of putative vessels at each point.
+Extensive experiments have been conducted both in 2D and 3D images and comparisons with classic vessel enhancement strategies have been performed.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>I thank the authors for this interesting article. Unsupervised vessel enhancement is of great interest for vascular-related clinical applications and, to the best of my knowledge, it is indeed the first unsupervised deep learning-based approach in the literature. The article is well written and the method is clearly explained. I also appreciated the extensive experiments that have been conducted on several datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>My main concern regards how the authors set the parameters of the compared methods. This can dramatically affect the comparison results. I am surprised by the results obtained for Frangi in Figure 3 (d). The Frangi filter usually yields many false positives due to border issues or close curvilinear structures. However, in the results shown on Figure 3 (d), the errors seem to come from a large overestimation of the size of the structures, as well as from detections of large structures that are not curvilinear at all. I am not used to seeing that in Frangi results. In Figure 4 in the supplementary materials, Frangi detects bright structures whereas the structures of interest are dark. Normally by choosing the sign of the eigenvalues and the contrast parameter correctly this should be prevented. The optimization strategy for setting the parameters of the compared methods should be explained to convince the reader that a fair comparison was performed.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>I think the method could be reproduced, however the authors did not provide all the hyperparameters they used (see detailed comments)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Regarding the profile consistency, the authors should explain in more details what their resizing transform $\Phi(u,r)$ is, as it seems that this is a crucial point of the method. This transform seems to be position-dependent, as the value of r can be different for every pixel. How is it applied in practice ? How is it included in the UNet architecture ?</li>
+        <li>In Equation 2, I do not understand why the authors specify $\dot{q}_p = u(p)$. It seems that this relation is not used in the equation nor later in the paper. If this is important, please clarify, otherwise please remove.</li>
+        <li>It is not clear for me why $b_1(p) = b_2(p) = -u(p)$. Why is there a minus sign ? The associated sentence is also not very clear. Please rephrase it: “Note that, in the absence of bifurcation, $b_1 (p) = b_2 (p) = −u(p)$ minimizes the same loss as $L_m$ . in the opposite direction of the vessel flow”.</li>
+        <li>The authors should specify the value of the loss hyperparameters $\lambda_1$ and $\lambda_2$ they used. I assume that the results highly depend on these parameters. Therefore, a discussion on how to set them would be interesting.</li>
+        <li>The authors used a batch size of 1. Is this because of memory issues ? Or did they obtain the best results with this value ? Did they observe training instability ?</li>
+        <li>The authors should consider performing cross validation to improve the statistical significance of their results.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The method is interesting and new. Even though I am not convinced that the comparison with other methods is totally fair, I still think the approach is interesting for the community.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper presents a method for vessel enhancement in medical images. The method uses self-supervised learning and is developed based on the geometric properties of the vessels. Overall, the method is interesting. The method has been compared with the closely related methods. The reviewers are all positive about the paper.  After reading the comments raised by the reviewers, my recommendation is given in Q3.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their detailed feedback.
+Here are some common concerns:
+R1: “It is not clear that the method is also applicable for diseased vessels…” 
+R2: “Assuming vessel profile as a unit disk, …”</p>
+
+  <p>A: This is a valid limitation of our method. There is only so much we can detect using a single template, our idea behind the paper is to show that vessel properties can be “baked” into a neural network using novel loss functions without ground truth. Further work can use sparse amounts of labeled anomalies which can be used to extend our method to increase its detection for vessel segments that do not conform to the template.</p>
+
+  <p>R1:</p>
+
+  <p>“The approach is unique, but its potential…” 
+A: we certainly considered experimenting with different templates, or alternatively, using a richer set of parameters (for non-rigid deformation of the template) for each pixel instead of a rigid scaling and rotation of the template, thus allowing a richer set of vessels. However, without ground truth data, the networks with so many parameters are susceptible to overfitting by “hallucinating” other regions of the image as vessels. Using a sparse amount of ground truth to tackle this problem can be the basis for future work.</p>
+
+  <p>R2:
+“There are three directions at a bifurcation … interchangeable during prediction.”</p>
+
+  <p>A: There is no “preference” towards “u” being the larger branch. Consider three points each on the 3 splits near the bifurcation, each point should have its corresponding split as <code class="language-plaintext highlighter-rouge">u</code> and the other two branches as <code class="language-plaintext highlighter-rouge">b1</code> and <code class="language-plaintext highlighter-rouge">b2</code>. This is done to extend the “template” at the bifurcation locations because a single template gives a poor response due to the branches not overlapping with the bifurcation.</p>
+
+  <p>“Profiles at opposite directions …”</p>
+
+  <p>A: We do this by construction. In 2D, we output half-angles \theta_1 \in [0, \pi/2] and \theta_2 \in [-\pi/2, 0] and rotate -u by these angles, making b1 and b2 face opposite to u.
+In the case of 3D, we multiply b1 and b2 by the sign of dot products &lt;b1, -u&gt; and &lt;b2, -u&gt;.</p>
+
+  <p>“Fig 1 is the most important figure in this paper, but it is misleading …”</p>
+
+  <p>A: The figure is illustrative. 1) In principle, any encoder-decoder architecture which outputs maps of the same spatial dimensions can be used 2) We used this diagram rather than a per-pixel heatmap to show what we’re trying to predict. A per-pixel prediction will be the most accurate where it matches the template (centerline of the artery) resulting in the maximal vesselness at those locations and gradually falling off. A suitable threshold on this vesselness gives a segmentation. 3) Yes, the outputs are of the same size, we used subsampling and quiver plots to illustrate the different outputs we’re predicting (radius, arrows for directions).</p>
+
+  <p>“Fig 3 (a) why no false … in the design?”
+A: Adding another color made the figure cluttery, so we stuck with TPs and FNs, the both of which make up the ground truth. Any of the unsupervised methods do not have any method to penalize FPs. To select a threshold, we use a small validation set and find the threshold which maximizes the dice score on the validation set.</p>
+
+  <p>“The section of “efficacy of the representation” … fig 3.”
+A: Due to space constraints, we were unable to include all qualitative results.</p>
+
+  <p>R3:
+“My main concern regards how the authors set …
+A: We use a standard implementation of the Frangi filter [1]. To convert the continuous-valued output to a binary threshold, we find the best threshold using a small validation set on which we maximize the dice score. For Figure 4, Frangi detects regions which are dark and surrounded by bright regions, which looks like a ridge (see FPs on left side of Figures 4(c)).</p>
+
+  <ul>
+    <li>“The authors should specify the value of the loss hyperparameters…” 
+A: In our case we set  $\lambda_1 = 0.5, \lambda_2 = 1$. Due to space constraints, we didn’t include an analysis on hyperparameter setting.</li>
+  </ul>
+
+  <p>[1] https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.frangi</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0222-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0223-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Vascular"
+        class="post-category">
+        Clinical applications - Vascular
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Jena, Rohit"
+        class="post-category">
+        Jena, Rohit
+      </a> |  
+      
+      <a href="kittywong/tags#Singla, Sumedha"
+        class="post-category">
+        Singla, Sumedha
+      </a> |  
+      
+      <a href="kittywong/tags#Batmanghelich, Kayhan"
+        class="post-category">
+        Batmanghelich, Kayhan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0223/12/31/Paper1796">
+          Unsupervised Contrastive Learning of Radiomics and Deep Features for Label-Efficient Tumor Classification
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0221/12/31/Paper1497">
+          Longitudinal self-supervision to disentangle inter-patient variability from disease progression
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

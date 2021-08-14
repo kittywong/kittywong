@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiaofeng Liu, Fangxu Xing, Chao Yang, Georges El Fakhri, Jonghye Woo Abstract Unsupervised domain adaptation (UDA) aims to transfer knowledge learned from a labeled source domain to an unlabeled and unseen target domain, which is usually trained on data from both domains. Access to the source domain data at the adaptation stage, however, is often limited, due to data storage or privacy issues. To alleviate this, in this work, we propose to adapt an ``off-the-shelf” segmentation model pre-trained in the source domain to the target domain, with an adaptive batch-wise normalization statistics adaptation framework. Specifically, the domain-specific low-order batch statistics, i.e., mean and variance, are gradually adapted with an exponential momentum decay scheme, while the consistency of domain shareable high-order batch statistics, i.e., scaling and shifting parameters, is explicitly enforced by our optimization objective. The transferability of each channel is adaptively measured first from which to balance the contribution of each channel. Moreover, the proposed framework is orthogonal to unsupervised learning methods, e.g., self-entropy minimization, which can thus be simply added on top of our framework. Extensive experiments on the BraTS 2018 database show that our framework outperformed existing source-relaxed UDA methods for the cross-subtype UDA task and yielded comparable results for the cross-modality UDA task, compared with a supervised UDA methods with the source data. Link to paper https://doi.org/10.1007/978-3-030-87196-3_51 Link to the code repository N/A Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/data.html Reviews Review #1 Please describe the contribution of the paper This paper proposes an approach for unsupervised domain adaptation (UDA) without accessing source domain data during adaptation. The proposed method combines batch normalization (BN) adaptation and self-entropy minimization, which is able to adapt “off-the-shelf” pre-trained segmentation model. Validation is performed on the public BRATS 2018 dataset for brain tumor segmentation with two different adaptation settings. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. UDA in the absence of the source domain data is a more practical yet challenging setting, which is worth investigating and would interest a broad MICCAI audience. The proposed method does not need additional training steps using the data in the source domain, thus is more flexible than previous method OSUDA, which needs to train an additional class ratio predictor. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Limited novelty: The two main components, BN adaptation and self-entropy minimization, are two well-known techniques for UDA, which have already been applied and validated in previous UDA works. Also, one limitation of the method is that it can only apply to source models with batch normalization, but for brain tumor segmentation, many state-of-the-art networks use instance normalization/group normalization instead of batch normalization [1][2]. Unclear motivation for the specific designs in BN adaptation: Authors present an exponential momentum decay scheme and a high-order statistics consistency loss for BN adaptation, but there is no analysis on these designs to show their contributions/necessity. Why is an exponential momentum decay scheme needed? What would be the results if using a constant momentum parameter? Moreover, it is not easy to understand why the consistency of the scaling and shifting parameters should be enforced. If the motivation for the high-order batch statistics consistency holds, shouldn’t the parameters of convolutional layers also have consistency across domains? What are the benefits of encouraging the consistency? Why not directly freeze the scaling and shifting parameters without updating to ensure consistency? In addition, the contribution of the adaptive parameter \alpha_{l, c} is also not validated. For the cross-modality adaptation in Table 2, there is still large performance gap, such as the inferior performance to DSFN. For the HGG to LGG adaptation, could authors also compare with the three UDA methods adopted in cross-modality adaptation, that are CycleGAN, SIFA, and DSFN? Lack of implementation details: The implementation of the method seems not straightforward, but many details are missing, and the supplementary file is not uploaded. For example, how to set the hyper-parameters \eta and \lambda? As the training is completely unsupervised in the target domain, how to tune the hyper-parameters? Are the hyper-parameters kept consistently for different adaptation tasks? As the entropy minimization may result in a degenerate trivial solution, how to decide when to stop the training? [1] Myronenko, Andriy. “3D MRI brain tumor segmentation using autoencoder regularization.” In International MICCAI Brainlesion Workshop, pp. 311-320. Springer, Cham, 2018. [2] Isensee, Fabian, Philipp Kickingereder, Wolfgang Wick, Martin Bendszus, and Klaus H. Maier-Hein. “No new-net.” In International MICCAI Brainlesion Workshop, pp. 234-244. Springer, Cham, 2018. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many important implementation details are missing but code will be released. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Table 1, what does the “Overall” column mean? Does it have the same meaning as the “Average” column in Table 2? But for the Dice score in Table 1, the average value of the first three columns does not equal to that of the “Overall” column. Authors state that “OSUDA outperformed several UDA methods trained with the source data, e.g., CycleGAN and SIFA”, but Table 2 shows that OSUDA obtains inferior performance to SIFA. The models trained with labeled target domain data should be presented in the tables and perhaps be regarded as the “upper-bound”, to have a better understanding about the performance gap. In Table 1 and Table 2, how is the standard deviation calculated and why is the standard deviation not presented for the last three methods? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper studies an interesting source-relaxed UDA problem, but both the technical novelty and experimental validation are insufficient and should be largely improved. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper A method for source-free domain adaptation is proposed and evaluated on 2 types of domain shifts: (1) concerning changes in the label distribution (high grade to low grade tumours), (2) concerning changes in the input image distribution (from one MR T2 to three target domains: T1, T1ce, FLAIR). The first main component of the method is to use target domain mean and variance in batch normalization (BN) layers. Now, like [22], entropy minimization is used to adapt BN shift and scale parameters. However, taking inspiration from [23], the shift and scale parameters are prevented from deviating too much. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method has been formulated by putting together several insights from many papers from the existing literature and is therefore very interesting. Some recent methods (e.g. [1]) propose to do source-free domain adaptation by using specific priors (such as class pixel ratios) on the segmentation label space that may not hold when the label distribution changes even slightly. By not relying on such specific priors, the proposed method is more robust to changes in the label distribution between the source and target datasets. Validation on two types of domain shifts shows the generality of the method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of the paper is unclear writing, especially in the methods section. I am fairly familiar with the related literature, but still had to read this section 3-4 times to understand it properly (and even then I have had to make several assumptions to make sense of it). Therefore, I believe that this section needs a substantial revision. In the current state, it would be very hard for readers to understand the method and its contributions relative to existing works. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Validation is done using a publicly available dataset (which has been cited) and the authors have promised to make their code publicly available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While updating the mean and variance for the target domain, the authors propose to use an exponentially decaying momentum term (Eqn. 3). Why is this preferred over normal exponential moving averaging with a constant momentum term (like Eqn. 2)? This should be clearly explained. Further, one of the additional baselines (not required for this paper, but suggested for extension of the work) would be to compare the proposed exponentially decaying momentum (Eqn. 3) against the normal way of updating BN mean and variance constant momentum (Eqn. 2). A major source of confusion for me was the loss term $L_{HBS}$ (Eqn. 4). If this loss is used independently (without the entropy minimization loss $L_{SE}$), the BN shift and scale parameters would not change at all, right? If this is correct, then $L_{HBS}$ would have to be introduced only when using another loss to adapt the BN shift and scale parameters, and the role of $L_{HBS}$ would be to prevent the shift and scale parameters from deviating too much from their source domain pretrained values. This is the only explanation of $L_{HBS}$ that makes sense to me. If this is correct, this needs to be explained much better in the manuscript. If this is not correct, what is the role played by $L_{HBS}$ when no additional loss (such as $L_{SE}$) is used? The method of measuring the transferability of each channel (Eqn. 5) is inspired from [23]. With the way it is currently presented, it feels as if this idea has been proposed in this paper. Also, because the reference to [23] is missing in this context, it is unclear why the discrepancy and transferability have been formulated as shown. Clearly stating that these ideas are inspired from [23] will make this part much easier to follow. In Sec 2.3, while minimizing $L_{SE}$ (Eqn. 6), are all the CNN parameters adapted or only the BN shift and scale parameters? I assume that only the BN shift and scale parameters are adapted, but could not find it in the description. Also, minimizing $L_{SE}$ by adapting the BN shift and scale parameters is the main idea of [22]. This should be clearly stated in Sec. 2.3. In the ablation study OSUDA - AC, is the adaptive channel-wise weighting (alpha in Eqn. 4) removed, or is the $L_{HBS}$ removed altogether? I assume it is the latter. If it is the former, a short interpretation should be provided of what it means to weigh all the channels equally. I tried to connect the proposed method and its ablations with the closest methods in the literature. It seems to me that (a) [22] = [16] + $L_{SE}$, (b) OSUDA = [22] + exponentially decaying momentum (EDM) + $L_{HBS}$, (c) OSUDA - SE = [16] + EDM (as $L_{HBS}$ will have no effect in this scenario), (d) OSUDA - AC = [22] + EDM. Are these interpretations correct? Either way, it would be very helpful for the readers if the relationship of the proposed method with [16] and [22] was clearly explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing of the methods section was very unclear to me. However, if I understood the method correctly (after making several assumptions as explained above), the method actually makes a lot of sense to me. Also, I appreciate the fact that the validation has been done on two different types of domain shifts. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1)The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pre-trained model from the source domain but does not require direct access to the source data. (2) The proposed method which adapts the BatchNorm layer parameters (mean, variance, alpha, and beta) is quite novel and interesting. (3) The results by the proposed method are comparable to those from UDA methods with access to the source data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed method is only compared with one source-relaxed UDA method, i.e. CRUDA [1]. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is no implementation details. Though the authors claim the implementation details are given in supplementary, but the supplementary material is missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) The image quality of Figure 1 should be improved and the texts are too small to recognize after printing. (2) For the experimental results reported in Table 1 and Table 2, average surface distance (ASD) is a common evaluation metric for semantic segmentation and should be included. (3) UDA methods with access to the source data are considered as upper bound, but the results of supervised models on the target domain should also be included for better and full understanding. (4) The proposed method is only compared with one source-relaxed UDA method, i.e., CRUDA [1]. More comparisons should be conducted with related state-of-the-art source-relaxed UDA methods. (5) Although the authors claim that the implementation details are given in the Appendix, the supplementary material is missing. (6) The authors report results without adaptive channel-wise weighting (OSUDA-AC) and without self-entropy minimization (OSUDA-SE). It would be great if the authors could also provide the results without adaptation of low order batch statistics or without consistency of high order statistics, which can demonstrate the effectiveness of adaptation of low and high order BN statistics. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pretrained model from source domain, but does not require direct access to the source data. The results by the proposed method are comparable to those from UDA methods with access to the source data. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although reviewers appreciated the interesting idea combining several existing techniques for source-free domain adaptation for image segmentation, they raised several main issues including (1) the technical novelty is not clear and the relationship between the proposed method and some related studies (e.g., [16], [22], [23]) is not clearly explained, (2) the method (including the motivation) is not well described and many technical details are missing, thereby making it difficult to understand, and (3) there is a large performance gap the proposed method and some other method (e.g., DSFN in Table 2), and the experiments are not sufficient. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript presents a source-free unsupervised domain adaptation (UDA) method for brain image segmentation, and it can be applied to a situation where source domain data is unavailable. The rebuttal has addressed the major concerns from reviewers (e.g., technical novelty, comparison with other methods, and presentation of the method), and thus the paper is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a source-free approach for UDA, which utilizes batch normalization adaptation and self-entropy minimization. Even though more technical details regarding the implementation should be added to better understand the paper, the overall intuition is interesting, and the addressed problem is critical for the field. The authors have addressed most of the reviewers’ comments in the feedback. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. One reviewer raise concern about the lack of novelty of the proposed method. The rebuttal has not convincingly demonstrated this concern. However, reviewers agree that the proposed method is interesting and practical. The topic of source-relaxed domain adaptation seems important for clinical applications. We recommend to accept this paper based on the reviewers’ consensus. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We thank the AC and reviewers for their valuable comments and positive feedback regarding the idea. All issues related can be addressed as follows. ***Clarify novelty w.r.t. [16,22,23] All of [16,22,23] are targeting classification. To our knowledge, the proposed method is the first attempt at source-relaxed off-the-shelf UDA for segmentation (no need for additional source domain class ratio predictor as in [1]MICCAI20). [16,23] are source-required UDA with batch normalization (BN). It is not trivial to adapt them to a source-relaxed version. Therefore, the novel exponential momentum decay scheme for domain specific low-order statistics (Eq. 3) and high-order batch statistics (HBS) loss (Eq. 4) are proposed as our major technical contributions. [22] only uses BN in the target domain as a common trick to stabilize training. Instead, [16,23] and our method explore the connection of BN statistics between the source and target domains. Besides, entropy minimization is a typical add-on loss in UDA (e.g., [1]) which is compatible with our method. We do not claim novelty on it, though. And an ablation study is provided. We believe the novelty w.r.t. both the task (source-relaxed off-the-shelf UDA for segmentation) and the methodology (exponential momentum decay and high-order batch statistics loss with adaptive channel-wise weighting) can provide some new insight to the MICCAI and general computer vision community. We will further clarify these points. ***Performance gap between DSFN in Tab.2 The source-required DSFN is just shown as the “upper-bound” of source-relaxed UDA. The only fair comparison with our source-relaxed method is CRUDA [1] in MICCAI2020, which is 3.7% inferior to ours. We also emphasized that our OSUDA can be better than several popular source-required UDA approaches, e.g., CycleGAN and SIFA. Our method’s performance is quite superior, considering that it does not access source data in adaptation. The good performance for two different types of domain shifts are specifically appreciated by R2 and R3. ***Description of method (motivation) and technical details These can be further clarified. -To reiterate, our motivation can be simply described as 1.BN statistics is available in the trained off-the-shelf source model without the need for source data. “It can be a better shareable information than class-ratio in [1].” 2.“The low/high order BN statistics are domain-dependent/independent for two domains. We should use different schemes for their adaptation.” 3.Exponential momentum decay is proposed “to gradually learn the target domain-specific low-order statistics.” 4.High-order statistics consistency loss is proposed “to encourage the high-order statistics consistency between the two domains.” We also proposed the adaptive channel-wise weighting, since “we would expect that the channels with higher transferability contribute more to the adaptation.” -We have elaborated all necessary details in the appendix, while it was occluded for the reviewers due to overlength (7 pages). We will reorganize the appendix and arXiv the full version. *Others: R1 referred two papers (3D Seg &amp; No new-net) do not consider domain adaptation. Their normalization is only used for a single domain as a trick to stabilize training as vanilla BN. R1 may not be familiar with the standard protocol of the BraTS dataset as in [21] and asked about the overall in Tab. 1. Overall is the weighted average of EnhT, CoreT, and ED. WholeT covers three classes and its DICE does not differentiate misclassifying EnhT to CoreT/ED, etc. We will further clarify this as in [21]. R1 asked the standard deviation (sd) of [4, 31, 32]. However, these works do not provide sd and the code in the BraTS dataset. We can only collect the results (without sd) from [32]. Instead, we have provided all results of our methods with sd. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiaofeng Liu, Fangxu Xing, Chao Yang, Georges El Fakhri, Jonghye Woo Abstract Unsupervised domain adaptation (UDA) aims to transfer knowledge learned from a labeled source domain to an unlabeled and unseen target domain, which is usually trained on data from both domains. Access to the source domain data at the adaptation stage, however, is often limited, due to data storage or privacy issues. To alleviate this, in this work, we propose to adapt an ``off-the-shelf” segmentation model pre-trained in the source domain to the target domain, with an adaptive batch-wise normalization statistics adaptation framework. Specifically, the domain-specific low-order batch statistics, i.e., mean and variance, are gradually adapted with an exponential momentum decay scheme, while the consistency of domain shareable high-order batch statistics, i.e., scaling and shifting parameters, is explicitly enforced by our optimization objective. The transferability of each channel is adaptively measured first from which to balance the contribution of each channel. Moreover, the proposed framework is orthogonal to unsupervised learning methods, e.g., self-entropy minimization, which can thus be simply added on top of our framework. Extensive experiments on the BraTS 2018 database show that our framework outperformed existing source-relaxed UDA methods for the cross-subtype UDA task and yielded comparable results for the cross-modality UDA task, compared with a supervised UDA methods with the source data. Link to paper https://doi.org/10.1007/978-3-030-87196-3_51 Link to the code repository N/A Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/data.html Reviews Review #1 Please describe the contribution of the paper This paper proposes an approach for unsupervised domain adaptation (UDA) without accessing source domain data during adaptation. The proposed method combines batch normalization (BN) adaptation and self-entropy minimization, which is able to adapt “off-the-shelf” pre-trained segmentation model. Validation is performed on the public BRATS 2018 dataset for brain tumor segmentation with two different adaptation settings. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. UDA in the absence of the source domain data is a more practical yet challenging setting, which is worth investigating and would interest a broad MICCAI audience. The proposed method does not need additional training steps using the data in the source domain, thus is more flexible than previous method OSUDA, which needs to train an additional class ratio predictor. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Limited novelty: The two main components, BN adaptation and self-entropy minimization, are two well-known techniques for UDA, which have already been applied and validated in previous UDA works. Also, one limitation of the method is that it can only apply to source models with batch normalization, but for brain tumor segmentation, many state-of-the-art networks use instance normalization/group normalization instead of batch normalization [1][2]. Unclear motivation for the specific designs in BN adaptation: Authors present an exponential momentum decay scheme and a high-order statistics consistency loss for BN adaptation, but there is no analysis on these designs to show their contributions/necessity. Why is an exponential momentum decay scheme needed? What would be the results if using a constant momentum parameter? Moreover, it is not easy to understand why the consistency of the scaling and shifting parameters should be enforced. If the motivation for the high-order batch statistics consistency holds, shouldn’t the parameters of convolutional layers also have consistency across domains? What are the benefits of encouraging the consistency? Why not directly freeze the scaling and shifting parameters without updating to ensure consistency? In addition, the contribution of the adaptive parameter \alpha_{l, c} is also not validated. For the cross-modality adaptation in Table 2, there is still large performance gap, such as the inferior performance to DSFN. For the HGG to LGG adaptation, could authors also compare with the three UDA methods adopted in cross-modality adaptation, that are CycleGAN, SIFA, and DSFN? Lack of implementation details: The implementation of the method seems not straightforward, but many details are missing, and the supplementary file is not uploaded. For example, how to set the hyper-parameters \eta and \lambda? As the training is completely unsupervised in the target domain, how to tune the hyper-parameters? Are the hyper-parameters kept consistently for different adaptation tasks? As the entropy minimization may result in a degenerate trivial solution, how to decide when to stop the training? [1] Myronenko, Andriy. “3D MRI brain tumor segmentation using autoencoder regularization.” In International MICCAI Brainlesion Workshop, pp. 311-320. Springer, Cham, 2018. [2] Isensee, Fabian, Philipp Kickingereder, Wolfgang Wick, Martin Bendszus, and Klaus H. Maier-Hein. “No new-net.” In International MICCAI Brainlesion Workshop, pp. 234-244. Springer, Cham, 2018. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many important implementation details are missing but code will be released. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Table 1, what does the “Overall” column mean? Does it have the same meaning as the “Average” column in Table 2? But for the Dice score in Table 1, the average value of the first three columns does not equal to that of the “Overall” column. Authors state that “OSUDA outperformed several UDA methods trained with the source data, e.g., CycleGAN and SIFA”, but Table 2 shows that OSUDA obtains inferior performance to SIFA. The models trained with labeled target domain data should be presented in the tables and perhaps be regarded as the “upper-bound”, to have a better understanding about the performance gap. In Table 1 and Table 2, how is the standard deviation calculated and why is the standard deviation not presented for the last three methods? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper studies an interesting source-relaxed UDA problem, but both the technical novelty and experimental validation are insufficient and should be largely improved. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper A method for source-free domain adaptation is proposed and evaluated on 2 types of domain shifts: (1) concerning changes in the label distribution (high grade to low grade tumours), (2) concerning changes in the input image distribution (from one MR T2 to three target domains: T1, T1ce, FLAIR). The first main component of the method is to use target domain mean and variance in batch normalization (BN) layers. Now, like [22], entropy minimization is used to adapt BN shift and scale parameters. However, taking inspiration from [23], the shift and scale parameters are prevented from deviating too much. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method has been formulated by putting together several insights from many papers from the existing literature and is therefore very interesting. Some recent methods (e.g. [1]) propose to do source-free domain adaptation by using specific priors (such as class pixel ratios) on the segmentation label space that may not hold when the label distribution changes even slightly. By not relying on such specific priors, the proposed method is more robust to changes in the label distribution between the source and target datasets. Validation on two types of domain shifts shows the generality of the method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of the paper is unclear writing, especially in the methods section. I am fairly familiar with the related literature, but still had to read this section 3-4 times to understand it properly (and even then I have had to make several assumptions to make sense of it). Therefore, I believe that this section needs a substantial revision. In the current state, it would be very hard for readers to understand the method and its contributions relative to existing works. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Validation is done using a publicly available dataset (which has been cited) and the authors have promised to make their code publicly available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While updating the mean and variance for the target domain, the authors propose to use an exponentially decaying momentum term (Eqn. 3). Why is this preferred over normal exponential moving averaging with a constant momentum term (like Eqn. 2)? This should be clearly explained. Further, one of the additional baselines (not required for this paper, but suggested for extension of the work) would be to compare the proposed exponentially decaying momentum (Eqn. 3) against the normal way of updating BN mean and variance constant momentum (Eqn. 2). A major source of confusion for me was the loss term $L_{HBS}$ (Eqn. 4). If this loss is used independently (without the entropy minimization loss $L_{SE}$), the BN shift and scale parameters would not change at all, right? If this is correct, then $L_{HBS}$ would have to be introduced only when using another loss to adapt the BN shift and scale parameters, and the role of $L_{HBS}$ would be to prevent the shift and scale parameters from deviating too much from their source domain pretrained values. This is the only explanation of $L_{HBS}$ that makes sense to me. If this is correct, this needs to be explained much better in the manuscript. If this is not correct, what is the role played by $L_{HBS}$ when no additional loss (such as $L_{SE}$) is used? The method of measuring the transferability of each channel (Eqn. 5) is inspired from [23]. With the way it is currently presented, it feels as if this idea has been proposed in this paper. Also, because the reference to [23] is missing in this context, it is unclear why the discrepancy and transferability have been formulated as shown. Clearly stating that these ideas are inspired from [23] will make this part much easier to follow. In Sec 2.3, while minimizing $L_{SE}$ (Eqn. 6), are all the CNN parameters adapted or only the BN shift and scale parameters? I assume that only the BN shift and scale parameters are adapted, but could not find it in the description. Also, minimizing $L_{SE}$ by adapting the BN shift and scale parameters is the main idea of [22]. This should be clearly stated in Sec. 2.3. In the ablation study OSUDA - AC, is the adaptive channel-wise weighting (alpha in Eqn. 4) removed, or is the $L_{HBS}$ removed altogether? I assume it is the latter. If it is the former, a short interpretation should be provided of what it means to weigh all the channels equally. I tried to connect the proposed method and its ablations with the closest methods in the literature. It seems to me that (a) [22] = [16] + $L_{SE}$, (b) OSUDA = [22] + exponentially decaying momentum (EDM) + $L_{HBS}$, (c) OSUDA - SE = [16] + EDM (as $L_{HBS}$ will have no effect in this scenario), (d) OSUDA - AC = [22] + EDM. Are these interpretations correct? Either way, it would be very helpful for the readers if the relationship of the proposed method with [16] and [22] was clearly explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing of the methods section was very unclear to me. However, if I understood the method correctly (after making several assumptions as explained above), the method actually makes a lot of sense to me. Also, I appreciate the fact that the validation has been done on two different types of domain shifts. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1)The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pre-trained model from the source domain but does not require direct access to the source data. (2) The proposed method which adapts the BatchNorm layer parameters (mean, variance, alpha, and beta) is quite novel and interesting. (3) The results by the proposed method are comparable to those from UDA methods with access to the source data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed method is only compared with one source-relaxed UDA method, i.e. CRUDA [1]. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is no implementation details. Though the authors claim the implementation details are given in supplementary, but the supplementary material is missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) The image quality of Figure 1 should be improved and the texts are too small to recognize after printing. (2) For the experimental results reported in Table 1 and Table 2, average surface distance (ASD) is a common evaluation metric for semantic segmentation and should be included. (3) UDA methods with access to the source data are considered as upper bound, but the results of supervised models on the target domain should also be included for better and full understanding. (4) The proposed method is only compared with one source-relaxed UDA method, i.e., CRUDA [1]. More comparisons should be conducted with related state-of-the-art source-relaxed UDA methods. (5) Although the authors claim that the implementation details are given in the Appendix, the supplementary material is missing. (6) The authors report results without adaptive channel-wise weighting (OSUDA-AC) and without self-entropy minimization (OSUDA-SE). It would be great if the authors could also provide the results without adaptation of low order batch statistics or without consistency of high order statistics, which can demonstrate the effectiveness of adaptation of low and high order BN statistics. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pretrained model from source domain, but does not require direct access to the source data. The results by the proposed method are comparable to those from UDA methods with access to the source data. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although reviewers appreciated the interesting idea combining several existing techniques for source-free domain adaptation for image segmentation, they raised several main issues including (1) the technical novelty is not clear and the relationship between the proposed method and some related studies (e.g., [16], [22], [23]) is not clearly explained, (2) the method (including the motivation) is not well described and many technical details are missing, thereby making it difficult to understand, and (3) there is a large performance gap the proposed method and some other method (e.g., DSFN in Table 2), and the experiments are not sufficient. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript presents a source-free unsupervised domain adaptation (UDA) method for brain image segmentation, and it can be applied to a situation where source domain data is unavailable. The rebuttal has addressed the major concerns from reviewers (e.g., technical novelty, comparison with other methods, and presentation of the method), and thus the paper is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a source-free approach for UDA, which utilizes batch normalization adaptation and self-entropy minimization. Even though more technical details regarding the implementation should be added to better understand the paper, the overall intuition is interesting, and the addressed problem is critical for the field. The authors have addressed most of the reviewers’ comments in the feedback. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. One reviewer raise concern about the lack of novelty of the proposed method. The rebuttal has not convincingly demonstrated this concern. However, reviewers agree that the proposed method is interesting and practical. The topic of source-relaxed domain adaptation seems important for clinical applications. We recommend to accept this paper based on the reviewers’ consensus. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We thank the AC and reviewers for their valuable comments and positive feedback regarding the idea. All issues related can be addressed as follows. ***Clarify novelty w.r.t. [16,22,23] All of [16,22,23] are targeting classification. To our knowledge, the proposed method is the first attempt at source-relaxed off-the-shelf UDA for segmentation (no need for additional source domain class ratio predictor as in [1]MICCAI20). [16,23] are source-required UDA with batch normalization (BN). It is not trivial to adapt them to a source-relaxed version. Therefore, the novel exponential momentum decay scheme for domain specific low-order statistics (Eq. 3) and high-order batch statistics (HBS) loss (Eq. 4) are proposed as our major technical contributions. [22] only uses BN in the target domain as a common trick to stabilize training. Instead, [16,23] and our method explore the connection of BN statistics between the source and target domains. Besides, entropy minimization is a typical add-on loss in UDA (e.g., [1]) which is compatible with our method. We do not claim novelty on it, though. And an ablation study is provided. We believe the novelty w.r.t. both the task (source-relaxed off-the-shelf UDA for segmentation) and the methodology (exponential momentum decay and high-order batch statistics loss with adaptive channel-wise weighting) can provide some new insight to the MICCAI and general computer vision community. We will further clarify these points. ***Performance gap between DSFN in Tab.2 The source-required DSFN is just shown as the “upper-bound” of source-relaxed UDA. The only fair comparison with our source-relaxed method is CRUDA [1] in MICCAI2020, which is 3.7% inferior to ours. We also emphasized that our OSUDA can be better than several popular source-required UDA approaches, e.g., CycleGAN and SIFA. Our method’s performance is quite superior, considering that it does not access source data in adaptation. The good performance for two different types of domain shifts are specifically appreciated by R2 and R3. ***Description of method (motivation) and technical details These can be further clarified. -To reiterate, our motivation can be simply described as 1.BN statistics is available in the trained off-the-shelf source model without the need for source data. “It can be a better shareable information than class-ratio in [1].” 2.“The low/high order BN statistics are domain-dependent/independent for two domains. We should use different schemes for their adaptation.” 3.Exponential momentum decay is proposed “to gradually learn the target domain-specific low-order statistics.” 4.High-order statistics consistency loss is proposed “to encourage the high-order statistics consistency between the two domains.” We also proposed the adaptive channel-wise weighting, since “we would expect that the channels with higher transferability contribute more to the adaptation.” -We have elaborated all necessary details in the appendix, while it was occluded for the reviewers due to overlength (7 pages). We will reorganize the appendix and arXiv the full version. *Others: R1 referred two papers (3D Seg &amp; No new-net) do not consider domain adaptation. Their normalization is only used for a single domain as a trick to stabilize training as vanilla BN. R1 may not be familiar with the standard protocol of the BraTS dataset as in [21] and asked about the overall in Tab. 1. Overall is the weighted average of EnhT, CoreT, and ED. WholeT covers three classes and its DICE does not differentiate misclassifying EnhT to CoreT/ED, etc. We will further clarify this as in [21]. R1 asked the standard deviation (sd) of [4, 31, 32]. However, these works do not provide sd and the code in the BraTS dataset. We can only collect the results (without sd) from [32]. Instead, we have provided all results of our methods with sd. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0250/12/31/Paper0498" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0250/12/31/Paper0498" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0250-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0250/12/31/Paper0498"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0250/12/31/Paper0498","headline":"Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation","dateModified":"0251-01-01T00:00:00-05:17","datePublished":"0250-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Xiaofeng Liu, Fangxu Xing, Chao Yang, Georges El Fakhri, Jonghye Woo Abstract Unsupervised domain adaptation (UDA) aims to transfer knowledge learned from a labeled source domain to an unlabeled and unseen target domain, which is usually trained on data from both domains. Access to the source domain data at the adaptation stage, however, is often limited, due to data storage or privacy issues. To alleviate this, in this work, we propose to adapt an ``off-the-shelf” segmentation model pre-trained in the source domain to the target domain, with an adaptive batch-wise normalization statistics adaptation framework. Specifically, the domain-specific low-order batch statistics, i.e., mean and variance, are gradually adapted with an exponential momentum decay scheme, while the consistency of domain shareable high-order batch statistics, i.e., scaling and shifting parameters, is explicitly enforced by our optimization objective. The transferability of each channel is adaptively measured first from which to balance the contribution of each channel. Moreover, the proposed framework is orthogonal to unsupervised learning methods, e.g., self-entropy minimization, which can thus be simply added on top of our framework. Extensive experiments on the BraTS 2018 database show that our framework outperformed existing source-relaxed UDA methods for the cross-subtype UDA task and yielded comparable results for the cross-modality UDA task, compared with a supervised UDA methods with the source data. Link to paper https://doi.org/10.1007/978-3-030-87196-3_51 Link to the code repository N/A Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/data.html Reviews Review #1 Please describe the contribution of the paper This paper proposes an approach for unsupervised domain adaptation (UDA) without accessing source domain data during adaptation. The proposed method combines batch normalization (BN) adaptation and self-entropy minimization, which is able to adapt “off-the-shelf” pre-trained segmentation model. Validation is performed on the public BRATS 2018 dataset for brain tumor segmentation with two different adaptation settings. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. UDA in the absence of the source domain data is a more practical yet challenging setting, which is worth investigating and would interest a broad MICCAI audience. The proposed method does not need additional training steps using the data in the source domain, thus is more flexible than previous method OSUDA, which needs to train an additional class ratio predictor. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Limited novelty: The two main components, BN adaptation and self-entropy minimization, are two well-known techniques for UDA, which have already been applied and validated in previous UDA works. Also, one limitation of the method is that it can only apply to source models with batch normalization, but for brain tumor segmentation, many state-of-the-art networks use instance normalization/group normalization instead of batch normalization [1][2]. Unclear motivation for the specific designs in BN adaptation: Authors present an exponential momentum decay scheme and a high-order statistics consistency loss for BN adaptation, but there is no analysis on these designs to show their contributions/necessity. Why is an exponential momentum decay scheme needed? What would be the results if using a constant momentum parameter? Moreover, it is not easy to understand why the consistency of the scaling and shifting parameters should be enforced. If the motivation for the high-order batch statistics consistency holds, shouldn’t the parameters of convolutional layers also have consistency across domains? What are the benefits of encouraging the consistency? Why not directly freeze the scaling and shifting parameters without updating to ensure consistency? In addition, the contribution of the adaptive parameter \\alpha_{l, c} is also not validated. For the cross-modality adaptation in Table 2, there is still large performance gap, such as the inferior performance to DSFN. For the HGG to LGG adaptation, could authors also compare with the three UDA methods adopted in cross-modality adaptation, that are CycleGAN, SIFA, and DSFN? Lack of implementation details: The implementation of the method seems not straightforward, but many details are missing, and the supplementary file is not uploaded. For example, how to set the hyper-parameters \\eta and \\lambda? As the training is completely unsupervised in the target domain, how to tune the hyper-parameters? Are the hyper-parameters kept consistently for different adaptation tasks? As the entropy minimization may result in a degenerate trivial solution, how to decide when to stop the training? [1] Myronenko, Andriy. “3D MRI brain tumor segmentation using autoencoder regularization.” In International MICCAI Brainlesion Workshop, pp. 311-320. Springer, Cham, 2018. [2] Isensee, Fabian, Philipp Kickingereder, Wolfgang Wick, Martin Bendszus, and Klaus H. Maier-Hein. “No new-net.” In International MICCAI Brainlesion Workshop, pp. 234-244. Springer, Cham, 2018. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Many important implementation details are missing but code will be released. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Table 1, what does the “Overall” column mean? Does it have the same meaning as the “Average” column in Table 2? But for the Dice score in Table 1, the average value of the first three columns does not equal to that of the “Overall” column. Authors state that “OSUDA outperformed several UDA methods trained with the source data, e.g., CycleGAN and SIFA”, but Table 2 shows that OSUDA obtains inferior performance to SIFA. The models trained with labeled target domain data should be presented in the tables and perhaps be regarded as the “upper-bound”, to have a better understanding about the performance gap. In Table 1 and Table 2, how is the standard deviation calculated and why is the standard deviation not presented for the last three methods? Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper studies an interesting source-relaxed UDA problem, but both the technical novelty and experimental validation are insufficient and should be largely improved. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper A method for source-free domain adaptation is proposed and evaluated on 2 types of domain shifts: (1) concerning changes in the label distribution (high grade to low grade tumours), (2) concerning changes in the input image distribution (from one MR T2 to three target domains: T1, T1ce, FLAIR). The first main component of the method is to use target domain mean and variance in batch normalization (BN) layers. Now, like [22], entropy minimization is used to adapt BN shift and scale parameters. However, taking inspiration from [23], the shift and scale parameters are prevented from deviating too much. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method has been formulated by putting together several insights from many papers from the existing literature and is therefore very interesting. Some recent methods (e.g. [1]) propose to do source-free domain adaptation by using specific priors (such as class pixel ratios) on the segmentation label space that may not hold when the label distribution changes even slightly. By not relying on such specific priors, the proposed method is more robust to changes in the label distribution between the source and target datasets. Validation on two types of domain shifts shows the generality of the method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of the paper is unclear writing, especially in the methods section. I am fairly familiar with the related literature, but still had to read this section 3-4 times to understand it properly (and even then I have had to make several assumptions to make sense of it). Therefore, I believe that this section needs a substantial revision. In the current state, it would be very hard for readers to understand the method and its contributions relative to existing works. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Validation is done using a publicly available dataset (which has been cited) and the authors have promised to make their code publicly available upon acceptance. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While updating the mean and variance for the target domain, the authors propose to use an exponentially decaying momentum term (Eqn. 3). Why is this preferred over normal exponential moving averaging with a constant momentum term (like Eqn. 2)? This should be clearly explained. Further, one of the additional baselines (not required for this paper, but suggested for extension of the work) would be to compare the proposed exponentially decaying momentum (Eqn. 3) against the normal way of updating BN mean and variance constant momentum (Eqn. 2). A major source of confusion for me was the loss term $L_{HBS}$ (Eqn. 4). If this loss is used independently (without the entropy minimization loss $L_{SE}$), the BN shift and scale parameters would not change at all, right? If this is correct, then $L_{HBS}$ would have to be introduced only when using another loss to adapt the BN shift and scale parameters, and the role of $L_{HBS}$ would be to prevent the shift and scale parameters from deviating too much from their source domain pretrained values. This is the only explanation of $L_{HBS}$ that makes sense to me. If this is correct, this needs to be explained much better in the manuscript. If this is not correct, what is the role played by $L_{HBS}$ when no additional loss (such as $L_{SE}$) is used? The method of measuring the transferability of each channel (Eqn. 5) is inspired from [23]. With the way it is currently presented, it feels as if this idea has been proposed in this paper. Also, because the reference to [23] is missing in this context, it is unclear why the discrepancy and transferability have been formulated as shown. Clearly stating that these ideas are inspired from [23] will make this part much easier to follow. In Sec 2.3, while minimizing $L_{SE}$ (Eqn. 6), are all the CNN parameters adapted or only the BN shift and scale parameters? I assume that only the BN shift and scale parameters are adapted, but could not find it in the description. Also, minimizing $L_{SE}$ by adapting the BN shift and scale parameters is the main idea of [22]. This should be clearly stated in Sec. 2.3. In the ablation study OSUDA - AC, is the adaptive channel-wise weighting (alpha in Eqn. 4) removed, or is the $L_{HBS}$ removed altogether? I assume it is the latter. If it is the former, a short interpretation should be provided of what it means to weigh all the channels equally. I tried to connect the proposed method and its ablations with the closest methods in the literature. It seems to me that (a) [22] = [16] + $L_{SE}$, (b) OSUDA = [22] + exponentially decaying momentum (EDM) + $L_{HBS}$, (c) OSUDA - SE = [16] + EDM (as $L_{HBS}$ will have no effect in this scenario), (d) OSUDA - AC = [22] + EDM. Are these interpretations correct? Either way, it would be very helpful for the readers if the relationship of the proposed method with [16] and [22] was clearly explained. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing of the methods section was very unclear to me. However, if I understood the method correctly (after making several assumptions as explained above), the method actually makes a lot of sense to me. Also, I appreciate the fact that the validation has been done on two different types of domain shifts. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1)The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pre-trained model from the source domain but does not require direct access to the source data. (2) The proposed method which adapts the BatchNorm layer parameters (mean, variance, alpha, and beta) is quite novel and interesting. (3) The results by the proposed method are comparable to those from UDA methods with access to the source data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed method is only compared with one source-relaxed UDA method, i.e. CRUDA [1]. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is no implementation details. Though the authors claim the implementation details are given in supplementary, but the supplementary material is missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) The image quality of Figure 1 should be improved and the texts are too small to recognize after printing. (2) For the experimental results reported in Table 1 and Table 2, average surface distance (ASD) is a common evaluation metric for semantic segmentation and should be included. (3) UDA methods with access to the source data are considered as upper bound, but the results of supervised models on the target domain should also be included for better and full understanding. (4) The proposed method is only compared with one source-relaxed UDA method, i.e., CRUDA [1]. More comparisons should be conducted with related state-of-the-art source-relaxed UDA methods. (5) Although the authors claim that the implementation details are given in the Appendix, the supplementary material is missing. (6) The authors report results without adaptive channel-wise weighting (OSUDA-AC) and without self-entropy minimization (OSUDA-SE). It would be great if the authors could also provide the results without adaptation of low order batch statistics or without consistency of high order statistics, which can demonstrate the effectiveness of adaptation of low and high order BN statistics. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pretrained model from source domain, but does not require direct access to the source data. The results by the proposed method are comparable to those from UDA methods with access to the source data. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although reviewers appreciated the interesting idea combining several existing techniques for source-free domain adaptation for image segmentation, they raised several main issues including (1) the technical novelty is not clear and the relationship between the proposed method and some related studies (e.g., [16], [22], [23]) is not clearly explained, (2) the method (including the motivation) is not well described and many technical details are missing, thereby making it difficult to understand, and (3) there is a large performance gap the proposed method and some other method (e.g., DSFN in Table 2), and the experiments are not sufficient. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This manuscript presents a source-free unsupervised domain adaptation (UDA) method for brain image segmentation, and it can be applied to a situation where source domain data is unavailable. The rebuttal has addressed the major concerns from reviewers (e.g., technical novelty, comparison with other methods, and presentation of the method), and thus the paper is recommended for acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose a source-free approach for UDA, which utilizes batch normalization adaptation and self-entropy minimization. Even though more technical details regarding the implementation should be added to better understand the paper, the overall intuition is interesting, and the addressed problem is critical for the field. The authors have addressed most of the reviewers’ comments in the feedback. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. One reviewer raise concern about the lack of novelty of the proposed method. The rebuttal has not convincingly demonstrated this concern. However, reviewers agree that the proposed method is interesting and practical. The topic of source-relaxed domain adaptation seems important for clinical applications. We recommend to accept this paper based on the reviewers’ consensus. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We thank the AC and reviewers for their valuable comments and positive feedback regarding the idea. All issues related can be addressed as follows. ***Clarify novelty w.r.t. [16,22,23] All of [16,22,23] are targeting classification. To our knowledge, the proposed method is the first attempt at source-relaxed off-the-shelf UDA for segmentation (no need for additional source domain class ratio predictor as in [1]MICCAI20). [16,23] are source-required UDA with batch normalization (BN). It is not trivial to adapt them to a source-relaxed version. Therefore, the novel exponential momentum decay scheme for domain specific low-order statistics (Eq. 3) and high-order batch statistics (HBS) loss (Eq. 4) are proposed as our major technical contributions. [22] only uses BN in the target domain as a common trick to stabilize training. Instead, [16,23] and our method explore the connection of BN statistics between the source and target domains. Besides, entropy minimization is a typical add-on loss in UDA (e.g., [1]) which is compatible with our method. We do not claim novelty on it, though. And an ablation study is provided. We believe the novelty w.r.t. both the task (source-relaxed off-the-shelf UDA for segmentation) and the methodology (exponential momentum decay and high-order batch statistics loss with adaptive channel-wise weighting) can provide some new insight to the MICCAI and general computer vision community. We will further clarify these points. ***Performance gap between DSFN in Tab.2 The source-required DSFN is just shown as the “upper-bound” of source-relaxed UDA. The only fair comparison with our source-relaxed method is CRUDA [1] in MICCAI2020, which is 3.7% inferior to ours. We also emphasized that our OSUDA can be better than several popular source-required UDA approaches, e.g., CycleGAN and SIFA. Our method’s performance is quite superior, considering that it does not access source data in adaptation. The good performance for two different types of domain shifts are specifically appreciated by R2 and R3. ***Description of method (motivation) and technical details These can be further clarified. -To reiterate, our motivation can be simply described as 1.BN statistics is available in the trained off-the-shelf source model without the need for source data. “It can be a better shareable information than class-ratio in [1].” 2.“The low/high order BN statistics are domain-dependent/independent for two domains. We should use different schemes for their adaptation.” 3.Exponential momentum decay is proposed “to gradually learn the target domain-specific low-order statistics.” 4.High-order statistics consistency loss is proposed “to encourage the high-order statistics consistency between the two domains.” We also proposed the adaptive channel-wise weighting, since “we would expect that the channels with higher transferability contribute more to the adaptation.” -We have elaborated all necessary details in the appendix, while it was occluded for the reviewers due to overlength (7 pages). We will reorganize the appendix and arXiv the full version. *Others: R1 referred two papers (3D Seg &amp; No new-net) do not consider domain adaptation. Their normalization is only used for a single domain as a trick to stabilize training as vanilla BN. R1 may not be familiar with the standard protocol of the BraTS dataset as in [21] and asked about the overall in Tab. 1. Overall is the weighted average of EnhT, CoreT, and ED. WholeT covers three classes and its DICE does not differentiate misclassifying EnhT to CoreT/ED, etc. We will further clarify this as in [21]. R1 asked the standard deviation (sd) of [4, 31, 32]. However, these works do not provide sd and the code in the BraTS dataset. We can only collect the results (without sd) from [32]. Instead, we have provided all results of our methods with sd. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Liu, Xiaofeng,Xing, Fangxu,Yang, Chao,El Fakhri, Georges,Woo, Jonghye" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Liu, Xiaofeng"
+        class="post-tags">
+        Liu, Xiaofeng
+      </a> |  
+      
+      <a href="kittywong/tags#Xing, Fangxu"
+        class="post-tags">
+        Xing, Fangxu
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Chao"
+        class="post-tags">
+        Yang, Chao
+      </a> |  
+      
+      <a href="kittywong/tags#El Fakhri, Georges"
+        class="post-tags">
+        El Fakhri, Georges
+      </a> |  
+      
+      <a href="kittywong/tags#Woo, Jonghye"
+        class="post-tags">
+        Woo, Jonghye
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Xiaofeng Liu, Fangxu Xing, Chao Yang, Georges El Fakhri, Jonghye Woo
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Unsupervised domain adaptation (UDA) aims to transfer knowledge learned from a labeled source domain to an unlabeled and unseen target domain, which is usually trained on data from both domains. Access to the source domain data at the adaptation stage, however, is often limited, due to data storage or privacy issues. To alleviate this, in this work, we propose to adapt an ``off-the-shelf” segmentation model pre-trained in the source domain to the target domain, with an adaptive batch-wise normalization statistics adaptation framework. Specifically, the domain-specific low-order batch statistics, i.e., mean and variance, are gradually adapted with an exponential momentum decay scheme, while the consistency of domain shareable high-order batch statistics, i.e., scaling and shifting parameters, is explicitly enforced by our optimization objective. The transferability of each channel is adaptively measured first from which to balance the contribution of each channel. Moreover, the proposed framework is orthogonal to unsupervised learning methods, e.g., self-entropy minimization, which can thus be simply added on top of our framework. Extensive experiments on the BraTS 2018 database show that our framework outperformed existing source-relaxed UDA methods for the cross-subtype UDA task and yielded comparable results for the cross-modality UDA task, compared with a supervised UDA methods with the source data.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_51">https://doi.org/10.1007/978-3-030-87196-3_51</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.med.upenn.edu/sbia/brats2018/data.html
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes an approach for unsupervised domain adaptation (UDA) without accessing source domain data during adaptation. The proposed method combines batch normalization (BN) adaptation and self-entropy minimization, which is able to adapt “off-the-shelf” pre-trained segmentation model. Validation is performed on the public BRATS 2018 dataset for brain tumor segmentation with two different adaptation settings.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>UDA in the absence of the source domain data is a more practical yet challenging setting, which is worth investigating and would interest a broad MICCAI audience.</li>
+        <li>The proposed method does not need additional training steps using the data in the source domain, thus is more flexible than previous method OSUDA, which needs to train an additional class ratio predictor.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Limited novelty: The two main components, BN adaptation and self-entropy minimization, are two well-known techniques for UDA, which have already been applied and validated in previous UDA works. Also, one limitation of the method is that it can only apply to source models with batch normalization, but for brain tumor segmentation, many state-of-the-art networks use instance normalization/group normalization instead of batch normalization [1][2].</p>
+        </li>
+        <li>
+          <p>Unclear motivation for the specific designs in BN adaptation: Authors present an exponential momentum decay scheme and a high-order statistics consistency loss for BN adaptation, but there is no analysis on these designs to show their contributions/necessity. Why is an exponential momentum decay scheme needed? What would be the results if using a constant momentum parameter? Moreover, it is not easy to understand why the consistency of the scaling and shifting parameters should be enforced. If the motivation for the high-order batch statistics consistency holds, shouldn’t the parameters of convolutional layers also have consistency across domains? What are the benefits of encouraging the consistency? Why not directly freeze the scaling and shifting parameters without updating to ensure consistency? In addition, the contribution of the adaptive parameter \alpha_{l, c} is also not validated.</p>
+        </li>
+        <li>
+          <p>For the cross-modality adaptation in Table 2, there is still large performance gap, such as the inferior performance to DSFN. For the HGG to LGG adaptation, could authors also compare with the three UDA methods adopted in cross-modality adaptation, that are CycleGAN, SIFA, and DSFN?</p>
+        </li>
+        <li>
+          <p>Lack of implementation details: The implementation of the method seems not straightforward, but many details are missing, and the supplementary file is not uploaded. For example, how to set the hyper-parameters \eta and \lambda? As the training is completely unsupervised in the target domain, how to tune the hyper-parameters? Are the hyper-parameters kept consistently for different adaptation tasks? As the entropy minimization may result in a degenerate trivial solution, how to decide when to stop the training?</p>
+        </li>
+      </ul>
+
+      <p>[1] Myronenko, Andriy. “3D MRI brain tumor segmentation using autoencoder regularization.” In International MICCAI Brainlesion Workshop, pp. 311-320. Springer, Cham, 2018.
+[2] Isensee, Fabian, Philipp Kickingereder, Wolfgang Wick, Martin Bendszus, and Klaus H. Maier-Hein. “No new-net.” In International MICCAI Brainlesion Workshop, pp. 234-244. Springer, Cham, 2018.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Many important implementation details are missing but code will be released.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>In Table 1, what does the “Overall” column mean? Does it have the same meaning as the “Average” column in Table 2? But for the Dice score in Table 1, the average value of the first three columns does not equal to that of the “Overall” column.</p>
+        </li>
+        <li>
+          <p>Authors state that “OSUDA outperformed several UDA methods trained with the source data, e.g., CycleGAN and SIFA”, but Table 2 shows that OSUDA obtains inferior performance to SIFA.</p>
+        </li>
+        <li>
+          <p>The models trained with labeled target domain data should be presented in the tables and perhaps be regarded as the “upper-bound”, to have a better understanding about the performance gap.</p>
+        </li>
+        <li>
+          <p>In Table 1 and Table 2, how is the standard deviation calculated and why is the standard deviation not presented for the last three methods?</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This paper studies an interesting source-relaxed UDA problem, but both the technical novelty and experimental validation are insufficient and should be largely improved.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>A method for source-free domain adaptation is proposed and evaluated on 2 types of domain shifts: (1) concerning changes in the label distribution (high grade to low grade tumours), (2) concerning changes in the input image distribution (from one MR T2 to three target domains: T1, T1ce, FLAIR). The first main component of the method is to use target domain mean and variance in batch normalization (BN) layers. Now, like [22], entropy minimization is used to adapt BN shift and scale parameters. However, taking inspiration from [23], the shift and scale parameters are prevented from deviating too much.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The proposed method has been formulated by putting together several insights from many papers from the existing literature and is therefore very interesting.</p>
+        </li>
+        <li>
+          <p>Some recent methods (e.g. [1]) propose to do source-free domain adaptation by using specific priors (such as class pixel ratios) on the segmentation label space that may not hold when the label distribution changes even slightly. By not relying on such specific priors, the proposed method is more robust to changes in the label distribution between the source and target datasets.</p>
+        </li>
+        <li>
+          <p>Validation on two types of domain shifts shows the generality of the method.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The main weakness of the paper is unclear writing, especially in the methods section. I am fairly familiar with the related literature, but still had to read this section 3-4 times to understand it properly (and even then I have had to make several assumptions to make sense of it). Therefore, I believe that this section needs a substantial revision. In the current state, it would be very hard for readers to understand the method and its contributions relative to existing works.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Validation is done using a publicly available dataset (which has been cited) and the authors have promised to make their code publicly available upon acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>While updating the mean and variance for the target domain, the authors propose to use an exponentially decaying momentum term (Eqn. 3). Why is this preferred over normal exponential moving averaging with a constant momentum term (like Eqn. 2)? This should be clearly explained. Further, one of the additional baselines (not required for this paper, but suggested for extension of the work) would be to compare the proposed exponentially decaying momentum (Eqn. 3) against the normal way of updating BN mean and variance constant momentum (Eqn. 2).</p>
+        </li>
+        <li>
+          <p>A major source of confusion for me was the loss term $L_{HBS}$ (Eqn. 4). If this loss is used independently (without the entropy minimization loss $L_{SE}$), the BN shift and scale parameters would not change at all, right? If this is correct, then $L_{HBS}$ would have to be introduced only when using another loss to adapt the BN shift and scale parameters, and the role of $L_{HBS}$ would be to prevent the shift and scale parameters from deviating too much from their source domain pretrained values. This is the only explanation of $L_{HBS}$ that makes sense to me. If this is correct, this needs to be explained much better in the manuscript. If this is not correct, what is the role played by $L_{HBS}$ when no additional loss (such as $L_{SE}$) is used?</p>
+        </li>
+        <li>
+          <p>The method of measuring the transferability of each channel (Eqn. 5) is inspired from [23]. With the way it is currently presented, it feels as if this idea has been proposed in this paper. Also, because the reference to [23] is missing in this context, it is unclear why the discrepancy and transferability have been formulated as shown. Clearly stating that these ideas are inspired from [23] will make this part much easier to follow.</p>
+        </li>
+        <li>
+          <p>In Sec 2.3, while minimizing $L_{SE}$ (Eqn. 6), are all the CNN parameters adapted or only the BN shift and scale parameters? I assume that only the BN shift and scale parameters are adapted, but could not find it in the description. Also, minimizing $L_{SE}$ by adapting the BN shift and scale parameters is the main idea of [22]. This should be clearly stated in Sec. 2.3.</p>
+        </li>
+        <li>
+          <p>In the ablation study OSUDA - AC, is the adaptive channel-wise weighting (alpha in Eqn. 4) removed, or is the $L_{HBS}$ removed altogether? I assume it is the latter. If it is the former, a short interpretation should be provided of what it means to weigh all the channels equally.</p>
+        </li>
+        <li>
+          <p>I tried to connect the proposed method and its ablations with the closest methods in the literature. It seems to me that (a) [22] = [16] + $L_{SE}$, (b) OSUDA = [22] + exponentially decaying momentum (EDM) + $L_{HBS}$, (c)  OSUDA - SE = [16] + EDM (as $L_{HBS}$ will have no effect in this scenario), (d) OSUDA - AC = [22] + EDM. Are these interpretations correct? Either way, it would be very helpful for the readers if the relationship of the proposed method with [16] and [22] was clearly explained.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The writing of the methods section was very unclear to me. However, if I understood the method correctly (after making several assumptions as explained above), the method actually makes a lot of sense to me. Also, I appreciate the fact that the validation has been done on two different types of domain shifts.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>(1)The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pre-trained model from the source domain but does not require direct access to the source data. 
+(2) The proposed method which adapts the BatchNorm layer parameters (mean, variance, alpha, and beta) is quite novel and interesting. 
+(3) The results by the proposed method are comparable to those from UDA methods with access to the source data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The proposed method is only compared with one source-relaxed UDA method, i.e. CRUDA [1].</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There is no implementation details. Though the authors claim the implementation details are given in supplementary, but the supplementary material is missing.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This paper proposed a method for source-relaxed target image adaptation segmentation, which adapts an “off-the-shelf” segmentation model pre-trained in the source domain to the target domain and does not need access to the source domain data. Domain-specific low-order batch statistics are adapted with an exponential momentum decay scheme while domain shareable high-order statistics consistency is enforced with proposed HBS loss. Self-entropy minimization is further applied to improve performance. The method was validated on the BraTS 2018 database (210 HGG subjects and 75 LGG subjects) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways.</p>
+
+      <p>(1) The image quality of Figure 1 should be improved and the texts are too small to recognize after printing. 
+(2) For the experimental results reported in Table 1 and Table 2, average surface distance (ASD) is a common evaluation metric for semantic segmentation and should be included. 
+(3) UDA methods with access to the source data are considered as upper bound, but the results of supervised models on the target domain should also be included for better and full understanding.
+(4) The proposed method is only compared with one source-relaxed UDA method, i.e., CRUDA [1]. More comparisons should be conducted with related state-of-the-art source-relaxed UDA methods. 
+(5) Although the authors claim that the implementation details are given in the Appendix, the supplementary material is missing. 
+(6) The authors report results without adaptive channel-wise weighting (OSUDA-AC) and without self-entropy minimization (OSUDA-SE). It would be great if the authors could also provide the results without adaptation of low order batch statistics or without consistency of high order statistics, which can demonstrate the effectiveness of adaptation of low and high order BN statistics.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The topic of source-relaxed adaptation for target medical image segmentation is highly important in clinical practice. The proposed method only relies on the pretrained model from source domain, but does not require direct access to the source data. The results by the proposed method are comparable to those from UDA methods with access to the source data.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Although reviewers appreciated the interesting idea combining several existing techniques for source-free domain adaptation for image segmentation, they raised several main issues including (1) the technical novelty is not clear and the relationship between the proposed method and some related studies (e.g., [16], [22], [23]) is not clearly explained, (2) the method (including the motivation) is not well described and many technical details are missing,  thereby making it difficult to understand, and (3) there is a large performance gap the proposed method and some other method (e.g., DSFN in Table 2), and the experiments are not sufficient.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This manuscript presents a source-free unsupervised domain adaptation (UDA) method for brain image segmentation, and it can be applied to a situation where source domain data is unavailable. The rebuttal has addressed the major concerns from reviewers (e.g., technical novelty, comparison with other methods, and presentation of the method), and thus the paper is recommended for acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors propose a source-free approach for UDA, which utilizes batch normalization adaptation and self-entropy minimization. Even though more technical details regarding the implementation should be added to better understand the paper, the overall intuition is interesting, and the addressed problem is critical for the field. The authors have addressed most of the reviewers’ comments in the feedback.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>One reviewer raise concern about the lack of novelty of the proposed method. The rebuttal has not convincingly demonstrated this concern. However, reviewers agree that the proposed method is interesting and practical. The topic of source-relaxed domain adaptation seems important for clinical applications. We recommend to accept this paper based on the reviewers’ consensus.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+
+  <p>We thank the AC and reviewers for their valuable comments and positive feedback regarding the idea. All issues related can be addressed as follows.</p>
+
+  <p>***Clarify novelty w.r.t. [16,22,23]</p>
+
+  <ol>
+    <li>
+      <p>All of [16,22,23] are targeting classification. To our knowledge, the proposed method is the first attempt at source-relaxed off-the-shelf UDA for segmentation (no need for additional source domain class ratio predictor as in [1]MICCAI20).</p>
+    </li>
+    <li>
+      <p>[16,23] are source-required UDA with batch normalization (BN). It is not trivial to adapt them to a source-relaxed version. Therefore, the novel exponential momentum decay scheme for domain specific low-order statistics (Eq. 3) and high-order batch statistics (HBS) loss (Eq. 4) are proposed as our major technical contributions.</p>
+    </li>
+    <li>
+      <p>[22] only uses BN in the target domain as a common trick to stabilize training. Instead, [16,23] and our method explore the connection of BN statistics between the source and target domains. Besides, entropy minimization is a typical add-on loss in UDA (e.g., [1]) which is compatible with our method. We do not claim novelty on it, though. And an ablation study is provided.</p>
+    </li>
+  </ol>
+
+  <p>We believe the novelty w.r.t. both the task (source-relaxed off-the-shelf UDA for segmentation) and the methodology (exponential momentum decay and high-order batch statistics loss with adaptive channel-wise weighting) can provide some new insight to the MICCAI and general computer vision community. We will further clarify these points.</p>
+
+  <p>***Performance gap between DSFN in Tab.2</p>
+
+  <p>The source-required DSFN is just shown as the “upper-bound” of source-relaxed UDA. The only fair comparison with our source-relaxed method is CRUDA [1] in MICCAI2020, which is 3.7% inferior to ours. We also emphasized that our OSUDA can be better than several popular source-required UDA approaches, e.g., CycleGAN and SIFA.</p>
+
+  <p>Our method’s performance is quite superior, considering that it does not access source data in adaptation. The good performance for two different types of domain shifts are specifically appreciated by R2 and R3.</p>
+
+  <p>***Description of method (motivation) and technical details
+These can be further clarified.</p>
+
+  <p>-To reiterate, our motivation can be simply described as</p>
+
+  <p>1.BN statistics is available in the trained off-the-shelf source model without the need for source data. “It can be a better shareable information than class-ratio in [1].”</p>
+
+  <p>2.“The low/high order BN statistics are domain-dependent/independent for two domains. We should use different schemes for their adaptation.”</p>
+
+  <p>3.Exponential momentum decay is proposed “to gradually learn the target domain-specific low-order statistics.”</p>
+
+  <p>4.High-order statistics consistency loss is proposed “to encourage the high-order statistics consistency between the two domains.” We also proposed the adaptive channel-wise weighting, since “we would expect that the channels with higher transferability contribute more to the adaptation.”</p>
+
+  <p>-We have elaborated all necessary details in the appendix, while it was occluded for the reviewers due to overlength (7 pages). We will reorganize the appendix and arXiv the full version.</p>
+
+  <p>*Others:</p>
+
+  <p>R1 referred two papers (3D Seg &amp; No new-net) do not consider domain adaptation. Their normalization is only used for a single domain as a trick to stabilize training as vanilla BN.</p>
+
+  <p>R1 may not be familiar with the standard protocol of the BraTS dataset as in [21] and asked about the overall in Tab. 1. Overall is the weighted average of EnhT, CoreT, and ED. WholeT covers three classes and its DICE does not differentiate misclassifying EnhT to CoreT/ED, etc. We will further clarify this as in [21].</p>
+
+  <p>R1 asked the standard deviation (sd) of [4, 31, 32]. However, these works do not provide sd and the code in the BraTS dataset. We can only collect the results (without sd) from [32]. Instead, we have provided all results of our methods with sd.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0250-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0251-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Liu, Xiaofeng"
+        class="post-category">
+        Liu, Xiaofeng
+      </a> |  
+      
+      <a href="kittywong/tags#Xing, Fangxu"
+        class="post-category">
+        Xing, Fangxu
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Chao"
+        class="post-category">
+        Yang, Chao
+      </a> |  
+      
+      <a href="kittywong/tags#El Fakhri, Georges"
+        class="post-category">
+        El Fakhri, Georges
+      </a> |  
+      
+      <a href="kittywong/tags#Woo, Jonghye"
+        class="post-category">
+        Woo, Jonghye
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0251/12/31/Paper0663">
+          Quality-Aware Memory Network for Interactive Volumetric Image Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0249/12/31/Paper0301">
+          OXnet: Deep Omni-supervised Thoracic Disease Detection from Chest X-rays
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

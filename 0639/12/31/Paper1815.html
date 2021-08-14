@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="A Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yinran Chen, Jing Liu, Jianwen Luo, Xiongbiao Luo Abstract This paper proposes a deep learning approach for high frame rate synthetic transmit aperture ultrasound imaging. The complete dataset of synthetic transmit aperture imaging benefits image quality in terms of lateral resolution and contrast at the expense of a low frame rate. To achieve high-frame-rate synthetic transmit aperture imaging, we propose a self-supervised network, i.e., ApodNet, to com-plete two tasks. (i) The encoder of ApodNet guides the high-frame-rate plane wave transmissions to acquire channel data with a set of optimized binary apodi-zation coefficients. (ii) The decoder of ApodNet recovers the complete dataset from the acquired channel data for the objective of two-way dynamic focusing. The image is finally reconstructed from the recovered dataset with conventional beamforming approach. We train the network with data from a standard tissue-mimicking phantom and validate the network with data from simulations and in-vivo experiments. Different loss functions are validated to determine the opti-mized ApodNet setup. The results of the simulations and the in-vivo experiments both demonstrate that, with a four-times higher frame rate, the proposed ApodNet setup achieves higher image contrast than other high-frame-rate methods. Fur-thermore, ApodNet has much shorter computational time for dataset recovery than the compared methods. Link to paper https://doi.org/10.1007/978-3-030-87231-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach to perform learned plane-wave transmissions for performing fast ultrasound imaging scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper tackles the problem of high-quality ultrasound reconstruction under fast acquisition which is interesting and has received relatively less attention in the literature when compared to other modalities. It can be beneficial in 3D echocardiography, cardiac imaging where frame-rate is a bottleneck. The idea proposed by the paper is relatively novel, interesting, and is potentially impactful, although it misses reference to an important and very relevant work that tackled the same exact problem (designing learning-based transmit patterns/apodization for ultrasound fast ultrasound image acquisition.) The paper is well written and is easy to follow. Evaluation is done on numerical simulations via Field-II and on in-vivo data. It demonstrates faster run-times when compared to compressed sensing based approaches that solve a rather large optimization problem at inference. This is not surprising and is common in most deep learning-based approaches for image reconstruction. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Missing reference to prior work. In the last paragraph of the introduction, the authors mention that “Different from other deep learning based methods which mainly focus on improving the performance of receive beamforming, our method focuses on transmit beamforming”. It is indeed true that most DL methods in US image reconstruction focus on receive beamforming. But it seems that the authors missed an important reference [1], which seems to be, to the best of my knowledge, the only work that dealt with transmit beamforming as well. I think the method proposed by the authors, although is not exactly the same, is very related to what was proposed in [1]. I elaborated on this matter in the constructive critique section below. I recommend that the authors add this important discussion to the revised version. I believe doing so will only improve the positioning of this paper in the literature. Evaluation. The authors evaluate the performance only using CNR and CR but they don’t measure the SNR/MSE of the signal reconstructed via ApodNet &amp; CS-STA approaches with respect to the ground-truth signal. Since ApodNet &amp; CS-STA are only responsible for reconstructing the “complete dataset” which is later on Rx beamformed and reconstructed to obtain the final image, I think it is fair to compare them using SNR and MSE metrics in the raw signal domain. Missing baselines. Please refer below to the constructive critique section under “Comparison with CS-STA”. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It would be nice if the authors could release some sample code with the raw RF US data. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Complete dataset. The authors use the word “complete dataset” quite a bit in the introduction, it would be nice to clearly define what the meaning of “complete dataset” is and why it is important to reconstruct the complete dataset early on to improve the clarity. Comparison with CS-STA. Firstly, I would like to distinguish between forward models (random, Hadamard, ApodNet’s encoder) and inverse problem solvers (basis pursuit solver, ApodNet decoder). That being said, the authors currently compare CS-STA approaches only with Random and Hadamard apodizations as the forward models. I think three important baselines that are missing are: CS-STA with ApodNet encoder as the sensing matrix, and ApodNet with random and Hadamard apodizations as fixed encoders. It is important to conduct these experiments because it will shed light on if the merit of ApodNet lies in the encoder or in the decoder or in the fact that both are trained jointly. Similar experiments are, for example, done in [1]. Do the authors agree? Comparison with [1]. I think the authors missed an important recent work that also proposed joint learning of transmit and receive beamforming in US imaging. While [1] and the current work differ in the specific details, I think [1] and the current work have some pros and cons. [1] seems to enforce the loss on final images obtained post-Rx-beamforming by differentiating through Rx beamformer, while the current work aims to reconstruct the signal prior to Rx beamforming. Putting loss post Rx beamforming allowed [1] to use CNNs since post Rx beamformed signals are coherent. This allows for having a “structured” decoder with good inductive priors when compared to a simple fully-connected network. The strength of the current work, that lacks in [1], is the aim of reconstructing the complete dataset while [1] worked with focused scans which probably renders their forward model inaccurate for simulating plane waves. I think adding a discussion along these lines would position the paper well. Apodization patterns. The authors mention that they learn binary apodization weights via BinaryConnect by employing straight-through gradient estimation. Why should the apodization weights be binary? Is it physically motivated? Can’t there be a “partial” excitation by some of the transmit elements? How easy is it to program the apodization pattern obtained in the NN’s encoder on a standard US machine? Are they any constraints that prohibit it? Can it be encoded Random and Hadamard apodization/transmission patterns: Are these binary as well? Apodization patterns: Do the authors observe any interesting patterns observed in the learned apodization? It would be nice to present “random vs Hadamard vs learned” apodization patterns in a single plot side-by-side. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe the paper makes important contributions although it misses some baselines, evaluation metrics, and references to prior work. I believe improving these aspects will improve the paper. :) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper presents an approach based on deep learning for the recovery of STA dataset from plane-wave dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is the first time that the complete STA dataset is recovered from plane-wave channel data using deep learning. The network is trained through an unsupervised method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed network is not explained well. The training is only limited to two phantom images which is quite low. The test experiment on simulation data is not acceptable while the simulation setting is also questionable. Details about test experiments are not explained enough. The results are not compared with the desired STA and the result of CPWC. The calculated contrast indexes are limited while the presented quantitative results are not conclusive. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed network is not explained properly. So, I would not think that the results are reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Here are my comments/questions: Introduction section only talks about low frame rate of STA as the only problem while STA also suffers from low SNR and penetration depth as it only uses a single element in each transmission. Although a big picture of the network architecture is given in the paper, I cannot still figure out how the network looks like. The explanation here is very general and details regarding the number of the layers, type of the layers, number of filter/kernels, etc are missing. The network is only trained with two experimental phantom image. Then, it is tested on the simulation and in vivo data. This looks weird to me because of the following reasons: The number of training data is very low because all of the training pairs only correspond to two images. How did you prevent overfitting? As for test experiments, did you have any further training/fine-tuning? Having 5 scatterers per cubic millimeter does not necessarily imply the simulation of fully developed speckle. What is the point of training on experimental data and testing on simulation? because simulation case is always easier than the experimental scenario. Moreover, your simulation setting is also missing. As for the presented results, why do not you presents the desired result of STA imaging? In other words, Ground-truth has to be illustrated. What is the index of resolution? is it FWHM? As for the contrast, it is necessary to calculate Generalized Contrast-to-Noise Ratio in order to have a better understanding about the achieved improvement. O. M. H. Rindal, A. Austeng, A. Fatemi and A. Rodriguez-Molares, “The Effect of Dynamic Range Alterations in the Estimation of Contrast,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 66, no. 7, pp. 1198-1208, July 2019, doi: 10.1109/TUFFC.2019.2911267. A. Rodriguez-Molares et al., “The Generalized Contrast-to-Noise Ratio: A Formal Definition for Lesion Detectability,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 67, no. 4, pp. 745-759, April 2020, doi: 10.1109/TUFFC.2019.2956855. The presented indexes need to be also calculated on the result of CPWC as well as the result of desired STA. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As there are many questions/ ambiguities about the proposed method and the presented results, I am not sure about the acceptance of the paper. The requested clarifications are necessary. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper describes ApodNet, a data-driven approach, based on unsupervised (self-supervised) learning for a network. This NN when trained, provides the binary apodizations for plane wave transmissions and recovers the complete dataset from the channel data of the apodised plane waves for two-way dynamic focusing. Different loss functions are used to determine the optimal one. Simulations and in-vivo experimental results are shown, in which the ApodNet achieves higher contrast ratio and contrast to noise ratio and amelioration of artifacts. It does this in substantially less time when compared with compressed sensing synthetic transmit aperture approaches. It achieves a 4X higher frame rate than conventional synthetic transmit aperture approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging proposes deep learning for high frame rate synthetic aperture ultrasound imaging. Synthetic transmission aperture (STA) has image quality advantages, however, it suffers from a low frame rate. Plane wave transmission has the advantage for ultra-high frame rate imaging, but it has image quality problems. It is desirable to recover the complete dataset for STA at a high frame rate. Through careful analysis of the computational procedure (matrix analysis essentially) the authors show the equivalence of the determination of the weights of the encoder and the apodizations for each element for the plane wave transmissions. These apodizations are recovered by self-supervised (unsupervised ) learning. The acquired channel data are then fed into the decoder to recover the complete dataset. The image is then reconstructed from the recovered complete dataset with delay-and -sum beamforming. This is an innovative interpretation leading to a useful speed up. It is implemented in Python and PyTorch. The different loss functions used are mean square error, mean absolute error and Huber loss. The simulations used 32 plane wave transmissions and a high frame rate (4X higher than conventional STA.) The simulations were carried out with Field II with noise added. The in-vivo experiment involved the imaging of the common carotid artery (CCA). The contrast ratio (CR), contrast-to-noise ratio (CNR) were calculated for the simulations and in-vivo experiments both. The results indicate a uniform improvement of the CR and CNR with ApodNet. Furthermore the time taken to dataset recovery is approximately 2 sec with the ApodNet whereas the time taken to data recovery with the other methods is 1800 to 35,000 seconds. These experimental results (in silico and in vivo) are a good indication of the value of this approach. The writing is clear and the mathematical analysis is succinct, to the point. Well written paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is well written, however there is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and scientifically sound. You may want to elaborate a bit more on the clinical applications of your approach in the Conclusion section. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper discusses the value of high frame rate in synthetic transmit aperture (STA) in clinical settings, then follows with a nice analysis of the theoretical basis for their algorithm which shows a nice analogy between a neural net (NN) and determining the total dataset from the acquired channel data for multiple plane wave transmissions. The use of both simulations and experimental data is important. The results indicate the usefulness of this approach. The discussion of the metrics used and analysis of the results is very good. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers indicate the value of the work, but several questions and concerns have also been raised, which need to be addressed for the further consideration of this submission. Among raised questions are potential lacks of novelty w.r.t. prior art, a precise description of the utilized network structure, and details and justification of training and test settings. I also agree with the reviews that it would be easy and crucial to present the learned optimal apodiation patterns, in comparison to traditional ones. Additionally, it is again very interesting to see the baselines with the learned encoder and decoder separately in combination with traditional CS-STA sensing and apodizations. Given that nonessential details, e.g. Table 1, can be moved to supplementary material, there would be sufficient space for such presentations. Furthermore, I find the evaluation of a learning based method on a single image frame as quite limited, since one may often find an isolated frame where certain trends are observed, but which may not generalize. I would also advise the authors to elaborate on this, and if the data exists, to extend the testing, for their current or future evaluations of their work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses several concerns. Besides the major limitations of apodization patterns being binary and the training/test images being few/single frames, the submission presents an interesting contribution, as generally agreed by all reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose an ultrasound innovation on synthetic aperture transmission (SAT) which allows to retain the benefits form conventional SAT with higher frame rates, by learning the transmission apodization. I agree with reviewers that this is very interesting and definitely suitable for MICCAI. Authors have clarified the major issues in the rebuttal ; I would particularly like to see the patterns of the learnt apodization which of course is not possible to communicate in a text only rebuttal, but hope to see this in the final version or the supplementary material. I recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper describes a data-driven approach, called ApodNet, able to give the binary apodizations from plane-wave transmissions. The authors evaluate the methods and different loss functions in both synthethic and in-vivo results. The reviewers agree in their recommendation to accept (despite 2 only borderline), highlighting the following strengths and weaknesses: Strengths: Highly relevant problem applicable to a number of fields New idea and genuinely good results Evaluation strategy (partly, especially the use of different data sets) Weaknesses: Several elements of the evaluation (eg single frame evaluation, several other metrics could have been used, relative lack of comparison with other methods) Lack of details re- the used parameters &amp; algorithm details The authors provide a number of other metrics &amp; good explanations why these are only relevant under certain conditions. They also include more details on the algorithm which are of huge interest for the reader and therefore need to be in the final version. In general I think this is a nice paper, with an interesting idea, applied thoughtfully to an important problem. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We appreciate the constructive comments and will address the major weaknesses raised by the reviewers in our revision. Reviewer #1 Q: Missing reference to prior work. A: We apologize for missing this important reference and thank the reviewer for providing the analysis on this reference and our paper. We will add this reference, revise the content, and provide necessary discussion in the revised version. Q: Evaluation of the recovered complete dataset. A: We have calculated the RMSE of the complete dataset in the simulations (ApodNet: 1.49%, CS-STA 1.55%). However, we finally decided not to include this in the paper considering that our ultimate objective is the image and thus we used resolution and contrast as metrics. Q: Separate evaluations of encoder and decoder (meta review). A: We appreciate the constructive comments. We added one more group of ApodNet apodizations with CS solver. This setup had moderate in-vivo performance (CR: 12.74 dB, CNR: 4.22 dB) between ApodNet and CS-STA. We would comment that ApodNet did train more efficient apodizations than the conventional ones. However, current ApodNet decoder was jointly trained with ApodNet encoder and could be limited when dealing with another encoder. However, we can independently train the ApodNet decoder with fixed apodizations in the future. Q: The trained apodization patterns. A: We have examined the apodization patterns w.r.t. epochs, finding that the signs of weights became the same locally, showing stable block-like distributions. We forced the apodizations to be binary considering that the transmit power is expected to be high to increase SNR under the safety restriction (see Section 2.1). No prohibition on programing the trained apodizations occurs on the Verasonics system. Reviewer #3 Q: More explanations on network, training, and test (meta review). A: We apologize for not providing sufficient details about ApodNet. The core structure was a 4-layer stacked denoising autoencoder with fully-connected layers (128-node input layer and 32, 128, 32, 128 nodes for the rest layers). The first 128-32 Encoder was a BinaryConnect. During utilization, we extracted the binary weights as apodizations and only used the Decoder in Fig. 1(a) to recover the complete dataset without further fine-tuning. We believe that it is reasonable and interesting to train the network with phantom data and utilize it in the in-vivo scenario. However, simulated data had adverse effects on convergence of training due to the differences between simulations and real experiments, e.g., impulse response, noise. However, we tested with simulated data to evaluate the spatial resolution by setting ideal point target and measuring the FWHM of PSF. The training data were “channel data” but not “image”, i.e., 524,288 samples from two positions (see Section 2.2). The training and test losses were both converged w.r.t. epochs, indicating that current setups avoided the risk of overfitting. However, we admit that we should be more elaborate on the simulation setups, especially the density of the scatterers by studying the speckle distribution and SNR. Q: Comparison with STA and CPWC. A: We did not compare STA and CPWC considering that taking STA as ground truth is doubtable in practice (CR: 13.50 dB, CNR: 5.11 dB, and lower frame rate), while CPWC achieves high-frame-rate imaging in a different way and the space of the paper is limited. However, we expected that ApodNet could perform better in lateral resolution, while contrast needs further investigation. Q: The conclusiveness of quantitative results (meta review). A: We calculated in-vivo gCNR and found 0.82 for STA, 0.86 for ApodNet, 0.51 for CS-STA (Hadamard), and 0.47 for CS-STA (Random), further demonstrating the effectiveness of ApodNet. Additionally, we did more experiments with 8 and 16 transmissions (higher frame rate). The results also demonstrated the improvement of ApodNet. We would extend the testing according to the meta review. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yinran Chen, Jing Liu, Jianwen Luo, Xiongbiao Luo Abstract This paper proposes a deep learning approach for high frame rate synthetic transmit aperture ultrasound imaging. The complete dataset of synthetic transmit aperture imaging benefits image quality in terms of lateral resolution and contrast at the expense of a low frame rate. To achieve high-frame-rate synthetic transmit aperture imaging, we propose a self-supervised network, i.e., ApodNet, to com-plete two tasks. (i) The encoder of ApodNet guides the high-frame-rate plane wave transmissions to acquire channel data with a set of optimized binary apodi-zation coefficients. (ii) The decoder of ApodNet recovers the complete dataset from the acquired channel data for the objective of two-way dynamic focusing. The image is finally reconstructed from the recovered dataset with conventional beamforming approach. We train the network with data from a standard tissue-mimicking phantom and validate the network with data from simulations and in-vivo experiments. Different loss functions are validated to determine the opti-mized ApodNet setup. The results of the simulations and the in-vivo experiments both demonstrate that, with a four-times higher frame rate, the proposed ApodNet setup achieves higher image contrast than other high-frame-rate methods. Fur-thermore, ApodNet has much shorter computational time for dataset recovery than the compared methods. Link to paper https://doi.org/10.1007/978-3-030-87231-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach to perform learned plane-wave transmissions for performing fast ultrasound imaging scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper tackles the problem of high-quality ultrasound reconstruction under fast acquisition which is interesting and has received relatively less attention in the literature when compared to other modalities. It can be beneficial in 3D echocardiography, cardiac imaging where frame-rate is a bottleneck. The idea proposed by the paper is relatively novel, interesting, and is potentially impactful, although it misses reference to an important and very relevant work that tackled the same exact problem (designing learning-based transmit patterns/apodization for ultrasound fast ultrasound image acquisition.) The paper is well written and is easy to follow. Evaluation is done on numerical simulations via Field-II and on in-vivo data. It demonstrates faster run-times when compared to compressed sensing based approaches that solve a rather large optimization problem at inference. This is not surprising and is common in most deep learning-based approaches for image reconstruction. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Missing reference to prior work. In the last paragraph of the introduction, the authors mention that “Different from other deep learning based methods which mainly focus on improving the performance of receive beamforming, our method focuses on transmit beamforming”. It is indeed true that most DL methods in US image reconstruction focus on receive beamforming. But it seems that the authors missed an important reference [1], which seems to be, to the best of my knowledge, the only work that dealt with transmit beamforming as well. I think the method proposed by the authors, although is not exactly the same, is very related to what was proposed in [1]. I elaborated on this matter in the constructive critique section below. I recommend that the authors add this important discussion to the revised version. I believe doing so will only improve the positioning of this paper in the literature. Evaluation. The authors evaluate the performance only using CNR and CR but they don’t measure the SNR/MSE of the signal reconstructed via ApodNet &amp; CS-STA approaches with respect to the ground-truth signal. Since ApodNet &amp; CS-STA are only responsible for reconstructing the “complete dataset” which is later on Rx beamformed and reconstructed to obtain the final image, I think it is fair to compare them using SNR and MSE metrics in the raw signal domain. Missing baselines. Please refer below to the constructive critique section under “Comparison with CS-STA”. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It would be nice if the authors could release some sample code with the raw RF US data. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Complete dataset. The authors use the word “complete dataset” quite a bit in the introduction, it would be nice to clearly define what the meaning of “complete dataset” is and why it is important to reconstruct the complete dataset early on to improve the clarity. Comparison with CS-STA. Firstly, I would like to distinguish between forward models (random, Hadamard, ApodNet’s encoder) and inverse problem solvers (basis pursuit solver, ApodNet decoder). That being said, the authors currently compare CS-STA approaches only with Random and Hadamard apodizations as the forward models. I think three important baselines that are missing are: CS-STA with ApodNet encoder as the sensing matrix, and ApodNet with random and Hadamard apodizations as fixed encoders. It is important to conduct these experiments because it will shed light on if the merit of ApodNet lies in the encoder or in the decoder or in the fact that both are trained jointly. Similar experiments are, for example, done in [1]. Do the authors agree? Comparison with [1]. I think the authors missed an important recent work that also proposed joint learning of transmit and receive beamforming in US imaging. While [1] and the current work differ in the specific details, I think [1] and the current work have some pros and cons. [1] seems to enforce the loss on final images obtained post-Rx-beamforming by differentiating through Rx beamformer, while the current work aims to reconstruct the signal prior to Rx beamforming. Putting loss post Rx beamforming allowed [1] to use CNNs since post Rx beamformed signals are coherent. This allows for having a “structured” decoder with good inductive priors when compared to a simple fully-connected network. The strength of the current work, that lacks in [1], is the aim of reconstructing the complete dataset while [1] worked with focused scans which probably renders their forward model inaccurate for simulating plane waves. I think adding a discussion along these lines would position the paper well. Apodization patterns. The authors mention that they learn binary apodization weights via BinaryConnect by employing straight-through gradient estimation. Why should the apodization weights be binary? Is it physically motivated? Can’t there be a “partial” excitation by some of the transmit elements? How easy is it to program the apodization pattern obtained in the NN’s encoder on a standard US machine? Are they any constraints that prohibit it? Can it be encoded Random and Hadamard apodization/transmission patterns: Are these binary as well? Apodization patterns: Do the authors observe any interesting patterns observed in the learned apodization? It would be nice to present “random vs Hadamard vs learned” apodization patterns in a single plot side-by-side. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe the paper makes important contributions although it misses some baselines, evaluation metrics, and references to prior work. I believe improving these aspects will improve the paper. :) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper presents an approach based on deep learning for the recovery of STA dataset from plane-wave dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is the first time that the complete STA dataset is recovered from plane-wave channel data using deep learning. The network is trained through an unsupervised method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed network is not explained well. The training is only limited to two phantom images which is quite low. The test experiment on simulation data is not acceptable while the simulation setting is also questionable. Details about test experiments are not explained enough. The results are not compared with the desired STA and the result of CPWC. The calculated contrast indexes are limited while the presented quantitative results are not conclusive. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed network is not explained properly. So, I would not think that the results are reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Here are my comments/questions: Introduction section only talks about low frame rate of STA as the only problem while STA also suffers from low SNR and penetration depth as it only uses a single element in each transmission. Although a big picture of the network architecture is given in the paper, I cannot still figure out how the network looks like. The explanation here is very general and details regarding the number of the layers, type of the layers, number of filter/kernels, etc are missing. The network is only trained with two experimental phantom image. Then, it is tested on the simulation and in vivo data. This looks weird to me because of the following reasons: The number of training data is very low because all of the training pairs only correspond to two images. How did you prevent overfitting? As for test experiments, did you have any further training/fine-tuning? Having 5 scatterers per cubic millimeter does not necessarily imply the simulation of fully developed speckle. What is the point of training on experimental data and testing on simulation? because simulation case is always easier than the experimental scenario. Moreover, your simulation setting is also missing. As for the presented results, why do not you presents the desired result of STA imaging? In other words, Ground-truth has to be illustrated. What is the index of resolution? is it FWHM? As for the contrast, it is necessary to calculate Generalized Contrast-to-Noise Ratio in order to have a better understanding about the achieved improvement. O. M. H. Rindal, A. Austeng, A. Fatemi and A. Rodriguez-Molares, “The Effect of Dynamic Range Alterations in the Estimation of Contrast,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 66, no. 7, pp. 1198-1208, July 2019, doi: 10.1109/TUFFC.2019.2911267. A. Rodriguez-Molares et al., “The Generalized Contrast-to-Noise Ratio: A Formal Definition for Lesion Detectability,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 67, no. 4, pp. 745-759, April 2020, doi: 10.1109/TUFFC.2019.2956855. The presented indexes need to be also calculated on the result of CPWC as well as the result of desired STA. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As there are many questions/ ambiguities about the proposed method and the presented results, I am not sure about the acceptance of the paper. The requested clarifications are necessary. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper describes ApodNet, a data-driven approach, based on unsupervised (self-supervised) learning for a network. This NN when trained, provides the binary apodizations for plane wave transmissions and recovers the complete dataset from the channel data of the apodised plane waves for two-way dynamic focusing. Different loss functions are used to determine the optimal one. Simulations and in-vivo experimental results are shown, in which the ApodNet achieves higher contrast ratio and contrast to noise ratio and amelioration of artifacts. It does this in substantially less time when compared with compressed sensing synthetic transmit aperture approaches. It achieves a 4X higher frame rate than conventional synthetic transmit aperture approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging proposes deep learning for high frame rate synthetic aperture ultrasound imaging. Synthetic transmission aperture (STA) has image quality advantages, however, it suffers from a low frame rate. Plane wave transmission has the advantage for ultra-high frame rate imaging, but it has image quality problems. It is desirable to recover the complete dataset for STA at a high frame rate. Through careful analysis of the computational procedure (matrix analysis essentially) the authors show the equivalence of the determination of the weights of the encoder and the apodizations for each element for the plane wave transmissions. These apodizations are recovered by self-supervised (unsupervised ) learning. The acquired channel data are then fed into the decoder to recover the complete dataset. The image is then reconstructed from the recovered complete dataset with delay-and -sum beamforming. This is an innovative interpretation leading to a useful speed up. It is implemented in Python and PyTorch. The different loss functions used are mean square error, mean absolute error and Huber loss. The simulations used 32 plane wave transmissions and a high frame rate (4X higher than conventional STA.) The simulations were carried out with Field II with noise added. The in-vivo experiment involved the imaging of the common carotid artery (CCA). The contrast ratio (CR), contrast-to-noise ratio (CNR) were calculated for the simulations and in-vivo experiments both. The results indicate a uniform improvement of the CR and CNR with ApodNet. Furthermore the time taken to dataset recovery is approximately 2 sec with the ApodNet whereas the time taken to data recovery with the other methods is 1800 to 35,000 seconds. These experimental results (in silico and in vivo) are a good indication of the value of this approach. The writing is clear and the mathematical analysis is succinct, to the point. Well written paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is well written, however there is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and scientifically sound. You may want to elaborate a bit more on the clinical applications of your approach in the Conclusion section. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper discusses the value of high frame rate in synthetic transmit aperture (STA) in clinical settings, then follows with a nice analysis of the theoretical basis for their algorithm which shows a nice analogy between a neural net (NN) and determining the total dataset from the acquired channel data for multiple plane wave transmissions. The use of both simulations and experimental data is important. The results indicate the usefulness of this approach. The discussion of the metrics used and analysis of the results is very good. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers indicate the value of the work, but several questions and concerns have also been raised, which need to be addressed for the further consideration of this submission. Among raised questions are potential lacks of novelty w.r.t. prior art, a precise description of the utilized network structure, and details and justification of training and test settings. I also agree with the reviews that it would be easy and crucial to present the learned optimal apodiation patterns, in comparison to traditional ones. Additionally, it is again very interesting to see the baselines with the learned encoder and decoder separately in combination with traditional CS-STA sensing and apodizations. Given that nonessential details, e.g. Table 1, can be moved to supplementary material, there would be sufficient space for such presentations. Furthermore, I find the evaluation of a learning based method on a single image frame as quite limited, since one may often find an isolated frame where certain trends are observed, but which may not generalize. I would also advise the authors to elaborate on this, and if the data exists, to extend the testing, for their current or future evaluations of their work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses several concerns. Besides the major limitations of apodization patterns being binary and the training/test images being few/single frames, the submission presents an interesting contribution, as generally agreed by all reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose an ultrasound innovation on synthetic aperture transmission (SAT) which allows to retain the benefits form conventional SAT with higher frame rates, by learning the transmission apodization. I agree with reviewers that this is very interesting and definitely suitable for MICCAI. Authors have clarified the major issues in the rebuttal ; I would particularly like to see the patterns of the learnt apodization which of course is not possible to communicate in a text only rebuttal, but hope to see this in the final version or the supplementary material. I recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper describes a data-driven approach, called ApodNet, able to give the binary apodizations from plane-wave transmissions. The authors evaluate the methods and different loss functions in both synthethic and in-vivo results. The reviewers agree in their recommendation to accept (despite 2 only borderline), highlighting the following strengths and weaknesses: Strengths: Highly relevant problem applicable to a number of fields New idea and genuinely good results Evaluation strategy (partly, especially the use of different data sets) Weaknesses: Several elements of the evaluation (eg single frame evaluation, several other metrics could have been used, relative lack of comparison with other methods) Lack of details re- the used parameters &amp; algorithm details The authors provide a number of other metrics &amp; good explanations why these are only relevant under certain conditions. They also include more details on the algorithm which are of huge interest for the reader and therefore need to be in the final version. In general I think this is a nice paper, with an interesting idea, applied thoughtfully to an important problem. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We appreciate the constructive comments and will address the major weaknesses raised by the reviewers in our revision. Reviewer #1 Q: Missing reference to prior work. A: We apologize for missing this important reference and thank the reviewer for providing the analysis on this reference and our paper. We will add this reference, revise the content, and provide necessary discussion in the revised version. Q: Evaluation of the recovered complete dataset. A: We have calculated the RMSE of the complete dataset in the simulations (ApodNet: 1.49%, CS-STA 1.55%). However, we finally decided not to include this in the paper considering that our ultimate objective is the image and thus we used resolution and contrast as metrics. Q: Separate evaluations of encoder and decoder (meta review). A: We appreciate the constructive comments. We added one more group of ApodNet apodizations with CS solver. This setup had moderate in-vivo performance (CR: 12.74 dB, CNR: 4.22 dB) between ApodNet and CS-STA. We would comment that ApodNet did train more efficient apodizations than the conventional ones. However, current ApodNet decoder was jointly trained with ApodNet encoder and could be limited when dealing with another encoder. However, we can independently train the ApodNet decoder with fixed apodizations in the future. Q: The trained apodization patterns. A: We have examined the apodization patterns w.r.t. epochs, finding that the signs of weights became the same locally, showing stable block-like distributions. We forced the apodizations to be binary considering that the transmit power is expected to be high to increase SNR under the safety restriction (see Section 2.1). No prohibition on programing the trained apodizations occurs on the Verasonics system. Reviewer #3 Q: More explanations on network, training, and test (meta review). A: We apologize for not providing sufficient details about ApodNet. The core structure was a 4-layer stacked denoising autoencoder with fully-connected layers (128-node input layer and 32, 128, 32, 128 nodes for the rest layers). The first 128-32 Encoder was a BinaryConnect. During utilization, we extracted the binary weights as apodizations and only used the Decoder in Fig. 1(a) to recover the complete dataset without further fine-tuning. We believe that it is reasonable and interesting to train the network with phantom data and utilize it in the in-vivo scenario. However, simulated data had adverse effects on convergence of training due to the differences between simulations and real experiments, e.g., impulse response, noise. However, we tested with simulated data to evaluate the spatial resolution by setting ideal point target and measuring the FWHM of PSF. The training data were “channel data” but not “image”, i.e., 524,288 samples from two positions (see Section 2.2). The training and test losses were both converged w.r.t. epochs, indicating that current setups avoided the risk of overfitting. However, we admit that we should be more elaborate on the simulation setups, especially the density of the scatterers by studying the speckle distribution and SNR. Q: Comparison with STA and CPWC. A: We did not compare STA and CPWC considering that taking STA as ground truth is doubtable in practice (CR: 13.50 dB, CNR: 5.11 dB, and lower frame rate), while CPWC achieves high-frame-rate imaging in a different way and the space of the paper is limited. However, we expected that ApodNet could perform better in lateral resolution, while contrast needs further investigation. Q: The conclusiveness of quantitative results (meta review). A: We calculated in-vivo gCNR and found 0.82 for STA, 0.86 for ApodNet, 0.51 for CS-STA (Hadamard), and 0.47 for CS-STA (Random), further demonstrating the effectiveness of ApodNet. Additionally, we did more experiments with 8 and 16 transmissions (higher frame rate). The results also demonstrated the improvement of ApodNet. We would extend the testing according to the meta review. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0639/12/31/Paper1815" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0639/12/31/Paper1815" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0639-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0639/12/31/Paper1815"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0639/12/31/Paper1815","headline":"A Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging","dateModified":"0640-01-04T00:00:00-05:17","datePublished":"0639-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yinran Chen, Jing Liu, Jianwen Luo, Xiongbiao Luo Abstract This paper proposes a deep learning approach for high frame rate synthetic transmit aperture ultrasound imaging. The complete dataset of synthetic transmit aperture imaging benefits image quality in terms of lateral resolution and contrast at the expense of a low frame rate. To achieve high-frame-rate synthetic transmit aperture imaging, we propose a self-supervised network, i.e., ApodNet, to com-plete two tasks. (i) The encoder of ApodNet guides the high-frame-rate plane wave transmissions to acquire channel data with a set of optimized binary apodi-zation coefficients. (ii) The decoder of ApodNet recovers the complete dataset from the acquired channel data for the objective of two-way dynamic focusing. The image is finally reconstructed from the recovered dataset with conventional beamforming approach. We train the network with data from a standard tissue-mimicking phantom and validate the network with data from simulations and in-vivo experiments. Different loss functions are validated to determine the opti-mized ApodNet setup. The results of the simulations and the in-vivo experiments both demonstrate that, with a four-times higher frame rate, the proposed ApodNet setup achieves higher image contrast than other high-frame-rate methods. Fur-thermore, ApodNet has much shorter computational time for dataset recovery than the compared methods. Link to paper https://doi.org/10.1007/978-3-030-87231-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach to perform learned plane-wave transmissions for performing fast ultrasound imaging scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper tackles the problem of high-quality ultrasound reconstruction under fast acquisition which is interesting and has received relatively less attention in the literature when compared to other modalities. It can be beneficial in 3D echocardiography, cardiac imaging where frame-rate is a bottleneck. The idea proposed by the paper is relatively novel, interesting, and is potentially impactful, although it misses reference to an important and very relevant work that tackled the same exact problem (designing learning-based transmit patterns/apodization for ultrasound fast ultrasound image acquisition.) The paper is well written and is easy to follow. Evaluation is done on numerical simulations via Field-II and on in-vivo data. It demonstrates faster run-times when compared to compressed sensing based approaches that solve a rather large optimization problem at inference. This is not surprising and is common in most deep learning-based approaches for image reconstruction. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Missing reference to prior work. In the last paragraph of the introduction, the authors mention that “Different from other deep learning based methods which mainly focus on improving the performance of receive beamforming, our method focuses on transmit beamforming”. It is indeed true that most DL methods in US image reconstruction focus on receive beamforming. But it seems that the authors missed an important reference [1], which seems to be, to the best of my knowledge, the only work that dealt with transmit beamforming as well. I think the method proposed by the authors, although is not exactly the same, is very related to what was proposed in [1]. I elaborated on this matter in the constructive critique section below. I recommend that the authors add this important discussion to the revised version. I believe doing so will only improve the positioning of this paper in the literature. Evaluation. The authors evaluate the performance only using CNR and CR but they don’t measure the SNR/MSE of the signal reconstructed via ApodNet &amp; CS-STA approaches with respect to the ground-truth signal. Since ApodNet &amp; CS-STA are only responsible for reconstructing the “complete dataset” which is later on Rx beamformed and reconstructed to obtain the final image, I think it is fair to compare them using SNR and MSE metrics in the raw signal domain. Missing baselines. Please refer below to the constructive critique section under “Comparison with CS-STA”. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It would be nice if the authors could release some sample code with the raw RF US data. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Complete dataset. The authors use the word “complete dataset” quite a bit in the introduction, it would be nice to clearly define what the meaning of “complete dataset” is and why it is important to reconstruct the complete dataset early on to improve the clarity. Comparison with CS-STA. Firstly, I would like to distinguish between forward models (random, Hadamard, ApodNet’s encoder) and inverse problem solvers (basis pursuit solver, ApodNet decoder). That being said, the authors currently compare CS-STA approaches only with Random and Hadamard apodizations as the forward models. I think three important baselines that are missing are: CS-STA with ApodNet encoder as the sensing matrix, and ApodNet with random and Hadamard apodizations as fixed encoders. It is important to conduct these experiments because it will shed light on if the merit of ApodNet lies in the encoder or in the decoder or in the fact that both are trained jointly. Similar experiments are, for example, done in [1]. Do the authors agree? Comparison with [1]. I think the authors missed an important recent work that also proposed joint learning of transmit and receive beamforming in US imaging. While [1] and the current work differ in the specific details, I think [1] and the current work have some pros and cons. [1] seems to enforce the loss on final images obtained post-Rx-beamforming by differentiating through Rx beamformer, while the current work aims to reconstruct the signal prior to Rx beamforming. Putting loss post Rx beamforming allowed [1] to use CNNs since post Rx beamformed signals are coherent. This allows for having a “structured” decoder with good inductive priors when compared to a simple fully-connected network. The strength of the current work, that lacks in [1], is the aim of reconstructing the complete dataset while [1] worked with focused scans which probably renders their forward model inaccurate for simulating plane waves. I think adding a discussion along these lines would position the paper well. Apodization patterns. The authors mention that they learn binary apodization weights via BinaryConnect by employing straight-through gradient estimation. Why should the apodization weights be binary? Is it physically motivated? Can’t there be a “partial” excitation by some of the transmit elements? How easy is it to program the apodization pattern obtained in the NN’s encoder on a standard US machine? Are they any constraints that prohibit it? Can it be encoded Random and Hadamard apodization/transmission patterns: Are these binary as well? Apodization patterns: Do the authors observe any interesting patterns observed in the learned apodization? It would be nice to present “random vs Hadamard vs learned” apodization patterns in a single plot side-by-side. [1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I believe the paper makes important contributions although it misses some baselines, evaluation metrics, and references to prior work. I believe improving these aspects will improve the paper. :) What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper presents an approach based on deep learning for the recovery of STA dataset from plane-wave dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is the first time that the complete STA dataset is recovered from plane-wave channel data using deep learning. The network is trained through an unsupervised method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed network is not explained well. The training is only limited to two phantom images which is quite low. The test experiment on simulation data is not acceptable while the simulation setting is also questionable. Details about test experiments are not explained enough. The results are not compared with the desired STA and the result of CPWC. The calculated contrast indexes are limited while the presented quantitative results are not conclusive. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed network is not explained properly. So, I would not think that the results are reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Here are my comments/questions: Introduction section only talks about low frame rate of STA as the only problem while STA also suffers from low SNR and penetration depth as it only uses a single element in each transmission. Although a big picture of the network architecture is given in the paper, I cannot still figure out how the network looks like. The explanation here is very general and details regarding the number of the layers, type of the layers, number of filter/kernels, etc are missing. The network is only trained with two experimental phantom image. Then, it is tested on the simulation and in vivo data. This looks weird to me because of the following reasons: The number of training data is very low because all of the training pairs only correspond to two images. How did you prevent overfitting? As for test experiments, did you have any further training/fine-tuning? Having 5 scatterers per cubic millimeter does not necessarily imply the simulation of fully developed speckle. What is the point of training on experimental data and testing on simulation? because simulation case is always easier than the experimental scenario. Moreover, your simulation setting is also missing. As for the presented results, why do not you presents the desired result of STA imaging? In other words, Ground-truth has to be illustrated. What is the index of resolution? is it FWHM? As for the contrast, it is necessary to calculate Generalized Contrast-to-Noise Ratio in order to have a better understanding about the achieved improvement. O. M. H. Rindal, A. Austeng, A. Fatemi and A. Rodriguez-Molares, “The Effect of Dynamic Range Alterations in the Estimation of Contrast,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 66, no. 7, pp. 1198-1208, July 2019, doi: 10.1109/TUFFC.2019.2911267. A. Rodriguez-Molares et al., “The Generalized Contrast-to-Noise Ratio: A Formal Definition for Lesion Detectability,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 67, no. 4, pp. 745-759, April 2020, doi: 10.1109/TUFFC.2019.2956855. The presented indexes need to be also calculated on the result of CPWC as well as the result of desired STA. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As there are many questions/ ambiguities about the proposed method and the presented results, I am not sure about the acceptance of the paper. The requested clarifications are necessary. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper describes ApodNet, a data-driven approach, based on unsupervised (self-supervised) learning for a network. This NN when trained, provides the binary apodizations for plane wave transmissions and recovers the complete dataset from the channel data of the apodised plane waves for two-way dynamic focusing. Different loss functions are used to determine the optimal one. Simulations and in-vivo experimental results are shown, in which the ApodNet achieves higher contrast ratio and contrast to noise ratio and amelioration of artifacts. It does this in substantially less time when compared with compressed sensing synthetic transmit aperture approaches. It achieves a 4X higher frame rate than conventional synthetic transmit aperture approaches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging proposes deep learning for high frame rate synthetic aperture ultrasound imaging. Synthetic transmission aperture (STA) has image quality advantages, however, it suffers from a low frame rate. Plane wave transmission has the advantage for ultra-high frame rate imaging, but it has image quality problems. It is desirable to recover the complete dataset for STA at a high frame rate. Through careful analysis of the computational procedure (matrix analysis essentially) the authors show the equivalence of the determination of the weights of the encoder and the apodizations for each element for the plane wave transmissions. These apodizations are recovered by self-supervised (unsupervised ) learning. The acquired channel data are then fed into the decoder to recover the complete dataset. The image is then reconstructed from the recovered complete dataset with delay-and -sum beamforming. This is an innovative interpretation leading to a useful speed up. It is implemented in Python and PyTorch. The different loss functions used are mean square error, mean absolute error and Huber loss. The simulations used 32 plane wave transmissions and a high frame rate (4X higher than conventional STA.) The simulations were carried out with Field II with noise added. The in-vivo experiment involved the imaging of the common carotid artery (CCA). The contrast ratio (CR), contrast-to-noise ratio (CNR) were calculated for the simulations and in-vivo experiments both. The results indicate a uniform improvement of the CR and CNR with ApodNet. Furthermore the time taken to dataset recovery is approximately 2 sec with the ApodNet whereas the time taken to data recovery with the other methods is 1800 to 35,000 seconds. These experimental results (in silico and in vivo) are a good indication of the value of this approach. The writing is clear and the mathematical analysis is succinct, to the point. Well written paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper is well written, however there is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and scientifically sound. You may want to elaborate a bit more on the clinical applications of your approach in the Conclusion section. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper discusses the value of high frame rate in synthetic transmit aperture (STA) in clinical settings, then follows with a nice analysis of the theoretical basis for their algorithm which shows a nice analogy between a neural net (NN) and determining the total dataset from the acquired channel data for multiple plane wave transmissions. The use of both simulations and experimental data is important. The results indicate the usefulness of this approach. The discussion of the metrics used and analysis of the results is very good. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers indicate the value of the work, but several questions and concerns have also been raised, which need to be addressed for the further consideration of this submission. Among raised questions are potential lacks of novelty w.r.t. prior art, a precise description of the utilized network structure, and details and justification of training and test settings. I also agree with the reviews that it would be easy and crucial to present the learned optimal apodiation patterns, in comparison to traditional ones. Additionally, it is again very interesting to see the baselines with the learned encoder and decoder separately in combination with traditional CS-STA sensing and apodizations. Given that nonessential details, e.g. Table 1, can be moved to supplementary material, there would be sufficient space for such presentations. Furthermore, I find the evaluation of a learning based method on a single image frame as quite limited, since one may often find an isolated frame where certain trends are observed, but which may not generalize. I would also advise the authors to elaborate on this, and if the data exists, to extend the testing, for their current or future evaluations of their work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses several concerns. Besides the major limitations of apodization patterns being binary and the training/test images being few/single frames, the submission presents an interesting contribution, as generally agreed by all reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors propose an ultrasound innovation on synthetic aperture transmission (SAT) which allows to retain the benefits form conventional SAT with higher frame rates, by learning the transmission apodization. I agree with reviewers that this is very interesting and definitely suitable for MICCAI. Authors have clarified the major issues in the rebuttal ; I would particularly like to see the patterns of the learnt apodization which of course is not possible to communicate in a text only rebuttal, but hope to see this in the final version or the supplementary material. I recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper describes a data-driven approach, called ApodNet, able to give the binary apodizations from plane-wave transmissions. The authors evaluate the methods and different loss functions in both synthethic and in-vivo results. The reviewers agree in their recommendation to accept (despite 2 only borderline), highlighting the following strengths and weaknesses: Strengths: Highly relevant problem applicable to a number of fields New idea and genuinely good results Evaluation strategy (partly, especially the use of different data sets) Weaknesses: Several elements of the evaluation (eg single frame evaluation, several other metrics could have been used, relative lack of comparison with other methods) Lack of details re- the used parameters &amp; algorithm details The authors provide a number of other metrics &amp; good explanations why these are only relevant under certain conditions. They also include more details on the algorithm which are of huge interest for the reader and therefore need to be in the final version. In general I think this is a nice paper, with an interesting idea, applied thoughtfully to an important problem. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We appreciate the constructive comments and will address the major weaknesses raised by the reviewers in our revision. Reviewer #1 Q: Missing reference to prior work. A: We apologize for missing this important reference and thank the reviewer for providing the analysis on this reference and our paper. We will add this reference, revise the content, and provide necessary discussion in the revised version. Q: Evaluation of the recovered complete dataset. A: We have calculated the RMSE of the complete dataset in the simulations (ApodNet: 1.49%, CS-STA 1.55%). However, we finally decided not to include this in the paper considering that our ultimate objective is the image and thus we used resolution and contrast as metrics. Q: Separate evaluations of encoder and decoder (meta review). A: We appreciate the constructive comments. We added one more group of ApodNet apodizations with CS solver. This setup had moderate in-vivo performance (CR: 12.74 dB, CNR: 4.22 dB) between ApodNet and CS-STA. We would comment that ApodNet did train more efficient apodizations than the conventional ones. However, current ApodNet decoder was jointly trained with ApodNet encoder and could be limited when dealing with another encoder. However, we can independently train the ApodNet decoder with fixed apodizations in the future. Q: The trained apodization patterns. A: We have examined the apodization patterns w.r.t. epochs, finding that the signs of weights became the same locally, showing stable block-like distributions. We forced the apodizations to be binary considering that the transmit power is expected to be high to increase SNR under the safety restriction (see Section 2.1). No prohibition on programing the trained apodizations occurs on the Verasonics system. Reviewer #3 Q: More explanations on network, training, and test (meta review). A: We apologize for not providing sufficient details about ApodNet. The core structure was a 4-layer stacked denoising autoencoder with fully-connected layers (128-node input layer and 32, 128, 32, 128 nodes for the rest layers). The first 128-32 Encoder was a BinaryConnect. During utilization, we extracted the binary weights as apodizations and only used the Decoder in Fig. 1(a) to recover the complete dataset without further fine-tuning. We believe that it is reasonable and interesting to train the network with phantom data and utilize it in the in-vivo scenario. However, simulated data had adverse effects on convergence of training due to the differences between simulations and real experiments, e.g., impulse response, noise. However, we tested with simulated data to evaluate the spatial resolution by setting ideal point target and measuring the FWHM of PSF. The training data were “channel data” but not “image”, i.e., 524,288 samples from two positions (see Section 2.2). The training and test losses were both converged w.r.t. epochs, indicating that current setups avoided the risk of overfitting. However, we admit that we should be more elaborate on the simulation setups, especially the density of the scatterers by studying the speckle distribution and SNR. Q: Comparison with STA and CPWC. A: We did not compare STA and CPWC considering that taking STA as ground truth is doubtable in practice (CR: 13.50 dB, CNR: 5.11 dB, and lower frame rate), while CPWC achieves high-frame-rate imaging in a different way and the space of the paper is limited. However, we expected that ApodNet could perform better in lateral resolution, while contrast needs further investigation. Q: The conclusiveness of quantitative results (meta review). A: We calculated in-vivo gCNR and found 0.82 for STA, 0.86 for ApodNet, 0.51 for CS-STA (Hadamard), and 0.47 for CS-STA (Random), further demonstrating the effectiveness of ApodNet. Additionally, we did more experiments with 8 and 16 transmissions (higher frame rate). The results also demonstrated the improvement of ApodNet. We would extend the testing according to the meta review. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Chen, Yinran,Liu, Jing,Luo, Jianwen,Luo, Xiongbiao" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>A Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Chen, Yinran"
+        class="post-tags">
+        Chen, Yinran
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Jing"
+        class="post-tags">
+        Liu, Jing
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Jianwen"
+        class="post-tags">
+        Luo, Jianwen
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiongbiao"
+        class="post-tags">
+        Luo, Xiongbiao
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yinran Chen, Jing Liu, Jianwen Luo, Xiongbiao Luo
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>This paper proposes a deep learning approach for high frame rate synthetic transmit aperture ultrasound imaging. The complete dataset of synthetic transmit aperture imaging benefits image quality in terms of lateral resolution and contrast at the expense of a low frame rate. To achieve high-frame-rate synthetic transmit aperture imaging, we propose a self-supervised network, i.e., ApodNet, to com-plete two tasks. (i) The encoder of ApodNet guides the high-frame-rate plane wave transmissions to acquire channel data with a set of optimized binary apodi-zation coefficients. (ii) The decoder of ApodNet recovers the complete dataset from the acquired channel data for the objective of two-way dynamic focusing. The image is finally reconstructed from the recovered dataset with conventional beamforming approach. We train the network with data from a standard tissue-mimicking phantom and validate the network with data from simulations and in-vivo experiments. Different loss functions are validated to determine the opti-mized ApodNet setup. The results of the simulations and the in-vivo experiments both demonstrate that, with a four-times higher frame rate, the proposed ApodNet setup achieves higher image contrast than other high-frame-rate methods. Fur-thermore, ApodNet has much shorter computational time for dataset recovery than the compared methods. <br />
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87231-1_40">https://doi.org/10.1007/978-3-030-87231-1_40</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes an approach to perform learned plane-wave transmissions for performing fast ultrasound imaging scans.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The paper tackles the problem of high-quality ultrasound reconstruction under fast acquisition which is interesting and has received relatively less attention in the literature when compared to other modalities. It can be beneficial in 3D echocardiography, cardiac imaging where frame-rate is a bottleneck.</li>
+        <li>The idea proposed by the paper is relatively novel, interesting, and is potentially impactful, although it misses reference to an important and very relevant work that tackled the same exact problem (designing learning-based transmit patterns/apodization for ultrasound fast ultrasound image acquisition.)</li>
+        <li>The paper is well written and is easy to follow.</li>
+        <li>Evaluation is done on numerical simulations via Field-II and on in-vivo data.
+It demonstrates faster run-times when compared to compressed sensing based approaches that solve a rather large optimization problem at inference. This is not surprising and is common in most deep learning-based approaches for image reconstruction.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Missing reference to prior work.</p>
+
+      <ol>
+        <li>In the last paragraph of the introduction, the authors mention that “Different from other deep learning based methods which mainly focus on improving the performance of receive beamforming, our method focuses on transmit beamforming”. It is indeed true that most DL methods in US image reconstruction focus on receive beamforming. But it seems that the authors missed an important reference [1], which seems to be, to the best of my knowledge, the only work that dealt with transmit beamforming as well. I think the method proposed by the authors, although is not exactly the same, is very related to what was proposed in [1]. I elaborated on this matter in the constructive critique section below. I recommend that the authors add this important discussion to the revised version. I believe doing so will only improve the positioning of this paper in the literature.</li>
+      </ol>
+
+      <p>Evaluation.</p>
+
+      <ol>
+        <li>The authors evaluate the performance only using CNR and CR but they don’t measure the SNR/MSE of the signal reconstructed via ApodNet &amp; CS-STA approaches with respect to the ground-truth signal. Since ApodNet &amp; CS-STA are only responsible for reconstructing the “complete dataset” which is later on Rx beamformed and reconstructed to obtain the final image, I think it is fair to compare them using SNR and MSE metrics in the raw signal domain.</li>
+      </ol>
+
+      <p>Missing baselines. Please refer below to the constructive critique section under “Comparison with CS-STA”.</p>
+
+      <p>[1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It would be nice if the authors could release some sample code with the raw RF US data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Complete dataset. The authors use the word “complete dataset” quite a bit in the introduction, it would be nice to clearly define what the meaning of “complete dataset” is and why it is important to reconstruct the complete dataset early on to improve the clarity.</p>
+
+      <p>Comparison with CS-STA. Firstly, I would like to distinguish between forward models (random, Hadamard, ApodNet’s encoder) and inverse problem solvers (basis pursuit solver, ApodNet decoder). 
+That being said, the authors currently compare CS-STA approaches only with Random and Hadamard apodizations as the forward models. I think three important baselines that are missing are: CS-STA with ApodNet encoder as the sensing matrix, and ApodNet with random and Hadamard apodizations as <em>fixed</em> encoders. 
+It is important to conduct these experiments because it will shed light on if the merit of ApodNet lies in the encoder or in the decoder or in the fact that both are trained jointly. Similar experiments are, for example, done in [1]. Do the authors agree?</p>
+
+      <p>Comparison with [1].</p>
+
+      <p>I think the authors missed an important recent work that also proposed joint learning of transmit and receive beamforming in US imaging. While [1] and the current work differ in the specific details, I think [1] and the current work have some pros and cons.
+[1] seems to enforce the loss on final images obtained post-Rx-beamforming by differentiating through Rx beamformer, while the current work aims to reconstruct the signal prior to Rx beamforming. Putting loss post Rx beamforming allowed [1] to use CNNs since post Rx beamformed signals are coherent. This allows for having a “structured” decoder with good inductive priors when compared to a simple fully-connected network.</p>
+
+      <p>The strength of the current work, that lacks in [1], is the aim of reconstructing the complete dataset while [1] worked with focused scans which probably renders their forward model inaccurate for simulating plane waves. I think adding a discussion along these lines would position the paper well.</p>
+
+      <p>Apodization patterns.</p>
+
+      <ol>
+        <li>The authors mention that they learn binary apodization weights via BinaryConnect by employing straight-through gradient estimation. Why should the apodization weights be binary? Is it physically motivated? Can’t there be a “partial” excitation by some of the transmit elements?</li>
+        <li>How easy is it to program the apodization pattern obtained in the NN’s encoder on a standard US machine? Are they any constraints that prohibit it? Can it be encoded</li>
+        <li>Random and Hadamard apodization/transmission patterns: Are these binary as well?</li>
+        <li>Apodization patterns: Do the authors observe any interesting patterns observed in the learned apodization? It would be nice to present “random vs Hadamard vs learned” apodization patterns in a single plot side-by-side.</li>
+      </ol>
+
+      <p>[1] Learning beamforming in ultrasound imaging. Sanketh Vedula, Ortal Senouf, Grigoriy Zurakhov, Alex Bronstein, Oleg Michailovich, Michael Zibulevsky. Proceedings of The 2nd International Conference on Medical Imaging with Deep Learning, PMLR 102:493-511, 2019.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I believe the paper makes important contributions although it misses some baselines, evaluation metrics, and references to prior work. I believe improving these aspects will improve the paper. :)</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents an approach based on deep learning for the recovery of STA dataset from plane-wave dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>This is the first time that the complete STA dataset is recovered from plane-wave channel data using deep learning.</li>
+        <li>The network is trained through an unsupervised method.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The proposed network is not explained well.</li>
+        <li>The training is only limited to two phantom images which is quite low.</li>
+        <li>The test experiment on simulation data is not acceptable while the simulation setting is also questionable.</li>
+        <li>Details about test experiments are not explained enough.</li>
+        <li>The results are not compared with the desired STA and the result of CPWC.</li>
+        <li>The calculated contrast indexes are limited while the presented quantitative results are not conclusive.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The proposed network is not explained properly. So, I would not think that the results are reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Here are my comments/questions:</p>
+      <ul>
+        <li>Introduction section only talks about low frame rate of STA as the only problem while STA also suffers from low SNR and penetration depth as it only uses a single element in each transmission.</li>
+        <li>Although a big picture of the network architecture is given in the paper, I cannot still figure out how the network looks like. The explanation here is very general and details regarding the number of the layers, type of the layers, number of filter/kernels, etc are missing.</li>
+        <li>The network is only trained with two experimental phantom image. Then, it is tested on the simulation and in vivo data. This looks weird to me because of the following reasons:</li>
+        <li>The number of training data is very low because all of the training pairs only correspond to two images. How did you prevent overfitting?</li>
+        <li>As for test experiments, did you have any further training/fine-tuning?</li>
+        <li>Having 5 scatterers per cubic millimeter does not necessarily imply the simulation of fully developed speckle. What is the point of training on experimental data and testing on simulation? because simulation case is always easier than the experimental scenario. Moreover, your simulation setting is also missing.</li>
+        <li>As for the presented results, why do not you presents the desired result of STA imaging? In other words, Ground-truth has to be illustrated.</li>
+        <li>What is the index of resolution? is it FWHM?</li>
+        <li>As for the contrast, it is necessary to calculate Generalized Contrast-to-Noise Ratio in order to have a better understanding about the achieved improvement.
+          <ol>
+            <li>O. M. H. Rindal, A. Austeng, A. Fatemi and A. Rodriguez-Molares, “The Effect of Dynamic Range Alterations in the Estimation of Contrast,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 66, no. 7, pp. 1198-1208, July 2019, doi: 10.1109/TUFFC.2019.2911267.</li>
+            <li>A. Rodriguez-Molares et al., “The Generalized Contrast-to-Noise Ratio: A Formal Definition for Lesion Detectability,” in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 67, no. 4, pp. 745-759, April 2020, doi: 10.1109/TUFFC.2019.2956855.</li>
+          </ol>
+        </li>
+        <li>The presented indexes need to be also calculated on the result of CPWC as well as the result of desired STA.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>As there are many questions/ ambiguities about the proposed method and the presented results, I am not sure about the acceptance of the paper. The requested clarifications are necessary.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper describes ApodNet, a data-driven approach, based on unsupervised (self-supervised) learning for a network.  This NN when trained, provides the binary apodizations for plane wave transmissions and recovers the complete dataset from the channel data of the apodised plane waves for two-way dynamic focusing.  Different loss functions are used to determine the optimal one.  Simulations and in-vivo experimental results are shown, in which the ApodNet achieves higher contrast ratio and contrast to noise ratio and amelioration of artifacts.  It does this in substantially less time when compared with compressed sensing synthetic transmit aperture approaches.  It achieves a 4X higher frame rate than conventional synthetic transmit aperture approaches.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Data-driven Approach for High Frame Rate Synthetic Transmit Aperture Ultrasound Imaging  proposes deep learning for high frame rate synthetic aperture ultrasound imaging.  Synthetic transmission aperture (STA) has image quality advantages, however, it suffers from a low frame rate.
+Plane wave transmission has the advantage for ultra-high frame rate imaging, but it has image quality problems.  It is desirable to recover the complete dataset for STA at a high frame rate.  Through careful analysis of the computational procedure (matrix analysis essentially) the authors show the equivalence of the determination of the weights of the encoder and the apodizations for each element for the plane wave transmissions.  These apodizations are recovered by self-supervised (unsupervised ) learning.  The acquired channel data are then fed into the decoder to recover the complete dataset.  The image is then reconstructed from the recovered complete dataset with delay-and -sum beamforming.
+This is an innovative interpretation leading to a useful speed up.  It is implemented in Python and PyTorch.<br />
+The different loss functions used are mean square error, mean absolute error and Huber loss.  The simulations used 32 plane wave transmissions and a high frame rate (4X higher than conventional STA.)  The simulations were carried out with Field II with noise added.<br />
+The in-vivo experiment involved the imaging of the common carotid artery (CCA).  The contrast ratio (CR), contrast-to-noise ratio (CNR) were calculated for the simulations and in-vivo experiments both.
+The results indicate a uniform improvement of the CR and CNR with ApodNet.  Furthermore the time taken to dataset recovery is approximately 2 sec with the ApodNet whereas the time taken to data recovery with the other methods is 1800 to 35,000 seconds.
+These experimental results (in silico and in vivo) are a good indication of the value of this approach.  The writing is clear and the mathematical analysis is succinct, to the point.  Well written paper.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The paper is well written, however there is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There is a reference in the Repoducibility to the code and data being available which I didn’t see in the paper - it could be in the anonymized part of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper is well written and scientifically sound.  You may want to elaborate a bit more on the clinical applications of your approach in the Conclusion section.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper discusses the value of high frame rate in synthetic transmit aperture (STA) in clinical settings, then follows with a nice analysis of the theoretical basis for their algorithm which shows a nice analogy between a neural net (NN) and determining the total dataset from the acquired channel data for multiple plane wave transmissions.<br />
+The use of both simulations and experimental data is important.  The results indicate the usefulness of this approach.
+The discussion of the metrics used and analysis of the results is very good.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>All reviewers indicate the value of the work, but several questions and concerns have also been raised, which need to be addressed for the further consideration of this submission.  Among raised questions are potential lacks of novelty w.r.t. prior art, a precise description of the utilized network structure, and details and justification of training and test settings.</p>
+
+      <p>I also agree with the reviews that it would be easy and crucial to present the learned optimal apodiation patterns, in comparison to traditional ones.  Additionally, it is again very interesting to see the baselines with the learned encoder and decoder separately in combination with traditional CS-STA sensing and apodizations.  Given that nonessential details, e.g. Table 1, can be moved to supplementary material, there would be sufficient space for such presentations.</p>
+
+      <p>Furthermore, I find the evaluation of a learning based method on a single image frame as quite limited, since one may often find an isolated frame where certain trends are observed, but which may not generalize.  I would also advise the authors to elaborate on this, and if the data exists, to extend the testing, for their current or future evaluations of their work.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The rebuttal addresses several concerns.  Besides the major limitations of apodization patterns being binary and the training/test images being few/single frames, the submission presents an interesting contribution, as generally agreed by all reviewers.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors propose an ultrasound innovation on synthetic aperture transmission (SAT) which allows to retain the benefits form conventional SAT with higher frame rates, by learning the transmission apodization. I agree with reviewers that this is very interesting and definitely suitable for MICCAI.</p>
+
+      <p>Authors have clarified the major issues in the rebuttal ; I would particularly like to see the patterns of the learnt apodization which of course is not possible to communicate in a text only rebuttal, but hope to see this in the final version or the supplementary material. I recommend accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper describes a data-driven approach, called ApodNet, able to give the binary apodizations from plane-wave transmissions. The authors evaluate the methods and different loss functions in both synthethic and in-vivo results. The reviewers agree in their recommendation to accept (despite 2 only borderline), highlighting the following strengths and weaknesses:
+Strengths:</p>
+      <ul>
+        <li>Highly relevant problem applicable to a number of fields</li>
+        <li>New idea and genuinely good results</li>
+        <li>Evaluation strategy (partly, especially the use of different data sets)
+Weaknesses:</li>
+        <li>Several elements of the evaluation (eg single frame evaluation, several other metrics could have been used, relative lack of comparison with other methods)</li>
+        <li>Lack of details re- the used parameters &amp; algorithm details</li>
+      </ul>
+
+      <p>The authors provide a number of other metrics &amp; good explanations why these are only relevant under certain conditions. They also include more details on the algorithm which are of huge interest for the reader and therefore need to be in the final version.</p>
+
+      <p>In general I think this is a nice paper, with an interesting idea, applied thoughtfully to an important problem.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We appreciate the constructive comments and will address the major weaknesses raised by the reviewers in our revision.
+Reviewer #1
+Q: Missing reference to prior work.
+A: We apologize for missing this important reference and thank the reviewer for providing the analysis on this reference and our paper. We will add this reference, revise the content, and provide necessary discussion in the revised version.
+Q: Evaluation of the recovered complete dataset.
+A: We have calculated the RMSE of the complete dataset in the simulations (ApodNet: 1.49%, CS-STA 1.55%). However, we finally decided not to include this in the paper considering that our ultimate objective is the image and thus we used resolution and contrast as metrics. 
+Q: Separate evaluations of encoder and decoder (meta review).
+A: We appreciate the constructive comments. We added one more group of ApodNet apodizations with CS solver. This setup had moderate in-vivo performance (CR: 12.74 dB, CNR: 4.22 dB) between ApodNet and CS-STA. We would comment that ApodNet did train more efficient apodizations than the conventional ones. However, current ApodNet decoder was jointly trained with ApodNet encoder and could be limited when dealing with another encoder. However, we can independently train the ApodNet decoder with fixed apodizations in the future.
+Q: The trained apodization patterns.
+A: We have examined the apodization patterns w.r.t. epochs, finding that the signs of weights became the same locally, showing stable block-like distributions. We forced the apodizations to be binary considering that the transmit power is expected to be high to increase SNR under the safety restriction (see Section 2.1). No prohibition on programing the trained apodizations occurs on the Verasonics system. 
+Reviewer #3
+Q: More explanations on network, training, and test (meta review).
+A: We apologize for not providing sufficient details about ApodNet. The core structure was a 4-layer stacked denoising autoencoder with fully-connected layers (128-node input layer and 32, 128, 32, 128 nodes for the rest layers). The first 128-32 Encoder was a BinaryConnect. During utilization, we extracted the binary weights as apodizations and only used the Decoder in Fig. 1(a) to recover the complete dataset without further fine-tuning. We believe that it is reasonable and interesting to train the network with phantom data and utilize it in the in-vivo scenario. However, simulated data had adverse effects on convergence of training due to the differences between simulations and real experiments, e.g., impulse response, noise. However, we tested with simulated data to evaluate the spatial resolution by setting ideal point target and measuring the FWHM of PSF. The training data were “channel data” but not “image”, i.e., 524,288 samples from two positions (see Section 2.2). The training and test losses were both converged w.r.t. epochs, indicating that current setups avoided the risk of overfitting. However, we admit that we should be more elaborate on the simulation setups, especially the density of the scatterers by studying the speckle distribution and SNR. 
+Q: Comparison with STA and CPWC.
+A: We did not compare STA and CPWC considering that taking STA as ground truth is doubtable in practice (CR: 13.50 dB, CNR: 5.11 dB, and lower frame rate), while CPWC achieves high-frame-rate imaging in a different way and the space of the paper is limited. However, we expected that ApodNet could perform better in lateral resolution, while contrast needs further investigation. 
+Q: The conclusiveness of quantitative results (meta review).
+A: We calculated in-vivo gCNR and found 0.82 for STA, 0.86 for ApodNet, 0.51 for CS-STA (Hadamard), and 0.47 for CS-STA (Random), further demonstrating the effectiveness of ApodNet. Additionally, we did more experiments with 8 and 16 transmissions (higher frame rate). The results also demonstrated the improvement of ApodNet. We would extend the testing according to the meta review.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0639-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0640-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Chen, Yinran"
+        class="post-category">
+        Chen, Yinran
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Jing"
+        class="post-category">
+        Liu, Jing
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Jianwen"
+        class="post-category">
+        Luo, Jianwen
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiongbiao"
+        class="post-category">
+        Luo, Xiongbiao
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0640/12/31/Paper1908">
+          Interpretable deep learning for multimodal super-resolution of medical images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0638/12/31/Paper1814">
+          Sequential Lung Nodule Synthesis using Attribute-guided Generative Adversarial Networks
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

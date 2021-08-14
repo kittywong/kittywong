@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>RATCHET: Medical Transformer for Chest X-ray Diagnosis and Reporting | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RATCHET: Medical Transformer for Chest X-ray Diagnosis and Reporting" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Benjamin Hou, Georgios Kaissis, Ronald M. Summers, Bernhard Kainz Abstract Chest radiographs are one of the most common diagnostic modalities in clinical routine. It can be done cheaply, requires minimal equipment, and the image can be diagnosed by every radiologists. However, the number of chest radiographs obtained on a daily basis can easily overwhelm the available clinical capacities. We propose RATCHET: RAdiological Text Captioning for Human Examined Thoraces. RATCHET is a CNN-RNN-based medical transformer that is trained end-to-end. It is capable of extracting image features from chest radiographs, and generates medically accurate text reports that fit seamlessly into clinical work flows. The model is evaluated for its natural language generation ability using common metrics from NLP literature, as well as its medically accuracy through a surrogate report classification task. The model is available for download at: http://www.github.com/farrell236/RATCHET. Link to paper https://doi.org/10.1007/978-3-030-87234-2_28 Link to the code repository http://github.com/farrell236/RATCHET Link to the dataset(s) https://physionet.org/content/mimic-cxr/2.0.0/ Reviews Review #1 Please describe the contribution of the paper The paper presents a new system named RATCHET to automatically generate free-text radiological reports for chest X-rays. The system consists of a CNN followed by a RNN architecture and uses ideas from transformers. The experiments and evaluation are done using ~300K images from the MIMIC database. According to the metrics used in the paper, RATCHET produce better reports than other competitors. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The system integrates in a novel way the image features extracted with the CNN into the pipline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the paper is really well written and easy to follow, the authors skipped most of the details about the implementation of their approach (see list below). In addition, it is not clear if at test/inference time the authors also used as input the image and the report. This is key to understand whether the system is useful. A system able to predict the radiological report using the radiological report is not useful. In addition, the evaluation (or at least the discussion) doesn’t seem fit to purpose. There is no mention to the fact that in some examples there key radiological findings not mentioned in the predicted reports. For example, in case 2, RATCHET missed edema, and in case 3, it misses lung metastases. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors used a publicly available database and used the predifend splits. However, it is impossible to reproduce the experiments since there are not enough details about the different parts of the system. E.g., what is the size of the vocabulary used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the paper is really well written and easy to understand, the authors skipped the details of what they exactly did. Here there is a list of missing (key) information: How do you apply your system at inference time? It seems you always use the radiological report as an input. What is the vocabulary size? How do you determine the sequence length to be predicted? When do you stop geenarating new words/tokens? What is d_k in equation (2)? What are d_{model} and d_v in the Masked Multi-Head Attention module? How did you choose the unique AP/PA views used in the experiments? The claim about the images being symmetric is completely wrong. Human chest is not symetric at all, for example, the heart is usually positioned on the left side, and this makes the left lung smaller than the right lung. There are humans with a condition called dextrocardia, that means that the heart is on the right. As a consecuence, they have all organs placed on the opossite side than most humans. By flipping horizontally the images your system will never be able to detect this condition. There is a mention about measuring the clinical accuracy of the generated reports, however, such an evaluation is not present. The word “clinical” suggests that a physician has checked the prediction, or that the evaluation has been produced in a clinical setting. I would remove the word “clinical” and make clear that the evaluation is only against NLP-generated labels. There are several key findings missed in the examples shown. There should be a mention to this. While the idea of generating an associated attention map to each predicted word seems really useful, it looks weird that words like “a” or “of” have a strong associated activation map (Figure 3). The conclusions don’t match the paper content. There is no proof of the “generalization abilities for captioning natural images” of the model presented. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The lack of clarity about the input at test time and the many missing implementation details. If the authors used the original radiological report at test time, I don’t see the benefit of the system presented. In addition, the omit to comment on the clinical relevance of the errors. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a CNN-RNN model that learns from chest radiographs and radiology reports and at inference time generates image captions from radiographs. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A straightforward method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) I don’t see technical contributions in this paper. The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. To me, this proposed model is pretty much akin to TieNet. 2) The goal/motivation of this work is unclear to me. Are we looking for a good text generator or a good pathology classifier from chest radiographs? Which columns should we focus on in Table 1? 3) The formulation and notations in the Method section are incohorent and uninformative. I can’t even find out what variable the input image is. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance After reading this paper I don’t think I can reproduce the proposed method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1) Point out how this work diiffers from prior ones. 2) Be clear about the goal/motivation of this work. 3) Make the Method section a coherent flow instead of a patch board of different technical components, which were not even originally proposed in this paper. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As specified in my comments above, I don’t think I learned anything after reading this paper. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work describes an attention based network for automatically generating reports from x-ray images. Attention is used to automatically localize disease ROIs. The method is validated on a large public dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a paper that demonstrates a new strategy for performing a challenging task: automatic report generation from images. The primary strengths are that it is well written and the methods are well described. Additionally, the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the authors list the contributions of this work, and also include a short summary of prior work, they don’t explicitly contrast the current work with prior work, so it is difficult to understand how it is better or novel. However, this is minimized by showing that results compared to prior methods are improved. One major oversight was the assertion that the human body is symmetric and the training strategy being designed off of that. It simply isn’t true, especially for the heart in an x-ray image. The authors need to address this somehow. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The use of a large open source dataset is a good step in the direction of reproducibility. The authors state the code with be shared if published, but I didn’t see any mention of that in the paper. The methods are described well enough that this research should be reproducible but would likely require a lot of effort without the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Starting a sentence with a [reference] is poor writing style. Better to say “X et al [ref]” than just “[ref].” [25] introduced TieNet -&gt; TieNet was introduced in [25] 14] later proposed –&gt; … was proposed in [14]. Similarly, “We have re-implemented [23] as the baseline architecture” isn’t descriptive enough. Say, “we implemented the original transformer method presented in [23]” “Data augmentation include random left and right flipping only as the body is symmetrical”. The human body is NOT symmetrical. This would have importance consequences for a cardiomegaly diagnosis, for example. Figure 3 is difficult to view, the images are tiny. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The clear communication, good description of methods, accurate validation with head-to-head results, and enlightening discussion make this a paper that many readers will be interested in investigating and learning more about. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Please see strengths and weaknesses of the paper summarized below. Please try your best to address the items under weaknesses and answer reviewer questions in your rebuttal. Strengths: The system integrates in a novel way the image features extracted with the CNN into the pipeline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Weaknesses: Need clarity on the input at test time The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. One reviewer commented that the proposed model is like TieNet. There is no direct comparison between this method and other related prior works. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors’ rebuttal provided more details on the input at test time and other implementation details. Although TieNet may not be considered the current state-of-the-art, authors’ reply addressed the concern regarding the comparison to other methods reasonably well. Such discussions should be included in the revised manuscript. More discussions on the validation results by a clinician should also be included in the final version, and the usage of horizontal flipping augmentation is not appropriate as even AP/PA views are not symmetric. I recommend acceptance of the paper, but authors should try to address the remaining concerns in the final version if accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I share the concerns brought up by the reviewers. One of the reviewers asked for clarification for differences from TieNet, but in my opinion, the rebuttal does notadequately answer this point It points to the related work section, but that section states that TieNet is a CNN-RNN architecture just like the RATCHET algorithm. The difference between the two are not explicitly stated as far as I can tell. The rebuttal also points to comparison to TieNet in the experiments section, but this is unrelated to the question brought up by the reviewer. I also share the concerns about the motivation of the paper. Radiologists typically dictate their report in the form of speech while analyzing the image. Dictation of the report doe not take much additional time. It is stated that a radiologist would take ultimate responsibility which would require analyzing the image; therefore, I don’t really see the time savings that can be gained with this method. This would need to be studied in a clinical study involving radiologists preparing reports with and without the help of RATCHET. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper addresses an important problem in medical image analysis. Unfortunately, I agree with reviewers that the reproducibility of this work is still a concern as there are still many sections that require further clarifications. However, I think that the task of generating radiology report is an important and challenging task that requires further investigations and therefore the paper could be interesting for many other researchers in MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We are pleased that R1 and R4 agree on the clarity and organisation of the paper, as well as its methodological contribution and performance gain upon existing state-of-the-art methods. We will address their main concerns as follows: Input at test time: [AC, R1] – During inference time, only a CXR image and the text token (Beginning-Of-Sentence) is passed into the model. The model is then run in an auto-regressive fashion, where the next predicted token is concatenated with the input tokens to form the input sequence. Only stopping when an (End-Of-Sentence) token is predicted, or it has reached max sequence (report) length of 128 tokens (128 is the max length in training but could easily be changed to longer sequences). The entire radiological report is only used during the training phase as an input, as the learning objective is to predict the next token of the sequence. The benefit of the transformer architecture is that the model can learn the next predicted token at every point of the sequence simultaneously. We will further clarify the autoregressive nature of the model for the final revision, as well as release all the code including vocab dictionary upon acceptance [R1/R4]. The vocab size in this work is 17734. d_k, d_v and d_model are 64, 64 and 512 respectively [R1]. Direct comparison between this method and others: [AC, R3] – The ‘proposed model is pretty much akin to TieNet’ and ‘didn’t point out how this work differs from the others’ [R3] – this is untrue, we have stated numerous image captioning methods/techniques for CXR in the related works section, and have compared directly to ‘Show, Attend and Tell’ [24] and TieNet [25]; as they fall under the same family of CNN-RNN architectures whilst being the most state-of-the-art (following an arXiv search through recent literature on google scholar including arXiv). This has been identified by [R1] stating “RATCHET produce better reports than other competitors”, and [R4] stating “the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made”. Furthermore, we have provided citations where comparable results are presented for similar CXR report generation experiments in literature [1, 14]. We aim to show that results are not artificially inflated by special conditioning of evaluation metrics, as the reports are evaluated in its entirety. The disparity in minute difference of scores are attributed to factors such as the tokenization of the language and/or number of report examples, etc… It is also confusing that [R3] states “a straightforward method” as a strength and then state “the Method section are incoherent and uninformative” and not being able to “reproduce the proposed method” later as a weakness. ‘The human body is asymmetric’ [R1/R4] – In our experiments, we only used AP/PA views from the MIMIC-CXR dataset as specified by the provided metadata. We omitted the use of lateral images as image features are likely to be drastically more different compared to AP/PA (i.e. It is more symmetric than lateral, but not completely symmetric). To complement the complete clinical pathway, we can re-train the model with only AP (150488 images) or PA (103363 images) alone. ‘clinical accuracy of the generated reports’ [R1] – the output of our method has been validated by a clinician, but not through a crafted evaluation setting involving multiple clinicians. By using Stanford’s NLP disease label extractor on the generated text, and comparing the performance to CheXNet, we have shown that RATCHET is just as accurate with the added bonus that the predicted outcome is of the form of a radiology report. We hope we have addressed the main concerns. We believe that our work would be of interest for the attendees of MICCAI 2021 and beyond. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Benjamin Hou, Georgios Kaissis, Ronald M. Summers, Bernhard Kainz Abstract Chest radiographs are one of the most common diagnostic modalities in clinical routine. It can be done cheaply, requires minimal equipment, and the image can be diagnosed by every radiologists. However, the number of chest radiographs obtained on a daily basis can easily overwhelm the available clinical capacities. We propose RATCHET: RAdiological Text Captioning for Human Examined Thoraces. RATCHET is a CNN-RNN-based medical transformer that is trained end-to-end. It is capable of extracting image features from chest radiographs, and generates medically accurate text reports that fit seamlessly into clinical work flows. The model is evaluated for its natural language generation ability using common metrics from NLP literature, as well as its medically accuracy through a surrogate report classification task. The model is available for download at: http://www.github.com/farrell236/RATCHET. Link to paper https://doi.org/10.1007/978-3-030-87234-2_28 Link to the code repository http://github.com/farrell236/RATCHET Link to the dataset(s) https://physionet.org/content/mimic-cxr/2.0.0/ Reviews Review #1 Please describe the contribution of the paper The paper presents a new system named RATCHET to automatically generate free-text radiological reports for chest X-rays. The system consists of a CNN followed by a RNN architecture and uses ideas from transformers. The experiments and evaluation are done using ~300K images from the MIMIC database. According to the metrics used in the paper, RATCHET produce better reports than other competitors. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The system integrates in a novel way the image features extracted with the CNN into the pipline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the paper is really well written and easy to follow, the authors skipped most of the details about the implementation of their approach (see list below). In addition, it is not clear if at test/inference time the authors also used as input the image and the report. This is key to understand whether the system is useful. A system able to predict the radiological report using the radiological report is not useful. In addition, the evaluation (or at least the discussion) doesn’t seem fit to purpose. There is no mention to the fact that in some examples there key radiological findings not mentioned in the predicted reports. For example, in case 2, RATCHET missed edema, and in case 3, it misses lung metastases. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors used a publicly available database and used the predifend splits. However, it is impossible to reproduce the experiments since there are not enough details about the different parts of the system. E.g., what is the size of the vocabulary used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the paper is really well written and easy to understand, the authors skipped the details of what they exactly did. Here there is a list of missing (key) information: How do you apply your system at inference time? It seems you always use the radiological report as an input. What is the vocabulary size? How do you determine the sequence length to be predicted? When do you stop geenarating new words/tokens? What is d_k in equation (2)? What are d_{model} and d_v in the Masked Multi-Head Attention module? How did you choose the unique AP/PA views used in the experiments? The claim about the images being symmetric is completely wrong. Human chest is not symetric at all, for example, the heart is usually positioned on the left side, and this makes the left lung smaller than the right lung. There are humans with a condition called dextrocardia, that means that the heart is on the right. As a consecuence, they have all organs placed on the opossite side than most humans. By flipping horizontally the images your system will never be able to detect this condition. There is a mention about measuring the clinical accuracy of the generated reports, however, such an evaluation is not present. The word “clinical” suggests that a physician has checked the prediction, or that the evaluation has been produced in a clinical setting. I would remove the word “clinical” and make clear that the evaluation is only against NLP-generated labels. There are several key findings missed in the examples shown. There should be a mention to this. While the idea of generating an associated attention map to each predicted word seems really useful, it looks weird that words like “a” or “of” have a strong associated activation map (Figure 3). The conclusions don’t match the paper content. There is no proof of the “generalization abilities for captioning natural images” of the model presented. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The lack of clarity about the input at test time and the many missing implementation details. If the authors used the original radiological report at test time, I don’t see the benefit of the system presented. In addition, the omit to comment on the clinical relevance of the errors. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a CNN-RNN model that learns from chest radiographs and radiology reports and at inference time generates image captions from radiographs. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A straightforward method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) I don’t see technical contributions in this paper. The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. To me, this proposed model is pretty much akin to TieNet. 2) The goal/motivation of this work is unclear to me. Are we looking for a good text generator or a good pathology classifier from chest radiographs? Which columns should we focus on in Table 1? 3) The formulation and notations in the Method section are incohorent and uninformative. I can’t even find out what variable the input image is. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance After reading this paper I don’t think I can reproduce the proposed method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1) Point out how this work diiffers from prior ones. 2) Be clear about the goal/motivation of this work. 3) Make the Method section a coherent flow instead of a patch board of different technical components, which were not even originally proposed in this paper. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As specified in my comments above, I don’t think I learned anything after reading this paper. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work describes an attention based network for automatically generating reports from x-ray images. Attention is used to automatically localize disease ROIs. The method is validated on a large public dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a paper that demonstrates a new strategy for performing a challenging task: automatic report generation from images. The primary strengths are that it is well written and the methods are well described. Additionally, the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the authors list the contributions of this work, and also include a short summary of prior work, they don’t explicitly contrast the current work with prior work, so it is difficult to understand how it is better or novel. However, this is minimized by showing that results compared to prior methods are improved. One major oversight was the assertion that the human body is symmetric and the training strategy being designed off of that. It simply isn’t true, especially for the heart in an x-ray image. The authors need to address this somehow. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The use of a large open source dataset is a good step in the direction of reproducibility. The authors state the code with be shared if published, but I didn’t see any mention of that in the paper. The methods are described well enough that this research should be reproducible but would likely require a lot of effort without the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Starting a sentence with a [reference] is poor writing style. Better to say “X et al [ref]” than just “[ref].” [25] introduced TieNet -&gt; TieNet was introduced in [25] 14] later proposed –&gt; … was proposed in [14]. Similarly, “We have re-implemented [23] as the baseline architecture” isn’t descriptive enough. Say, “we implemented the original transformer method presented in [23]” “Data augmentation include random left and right flipping only as the body is symmetrical”. The human body is NOT symmetrical. This would have importance consequences for a cardiomegaly diagnosis, for example. Figure 3 is difficult to view, the images are tiny. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The clear communication, good description of methods, accurate validation with head-to-head results, and enlightening discussion make this a paper that many readers will be interested in investigating and learning more about. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Please see strengths and weaknesses of the paper summarized below. Please try your best to address the items under weaknesses and answer reviewer questions in your rebuttal. Strengths: The system integrates in a novel way the image features extracted with the CNN into the pipeline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Weaknesses: Need clarity on the input at test time The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. One reviewer commented that the proposed model is like TieNet. There is no direct comparison between this method and other related prior works. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors’ rebuttal provided more details on the input at test time and other implementation details. Although TieNet may not be considered the current state-of-the-art, authors’ reply addressed the concern regarding the comparison to other methods reasonably well. Such discussions should be included in the revised manuscript. More discussions on the validation results by a clinician should also be included in the final version, and the usage of horizontal flipping augmentation is not appropriate as even AP/PA views are not symmetric. I recommend acceptance of the paper, but authors should try to address the remaining concerns in the final version if accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I share the concerns brought up by the reviewers. One of the reviewers asked for clarification for differences from TieNet, but in my opinion, the rebuttal does notadequately answer this point It points to the related work section, but that section states that TieNet is a CNN-RNN architecture just like the RATCHET algorithm. The difference between the two are not explicitly stated as far as I can tell. The rebuttal also points to comparison to TieNet in the experiments section, but this is unrelated to the question brought up by the reviewer. I also share the concerns about the motivation of the paper. Radiologists typically dictate their report in the form of speech while analyzing the image. Dictation of the report doe not take much additional time. It is stated that a radiologist would take ultimate responsibility which would require analyzing the image; therefore, I don’t really see the time savings that can be gained with this method. This would need to be studied in a clinical study involving radiologists preparing reports with and without the help of RATCHET. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper addresses an important problem in medical image analysis. Unfortunately, I agree with reviewers that the reproducibility of this work is still a concern as there are still many sections that require further clarifications. However, I think that the task of generating radiology report is an important and challenging task that requires further investigations and therefore the paper could be interesting for many other researchers in MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We are pleased that R1 and R4 agree on the clarity and organisation of the paper, as well as its methodological contribution and performance gain upon existing state-of-the-art methods. We will address their main concerns as follows: Input at test time: [AC, R1] – During inference time, only a CXR image and the text token (Beginning-Of-Sentence) is passed into the model. The model is then run in an auto-regressive fashion, where the next predicted token is concatenated with the input tokens to form the input sequence. Only stopping when an (End-Of-Sentence) token is predicted, or it has reached max sequence (report) length of 128 tokens (128 is the max length in training but could easily be changed to longer sequences). The entire radiological report is only used during the training phase as an input, as the learning objective is to predict the next token of the sequence. The benefit of the transformer architecture is that the model can learn the next predicted token at every point of the sequence simultaneously. We will further clarify the autoregressive nature of the model for the final revision, as well as release all the code including vocab dictionary upon acceptance [R1/R4]. The vocab size in this work is 17734. d_k, d_v and d_model are 64, 64 and 512 respectively [R1]. Direct comparison between this method and others: [AC, R3] – The ‘proposed model is pretty much akin to TieNet’ and ‘didn’t point out how this work differs from the others’ [R3] – this is untrue, we have stated numerous image captioning methods/techniques for CXR in the related works section, and have compared directly to ‘Show, Attend and Tell’ [24] and TieNet [25]; as they fall under the same family of CNN-RNN architectures whilst being the most state-of-the-art (following an arXiv search through recent literature on google scholar including arXiv). This has been identified by [R1] stating “RATCHET produce better reports than other competitors”, and [R4] stating “the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made”. Furthermore, we have provided citations where comparable results are presented for similar CXR report generation experiments in literature [1, 14]. We aim to show that results are not artificially inflated by special conditioning of evaluation metrics, as the reports are evaluated in its entirety. The disparity in minute difference of scores are attributed to factors such as the tokenization of the language and/or number of report examples, etc… It is also confusing that [R3] states “a straightforward method” as a strength and then state “the Method section are incoherent and uninformative” and not being able to “reproduce the proposed method” later as a weakness. ‘The human body is asymmetric’ [R1/R4] – In our experiments, we only used AP/PA views from the MIMIC-CXR dataset as specified by the provided metadata. We omitted the use of lateral images as image features are likely to be drastically more different compared to AP/PA (i.e. It is more symmetric than lateral, but not completely symmetric). To complement the complete clinical pathway, we can re-train the model with only AP (150488 images) or PA (103363 images) alone. ‘clinical accuracy of the generated reports’ [R1] – the output of our method has been validated by a clinician, but not through a crafted evaluation setting involving multiple clinicians. By using Stanford’s NLP disease label extractor on the generated text, and comparing the performance to CheXNet, we have shown that RATCHET is just as accurate with the added bonus that the predicted outcome is of the form of a radiology report. We hope we have addressed the main concerns. We believe that our work would be of interest for the attendees of MICCAI 2021 and beyond. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0727/12/31/Paper1026" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0727/12/31/Paper1026" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0727-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="RATCHET: Medical Transformer for Chest X-ray Diagnosis and Reporting" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0727/12/31/Paper1026"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0727/12/31/Paper1026","headline":"RATCHET: Medical Transformer for Chest X-ray Diagnosis and Reporting","dateModified":"0728-01-05T00:00:00-05:17","datePublished":"0727-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Benjamin Hou, Georgios Kaissis, Ronald M. Summers, Bernhard Kainz Abstract Chest radiographs are one of the most common diagnostic modalities in clinical routine. It can be done cheaply, requires minimal equipment, and the image can be diagnosed by every radiologists. However, the number of chest radiographs obtained on a daily basis can easily overwhelm the available clinical capacities. We propose RATCHET: RAdiological Text Captioning for Human Examined Thoraces. RATCHET is a CNN-RNN-based medical transformer that is trained end-to-end. It is capable of extracting image features from chest radiographs, and generates medically accurate text reports that fit seamlessly into clinical work flows. The model is evaluated for its natural language generation ability using common metrics from NLP literature, as well as its medically accuracy through a surrogate report classification task. The model is available for download at: http://www.github.com/farrell236/RATCHET. Link to paper https://doi.org/10.1007/978-3-030-87234-2_28 Link to the code repository http://github.com/farrell236/RATCHET Link to the dataset(s) https://physionet.org/content/mimic-cxr/2.0.0/ Reviews Review #1 Please describe the contribution of the paper The paper presents a new system named RATCHET to automatically generate free-text radiological reports for chest X-rays. The system consists of a CNN followed by a RNN architecture and uses ideas from transformers. The experiments and evaluation are done using ~300K images from the MIMIC database. According to the metrics used in the paper, RATCHET produce better reports than other competitors. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The system integrates in a novel way the image features extracted with the CNN into the pipline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the paper is really well written and easy to follow, the authors skipped most of the details about the implementation of their approach (see list below). In addition, it is not clear if at test/inference time the authors also used as input the image and the report. This is key to understand whether the system is useful. A system able to predict the radiological report using the radiological report is not useful. In addition, the evaluation (or at least the discussion) doesn’t seem fit to purpose. There is no mention to the fact that in some examples there key radiological findings not mentioned in the predicted reports. For example, in case 2, RATCHET missed edema, and in case 3, it misses lung metastases. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors used a publicly available database and used the predifend splits. However, it is impossible to reproduce the experiments since there are not enough details about the different parts of the system. E.g., what is the size of the vocabulary used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the paper is really well written and easy to understand, the authors skipped the details of what they exactly did. Here there is a list of missing (key) information: How do you apply your system at inference time? It seems you always use the radiological report as an input. What is the vocabulary size? How do you determine the sequence length to be predicted? When do you stop geenarating new words/tokens? What is d_k in equation (2)? What are d_{model} and d_v in the Masked Multi-Head Attention module? How did you choose the unique AP/PA views used in the experiments? The claim about the images being symmetric is completely wrong. Human chest is not symetric at all, for example, the heart is usually positioned on the left side, and this makes the left lung smaller than the right lung. There are humans with a condition called dextrocardia, that means that the heart is on the right. As a consecuence, they have all organs placed on the opossite side than most humans. By flipping horizontally the images your system will never be able to detect this condition. There is a mention about measuring the clinical accuracy of the generated reports, however, such an evaluation is not present. The word “clinical” suggests that a physician has checked the prediction, or that the evaluation has been produced in a clinical setting. I would remove the word “clinical” and make clear that the evaluation is only against NLP-generated labels. There are several key findings missed in the examples shown. There should be a mention to this. While the idea of generating an associated attention map to each predicted word seems really useful, it looks weird that words like “a” or “of” have a strong associated activation map (Figure 3). The conclusions don’t match the paper content. There is no proof of the “generalization abilities for captioning natural images” of the model presented. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The lack of clarity about the input at test time and the many missing implementation details. If the authors used the original radiological report at test time, I don’t see the benefit of the system presented. In addition, the omit to comment on the clinical relevance of the errors. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a CNN-RNN model that learns from chest radiographs and radiology reports and at inference time generates image captions from radiographs. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A straightforward method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) I don’t see technical contributions in this paper. The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. To me, this proposed model is pretty much akin to TieNet. 2) The goal/motivation of this work is unclear to me. Are we looking for a good text generator or a good pathology classifier from chest radiographs? Which columns should we focus on in Table 1? 3) The formulation and notations in the Method section are incohorent and uninformative. I can’t even find out what variable the input image is. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance After reading this paper I don’t think I can reproduce the proposed method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1) Point out how this work diiffers from prior ones. 2) Be clear about the goal/motivation of this work. 3) Make the Method section a coherent flow instead of a patch board of different technical components, which were not even originally proposed in this paper. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? As specified in my comments above, I don’t think I learned anything after reading this paper. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This work describes an attention based network for automatically generating reports from x-ray images. Attention is used to automatically localize disease ROIs. The method is validated on a large public dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a paper that demonstrates a new strategy for performing a challenging task: automatic report generation from images. The primary strengths are that it is well written and the methods are well described. Additionally, the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the authors list the contributions of this work, and also include a short summary of prior work, they don’t explicitly contrast the current work with prior work, so it is difficult to understand how it is better or novel. However, this is minimized by showing that results compared to prior methods are improved. One major oversight was the assertion that the human body is symmetric and the training strategy being designed off of that. It simply isn’t true, especially for the heart in an x-ray image. The authors need to address this somehow. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The use of a large open source dataset is a good step in the direction of reproducibility. The authors state the code with be shared if published, but I didn’t see any mention of that in the paper. The methods are described well enough that this research should be reproducible but would likely require a lot of effort without the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Starting a sentence with a [reference] is poor writing style. Better to say “X et al [ref]” than just “[ref].” [25] introduced TieNet -&gt; TieNet was introduced in [25] 14] later proposed –&gt; … was proposed in [14]. Similarly, “We have re-implemented [23] as the baseline architecture” isn’t descriptive enough. Say, “we implemented the original transformer method presented in [23]” “Data augmentation include random left and right flipping only as the body is symmetrical”. The human body is NOT symmetrical. This would have importance consequences for a cardiomegaly diagnosis, for example. Figure 3 is difficult to view, the images are tiny. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The clear communication, good description of methods, accurate validation with head-to-head results, and enlightening discussion make this a paper that many readers will be interested in investigating and learning more about. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Please see strengths and weaknesses of the paper summarized below. Please try your best to address the items under weaknesses and answer reviewer questions in your rebuttal. Strengths: The system integrates in a novel way the image features extracted with the CNN into the pipeline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word. Weaknesses: Need clarity on the input at test time The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. One reviewer commented that the proposed model is like TieNet. There is no direct comparison between this method and other related prior works. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors’ rebuttal provided more details on the input at test time and other implementation details. Although TieNet may not be considered the current state-of-the-art, authors’ reply addressed the concern regarding the comparison to other methods reasonably well. Such discussions should be included in the revised manuscript. More discussions on the validation results by a clinician should also be included in the final version, and the usage of horizontal flipping augmentation is not appropriate as even AP/PA views are not symmetric. I recommend acceptance of the paper, but authors should try to address the remaining concerns in the final version if accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I share the concerns brought up by the reviewers. One of the reviewers asked for clarification for differences from TieNet, but in my opinion, the rebuttal does notadequately answer this point It points to the related work section, but that section states that TieNet is a CNN-RNN architecture just like the RATCHET algorithm. The difference between the two are not explicitly stated as far as I can tell. The rebuttal also points to comparison to TieNet in the experiments section, but this is unrelated to the question brought up by the reviewer. I also share the concerns about the motivation of the paper. Radiologists typically dictate their report in the form of speech while analyzing the image. Dictation of the report doe not take much additional time. It is stated that a radiologist would take ultimate responsibility which would require analyzing the image; therefore, I don’t really see the time savings that can be gained with this method. This would need to be studied in a clinical study involving radiologists preparing reports with and without the help of RATCHET. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper addresses an important problem in medical image analysis. Unfortunately, I agree with reviewers that the reproducibility of this work is still a concern as there are still many sections that require further clarifications. However, I think that the task of generating radiology report is an important and challenging task that requires further investigations and therefore the paper could be interesting for many other researchers in MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We are pleased that R1 and R4 agree on the clarity and organisation of the paper, as well as its methodological contribution and performance gain upon existing state-of-the-art methods. We will address their main concerns as follows: Input at test time: [AC, R1] – During inference time, only a CXR image and the text token (Beginning-Of-Sentence) is passed into the model. The model is then run in an auto-regressive fashion, where the next predicted token is concatenated with the input tokens to form the input sequence. Only stopping when an (End-Of-Sentence) token is predicted, or it has reached max sequence (report) length of 128 tokens (128 is the max length in training but could easily be changed to longer sequences). The entire radiological report is only used during the training phase as an input, as the learning objective is to predict the next token of the sequence. The benefit of the transformer architecture is that the model can learn the next predicted token at every point of the sequence simultaneously. We will further clarify the autoregressive nature of the model for the final revision, as well as release all the code including vocab dictionary upon acceptance [R1/R4]. The vocab size in this work is 17734. d_k, d_v and d_model are 64, 64 and 512 respectively [R1]. Direct comparison between this method and others: [AC, R3] – The ‘proposed model is pretty much akin to TieNet’ and ‘didn’t point out how this work differs from the others’ [R3] – this is untrue, we have stated numerous image captioning methods/techniques for CXR in the related works section, and have compared directly to ‘Show, Attend and Tell’ [24] and TieNet [25]; as they fall under the same family of CNN-RNN architectures whilst being the most state-of-the-art (following an arXiv search through recent literature on google scholar including arXiv). This has been identified by [R1] stating “RATCHET produce better reports than other competitors”, and [R4] stating “the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made”. Furthermore, we have provided citations where comparable results are presented for similar CXR report generation experiments in literature [1, 14]. We aim to show that results are not artificially inflated by special conditioning of evaluation metrics, as the reports are evaluated in its entirety. The disparity in minute difference of scores are attributed to factors such as the tokenization of the language and/or number of report examples, etc… It is also confusing that [R3] states “a straightforward method” as a strength and then state “the Method section are incoherent and uninformative” and not being able to “reproduce the proposed method” later as a weakness. ‘The human body is asymmetric’ [R1/R4] – In our experiments, we only used AP/PA views from the MIMIC-CXR dataset as specified by the provided metadata. We omitted the use of lateral images as image features are likely to be drastically more different compared to AP/PA (i.e. It is more symmetric than lateral, but not completely symmetric). To complement the complete clinical pathway, we can re-train the model with only AP (150488 images) or PA (103363 images) alone. ‘clinical accuracy of the generated reports’ [R1] – the output of our method has been validated by a clinician, but not through a crafted evaluation setting involving multiple clinicians. By using Stanford’s NLP disease label extractor on the generated text, and comparing the performance to CheXNet, we have shown that RATCHET is just as accurate with the added bonus that the predicted outcome is of the form of a radiology report. We hope we have addressed the main concerns. We believe that our work would be of interest for the attendees of MICCAI 2021 and beyond. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Hou, Benjamin,Kaissis, Georgios,Summers, Ronald M.,Kainz, Bernhard" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>RATCHET: Medical Transformer for Chest X-ray Diagnosis and Reporting</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Text (clinical/radiology reports)"
+        class="post-category">
+        Modalities - Text (clinical/radiology reports)
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Hou, Benjamin"
+        class="post-tags">
+        Hou, Benjamin
+      </a> |  
+      
+      <a href="kittywong/tags#Kaissis, Georgios"
+        class="post-tags">
+        Kaissis, Georgios
+      </a> |  
+      
+      <a href="kittywong/tags#Summers, Ronald M."
+        class="post-tags">
+        Summers, Ronald M.
+      </a> |  
+      
+      <a href="kittywong/tags#Kainz, Bernhard"
+        class="post-tags">
+        Kainz, Bernhard
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Benjamin Hou, Georgios Kaissis, Ronald M. Summers, Bernhard Kainz
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Chest radiographs are one of the most common diagnostic modalities in clinical routine. It can be done cheaply, requires minimal equipment, and the image can be diagnosed by every radiologists. However, the number of chest radiographs obtained on a daily basis can easily overwhelm the available clinical capacities. We propose RATCHET: RAdiological Text Captioning for Human Examined Thoraces. RATCHET is a CNN-RNN-based medical transformer that is trained end-to-end. It is capable of extracting image features from chest radiographs, and generates medically accurate text reports that fit seamlessly into clinical work flows. The model is evaluated for its natural language generation ability using common metrics from NLP literature, as well as its medically accuracy through a surrogate report classification task. The model is available for download at: http://www.github.com/farrell236/RATCHET. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87234-2_28">https://doi.org/10.1007/978-3-030-87234-2_28</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>http://github.com/farrell236/RATCHET
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://physionet.org/content/mimic-cxr/2.0.0/</p>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a new system named RATCHET to automatically generate free-text radiological reports for chest X-rays.
+The system consists of a CNN followed by a RNN architecture and uses ideas from transformers.
+The experiments and evaluation are done using ~300K images from the MIMIC database.
+According to the metrics used in the paper, RATCHET produce better reports than other competitors.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The system integrates in a novel way the image features extracted with the CNN into the pipline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps.
+This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>While the paper is really well written and easy to follow, the authors skipped most of the details about the implementation of their approach (see list below).
+In addition, it is not clear if at test/inference time the authors also used as input the image and the report. This is key to understand whether the system is useful. A system able to predict the radiological report using the radiological report is not useful.
+In addition, the evaluation (or at least the discussion) doesn’t seem fit to purpose. There is no mention to the fact that in some examples there key radiological findings not mentioned in the predicted reports. For example, in case 2, RATCHET missed edema, and in case 3, it misses lung metastases.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors used a publicly available database and used the predifend splits.
+However, it is impossible to reproduce the experiments since there are not enough details about the different parts of the system. E.g., what is the size of the vocabulary used.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>While the paper is really well written and easy to understand, the authors skipped the details of what they exactly did. Here there is a list of missing (key) information:</p>
+      <ul>
+        <li>How do you apply your system at inference time? It seems you always use the radiological report as an input.</li>
+        <li>What is the vocabulary size?</li>
+        <li>How do you determine the sequence length to be predicted? When do you stop geenarating new words/tokens?</li>
+        <li>What is d_k in equation (2)? What are d_{model} and d_v in the Masked Multi-Head Attention module?</li>
+        <li>How did you choose the unique AP/PA views used in the experiments?</li>
+      </ul>
+
+      <p>The claim about the images being symmetric is completely wrong. Human chest is not symetric at all, for example, the heart is usually positioned on the left side, and this makes the left lung smaller than the right lung. There are humans with a condition called dextrocardia, that means that the heart is on the right. As a consecuence, they have all organs placed on the opossite side than most humans. By flipping horizontally the images your system will never be able to detect this condition.</p>
+
+      <p>There is a mention about measuring the clinical accuracy of the generated reports, however, such an evaluation is not present. The word “clinical” suggests that a physician has checked the prediction, or that the evaluation has been produced in a clinical setting. I would remove the word “clinical” and make clear that the evaluation is only against NLP-generated labels.</p>
+
+      <p>There are several key findings missed in the examples shown. There should be a mention to this.</p>
+
+      <p>While the idea of generating an associated attention map to each predicted word seems really useful, it looks weird that words like “a” or “of” have a strong associated activation map (Figure 3).</p>
+
+      <p>The conclusions don’t match the paper content. There is no proof of the “generalization abilities for captioning natural images” of the model presented.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The lack of clarity about the input at test time and the many missing implementation details. If the authors used the original radiological report at test time, I don’t see the benefit of the system presented.
+In addition, the omit to comment on the clinical relevance of the errors.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a CNN-RNN model that learns from chest radiographs and radiology reports and at inference time generates image captions from radiographs.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>A straightforward method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>1) I don’t see technical contributions in this paper. The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. To me, this proposed model is pretty much akin to TieNet. 
+2) The goal/motivation of this work is unclear to me. Are we looking for a good text generator or a good pathology classifier from chest radiographs? Which columns should we focus on in Table 1?
+3) The formulation and notations in the Method section are incohorent and uninformative. I can’t even find out what variable the input image is.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>After reading this paper I don’t think I can reproduce the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>1) Point out how this work diiffers from prior ones.
+2) Be clear about the goal/motivation of this work.
+3) Make the Method section a coherent flow instead of a patch board of different technical components, which were not even originally proposed in this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>As specified in my comments above, I don’t think I learned anything after reading this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work describes an attention based network for automatically generating reports from x-ray images. Attention is used to automatically localize disease ROIs.
+The method is validated on a large public dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This is a paper that demonstrates a new strategy for performing a challenging task: automatic report generation from images. The primary strengths are that it is well written and the methods are well described. Additionally, the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Although the authors list the contributions of this work, and also include a short summary of prior work, they don’t explicitly contrast the current work with prior work, so it is difficult to understand how it is better or novel. However, this is minimized by showing that results compared to prior methods are improved.</p>
+
+      <p>One major oversight was the assertion that the human body is symmetric and the training strategy being designed off of that. It simply isn’t true, especially for the heart in an x-ray image. The authors need to address this somehow.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The use of a large open source dataset is a good step in the direction of reproducibility. The authors state the code with be shared if published, but I didn’t see any mention of that in the paper. The methods are described well enough that this research should be reproducible but would likely require a lot of effort without the code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Starting a sentence with a [reference] is poor writing style. Better to say “X et al [ref]” than just “[ref].”
+[25] introduced TieNet -&gt; TieNet was introduced in [25]
+14] later proposed –&gt; … was proposed in [14].</p>
+
+      <p>Similarly, “We have re-implemented [23] as the baseline architecture” isn’t descriptive enough. Say, “we implemented the original transformer method presented in [23]”</p>
+
+      <p>“Data augmentation include random left and right flipping only as the body is symmetrical”. The human body is NOT symmetrical. This would have importance consequences for a cardiomegaly diagnosis, for example.</p>
+
+      <p>Figure 3 is difficult to view, the images are tiny.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The clear communication, good description of methods, accurate validation with head-to-head results, and enlightening discussion make this a paper that many readers will be interested in investigating and learning more about.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Please see strengths and weaknesses of the paper summarized below.  Please try your best to address the items under weaknesses and answer reviewer questions in your rebuttal.</p>
+
+      <p>Strengths:</p>
+      <ul>
+        <li>The system integrates in a novel way the image features extracted with the CNN into the pipeline of a transformer-based RNN, where each next token predicted has a corresponding response in the image feature maps. This makes the system able to provide a new word and an associated attention map to indicate which part of the image contributed to generate that word.</li>
+      </ul>
+
+      <p>Weaknesses:</p>
+      <ul>
+        <li>Need clarity on the input at test time</li>
+        <li>The authors discussed other prior work in image-to-text generation in the last paragraph of the Introduction section, but didn’t point out how this work differs from the others. One reviewer commented that the proposed model is like TieNet.  There is no direct comparison between this method and other related prior works.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors’ rebuttal provided more details on the input at test time and other implementation details. Although TieNet may not be considered the current state-of-the-art, authors’ reply addressed the concern regarding the comparison to other methods reasonably well. Such discussions should be included in the revised manuscript. More discussions on the validation results by a clinician should also be included in the final version, and the usage of horizontal flipping augmentation is not appropriate as even AP/PA views are not symmetric. I recommend acceptance of the paper, but authors should try to address the remaining concerns in the final version if accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>12</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>I share the concerns brought up by the reviewers. One of the reviewers asked for clarification for differences from TieNet, but in my opinion, the rebuttal does notadequately answer this point It points to the related work section, but that section states that TieNet is a CNN-RNN architecture just like the RATCHET algorithm. The difference between the two are not explicitly stated as far as I can tell. The rebuttal also points to comparison to TieNet in the experiments section, but this is unrelated to the question brought up by the reviewer. I also share the concerns about the motivation of the paper. Radiologists typically dictate their report in the form of speech while analyzing the image. Dictation of the report doe not take much additional time. It is stated that a radiologist would take ultimate responsibility which would require analyzing the image; therefore, I don’t really see the time savings that can be gained with this method. This would need to be studied in a clinical study involving radiologists preparing reports with and without the help of RATCHET.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>14</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper addresses an important problem in medical image analysis. Unfortunately, I agree with reviewers that the reproducibility of this work is still a concern as there are still many sections that require further clarifications. However, I think that the task of generating radiology report is an important and challenging task that requires further investigations and therefore the paper could be interesting for many other researchers in MICCAI community.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We are pleased  that R1 and R4 agree on the clarity and organisation of the paper, as well as its methodological contribution and performance gain upon existing state-of-the-art methods. We will address their main concerns as follows:</p>
+
+  <p>Input at test time: [AC, R1] – During inference time, only a CXR image and the text token <BOS> (Beginning-Of-Sentence) is passed into the model. The model is then run in an auto-regressive fashion, where the next predicted token is concatenated with the input tokens to form the input sequence. Only stopping when an <EOS> (End-Of-Sentence) token is predicted, or it has reached max sequence (report) length of 128 tokens (128 is the max length in training but could easily be changed to longer sequences). The entire radiological report is only used during the training phase as an input, as the learning objective is to predict the next token of the sequence. The benefit of the transformer architecture is that the model can learn the next predicted token at every point of the sequence simultaneously. We will further clarify the autoregressive nature of the model for the final revision, as well as release all the code including vocab dictionary upon acceptance [R1/R4]. The vocab size in this work is 17734. d_k, d_v and d_model are 64, 64 and 512 respectively [R1].</EOS></BOS></p>
+
+  <p>Direct comparison between this method and others: [AC, R3]  – The ‘proposed model is pretty much akin to TieNet’ and ‘didn’t point out how this work differs from the others’ [R3] – this is untrue, we have stated numerous image captioning methods/techniques for CXR in the related works section, and have compared directly to ‘Show, Attend and Tell’ [24] and TieNet [25]; as they fall under the same family of CNN-RNN architectures whilst being the most state-of-the-art (following an arXiv search through recent literature on google scholar including arXiv). This has been identified by [R1] stating “RATCHET produce better reports than other competitors”, and [R4] stating “the results show an improvement in the state-of-the-art, which the authors went through the trouble of (re-)implementing so that a head-to-head comparison could be made”. Furthermore, we have provided citations where comparable results are presented for similar CXR report generation experiments in literature [1, 14]. We aim to show that results are not artificially inflated by special conditioning of evaluation metrics, as the reports are evaluated in its entirety. The disparity in minute difference of scores are attributed to factors such as the tokenization of the language and/or number of report examples, etc… It is also confusing that [R3] states “a straightforward method” as a strength and then state “the Method section are incoherent and uninformative” and not being able to “reproduce the proposed method” later as a weakness.</p>
+
+  <p>‘The human body is asymmetric’ [R1/R4] – In our experiments, we only used AP/PA views from the MIMIC-CXR dataset as specified by the provided metadata. We omitted the use of lateral images as image features are likely to be drastically more different compared to AP/PA (i.e. It is more symmetric than lateral, but not completely symmetric). To complement the complete clinical pathway, we can re-train the model with only AP (150488 images) or PA (103363 images) alone.</p>
+
+  <p>‘clinical accuracy of the generated reports’ [R1] – the output of our method has been validated by a clinician, but not through a crafted evaluation setting involving multiple clinicians. By using Stanford’s NLP disease label extractor on the generated text, and comparing the performance to CheXNet, we have shown that RATCHET is just as accurate with the added bonus that the predicted outcome is of the form of a radiology report.</p>
+
+  <p>We hope we have addressed the main concerns. We believe that our work would be of interest for the attendees of MICCAI 2021 and beyond.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0727-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0728-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Text (clinical/radiology reports)"
+        class="post-category">
+        Modalities - Text (clinical/radiology reports)
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Hou, Benjamin"
+        class="post-category">
+        Hou, Benjamin
+      </a> |  
+      
+      <a href="kittywong/tags#Kaissis, Georgios"
+        class="post-category">
+        Kaissis, Georgios
+      </a> |  
+      
+      <a href="kittywong/tags#Summers, Ronald M."
+        class="post-category">
+        Summers, Ronald M.
+      </a> |  
+      
+      <a href="kittywong/tags#Kainz, Bernhard"
+        class="post-category">
+        Kainz, Bernhard
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0728/12/31/Paper1378">
+          Detecting when pre-trained nnU-Net models fail silently for Covid-19 lung lesion segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0726/12/31/Paper0562">
+          Beyond COVID-19 Diagnosis: Prognosis with Hierarchical Graph Representation Learning
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

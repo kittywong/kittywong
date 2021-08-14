@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Few-Shot Domain Adaptation with Polymorphic Transformers | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Few-Shot Domain Adaptation with Polymorphic Transformers" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Shaohua Li, Xiuchao Sui, Jie Fu, Huazhu Fu, Xiangde Luo, Yangqin Feng, Xinxing Xu, Yong Liu, Daniel S. W. Ting, Rick Siow Mong Goh Abstract Deep neural networks (DNNs) trained on one set of medical images often experience severe performance drop on unseen test images, due to various domain discrepancy between the training images (source domain) and the test images (target domain), which raises a domain adaptation issue. In clinical settings, it is difficult to collect enough annotated target domain data in a short period. Few-shot domain adaptation, i.e., adapting a trained model with a handful of annotations, is highly practical and useful in this case. In this paper, we propose a Polymorphic Transformer (Polyformer), which can be incorporated into any DNN backbones for few-shot domain adaptation. Specifically, after the polyformer layer is inserted into a model trained on the source domain, it extracts a set of prototype embeddings, which can be viewed as a ``basis’’ of the source-domain features. On the target domain, the polyformer layer adapts by only updating a projection layer which controls the interactions between image features and the prototype embeddings. All other model weights (except BatchNorm parameters) are frozen during adaptation. Thus, the chance of overfitting the annotations is greatly reduced, and the model can perform robustly on the target domain after being trained on a few annotated images. We demonstrate the effectiveness of Polyformer on two medical segmentation tasks (i.e., optic disc/cup segmentation, and polyp segmentation). The source code of Polyformer is released at https://github.com/askerlee/segtran. Link to paper https://doi.org/10.1007/978-3-030-87196-3_31 Link to the code repository https://github.com/askerlee/segtran Link to the dataset(s) https://drive.google.com/file/d/1lODorfB33jbd-im-qrtUgWnZXxB94F55/view Reviews Review #1 Please describe the contribution of the paper The paper proposes a novel approach to few-shot domain adaptation by introducing a polymorphic transformer that can be inserted between the feature extraction and the prediction component of the model. The polymorphic transformer consists of an Induced Set Attention Block (ISAB), to learn inducing points/prototypes for the source domain that can then be transformed to target prototypes by attending the input features and can then finally produce adapted features (by again attending by the input features). During domain adaptation, the transformer projection weights are finetuned in addition to the batch norm parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The use of ISAB for few-shot domain adaptation is novel. The approach is simple, achieves promising results and an ablation study is provided to highlight the effect of different components/choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental evaluation of the paper is lacking. Results of the proposed approach are compared to baselines, but it is not clear what these baselines are (see detailed comments). Methods are further compared on two datasets (optic disk/cup segmentation and polyp segmentation). However, as it is not motivated why these particular datasets are chosen, it raises concerns that no comparisons are performed on the medical datasets (or the same subset of data) that have been used in prior work. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors provide source code and the main experimental details. Reported experiments (besides the baselines) appear reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experimental evaluation: For instance, the CycleGAN description appears to be the naive approach to train a CycleGAN to map the target images to the source domain and use a source-domain trained classifier, while the reference [12] indicates a more recent and advanced approach where CycleGAN only is a minor component. Similarly, DA-ADV is not identical to pOSAL (although related), which raises the question what models are being compared and if the proposed approach does compare well compared to more recent baselines. A table highlighting the number of parameters that are being fine-tuned in the different settings, would also have been useful. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the approach is simple and the authors report promising results, it is difficult to assess the performance due to the issues with the experimental evaluation. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use a transformer for few-shot domain adaptation on medical image segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of using transformer-based model for few-shot domain adaptation (FSDA) is novel. The proposed method aims to use prototype alignment to learn domain-invariant features. The experimental results claimed in this work seem to be promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The building blocks of the transformer are proposed in [1,11]. Thus, the contribution on transformer is somewhat limited. (I have no access to [1], so I cannot make a fair judgement of how different from [1].) The experimental design requires elaboration. 2.1) The authors only choose adversarial domain adaptation (ADA) as the baseline methods. ADA are designed for unsupervised domain adaptation (UDA) although it can be used for FSDA. That is to say, ADA does not fully utilize the labeled examples from the target domain. Should this be discussed in the experimental design? In Table 2, it is more interesting to see the comparison between Polyformer (unsupervised) and ADA. 2.2) The baseline ADA methods are doing domain invariance learning in the masks. But [9,17] are proposed to work in the feature space (before the last layer of the fully connected layer). Have the authors thought about this? 2.3) The authors choose 5-shot. What is the influence of the number of the labeled target examples (few shot) on the model performance? 2.4) The description of the baseline methods is bit unclear, especially for [4,9,17]. Are these baseline methods re-implemented with U-Net? What is the architecture for the discriminator? According to [a], the architecture of the discriminator also plays an important role. [a] Neural Architecture Search for Adversarial Medical Image Segmentation, MICCAI 2019 Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility seems to be OK. But I want to clarify that I didn’t test the source code in the supplementary materials. I think a simple README file is highly desired. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Following 4. Minor Issues: 1) In Table 1 and 2, there is a column called Average, which requires clarification. 2) Missing references. [b] Few-Shot Adversarial Domain Adaptation, NIPS 2017 [c] Domain Adaption in One-Shot Learning, ECML 2018 Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The recommendation is based on questions in 4 and 7. I am willing to upgrade my score if there is a rebuttal phase for clarification. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a Polymorphic Transformer (polyformer) for few-shot domain adaptation. The polyformer layer locates between the feature extractor and task head, and it adapts to the target domain by updating a projection layer that updates BatchNorm parameters only and keeps all other parameters frozen. The method was validated on two data sets (optic disc/cup segmentation, and polyp segmentation) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. (2) The proposed method applies Polymorphic Transformer to few-shot domain adaptation is quite novel. (3) The results by the proposed method outperformed other related state-of-the-art methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Implementation details are not well described, though the code is directly attached in the supplementary material. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is very good, as the authors directly attached the code in the supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In this paper, a polymorphic transformer (polyformer) is proposed for few-shot domain adaptation. The polyformer layer is located between the feature extractor and the task header and adapts to the target domain by updating a projection layer that updates only the batch norm parameters and keeps all other parameters frozen. The method was validated on two datasets (optic disc/cup segmentation and polyp segmentation) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) Implementation details should be well described and can be included in supplementary material if space is limited. Although the authors provide the code directly in the supplementary material, it is difficult to follow in a short time. (2) The polyformer layer is used to transform the feature maps f in the target domain into f’ that look more “familiar” to the task header M2. The idea is very similar to feature alignment in unsupervised domain adaptation (UDA). What is the advantage of the polyformer compared to feature alignment? (3) M is a hyper-parameter in the polyformer layer and takes a value of 256. How did the authors choose this default value, and does it make a big difference to the final performance? (4) In Table 1, the dice coefficient of disc segmentation (0.909) in RIM-One of Polyformer (K + BN + Mask Adv) is worse than the dice of 0.913 of Polyformer (Features Adv). It would be great if the authors could share some possible reasons for this. (5) In the experimental design, five annotated images were randomly selected from the target domain. What is the accuracy if we select more images, say 10? How many images do we need to select to get comparable results with the upper bound of the directly supervised model? (6) It would be great if the authors could give some examples of failed segmentations in the target domain. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. The experiment results are quite solid and outperformed other state-of-the-art methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While reviewers appreciated the idea of polymorphic transformer-based few-shot domain adaptation for image segmentation, they raised some concerns: experimental design is not clear and needs clarification (e.g., what the baseline approaches are, why the paper chooses those competitor/baseline methods for a comparison in the experiments, whether the comparison with other methods is fair, why five shots are selected, insights for the experimental results are missing, etc.), technical contributions are not clear (relationship between the proposed method and references [1][11] needs to be clarified), and technical or implementation details are not clearly explained. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a polymorphic transformer-based few-shot domain adaptation method for medical image segmentation. The rebuttal resolves some of the reviewers’ concerns, but one important point about the technical novelty is not well addressed. In addition, the comment regarding technical/implementation details is not satisfactorily addressed in the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers agreed on the importance of the problem the paper tackles and the novelty of the method. On the other hand, they raised concerns about the experimental design including baseline methods and datasets, and lack of detail/clarity in certain aspects of the paper. In my opinion, the rebuttal does a good job of answering most of these concerns, most importantly questions regarding the experimental set up. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is a paper with relatively strong scores going into the rebuttal with all reviewers commenting positively on the novel idea. However, the reviewers raised some major points regarding the experimental setup and evaluation of the proposed contribution. The rebuttal mostly addresses those points. I could imagine the reviewers arguing some points further, for example the use of the ADA baseline, or the relationship to [1] &amp; [11] which isn’t clarified in the rebuttal. However, with some major points clarified I believe this paper is of sufficient quality and interest to the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their high-quality reviews and constructive comments. We are happy to learn that all reviewers appreciate our motivation and novelty. Below we provide point-to-point responses to the comments, which will be integrated in the final version. [Q] Number of shots (R2, R3): [A] We list additional results of 10 and 15 shots. Constrained by space, we only choose three competitive baselines and report the average dice score, as: Method / 10-shot / 15-shot U-Net (target) / 0.819 / 0.845 RevGrad (Features) / 0.826 / 0.849 CellSegSSDA / 0.829 / 0.855 Polyformer / 0.840 / 0.861 By comparing scores above with Table 2, our Polyformer consistently outperforms other baselines under different shots. [Q] Evaluation (R1): [A] First, we stress that the aim of our experiments is not to achieve SOTA by combining various tricks, but to demonstrate that Polyformer per se works well without bells and whistles. CycleGAN: We realized that the presentation “CycleGAN [23,12]” was unclear and confusing. We clarify that here citation [12] is to indicate that CycleGAN is an important component of [12], and not to suggest [12] only uses CycleGAN. [12] consists of three components: 1) a CycleGAN to convert source domain to the target domain, 2) inter-domain knowledge distillation, and 3) a “mean teacher” on the target domain to make the model more robust. Among them, CycleGAN is the essential component for domain adaptation. Components 2 and 3 are popular means to improve model robustness, and can be incorporated into Polyformer or other baselines to improve them as well. As the authors of [12] cannot share their source code upon our email request, we were unable to implement [12] during the short rebuttal period. We will analyze each component of [12] after rebuttal. Nonetheless, our use of CycleGAN in the submission was different from [12]; to better conform to [12], we ran extra experiments of CycleGAN to convert source domain to target domain for model training. The scores improved a bit: 0.747/0.690/0.709, Avg. 0.715, but are still much lower than other baselines. DA-ADV vs. pOSAL: We disagree with R1 on “DA-ADV [4] is not identical to pOSAL [19]”. pOSAL consists of two parts: 1) an ROI extraction net to crop the optic disc region; 2) adversarial training by discriminating predicted masks on source- vs. target-domain images. In our pipeline, we cropped the optic disc regions in preprocessing, same as part 1 of pOSAL. Part 2 of pOSAL is exactly DA-ADV. Although there are minor techniques to further improve the performance of pOSAL, e.g. Morphology-aware Segmentation Loss, it’s not a major ingredient and can be incorporated into other methods to improve them as well. [Q] Choice of datasets (R1): [A] To our best knowledge, there is no standard dataset to benchmark domain adaptation on medical images. Different papers choose datasets based on more or less ad-hoc preferences. Thus, we choose two widely studied medical tasks (disc/cup and polyp segmentation) for our evaluation. [Q] Utilizing labeled target domain images (R2): [A] We followed the common practice of few-shot semi-supervised learning by combining unsupervised objectives with supervised ones, which is also adopted in [4,9,10]. There may be better ways to incorporate supervision into ADA, but it’s beyond the scope and focus of this paper. [Q] Other settings of ADA (R2): [A] We add an experiment to compare Polyformer (unsupervised) and ADA (unsupervised): ADA (unsupervised): 0.817/0.704/0.716, Avg. 0.746; Polyformer (unsupervised): 0.829/0.728/0.736, Avg. 0.764 (Table 1). We also experimented with ADDA [17] on features, whose performance falls between RevGrad (Features) and ADDA (Mask). [Q] Feature alignment (R3): [A] We experimented with a nearest-neighbor based feature alignment, but found it performed poorly (either used with Polyformer or used alone). Moreover, domain adversarial training can be viewed as performing learnable feature alignment. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Shaohua Li, Xiuchao Sui, Jie Fu, Huazhu Fu, Xiangde Luo, Yangqin Feng, Xinxing Xu, Yong Liu, Daniel S. W. Ting, Rick Siow Mong Goh Abstract Deep neural networks (DNNs) trained on one set of medical images often experience severe performance drop on unseen test images, due to various domain discrepancy between the training images (source domain) and the test images (target domain), which raises a domain adaptation issue. In clinical settings, it is difficult to collect enough annotated target domain data in a short period. Few-shot domain adaptation, i.e., adapting a trained model with a handful of annotations, is highly practical and useful in this case. In this paper, we propose a Polymorphic Transformer (Polyformer), which can be incorporated into any DNN backbones for few-shot domain adaptation. Specifically, after the polyformer layer is inserted into a model trained on the source domain, it extracts a set of prototype embeddings, which can be viewed as a ``basis’’ of the source-domain features. On the target domain, the polyformer layer adapts by only updating a projection layer which controls the interactions between image features and the prototype embeddings. All other model weights (except BatchNorm parameters) are frozen during adaptation. Thus, the chance of overfitting the annotations is greatly reduced, and the model can perform robustly on the target domain after being trained on a few annotated images. We demonstrate the effectiveness of Polyformer on two medical segmentation tasks (i.e., optic disc/cup segmentation, and polyp segmentation). The source code of Polyformer is released at https://github.com/askerlee/segtran. Link to paper https://doi.org/10.1007/978-3-030-87196-3_31 Link to the code repository https://github.com/askerlee/segtran Link to the dataset(s) https://drive.google.com/file/d/1lODorfB33jbd-im-qrtUgWnZXxB94F55/view Reviews Review #1 Please describe the contribution of the paper The paper proposes a novel approach to few-shot domain adaptation by introducing a polymorphic transformer that can be inserted between the feature extraction and the prediction component of the model. The polymorphic transformer consists of an Induced Set Attention Block (ISAB), to learn inducing points/prototypes for the source domain that can then be transformed to target prototypes by attending the input features and can then finally produce adapted features (by again attending by the input features). During domain adaptation, the transformer projection weights are finetuned in addition to the batch norm parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The use of ISAB for few-shot domain adaptation is novel. The approach is simple, achieves promising results and an ablation study is provided to highlight the effect of different components/choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental evaluation of the paper is lacking. Results of the proposed approach are compared to baselines, but it is not clear what these baselines are (see detailed comments). Methods are further compared on two datasets (optic disk/cup segmentation and polyp segmentation). However, as it is not motivated why these particular datasets are chosen, it raises concerns that no comparisons are performed on the medical datasets (or the same subset of data) that have been used in prior work. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors provide source code and the main experimental details. Reported experiments (besides the baselines) appear reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experimental evaluation: For instance, the CycleGAN description appears to be the naive approach to train a CycleGAN to map the target images to the source domain and use a source-domain trained classifier, while the reference [12] indicates a more recent and advanced approach where CycleGAN only is a minor component. Similarly, DA-ADV is not identical to pOSAL (although related), which raises the question what models are being compared and if the proposed approach does compare well compared to more recent baselines. A table highlighting the number of parameters that are being fine-tuned in the different settings, would also have been useful. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the approach is simple and the authors report promising results, it is difficult to assess the performance due to the issues with the experimental evaluation. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use a transformer for few-shot domain adaptation on medical image segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of using transformer-based model for few-shot domain adaptation (FSDA) is novel. The proposed method aims to use prototype alignment to learn domain-invariant features. The experimental results claimed in this work seem to be promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The building blocks of the transformer are proposed in [1,11]. Thus, the contribution on transformer is somewhat limited. (I have no access to [1], so I cannot make a fair judgement of how different from [1].) The experimental design requires elaboration. 2.1) The authors only choose adversarial domain adaptation (ADA) as the baseline methods. ADA are designed for unsupervised domain adaptation (UDA) although it can be used for FSDA. That is to say, ADA does not fully utilize the labeled examples from the target domain. Should this be discussed in the experimental design? In Table 2, it is more interesting to see the comparison between Polyformer (unsupervised) and ADA. 2.2) The baseline ADA methods are doing domain invariance learning in the masks. But [9,17] are proposed to work in the feature space (before the last layer of the fully connected layer). Have the authors thought about this? 2.3) The authors choose 5-shot. What is the influence of the number of the labeled target examples (few shot) on the model performance? 2.4) The description of the baseline methods is bit unclear, especially for [4,9,17]. Are these baseline methods re-implemented with U-Net? What is the architecture for the discriminator? According to [a], the architecture of the discriminator also plays an important role. [a] Neural Architecture Search for Adversarial Medical Image Segmentation, MICCAI 2019 Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility seems to be OK. But I want to clarify that I didn’t test the source code in the supplementary materials. I think a simple README file is highly desired. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Following 4. Minor Issues: 1) In Table 1 and 2, there is a column called Average, which requires clarification. 2) Missing references. [b] Few-Shot Adversarial Domain Adaptation, NIPS 2017 [c] Domain Adaption in One-Shot Learning, ECML 2018 Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The recommendation is based on questions in 4 and 7. I am willing to upgrade my score if there is a rebuttal phase for clarification. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a Polymorphic Transformer (polyformer) for few-shot domain adaptation. The polyformer layer locates between the feature extractor and task head, and it adapts to the target domain by updating a projection layer that updates BatchNorm parameters only and keeps all other parameters frozen. The method was validated on two data sets (optic disc/cup segmentation, and polyp segmentation) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. (2) The proposed method applies Polymorphic Transformer to few-shot domain adaptation is quite novel. (3) The results by the proposed method outperformed other related state-of-the-art methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Implementation details are not well described, though the code is directly attached in the supplementary material. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is very good, as the authors directly attached the code in the supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In this paper, a polymorphic transformer (polyformer) is proposed for few-shot domain adaptation. The polyformer layer is located between the feature extractor and the task header and adapts to the target domain by updating a projection layer that updates only the batch norm parameters and keeps all other parameters frozen. The method was validated on two datasets (optic disc/cup segmentation and polyp segmentation) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) Implementation details should be well described and can be included in supplementary material if space is limited. Although the authors provide the code directly in the supplementary material, it is difficult to follow in a short time. (2) The polyformer layer is used to transform the feature maps f in the target domain into f’ that look more “familiar” to the task header M2. The idea is very similar to feature alignment in unsupervised domain adaptation (UDA). What is the advantage of the polyformer compared to feature alignment? (3) M is a hyper-parameter in the polyformer layer and takes a value of 256. How did the authors choose this default value, and does it make a big difference to the final performance? (4) In Table 1, the dice coefficient of disc segmentation (0.909) in RIM-One of Polyformer (K + BN + Mask Adv) is worse than the dice of 0.913 of Polyformer (Features Adv). It would be great if the authors could share some possible reasons for this. (5) In the experimental design, five annotated images were randomly selected from the target domain. What is the accuracy if we select more images, say 10? How many images do we need to select to get comparable results with the upper bound of the directly supervised model? (6) It would be great if the authors could give some examples of failed segmentations in the target domain. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. The experiment results are quite solid and outperformed other state-of-the-art methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While reviewers appreciated the idea of polymorphic transformer-based few-shot domain adaptation for image segmentation, they raised some concerns: experimental design is not clear and needs clarification (e.g., what the baseline approaches are, why the paper chooses those competitor/baseline methods for a comparison in the experiments, whether the comparison with other methods is fair, why five shots are selected, insights for the experimental results are missing, etc.), technical contributions are not clear (relationship between the proposed method and references [1][11] needs to be clarified), and technical or implementation details are not clearly explained. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a polymorphic transformer-based few-shot domain adaptation method for medical image segmentation. The rebuttal resolves some of the reviewers’ concerns, but one important point about the technical novelty is not well addressed. In addition, the comment regarding technical/implementation details is not satisfactorily addressed in the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers agreed on the importance of the problem the paper tackles and the novelty of the method. On the other hand, they raised concerns about the experimental design including baseline methods and datasets, and lack of detail/clarity in certain aspects of the paper. In my opinion, the rebuttal does a good job of answering most of these concerns, most importantly questions regarding the experimental set up. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is a paper with relatively strong scores going into the rebuttal with all reviewers commenting positively on the novel idea. However, the reviewers raised some major points regarding the experimental setup and evaluation of the proposed contribution. The rebuttal mostly addresses those points. I could imagine the reviewers arguing some points further, for example the use of the ADA baseline, or the relationship to [1] &amp; [11] which isn’t clarified in the rebuttal. However, with some major points clarified I believe this paper is of sufficient quality and interest to the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their high-quality reviews and constructive comments. We are happy to learn that all reviewers appreciate our motivation and novelty. Below we provide point-to-point responses to the comments, which will be integrated in the final version. [Q] Number of shots (R2, R3): [A] We list additional results of 10 and 15 shots. Constrained by space, we only choose three competitive baselines and report the average dice score, as: Method / 10-shot / 15-shot U-Net (target) / 0.819 / 0.845 RevGrad (Features) / 0.826 / 0.849 CellSegSSDA / 0.829 / 0.855 Polyformer / 0.840 / 0.861 By comparing scores above with Table 2, our Polyformer consistently outperforms other baselines under different shots. [Q] Evaluation (R1): [A] First, we stress that the aim of our experiments is not to achieve SOTA by combining various tricks, but to demonstrate that Polyformer per se works well without bells and whistles. CycleGAN: We realized that the presentation “CycleGAN [23,12]” was unclear and confusing. We clarify that here citation [12] is to indicate that CycleGAN is an important component of [12], and not to suggest [12] only uses CycleGAN. [12] consists of three components: 1) a CycleGAN to convert source domain to the target domain, 2) inter-domain knowledge distillation, and 3) a “mean teacher” on the target domain to make the model more robust. Among them, CycleGAN is the essential component for domain adaptation. Components 2 and 3 are popular means to improve model robustness, and can be incorporated into Polyformer or other baselines to improve them as well. As the authors of [12] cannot share their source code upon our email request, we were unable to implement [12] during the short rebuttal period. We will analyze each component of [12] after rebuttal. Nonetheless, our use of CycleGAN in the submission was different from [12]; to better conform to [12], we ran extra experiments of CycleGAN to convert source domain to target domain for model training. The scores improved a bit: 0.747/0.690/0.709, Avg. 0.715, but are still much lower than other baselines. DA-ADV vs. pOSAL: We disagree with R1 on “DA-ADV [4] is not identical to pOSAL [19]”. pOSAL consists of two parts: 1) an ROI extraction net to crop the optic disc region; 2) adversarial training by discriminating predicted masks on source- vs. target-domain images. In our pipeline, we cropped the optic disc regions in preprocessing, same as part 1 of pOSAL. Part 2 of pOSAL is exactly DA-ADV. Although there are minor techniques to further improve the performance of pOSAL, e.g. Morphology-aware Segmentation Loss, it’s not a major ingredient and can be incorporated into other methods to improve them as well. [Q] Choice of datasets (R1): [A] To our best knowledge, there is no standard dataset to benchmark domain adaptation on medical images. Different papers choose datasets based on more or less ad-hoc preferences. Thus, we choose two widely studied medical tasks (disc/cup and polyp segmentation) for our evaluation. [Q] Utilizing labeled target domain images (R2): [A] We followed the common practice of few-shot semi-supervised learning by combining unsupervised objectives with supervised ones, which is also adopted in [4,9,10]. There may be better ways to incorporate supervision into ADA, but it’s beyond the scope and focus of this paper. [Q] Other settings of ADA (R2): [A] We add an experiment to compare Polyformer (unsupervised) and ADA (unsupervised): ADA (unsupervised): 0.817/0.704/0.716, Avg. 0.746; Polyformer (unsupervised): 0.829/0.728/0.736, Avg. 0.764 (Table 1). We also experimented with ADDA [17] on features, whose performance falls between RevGrad (Features) and ADDA (Mask). [Q] Feature alignment (R3): [A] We experimented with a nearest-neighbor based feature alignment, but found it performed poorly (either used with Polyformer or used alone). Moreover, domain adversarial training can be viewed as performing learnable feature alignment. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0230/12/31/Paper0106" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0230/12/31/Paper0106" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0230-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Few-Shot Domain Adaptation with Polymorphic Transformers" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0230/12/31/Paper0106"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0230/12/31/Paper0106","headline":"Few-Shot Domain Adaptation with Polymorphic Transformers","dateModified":"0231-01-01T00:00:00-05:17","datePublished":"0230-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Shaohua Li, Xiuchao Sui, Jie Fu, Huazhu Fu, Xiangde Luo, Yangqin Feng, Xinxing Xu, Yong Liu, Daniel S. W. Ting, Rick Siow Mong Goh Abstract Deep neural networks (DNNs) trained on one set of medical images often experience severe performance drop on unseen test images, due to various domain discrepancy between the training images (source domain) and the test images (target domain), which raises a domain adaptation issue. In clinical settings, it is difficult to collect enough annotated target domain data in a short period. Few-shot domain adaptation, i.e., adapting a trained model with a handful of annotations, is highly practical and useful in this case. In this paper, we propose a Polymorphic Transformer (Polyformer), which can be incorporated into any DNN backbones for few-shot domain adaptation. Specifically, after the polyformer layer is inserted into a model trained on the source domain, it extracts a set of prototype embeddings, which can be viewed as a ``basis’’ of the source-domain features. On the target domain, the polyformer layer adapts by only updating a projection layer which controls the interactions between image features and the prototype embeddings. All other model weights (except BatchNorm parameters) are frozen during adaptation. Thus, the chance of overfitting the annotations is greatly reduced, and the model can perform robustly on the target domain after being trained on a few annotated images. We demonstrate the effectiveness of Polyformer on two medical segmentation tasks (i.e., optic disc/cup segmentation, and polyp segmentation). The source code of Polyformer is released at https://github.com/askerlee/segtran. Link to paper https://doi.org/10.1007/978-3-030-87196-3_31 Link to the code repository https://github.com/askerlee/segtran Link to the dataset(s) https://drive.google.com/file/d/1lODorfB33jbd-im-qrtUgWnZXxB94F55/view Reviews Review #1 Please describe the contribution of the paper The paper proposes a novel approach to few-shot domain adaptation by introducing a polymorphic transformer that can be inserted between the feature extraction and the prediction component of the model. The polymorphic transformer consists of an Induced Set Attention Block (ISAB), to learn inducing points/prototypes for the source domain that can then be transformed to target prototypes by attending the input features and can then finally produce adapted features (by again attending by the input features). During domain adaptation, the transformer projection weights are finetuned in addition to the batch norm parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The use of ISAB for few-shot domain adaptation is novel. The approach is simple, achieves promising results and an ablation study is provided to highlight the effect of different components/choices. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental evaluation of the paper is lacking. Results of the proposed approach are compared to baselines, but it is not clear what these baselines are (see detailed comments). Methods are further compared on two datasets (optic disk/cup segmentation and polyp segmentation). However, as it is not motivated why these particular datasets are chosen, it raises concerns that no comparisons are performed on the medical datasets (or the same subset of data) that have been used in prior work. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors provide source code and the main experimental details. Reported experiments (besides the baselines) appear reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Experimental evaluation: For instance, the CycleGAN description appears to be the naive approach to train a CycleGAN to map the target images to the source domain and use a source-domain trained classifier, while the reference [12] indicates a more recent and advanced approach where CycleGAN only is a minor component. Similarly, DA-ADV is not identical to pOSAL (although related), which raises the question what models are being compared and if the proposed approach does compare well compared to more recent baselines. A table highlighting the number of parameters that are being fine-tuned in the different settings, would also have been useful. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the approach is simple and the authors report promising results, it is difficult to assess the performance due to the issues with the experimental evaluation. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use a transformer for few-shot domain adaptation on medical image segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of using transformer-based model for few-shot domain adaptation (FSDA) is novel. The proposed method aims to use prototype alignment to learn domain-invariant features. The experimental results claimed in this work seem to be promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The building blocks of the transformer are proposed in [1,11]. Thus, the contribution on transformer is somewhat limited. (I have no access to [1], so I cannot make a fair judgement of how different from [1].) The experimental design requires elaboration. 2.1) The authors only choose adversarial domain adaptation (ADA) as the baseline methods. ADA are designed for unsupervised domain adaptation (UDA) although it can be used for FSDA. That is to say, ADA does not fully utilize the labeled examples from the target domain. Should this be discussed in the experimental design? In Table 2, it is more interesting to see the comparison between Polyformer (unsupervised) and ADA. 2.2) The baseline ADA methods are doing domain invariance learning in the masks. But [9,17] are proposed to work in the feature space (before the last layer of the fully connected layer). Have the authors thought about this? 2.3) The authors choose 5-shot. What is the influence of the number of the labeled target examples (few shot) on the model performance? 2.4) The description of the baseline methods is bit unclear, especially for [4,9,17]. Are these baseline methods re-implemented with U-Net? What is the architecture for the discriminator? According to [a], the architecture of the discriminator also plays an important role. [a] Neural Architecture Search for Adversarial Medical Image Segmentation, MICCAI 2019 Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility seems to be OK. But I want to clarify that I didn’t test the source code in the supplementary materials. I think a simple README file is highly desired. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Following 4. Minor Issues: 1) In Table 1 and 2, there is a column called Average, which requires clarification. 2) Missing references. [b] Few-Shot Adversarial Domain Adaptation, NIPS 2017 [c] Domain Adaption in One-Shot Learning, ECML 2018 Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The recommendation is based on questions in 4 and 7. I am willing to upgrade my score if there is a rebuttal phase for clarification. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a Polymorphic Transformer (polyformer) for few-shot domain adaptation. The polyformer layer locates between the feature extractor and task head, and it adapts to the target domain by updating a projection layer that updates BatchNorm parameters only and keeps all other parameters frozen. The method was validated on two data sets (optic disc/cup segmentation, and polyp segmentation) and reported state-of-the-art results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. (2) The proposed method applies Polymorphic Transformer to few-shot domain adaptation is quite novel. (3) The results by the proposed method outperformed other related state-of-the-art methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Implementation details are not well described, though the code is directly attached in the supplementary material. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of the paper is very good, as the authors directly attached the code in the supplementary material. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In this paper, a polymorphic transformer (polyformer) is proposed for few-shot domain adaptation. The polyformer layer is located between the feature extractor and the task header and adapts to the target domain by updating a projection layer that updates only the batch norm parameters and keeps all other parameters frozen. The method was validated on two datasets (optic disc/cup segmentation and polyp segmentation) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways. (1) Implementation details should be well described and can be included in supplementary material if space is limited. Although the authors provide the code directly in the supplementary material, it is difficult to follow in a short time. (2) The polyformer layer is used to transform the feature maps f in the target domain into f’ that look more “familiar” to the task header M2. The idea is very similar to feature alignment in unsupervised domain adaptation (UDA). What is the advantage of the polyformer compared to feature alignment? (3) M is a hyper-parameter in the polyformer layer and takes a value of 256. How did the authors choose this default value, and does it make a big difference to the final performance? (4) In Table 1, the dice coefficient of disc segmentation (0.909) in RIM-One of Polyformer (K + BN + Mask Adv) is worse than the dice of 0.913 of Polyformer (Features Adv). It would be great if the authors could share some possible reasons for this. (5) In the experimental design, five annotated images were randomly selected from the target domain. What is the accuracy if we select more images, say 10? How many images do we need to select to get comparable results with the upper bound of the directly supervised model? (6) It would be great if the authors could give some examples of failed segmentations in the target domain. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. The experiment results are quite solid and outperformed other state-of-the-art methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While reviewers appreciated the idea of polymorphic transformer-based few-shot domain adaptation for image segmentation, they raised some concerns: experimental design is not clear and needs clarification (e.g., what the baseline approaches are, why the paper chooses those competitor/baseline methods for a comparison in the experiments, whether the comparison with other methods is fair, why five shots are selected, insights for the experimental results are missing, etc.), technical contributions are not clear (relationship between the proposed method and references [1][11] needs to be clarified), and technical or implementation details are not clearly explained. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a polymorphic transformer-based few-shot domain adaptation method for medical image segmentation. The rebuttal resolves some of the reviewers’ concerns, but one important point about the technical novelty is not well addressed. In addition, the comment regarding technical/implementation details is not satisfactorily addressed in the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers agreed on the importance of the problem the paper tackles and the novelty of the method. On the other hand, they raised concerns about the experimental design including baseline methods and datasets, and lack of detail/clarity in certain aspects of the paper. In my opinion, the rebuttal does a good job of answering most of these concerns, most importantly questions regarding the experimental set up. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is a paper with relatively strong scores going into the rebuttal with all reviewers commenting positively on the novel idea. However, the reviewers raised some major points regarding the experimental setup and evaluation of the proposed contribution. The rebuttal mostly addresses those points. I could imagine the reviewers arguing some points further, for example the use of the ADA baseline, or the relationship to [1] &amp; [11] which isn’t clarified in the rebuttal. However, with some major points clarified I believe this paper is of sufficient quality and interest to the MICCAI community. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their high-quality reviews and constructive comments. We are happy to learn that all reviewers appreciate our motivation and novelty. Below we provide point-to-point responses to the comments, which will be integrated in the final version. [Q] Number of shots (R2, R3): [A] We list additional results of 10 and 15 shots. Constrained by space, we only choose three competitive baselines and report the average dice score, as: Method / 10-shot / 15-shot U-Net (target) / 0.819 / 0.845 RevGrad (Features) / 0.826 / 0.849 CellSegSSDA / 0.829 / 0.855 Polyformer / 0.840 / 0.861 By comparing scores above with Table 2, our Polyformer consistently outperforms other baselines under different shots. [Q] Evaluation (R1): [A] First, we stress that the aim of our experiments is not to achieve SOTA by combining various tricks, but to demonstrate that Polyformer per se works well without bells and whistles. CycleGAN: We realized that the presentation “CycleGAN [23,12]” was unclear and confusing. We clarify that here citation [12] is to indicate that CycleGAN is an important component of [12], and not to suggest [12] only uses CycleGAN. [12] consists of three components: 1) a CycleGAN to convert source domain to the target domain, 2) inter-domain knowledge distillation, and 3) a “mean teacher” on the target domain to make the model more robust. Among them, CycleGAN is the essential component for domain adaptation. Components 2 and 3 are popular means to improve model robustness, and can be incorporated into Polyformer or other baselines to improve them as well. As the authors of [12] cannot share their source code upon our email request, we were unable to implement [12] during the short rebuttal period. We will analyze each component of [12] after rebuttal. Nonetheless, our use of CycleGAN in the submission was different from [12]; to better conform to [12], we ran extra experiments of CycleGAN to convert source domain to target domain for model training. The scores improved a bit: 0.747/0.690/0.709, Avg. 0.715, but are still much lower than other baselines. DA-ADV vs. pOSAL: We disagree with R1 on “DA-ADV [4] is not identical to pOSAL [19]”. pOSAL consists of two parts: 1) an ROI extraction net to crop the optic disc region; 2) adversarial training by discriminating predicted masks on source- vs. target-domain images. In our pipeline, we cropped the optic disc regions in preprocessing, same as part 1 of pOSAL. Part 2 of pOSAL is exactly DA-ADV. Although there are minor techniques to further improve the performance of pOSAL, e.g. Morphology-aware Segmentation Loss, it’s not a major ingredient and can be incorporated into other methods to improve them as well. [Q] Choice of datasets (R1): [A] To our best knowledge, there is no standard dataset to benchmark domain adaptation on medical images. Different papers choose datasets based on more or less ad-hoc preferences. Thus, we choose two widely studied medical tasks (disc/cup and polyp segmentation) for our evaluation. [Q] Utilizing labeled target domain images (R2): [A] We followed the common practice of few-shot semi-supervised learning by combining unsupervised objectives with supervised ones, which is also adopted in [4,9,10]. There may be better ways to incorporate supervision into ADA, but it’s beyond the scope and focus of this paper. [Q] Other settings of ADA (R2): [A] We add an experiment to compare Polyformer (unsupervised) and ADA (unsupervised): ADA (unsupervised): 0.817/0.704/0.716, Avg. 0.746; Polyformer (unsupervised): 0.829/0.728/0.736, Avg. 0.764 (Table 1). We also experimented with ADDA [17] on features, whose performance falls between RevGrad (Features) and ADDA (Mask). [Q] Feature alignment (R3): [A] We experimented with a nearest-neighbor based feature alignment, but found it performed poorly (either used with Polyformer or used alone). Moreover, domain adversarial training can be viewed as performing learnable feature alignment. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Li, Shaohua,Sui, Xiuchao,Fu, Jie,Fu, Huazhu,Luo, Xiangde,Feng, Yangqin,Xu, Xinxing,Liu, Yong,Ting, Daniel S. W.,Goh, Rick Siow Mong" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Few-Shot Domain Adaptation with Polymorphic Transformers</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Li, Shaohua"
+        class="post-tags">
+        Li, Shaohua
+      </a> |  
+      
+      <a href="kittywong/tags#Sui, Xiuchao"
+        class="post-tags">
+        Sui, Xiuchao
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Jie"
+        class="post-tags">
+        Fu, Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Huazhu"
+        class="post-tags">
+        Fu, Huazhu
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiangde"
+        class="post-tags">
+        Luo, Xiangde
+      </a> |  
+      
+      <a href="kittywong/tags#Feng, Yangqin"
+        class="post-tags">
+        Feng, Yangqin
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Xinxing"
+        class="post-tags">
+        Xu, Xinxing
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yong"
+        class="post-tags">
+        Liu, Yong
+      </a> |  
+      
+      <a href="kittywong/tags#Ting, Daniel S. W."
+        class="post-tags">
+        Ting, Daniel S. W.
+      </a> |  
+      
+      <a href="kittywong/tags#Goh, Rick Siow Mong"
+        class="post-tags">
+        Goh, Rick Siow Mong
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Shaohua Li, Xiuchao Sui, Jie Fu, Huazhu Fu, Xiangde Luo, Yangqin Feng, Xinxing Xu, Yong Liu, Daniel S. W. Ting, Rick Siow Mong Goh
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Deep neural networks (DNNs) trained on one set of medical images often experience severe performance drop on unseen test images, due to various domain discrepancy between the training images (source domain) and the test images (target domain), which raises a domain adaptation issue. In clinical settings, it is difficult to collect enough annotated target domain data in a short period. Few-shot domain adaptation, i.e., adapting a trained model with a handful of annotations, is highly practical and useful in this case. In this paper, we propose a Polymorphic Transformer (Polyformer), which can be incorporated into any DNN backbones for few-shot domain adaptation. Specifically, after the polyformer layer is inserted into a model trained on the source domain, it extracts a set of prototype embeddings, which can be viewed as a ``basis’’ of the source-domain features. On the target domain, the polyformer layer adapts by only updating  a projection layer which controls the interactions between image features and the prototype embeddings. All other model weights (except BatchNorm parameters) are frozen during adaptation. Thus, the chance of overfitting the annotations is greatly reduced, and the model can perform robustly on the target domain after being trained on a few annotated images. We demonstrate the effectiveness of Polyformer on two medical segmentation tasks (i.e., optic disc/cup segmentation, and polyp segmentation). The source code of Polyformer is released at https://github.com/askerlee/segtran.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_31">https://doi.org/10.1007/978-3-030-87196-3_31</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/askerlee/segtran
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://drive.google.com/file/d/1lODorfB33jbd-im-qrtUgWnZXxB94F55/view
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes a novel approach to few-shot domain adaptation by introducing a polymorphic transformer that can be inserted between the feature extraction and the prediction component of the model. The polymorphic transformer consists of an Induced Set Attention Block (ISAB), to learn inducing points/prototypes for the source domain that can then be transformed to target prototypes by attending the input features and can then finally produce adapted features (by again attending by the input features). During domain adaptation, the transformer projection weights are finetuned in addition to the batch norm parameters.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The use of ISAB for few-shot domain adaptation is novel.
+The approach is simple, achieves promising results and an ablation study is provided to highlight the effect of different components/choices.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The experimental evaluation of the paper is lacking. Results of the proposed approach are compared to baselines, but it is not clear what these baselines are (see detailed comments).</p>
+
+      <p>Methods are further compared on two datasets (optic disk/cup segmentation and polyp segmentation). However, as it is not motivated why these particular datasets are chosen, it raises concerns that no comparisons are performed on the medical datasets (or the same subset of data) that have been used in prior work.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors provide source code and the main experimental details. Reported experiments (besides the baselines) appear reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Experimental evaluation: For instance, the CycleGAN description appears to be the naive approach to train a CycleGAN to map the target images to the source domain and use a source-domain trained classifier, while the reference [12] indicates a more recent and advanced approach where CycleGAN only is a minor component. Similarly, DA-ADV is not identical to pOSAL (although related), which raises the question what models are being compared and if the proposed approach does compare well compared to more recent baselines.</p>
+
+      <p>A table highlighting the number of parameters that are being fine-tuned in the different settings, would also have been useful.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>While the approach is simple and the authors report promising results, it is difficult to assess the performance due to the issues with the experimental evaluation.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes to use a transformer for few-shot domain adaptation on medical image segmentation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The idea of using transformer-based model for few-shot domain adaptation (FSDA) is novel. The proposed method aims to use prototype alignment to learn domain-invariant features.</li>
+        <li>The experimental results claimed in this work seem to be promising.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The building blocks of the transformer are proposed in [1,11]. Thus, the contribution on transformer is somewhat limited. (I have no access to [1], so I cannot make a fair judgement of how different from [1].)</p>
+        </li>
+        <li>
+          <p>The experimental design requires elaboration.
+2.1) The authors only choose adversarial domain adaptation (ADA) as the baseline methods. ADA are designed for unsupervised domain adaptation (UDA) although it can be used for FSDA. That is to say, ADA does not fully utilize the labeled examples from the target domain. Should this be discussed in the experimental design? In Table 2, it is more interesting to see the comparison between Polyformer (unsupervised) and ADA.
+2.2) The baseline ADA methods are doing domain invariance learning in the masks. But [9,17] are proposed to work in the feature space (before the last layer of the fully connected layer). Have the authors thought about this?
+2.3) The authors choose 5-shot. What is the influence of the number of the labeled target examples (few shot) on the model performance? 
+2.4) The description of the baseline methods is bit unclear, especially for [4,9,17]. Are these baseline methods re-implemented with U-Net? What is the architecture for the discriminator? According to [a], the architecture of the discriminator also plays an important role.</p>
+        </li>
+      </ol>
+
+      <p>[a] Neural Architecture Search for Adversarial Medical Image Segmentation, MICCAI 2019</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility seems to be OK. But I want to clarify that I didn’t test the source code in the supplementary materials. I think a simple README file is highly desired.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Following 4.</p>
+
+      <p>Minor Issues:
+1) In Table 1 and 2, there is a column called Average, which requires clarification.
+2) Missing references. 
+[b] Few-Shot Adversarial Domain Adaptation, NIPS 2017
+[c] Domain Adaption in One-Shot Learning, ECML 2018</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The recommendation is based on questions in 4 and 7. I am willing to upgrade my score if there is a rebuttal phase for clarification.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a Polymorphic Transformer (polyformer) for few-shot domain adaptation. The polyformer layer locates between the feature extractor and task head, and it adapts to the target domain by updating a projection layer that updates BatchNorm parameters only and keeps all other parameters frozen. The method was validated on two data sets (optic disc/cup segmentation, and polyp segmentation) and reported state-of-the-art results.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>(1) The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. 
+(2) The proposed method applies Polymorphic Transformer to few-shot domain adaptation is quite novel.
+(3) The results by the proposed method outperformed other related state-of-the-art methods.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Implementation details are not well described, though the code is directly attached in the supplementary material.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility of the paper is very good, as the authors directly attached the code in the supplementary material.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>In this paper, a polymorphic transformer (polyformer) is proposed for few-shot domain adaptation. The polyformer layer is located between the feature extractor and the task header and adapts to the target domain by updating a projection layer that updates only the batch norm parameters and keeps all other parameters frozen. The method was validated on two datasets (optic disc/cup segmentation and polyp segmentation) and reported state-of-the-art results. I appreciate their great efforts, but some drawbacks limit the potential and the work can be further improved in several ways.</p>
+
+      <p>(1) Implementation details should be well described and can be included in supplementary material if space is limited. Although the authors provide the code directly in the supplementary material, it is difficult to follow in a short time.
+(2) The polyformer layer is used to transform the feature maps f in the target domain into f’ that look more “familiar” to the task header M2. The idea is very similar to feature alignment in unsupervised domain adaptation (UDA). What is the advantage of the polyformer compared to feature alignment?
+(3) M is a hyper-parameter in the polyformer layer and takes a value of 256. How did the authors choose this default value, and does it make a big difference to the final performance? 
+(4) In Table 1, the dice coefficient of disc segmentation (0.909) in RIM-One of Polyformer (K + BN + Mask Adv) is worse than the dice of 0.913 of Polyformer (Features Adv). It would be great if the authors could share some possible reasons for this.
+(5) In the experimental design, five annotated images were randomly selected from the target domain. What is the accuracy if we select more images, say 10? How many images do we need to select to get comparable results with the upper bound of the directly supervised model?
+(6) It would be great if the authors could give some examples of failed segmentations in the target domain.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The topic of few-shot domain adaptation is highly important and interesting in clinical practice, which addresses the challenge of domain shift between source and target domains and expensive annotations. The experiment results are quite solid and outperformed other state-of-the-art methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>While reviewers appreciated the idea of polymorphic transformer-based few-shot domain adaptation for image segmentation, they raised some concerns: experimental design is not clear and needs clarification (e.g., what the baseline approaches are, why the paper chooses those competitor/baseline methods for a comparison in the experiments, whether the comparison with other methods is fair, why five shots are selected, insights for the experimental results are missing, etc.), technical contributions are not clear (relationship between the proposed method and references [1][11] needs to be clarified), and technical or implementation details are not clearly explained.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper presents a polymorphic transformer-based few-shot domain adaptation method for medical image segmentation. The rebuttal resolves some of the reviewers’ concerns, but one important point about the technical novelty is not well addressed. In addition, the comment regarding technical/implementation details is not satisfactorily addressed in the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>16</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The reviewers agreed on the importance of the problem the paper tackles and the novelty of the method. On the other hand, they raised concerns about the experimental design including baseline methods and datasets, and lack of detail/clarity in certain aspects of the paper. In my opinion, the rebuttal does a good job of answering most of these concerns, most importantly questions regarding the experimental set up.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This is a paper with relatively strong scores going into the rebuttal with all reviewers commenting positively on the novel idea. However, the reviewers raised some major points regarding the experimental setup and evaluation of the proposed contribution. The rebuttal mostly addresses those points. I could imagine the reviewers arguing some points further, for example the use of the ADA baseline, or the relationship to [1] &amp; [11] which isn’t clarified in the rebuttal. However, with some major points clarified I believe this paper is of sufficient quality and interest to the MICCAI community.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their high-quality reviews and constructive comments. We are happy to learn that all reviewers appreciate our motivation and novelty. Below we provide point-to-point responses to the comments, which will be integrated in the final version.</p>
+
+  <p>[Q] Number of shots (R2, R3):
+[A] We list additional results of 10 and 15 shots. Constrained by space, we only choose three competitive baselines and report the average dice score, as: 
+Method / 10-shot / 15-shot
+U-Net (target) / 0.819 / 0.845
+RevGrad (Features) / 0.826 / 0.849
+CellSegSSDA / 0.829 / 0.855
+Polyformer / 0.840 / 0.861
+By comparing scores above with Table 2, our Polyformer consistently outperforms other baselines under different shots.</p>
+
+  <p>[Q] Evaluation (R1):
+[A] First, we stress that the aim of our experiments is not to achieve SOTA by combining various tricks, but to demonstrate that Polyformer per se works well without bells and whistles.</p>
+
+  <p>CycleGAN:<br />
+We realized that the presentation “CycleGAN [23,12]” was unclear and confusing. We clarify that here citation [12] is to indicate that CycleGAN is an important component of [12], and not to suggest [12] only uses CycleGAN. [12] consists of three components: 1) a CycleGAN to convert source domain to the target domain, 2) inter-domain knowledge distillation, and 3) a “mean teacher” on the target domain to make the model more robust. Among them, CycleGAN is the essential component for domain adaptation. Components 2 and 3 are popular means to improve model robustness, and can be incorporated into Polyformer or other baselines to improve them as well. As the authors of [12] cannot share their source code upon our email request, we were unable to implement [12] during the short rebuttal period. We will analyze each component of [12] after rebuttal. Nonetheless, our use of CycleGAN in the submission was different from [12]; to better conform to [12], we ran extra experiments of CycleGAN to convert source domain to target domain for model training. The scores improved a bit: 0.747/0.690/0.709, Avg. 0.715, but are still much lower than other baselines.</p>
+
+  <p>DA-ADV vs. pOSAL: 
+We disagree with R1 on “DA-ADV [4] is not identical to pOSAL [19]”. pOSAL consists of two parts: 1) an ROI extraction net to crop the optic disc region; 2) adversarial training by discriminating predicted masks on source- vs. target-domain images. In our pipeline, we cropped the optic disc regions in preprocessing, same as part 1 of pOSAL. Part 2 of pOSAL is exactly DA-ADV. Although there are minor techniques to further improve the performance of pOSAL, e.g. Morphology-aware Segmentation Loss, it’s not a major ingredient and can be incorporated into other methods to improve them as well.</p>
+
+  <p>[Q] Choice of datasets (R1):
+[A] To our best knowledge, there is no standard dataset to benchmark domain adaptation on medical images. Different papers choose datasets based on more or less ad-hoc preferences. Thus, we choose two widely studied medical tasks (disc/cup and polyp segmentation) for our evaluation.</p>
+
+  <p>[Q] Utilizing labeled target domain images (R2):
+[A] We followed the common practice of few-shot semi-supervised learning by combining unsupervised objectives with supervised ones, which is also adopted in [4,9,10]. There may be better ways to incorporate supervision into ADA, but it’s beyond the scope and focus of this paper.</p>
+
+  <p>[Q] Other settings of ADA (R2):
+[A] We add an experiment to compare Polyformer (unsupervised) and ADA (unsupervised): 
+ADA (unsupervised): 0.817/0.704/0.716, Avg. 0.746; 
+Polyformer (unsupervised): 0.829/0.728/0.736, Avg. 0.764 (Table 1). 
+We also experimented with ADDA [17] on features, whose performance falls between RevGrad (Features) and ADDA (Mask).</p>
+
+  <p>[Q] Feature alignment (R3):
+[A] We experimented with a nearest-neighbor based feature alignment, but found it performed poorly (either used with Polyformer or used alone). Moreover, domain adversarial training can be viewed as performing learnable feature alignment.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0230-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0231-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Li, Shaohua"
+        class="post-category">
+        Li, Shaohua
+      </a> |  
+      
+      <a href="kittywong/tags#Sui, Xiuchao"
+        class="post-category">
+        Sui, Xiuchao
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Jie"
+        class="post-category">
+        Fu, Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Huazhu"
+        class="post-category">
+        Fu, Huazhu
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiangde"
+        class="post-category">
+        Luo, Xiangde
+      </a> |  
+      
+      <a href="kittywong/tags#Feng, Yangqin"
+        class="post-category">
+        Feng, Yangqin
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Xinxing"
+        class="post-category">
+        Xu, Xinxing
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yong"
+        class="post-category">
+        Liu, Yong
+      </a> |  
+      
+      <a href="kittywong/tags#Ting, Daniel S. W."
+        class="post-category">
+        Ting, Daniel S. W.
+      </a> |  
+      
+      <a href="kittywong/tags#Goh, Rick Siow Mong"
+        class="post-category">
+        Goh, Rick Siow Mong
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0231/12/31/Paper0113">
+          Lesion Segmentation and RECIST Diameter Prediction via Click-driven Attention and Dual-path Connection
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0229/12/31/Paper0084">
+          Efficient Semi-Supervised Gross Target Volume of Nasopharyngeal Carcinoma Segmentation via Uncertainty Rectified Pyramid Consistency
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

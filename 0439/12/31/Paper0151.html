@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yonghao Long, Zhaoshuo Li, Chi Hang Yee, Chi Fai Ng, Russell H. Taylor, Mathias Unberath, Qi Dou Abstract Reconstructing the scene of robotic surgery from the stereo endoscopic video is an important and promising topic in surgical data science, which potentially supports many applications such as surgical visual perception, robotic surgery education and intra-operative context awareness. However, current methods are mostly restricted to reconstructing static anatomy assuming no tissue deformation, tool occlusion and de-occlusion and camera movement. However, these assumptions are not always satisfied in minimal invasive robotic surgeries. In this work, we present an efficient reconstruction pipeline for highly dynamic surgical scenes that runs at 28 fps. Specifically, we design a transformer-based stereoscopic depth perception for efficient depth estimation and a light-weight tool segmentor to handle tool occlusion. After that, a dynamic reconstruction algorithm which can estimate the tissue deformation and camera movement, and aggregate the information over time is proposed for surgical scene reconstruction. We evaluate it on two datasets, the public Hamlyn Centre Endoscopic Video Dataset and our in-house DaVinci robotic surgery dataset. The results demonstrate that our method can recover the scene obstructed by the surgical tool and handle the movement of camera in complex surgical scenarios effectively at real-time speed. Link to paper https://doi.org/10.1007/978-3-030-87202-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This manuscript presents an approach to reconstruct the 3D environment of an endoscopic scene captured by a stereo laparoscope. The main idea is to divide the problem into two components: 1) dense stereo depth map estimation and 2) depth map fusion accounting for camera motion and non-rigid soft tissue motion. The main contributions of this work is really to combine components from related works into one system (tool segmentation, depth map estimation, dynamic scene fusion) for solving a challenging and important problem in computer assisted surgery. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work presents a well thought-through pipeline for the task. There are existing methods to this one that have similar pipelines, but I have not seen one that also handles tool occlusions. This is an important component for real-world use The manuscript reads very well and it is easy to follow Results are strong and encouraging Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The technical contributions are not clearly stated. This work is clearly heavily inspired by previous works on dynamic RGBD fusion for example DynamicFusion (Newcombe et al. CVPR 2015) and more recent works. I expect that very similar results could be obtained by applying DynamicFusion with two modifications: 1) substitute depth coming from a depth sensor with depth coming from the stereo reconstruction. 2) Apply a mask to remove tool regions using a tool detector. So, what really is new or better than this adaptation of previous work? The authors are missing a survey of dynamic RGBD fusion including DynamicFusion, and clearly stating that they could be applied in the stereo MIS setting using dense stereo reconstructions. I think there is some novelty in this work for automatically removing tool regions, but novelty is limited in terms of the general reconstruction pipeline. Related to the previous point, the problem tackled by [7,21] is similar, but I think that the limitation of these works is over-emphasized compared to this submission. It would be quite trivial to apply a tool segmenter to remove tool pixels to those works. This article would have been much stronger to demonstrate that previous dynamic RGBD or stereo fusion algorithms using the same tool masks do not work as well as this approach. There is no evaluation with ground truth. Certainly, this is not easy to obtain but it could have been done with a simulation study. This method, as with all previous dynamic fusion system that incrementally build the scene has important failure cases that are not presented. The main ones are failure with sudden camera motion (fusion will fall in a local minimum), blurred frames (causing poor stereo reconstructions that will corrupt the model) and handling views with poor shape or texture characteristics (leading to fusion ambiguities). This kind of approach tends to break down over long video durations (where drift builds up in the fused model). Deformations are relatively simple in the presented experiments. In real-world AR applications with e.g. the liver, there can be much stronger deformations when the liver is being manipulated. Dynamic fusion is much more challenging here, and I would have been much more convinced by the results if more challenging deformations such as liver manipulation were presented. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist mostly agrees with the submission. However for :An analysis of statistical significance of reported differences in performance between methods”, N/A is selected. It was not clear to me how standard deviations in table 1 were computed from the manuscript, and why statistical significance tests could not have been performed using confidence intervals. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My constructive feedback has been detailed in my previous comments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My justification is based on the positive aspects (the results are qualitatively convincing despite being tested on relatively simple deformations) balanced against the negative aspects (incremental work with respect to previous dynamic fusion systems especially in the broader context of computer vision, and lack of an experiment with ground truth evaluation). Overall I am rating this submission as borderline-to-accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This manuscript presents a deep learning based framework for surgical scene reconstruction based on stereo camera data. The framework can perform 3D reconstruction under tissue deformation and tool occlusion, which are commonly known challenges in this topic. Both quantitative and qualitative results on in-vivo surgical data are provided to demonstrate the performance of the proposed framework. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A transformer-based depth prediction network is used for stereo matching, and thus 3D surface reconstruction. This is a new use on surgical data of the work proposed in [11]. A slight modification has been made on the original STTR to make it more efficient. For addressing tool occlusion, a separate UNet has been trained for tool segmentation, such that a binary mask can be then used for excluding the tool area from the recovered depth maps. In addition, tissue deformation is considered when estimating relative motion between time t and t+1. And a combined energy function of both camera pose and deformation is used. A comparison study to the state-of-the-art [26] on in-vivo surgical data has been provided. Based on the measures provided, the proposed framework has shown better quantitative results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this manuscript is on its validation. There are some important components are not properly evaluated and discussed, e.g., camera motion estimation recovery and tool segmentation. More details on both technical and experimental descriptions are needed for better illustrations of the proposed approach, e.g., tool segmentation and model fusion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have agreed to provide code and datasets to the public based the information provide in the checklist. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To address tool occlusions in surgical videos, the authors have adopted a UNet to generate binary masks for tool segmentation. These masks are then used to exclude the regions of the image where the tools occupy before stereo matching. However, my understanding is that the effect of these moving tools will have a major impact when estimating camera motion but not on stereo reconstruction using image pairs. It does not seem to be a harm including surgical tools stereo matching and reconstruction, before camera motion estimation. Can the authors provide more details or an explanation on this under Section “Efficient surgical tool segmentation”? It is mentioned that to address the domain gap between training and evaluation data, an additional morphological operation is performed. It is not clear how much improvement of this step could provide to the segmentation task? And current validation is missing quantitative numbers of the tool segmentation accuracy. Can the authors briefly present these numbers in their validation section? In Section 3.2, the authors mentioned that a Surfel contains an unordered list of tuple of variables. Is Surfel an element or a list of elements? Please remove “list of” if Surfel is defined as an element. In addition, what is typical number of surfers for representing a scene? Is there a minimum number to guarantee good camera motion estimation? How long is the time (criteria) that a surfel will be removed when not being observed? In Section 4.1, please provide details on the optimizers used for STTR(-light) and Unet as well as the hyper parameters set for the training procedure. It would be also good the training time for the networks can be provided. One of my major concerns for this work is it is missing the specific experiments on tissue deformation recovery. As one of the main contributions in this work is to perform 3D reconstruction and camera motion estimation under tissue deformation, a specific 3D accuracy assessment should then be provided on assessing the recovered tissue deformation. It might be difficult to perform this analysis on in-vivo, but I would like to encourage the authors to do this at least on an ex-vivo setting. The ground truth data can be obtained using an optical tracking device with fiducial markers placed on the deforming surface (deformation can be introduced manually or using a mechanical device). The comparison study is performed based on SSIM and PSNR measures. These measures are not direct 3D measures for assessing the accuracy of reconstruction methods. The authors mentioned the difficulty of creating ground truth with additional sensors in in-vivo environments, which is understandable. I would suggest two alternatives to bring the study closer to 3D accuracy assessment. The first option is to manually label a set of sparse correspondences of pixels on the pairs of stereo in-vivo images as well as temporal pairs. This procedure can then provide a sparse 3D point cloud and temporal correspondences along the time axis. And the errors can be calculated based on comparing this GT with the output from the framework. The second option is to do this in an ex-vivo experimental where optical trackers can be used for collection the ground truth. MICCAI readers would expect high-quality experiments which can directly support the statements made regarding the novelty and superior performance, however, the provided measures currently do not seem to be sufficient to meet this requirement. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work presents a sound framework for 3D scene reconstruction under tool occlusion and tissue deformation. The technical novelty of this paper is moderate and acceptable. However, the validation part of this manuscript is relatively weak and needs more experimental details as I mentioned in my comments. Given the timeframe of reviewing procedures, I would suggest a borderline acceptance for this paper and I am looking forward to seeing the rebuttals from the authors for improvements. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Brings new techniques (i.e., transformer) to a practical application. Experiment on public dataset, results seem reproducible Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The fusion of segmentation and depth estimation in a single framework that can handle tissue deformation, tool occlusion and camera movement simultaneously. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of experiment comparison with other alternative methods Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Results seem reproducible to me, as details of speed and video supplements are provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The rationale of using transformer-based depth estimation is very limited. Why other depth estimation methods are not applicable here? How to make sure the U-Net trained on [1] is applicable on data in [27]? How the framework handles the reconstruction if the segmentation fails? Is there a limit for the length of video input? Setting video clips to 10s long is a bit short. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I appreciate the use of latest techniques in a real surgical application and the engineering effort of fusing all aspect of tools in a real time framework. Some concerns are from the lack of comparison with other alternative methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper was well-reviewed by three reviewers who borderline accept this paper. I would also join this recommendation. However, the reviewers raised some questions that should be addressed in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors well addressed the raised questions from the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviews pointed out two main issues: 1) differences wrt to previous work from computer vision on the same problem, albeit in its general setting, and 2) experimental validation. The authors have convincingly addressed problem 1) in their rebuttal, pointing out the differences. However, they mentioned that they were aware of problem 2) and acknowledge it’s a real practical issue. This is annoying. One cannot publish a reconstruction method without quantitative experimental validation, especially given that the method is a combination of existing ideas. I would thus not recommend acceptance of the paper at this point. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission, titled “E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception”, with reviewed by 3 experts with industrial background. The main criticisms were: R1: - clarity of manuscript (technical contribution not clearly stated, incomplete literature review, limitation of other works were over emphasized) - no evaluation against ground truth - efficacy of the approach for long video duration - experiment may not be representative to real-world clinical scenario R2: - validation R3: - validation That is, the main concern shared by all reviewers focused on the validation of the proposed work (i.e. lack of ground truth and/or comparative study against other methods). As the ground truth is difficult to obtain, this AC is satisfied with the rebuttal provided in this regard. As noted, authors have indicated the open-source availability of their work, thus 1) the reproducibility of their work is not of any concern, and 2) the potential impact of this work has increased. The quoted run-time (28fps) is also of significance. R1’s concern regarding to the efficacy of this work for video with long duration was not addressed in the rebuttal. If accepted, an additional discussion about this should be added. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank reviewers and AC for their time and effort in evaluating our paper. This is the first work to dynamically reconstruct 3D Da Vinci stereo endoscopic surgical scene and recover regions occluded by surgical tools, under challenges of endoscope movement and tissue deformation. Our work is well-reviewed by three experts in the field. All reviewers recognize our contribution in this new, important yet challenging problem setting, and highlight its value for real-world setting. There is currently no solution to this problem, and our proposed novel pipeline is accepted by all reviewers. This rebuttal answers all remaining main questions, which ask for clarifications on differences with related work and validations about experiments. Differences with [7,12] and DynamicFusion (CVPR2015) Both [7,12] tackle an easier problem without considering tool occlusion. Instead, we solve the real-world situation to recover the entire surgical site including regions hidden by tools. To achieve this, we develop new model fusion strategies to consider cross-frame association under occlusion and topology changes of tool-tissue interactions (see Sec. 3.2). DynamicFusion, proposed for natural videos, only considers a single object (usually human) and uses depth sensors as input (not possible in surgery). To address this limitation, we propose a real-time transformer-based stereo image depth estimation model and automated tool segmentation for clinical scenes. We also replace the dense volumetric TSDF with the sparse thus more efficient Surfels. Note that all these step-by-step method improvements are thought-through and by no means trivial. Validation issue: no in-vivo ground truth data, compare with other methods As both R1 and R3 agreed, obtaining in-vivo ground truth is impractical, which is also an interesting art of our real-world problem setting. In fact, we were aware of this issue and have tried our best to validate our method to the extent possible under such a constraint. 1) We show both qualitative results (visually confirmed by our surgeon co-authors) and quantitative evaluations (based on well-established PSNR and SSIM metrics where ground truth is missing [4, 9]). 2) We show run-time performance for the interest of potential real-time applications. 3) Considering no existing work for this new task, we gave ablation studies on possible alternatives of submodules (stereo depth estimation with [26]) and w/o tool segmentation module. We consider analysis like such is more valuable than comparing with methods that are known to fail (such as cannot handle tool occlusion). 4) We validated on two datasets, i.e., public Hamlyn data, and our own Da Vinci videos. Meanwhile, we admit this limitation, and will systematically explore more possible ways of validations in our future work, including manually-labelling ex-vivo simulations as suggested by reviewers, though simulations still cannot fully represent realistic artifacts such as smoke and blood. Experiment on tissue deformation We indeed demonstrate tissue deformation handling by showing qualitatively in supplementary video that the canonical model is static while the tissue in the scene is deforming. This attributes to our deformation field (see Sec. 3.2). Quantitatively, we deform the canonical model to the current input frame, compute the similarities between the live/canonical frames, and show they are aligned accurately (see Sec. 4.3). We will clarify these in the final version. We agree with R1 that liver manipulation will be more challenging with larger deformation. Since our in-house dataset (prostatectomy) and Hamlyn dataset [27] (partial nephrectomy) rarely have such significant tissue deformation, we did not evaluate in such cases. But, we also think this point is insightful and are very interested in exploring it in future. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yonghao Long, Zhaoshuo Li, Chi Hang Yee, Chi Fai Ng, Russell H. Taylor, Mathias Unberath, Qi Dou Abstract Reconstructing the scene of robotic surgery from the stereo endoscopic video is an important and promising topic in surgical data science, which potentially supports many applications such as surgical visual perception, robotic surgery education and intra-operative context awareness. However, current methods are mostly restricted to reconstructing static anatomy assuming no tissue deformation, tool occlusion and de-occlusion and camera movement. However, these assumptions are not always satisfied in minimal invasive robotic surgeries. In this work, we present an efficient reconstruction pipeline for highly dynamic surgical scenes that runs at 28 fps. Specifically, we design a transformer-based stereoscopic depth perception for efficient depth estimation and a light-weight tool segmentor to handle tool occlusion. After that, a dynamic reconstruction algorithm which can estimate the tissue deformation and camera movement, and aggregate the information over time is proposed for surgical scene reconstruction. We evaluate it on two datasets, the public Hamlyn Centre Endoscopic Video Dataset and our in-house DaVinci robotic surgery dataset. The results demonstrate that our method can recover the scene obstructed by the surgical tool and handle the movement of camera in complex surgical scenarios effectively at real-time speed. Link to paper https://doi.org/10.1007/978-3-030-87202-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This manuscript presents an approach to reconstruct the 3D environment of an endoscopic scene captured by a stereo laparoscope. The main idea is to divide the problem into two components: 1) dense stereo depth map estimation and 2) depth map fusion accounting for camera motion and non-rigid soft tissue motion. The main contributions of this work is really to combine components from related works into one system (tool segmentation, depth map estimation, dynamic scene fusion) for solving a challenging and important problem in computer assisted surgery. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work presents a well thought-through pipeline for the task. There are existing methods to this one that have similar pipelines, but I have not seen one that also handles tool occlusions. This is an important component for real-world use The manuscript reads very well and it is easy to follow Results are strong and encouraging Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The technical contributions are not clearly stated. This work is clearly heavily inspired by previous works on dynamic RGBD fusion for example DynamicFusion (Newcombe et al. CVPR 2015) and more recent works. I expect that very similar results could be obtained by applying DynamicFusion with two modifications: 1) substitute depth coming from a depth sensor with depth coming from the stereo reconstruction. 2) Apply a mask to remove tool regions using a tool detector. So, what really is new or better than this adaptation of previous work? The authors are missing a survey of dynamic RGBD fusion including DynamicFusion, and clearly stating that they could be applied in the stereo MIS setting using dense stereo reconstructions. I think there is some novelty in this work for automatically removing tool regions, but novelty is limited in terms of the general reconstruction pipeline. Related to the previous point, the problem tackled by [7,21] is similar, but I think that the limitation of these works is over-emphasized compared to this submission. It would be quite trivial to apply a tool segmenter to remove tool pixels to those works. This article would have been much stronger to demonstrate that previous dynamic RGBD or stereo fusion algorithms using the same tool masks do not work as well as this approach. There is no evaluation with ground truth. Certainly, this is not easy to obtain but it could have been done with a simulation study. This method, as with all previous dynamic fusion system that incrementally build the scene has important failure cases that are not presented. The main ones are failure with sudden camera motion (fusion will fall in a local minimum), blurred frames (causing poor stereo reconstructions that will corrupt the model) and handling views with poor shape or texture characteristics (leading to fusion ambiguities). This kind of approach tends to break down over long video durations (where drift builds up in the fused model). Deformations are relatively simple in the presented experiments. In real-world AR applications with e.g. the liver, there can be much stronger deformations when the liver is being manipulated. Dynamic fusion is much more challenging here, and I would have been much more convinced by the results if more challenging deformations such as liver manipulation were presented. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist mostly agrees with the submission. However for :An analysis of statistical significance of reported differences in performance between methods”, N/A is selected. It was not clear to me how standard deviations in table 1 were computed from the manuscript, and why statistical significance tests could not have been performed using confidence intervals. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My constructive feedback has been detailed in my previous comments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My justification is based on the positive aspects (the results are qualitatively convincing despite being tested on relatively simple deformations) balanced against the negative aspects (incremental work with respect to previous dynamic fusion systems especially in the broader context of computer vision, and lack of an experiment with ground truth evaluation). Overall I am rating this submission as borderline-to-accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This manuscript presents a deep learning based framework for surgical scene reconstruction based on stereo camera data. The framework can perform 3D reconstruction under tissue deformation and tool occlusion, which are commonly known challenges in this topic. Both quantitative and qualitative results on in-vivo surgical data are provided to demonstrate the performance of the proposed framework. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A transformer-based depth prediction network is used for stereo matching, and thus 3D surface reconstruction. This is a new use on surgical data of the work proposed in [11]. A slight modification has been made on the original STTR to make it more efficient. For addressing tool occlusion, a separate UNet has been trained for tool segmentation, such that a binary mask can be then used for excluding the tool area from the recovered depth maps. In addition, tissue deformation is considered when estimating relative motion between time t and t+1. And a combined energy function of both camera pose and deformation is used. A comparison study to the state-of-the-art [26] on in-vivo surgical data has been provided. Based on the measures provided, the proposed framework has shown better quantitative results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this manuscript is on its validation. There are some important components are not properly evaluated and discussed, e.g., camera motion estimation recovery and tool segmentation. More details on both technical and experimental descriptions are needed for better illustrations of the proposed approach, e.g., tool segmentation and model fusion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have agreed to provide code and datasets to the public based the information provide in the checklist. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To address tool occlusions in surgical videos, the authors have adopted a UNet to generate binary masks for tool segmentation. These masks are then used to exclude the regions of the image where the tools occupy before stereo matching. However, my understanding is that the effect of these moving tools will have a major impact when estimating camera motion but not on stereo reconstruction using image pairs. It does not seem to be a harm including surgical tools stereo matching and reconstruction, before camera motion estimation. Can the authors provide more details or an explanation on this under Section “Efficient surgical tool segmentation”? It is mentioned that to address the domain gap between training and evaluation data, an additional morphological operation is performed. It is not clear how much improvement of this step could provide to the segmentation task? And current validation is missing quantitative numbers of the tool segmentation accuracy. Can the authors briefly present these numbers in their validation section? In Section 3.2, the authors mentioned that a Surfel contains an unordered list of tuple of variables. Is Surfel an element or a list of elements? Please remove “list of” if Surfel is defined as an element. In addition, what is typical number of surfers for representing a scene? Is there a minimum number to guarantee good camera motion estimation? How long is the time (criteria) that a surfel will be removed when not being observed? In Section 4.1, please provide details on the optimizers used for STTR(-light) and Unet as well as the hyper parameters set for the training procedure. It would be also good the training time for the networks can be provided. One of my major concerns for this work is it is missing the specific experiments on tissue deformation recovery. As one of the main contributions in this work is to perform 3D reconstruction and camera motion estimation under tissue deformation, a specific 3D accuracy assessment should then be provided on assessing the recovered tissue deformation. It might be difficult to perform this analysis on in-vivo, but I would like to encourage the authors to do this at least on an ex-vivo setting. The ground truth data can be obtained using an optical tracking device with fiducial markers placed on the deforming surface (deformation can be introduced manually or using a mechanical device). The comparison study is performed based on SSIM and PSNR measures. These measures are not direct 3D measures for assessing the accuracy of reconstruction methods. The authors mentioned the difficulty of creating ground truth with additional sensors in in-vivo environments, which is understandable. I would suggest two alternatives to bring the study closer to 3D accuracy assessment. The first option is to manually label a set of sparse correspondences of pixels on the pairs of stereo in-vivo images as well as temporal pairs. This procedure can then provide a sparse 3D point cloud and temporal correspondences along the time axis. And the errors can be calculated based on comparing this GT with the output from the framework. The second option is to do this in an ex-vivo experimental where optical trackers can be used for collection the ground truth. MICCAI readers would expect high-quality experiments which can directly support the statements made regarding the novelty and superior performance, however, the provided measures currently do not seem to be sufficient to meet this requirement. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work presents a sound framework for 3D scene reconstruction under tool occlusion and tissue deformation. The technical novelty of this paper is moderate and acceptable. However, the validation part of this manuscript is relatively weak and needs more experimental details as I mentioned in my comments. Given the timeframe of reviewing procedures, I would suggest a borderline acceptance for this paper and I am looking forward to seeing the rebuttals from the authors for improvements. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Brings new techniques (i.e., transformer) to a practical application. Experiment on public dataset, results seem reproducible Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The fusion of segmentation and depth estimation in a single framework that can handle tissue deformation, tool occlusion and camera movement simultaneously. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of experiment comparison with other alternative methods Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Results seem reproducible to me, as details of speed and video supplements are provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The rationale of using transformer-based depth estimation is very limited. Why other depth estimation methods are not applicable here? How to make sure the U-Net trained on [1] is applicable on data in [27]? How the framework handles the reconstruction if the segmentation fails? Is there a limit for the length of video input? Setting video clips to 10s long is a bit short. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I appreciate the use of latest techniques in a real surgical application and the engineering effort of fusing all aspect of tools in a real time framework. Some concerns are from the lack of comparison with other alternative methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper was well-reviewed by three reviewers who borderline accept this paper. I would also join this recommendation. However, the reviewers raised some questions that should be addressed in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors well addressed the raised questions from the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviews pointed out two main issues: 1) differences wrt to previous work from computer vision on the same problem, albeit in its general setting, and 2) experimental validation. The authors have convincingly addressed problem 1) in their rebuttal, pointing out the differences. However, they mentioned that they were aware of problem 2) and acknowledge it’s a real practical issue. This is annoying. One cannot publish a reconstruction method without quantitative experimental validation, especially given that the method is a combination of existing ideas. I would thus not recommend acceptance of the paper at this point. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission, titled “E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception”, with reviewed by 3 experts with industrial background. The main criticisms were: R1: - clarity of manuscript (technical contribution not clearly stated, incomplete literature review, limitation of other works were over emphasized) - no evaluation against ground truth - efficacy of the approach for long video duration - experiment may not be representative to real-world clinical scenario R2: - validation R3: - validation That is, the main concern shared by all reviewers focused on the validation of the proposed work (i.e. lack of ground truth and/or comparative study against other methods). As the ground truth is difficult to obtain, this AC is satisfied with the rebuttal provided in this regard. As noted, authors have indicated the open-source availability of their work, thus 1) the reproducibility of their work is not of any concern, and 2) the potential impact of this work has increased. The quoted run-time (28fps) is also of significance. R1’s concern regarding to the efficacy of this work for video with long duration was not addressed in the rebuttal. If accepted, an additional discussion about this should be added. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank reviewers and AC for their time and effort in evaluating our paper. This is the first work to dynamically reconstruct 3D Da Vinci stereo endoscopic surgical scene and recover regions occluded by surgical tools, under challenges of endoscope movement and tissue deformation. Our work is well-reviewed by three experts in the field. All reviewers recognize our contribution in this new, important yet challenging problem setting, and highlight its value for real-world setting. There is currently no solution to this problem, and our proposed novel pipeline is accepted by all reviewers. This rebuttal answers all remaining main questions, which ask for clarifications on differences with related work and validations about experiments. Differences with [7,12] and DynamicFusion (CVPR2015) Both [7,12] tackle an easier problem without considering tool occlusion. Instead, we solve the real-world situation to recover the entire surgical site including regions hidden by tools. To achieve this, we develop new model fusion strategies to consider cross-frame association under occlusion and topology changes of tool-tissue interactions (see Sec. 3.2). DynamicFusion, proposed for natural videos, only considers a single object (usually human) and uses depth sensors as input (not possible in surgery). To address this limitation, we propose a real-time transformer-based stereo image depth estimation model and automated tool segmentation for clinical scenes. We also replace the dense volumetric TSDF with the sparse thus more efficient Surfels. Note that all these step-by-step method improvements are thought-through and by no means trivial. Validation issue: no in-vivo ground truth data, compare with other methods As both R1 and R3 agreed, obtaining in-vivo ground truth is impractical, which is also an interesting art of our real-world problem setting. In fact, we were aware of this issue and have tried our best to validate our method to the extent possible under such a constraint. 1) We show both qualitative results (visually confirmed by our surgeon co-authors) and quantitative evaluations (based on well-established PSNR and SSIM metrics where ground truth is missing [4, 9]). 2) We show run-time performance for the interest of potential real-time applications. 3) Considering no existing work for this new task, we gave ablation studies on possible alternatives of submodules (stereo depth estimation with [26]) and w/o tool segmentation module. We consider analysis like such is more valuable than comparing with methods that are known to fail (such as cannot handle tool occlusion). 4) We validated on two datasets, i.e., public Hamlyn data, and our own Da Vinci videos. Meanwhile, we admit this limitation, and will systematically explore more possible ways of validations in our future work, including manually-labelling ex-vivo simulations as suggested by reviewers, though simulations still cannot fully represent realistic artifacts such as smoke and blood. Experiment on tissue deformation We indeed demonstrate tissue deformation handling by showing qualitatively in supplementary video that the canonical model is static while the tissue in the scene is deforming. This attributes to our deformation field (see Sec. 3.2). Quantitatively, we deform the canonical model to the current input frame, compute the similarities between the live/canonical frames, and show they are aligned accurately (see Sec. 4.3). We will clarify these in the final version. We agree with R1 that liver manipulation will be more challenging with larger deformation. Since our in-house dataset (prostatectomy) and Hamlyn dataset [27] (partial nephrectomy) rarely have such significant tissue deformation, we did not evaluate in such cases. But, we also think this point is insightful and are very interested in exploring it in future. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0439/12/31/Paper0151" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0439/12/31/Paper0151" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0439-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0439/12/31/Paper0151"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0439/12/31/Paper0151","headline":"E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception","dateModified":"0440-01-02T00:00:00-05:17","datePublished":"0439-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yonghao Long, Zhaoshuo Li, Chi Hang Yee, Chi Fai Ng, Russell H. Taylor, Mathias Unberath, Qi Dou Abstract Reconstructing the scene of robotic surgery from the stereo endoscopic video is an important and promising topic in surgical data science, which potentially supports many applications such as surgical visual perception, robotic surgery education and intra-operative context awareness. However, current methods are mostly restricted to reconstructing static anatomy assuming no tissue deformation, tool occlusion and de-occlusion and camera movement. However, these assumptions are not always satisfied in minimal invasive robotic surgeries. In this work, we present an efficient reconstruction pipeline for highly dynamic surgical scenes that runs at 28 fps. Specifically, we design a transformer-based stereoscopic depth perception for efficient depth estimation and a light-weight tool segmentor to handle tool occlusion. After that, a dynamic reconstruction algorithm which can estimate the tissue deformation and camera movement, and aggregate the information over time is proposed for surgical scene reconstruction. We evaluate it on two datasets, the public Hamlyn Centre Endoscopic Video Dataset and our in-house DaVinci robotic surgery dataset. The results demonstrate that our method can recover the scene obstructed by the surgical tool and handle the movement of camera in complex surgical scenarios effectively at real-time speed. Link to paper https://doi.org/10.1007/978-3-030-87202-1_40 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This manuscript presents an approach to reconstruct the 3D environment of an endoscopic scene captured by a stereo laparoscope. The main idea is to divide the problem into two components: 1) dense stereo depth map estimation and 2) depth map fusion accounting for camera motion and non-rigid soft tissue motion. The main contributions of this work is really to combine components from related works into one system (tool segmentation, depth map estimation, dynamic scene fusion) for solving a challenging and important problem in computer assisted surgery. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work presents a well thought-through pipeline for the task. There are existing methods to this one that have similar pipelines, but I have not seen one that also handles tool occlusions. This is an important component for real-world use The manuscript reads very well and it is easy to follow Results are strong and encouraging Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The technical contributions are not clearly stated. This work is clearly heavily inspired by previous works on dynamic RGBD fusion for example DynamicFusion (Newcombe et al. CVPR 2015) and more recent works. I expect that very similar results could be obtained by applying DynamicFusion with two modifications: 1) substitute depth coming from a depth sensor with depth coming from the stereo reconstruction. 2) Apply a mask to remove tool regions using a tool detector. So, what really is new or better than this adaptation of previous work? The authors are missing a survey of dynamic RGBD fusion including DynamicFusion, and clearly stating that they could be applied in the stereo MIS setting using dense stereo reconstructions. I think there is some novelty in this work for automatically removing tool regions, but novelty is limited in terms of the general reconstruction pipeline. Related to the previous point, the problem tackled by [7,21] is similar, but I think that the limitation of these works is over-emphasized compared to this submission. It would be quite trivial to apply a tool segmenter to remove tool pixels to those works. This article would have been much stronger to demonstrate that previous dynamic RGBD or stereo fusion algorithms using the same tool masks do not work as well as this approach. There is no evaluation with ground truth. Certainly, this is not easy to obtain but it could have been done with a simulation study. This method, as with all previous dynamic fusion system that incrementally build the scene has important failure cases that are not presented. The main ones are failure with sudden camera motion (fusion will fall in a local minimum), blurred frames (causing poor stereo reconstructions that will corrupt the model) and handling views with poor shape or texture characteristics (leading to fusion ambiguities). This kind of approach tends to break down over long video durations (where drift builds up in the fused model). Deformations are relatively simple in the presented experiments. In real-world AR applications with e.g. the liver, there can be much stronger deformations when the liver is being manipulated. Dynamic fusion is much more challenging here, and I would have been much more convinced by the results if more challenging deformations such as liver manipulation were presented. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist mostly agrees with the submission. However for :An analysis of statistical significance of reported differences in performance between methods”, N/A is selected. It was not clear to me how standard deviations in table 1 were computed from the manuscript, and why statistical significance tests could not have been performed using confidence intervals. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My constructive feedback has been detailed in my previous comments. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? My justification is based on the positive aspects (the results are qualitatively convincing despite being tested on relatively simple deformations) balanced against the negative aspects (incremental work with respect to previous dynamic fusion systems especially in the broader context of computer vision, and lack of an experiment with ground truth evaluation). Overall I am rating this submission as borderline-to-accept. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This manuscript presents a deep learning based framework for surgical scene reconstruction based on stereo camera data. The framework can perform 3D reconstruction under tissue deformation and tool occlusion, which are commonly known challenges in this topic. Both quantitative and qualitative results on in-vivo surgical data are provided to demonstrate the performance of the proposed framework. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A transformer-based depth prediction network is used for stereo matching, and thus 3D surface reconstruction. This is a new use on surgical data of the work proposed in [11]. A slight modification has been made on the original STTR to make it more efficient. For addressing tool occlusion, a separate UNet has been trained for tool segmentation, such that a binary mask can be then used for excluding the tool area from the recovered depth maps. In addition, tissue deformation is considered when estimating relative motion between time t and t+1. And a combined energy function of both camera pose and deformation is used. A comparison study to the state-of-the-art [26] on in-vivo surgical data has been provided. Based on the measures provided, the proposed framework has shown better quantitative results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this manuscript is on its validation. There are some important components are not properly evaluated and discussed, e.g., camera motion estimation recovery and tool segmentation. More details on both technical and experimental descriptions are needed for better illustrations of the proposed approach, e.g., tool segmentation and model fusion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have agreed to provide code and datasets to the public based the information provide in the checklist. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html To address tool occlusions in surgical videos, the authors have adopted a UNet to generate binary masks for tool segmentation. These masks are then used to exclude the regions of the image where the tools occupy before stereo matching. However, my understanding is that the effect of these moving tools will have a major impact when estimating camera motion but not on stereo reconstruction using image pairs. It does not seem to be a harm including surgical tools stereo matching and reconstruction, before camera motion estimation. Can the authors provide more details or an explanation on this under Section “Efficient surgical tool segmentation”? It is mentioned that to address the domain gap between training and evaluation data, an additional morphological operation is performed. It is not clear how much improvement of this step could provide to the segmentation task? And current validation is missing quantitative numbers of the tool segmentation accuracy. Can the authors briefly present these numbers in their validation section? In Section 3.2, the authors mentioned that a Surfel contains an unordered list of tuple of variables. Is Surfel an element or a list of elements? Please remove “list of” if Surfel is defined as an element. In addition, what is typical number of surfers for representing a scene? Is there a minimum number to guarantee good camera motion estimation? How long is the time (criteria) that a surfel will be removed when not being observed? In Section 4.1, please provide details on the optimizers used for STTR(-light) and Unet as well as the hyper parameters set for the training procedure. It would be also good the training time for the networks can be provided. One of my major concerns for this work is it is missing the specific experiments on tissue deformation recovery. As one of the main contributions in this work is to perform 3D reconstruction and camera motion estimation under tissue deformation, a specific 3D accuracy assessment should then be provided on assessing the recovered tissue deformation. It might be difficult to perform this analysis on in-vivo, but I would like to encourage the authors to do this at least on an ex-vivo setting. The ground truth data can be obtained using an optical tracking device with fiducial markers placed on the deforming surface (deformation can be introduced manually or using a mechanical device). The comparison study is performed based on SSIM and PSNR measures. These measures are not direct 3D measures for assessing the accuracy of reconstruction methods. The authors mentioned the difficulty of creating ground truth with additional sensors in in-vivo environments, which is understandable. I would suggest two alternatives to bring the study closer to 3D accuracy assessment. The first option is to manually label a set of sparse correspondences of pixels on the pairs of stereo in-vivo images as well as temporal pairs. This procedure can then provide a sparse 3D point cloud and temporal correspondences along the time axis. And the errors can be calculated based on comparing this GT with the output from the framework. The second option is to do this in an ex-vivo experimental where optical trackers can be used for collection the ground truth. MICCAI readers would expect high-quality experiments which can directly support the statements made regarding the novelty and superior performance, however, the provided measures currently do not seem to be sufficient to meet this requirement. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This work presents a sound framework for 3D scene reconstruction under tool occlusion and tissue deformation. The technical novelty of this paper is moderate and acceptable. However, the validation part of this manuscript is relatively weak and needs more experimental details as I mentioned in my comments. Given the timeframe of reviewing procedures, I would suggest a borderline acceptance for this paper and I am looking forward to seeing the rebuttals from the authors for improvements. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper Brings new techniques (i.e., transformer) to a practical application. Experiment on public dataset, results seem reproducible Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The fusion of segmentation and depth estimation in a single framework that can handle tissue deformation, tool occlusion and camera movement simultaneously. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Lack of experiment comparison with other alternative methods Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Results seem reproducible to me, as details of speed and video supplements are provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The rationale of using transformer-based depth estimation is very limited. Why other depth estimation methods are not applicable here? How to make sure the U-Net trained on [1] is applicable on data in [27]? How the framework handles the reconstruction if the segmentation fails? Is there a limit for the length of video input? Setting video clips to 10s long is a bit short. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I appreciate the use of latest techniques in a real surgical application and the engineering effort of fusing all aspect of tools in a real time framework. Some concerns are from the lack of comparison with other alternative methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper was well-reviewed by three reviewers who borderline accept this paper. I would also join this recommendation. However, the reviewers raised some questions that should be addressed in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors well addressed the raised questions from the reviewers. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviews pointed out two main issues: 1) differences wrt to previous work from computer vision on the same problem, albeit in its general setting, and 2) experimental validation. The authors have convincingly addressed problem 1) in their rebuttal, pointing out the differences. However, they mentioned that they were aware of problem 2) and acknowledge it’s a real practical issue. This is annoying. One cannot publish a reconstruction method without quantitative experimental validation, especially given that the method is a combination of existing ideas. I would thus not recommend acceptance of the paper at this point. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission, titled “E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception”, with reviewed by 3 experts with industrial background. The main criticisms were: R1: - clarity of manuscript (technical contribution not clearly stated, incomplete literature review, limitation of other works were over emphasized) - no evaluation against ground truth - efficacy of the approach for long video duration - experiment may not be representative to real-world clinical scenario R2: - validation R3: - validation That is, the main concern shared by all reviewers focused on the validation of the proposed work (i.e. lack of ground truth and/or comparative study against other methods). As the ground truth is difficult to obtain, this AC is satisfied with the rebuttal provided in this regard. As noted, authors have indicated the open-source availability of their work, thus 1) the reproducibility of their work is not of any concern, and 2) the potential impact of this work has increased. The quoted run-time (28fps) is also of significance. R1’s concern regarding to the efficacy of this work for video with long duration was not addressed in the rebuttal. If accepted, an additional discussion about this should be added. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank reviewers and AC for their time and effort in evaluating our paper. This is the first work to dynamically reconstruct 3D Da Vinci stereo endoscopic surgical scene and recover regions occluded by surgical tools, under challenges of endoscope movement and tissue deformation. Our work is well-reviewed by three experts in the field. All reviewers recognize our contribution in this new, important yet challenging problem setting, and highlight its value for real-world setting. There is currently no solution to this problem, and our proposed novel pipeline is accepted by all reviewers. This rebuttal answers all remaining main questions, which ask for clarifications on differences with related work and validations about experiments. Differences with [7,12] and DynamicFusion (CVPR2015) Both [7,12] tackle an easier problem without considering tool occlusion. Instead, we solve the real-world situation to recover the entire surgical site including regions hidden by tools. To achieve this, we develop new model fusion strategies to consider cross-frame association under occlusion and topology changes of tool-tissue interactions (see Sec. 3.2). DynamicFusion, proposed for natural videos, only considers a single object (usually human) and uses depth sensors as input (not possible in surgery). To address this limitation, we propose a real-time transformer-based stereo image depth estimation model and automated tool segmentation for clinical scenes. We also replace the dense volumetric TSDF with the sparse thus more efficient Surfels. Note that all these step-by-step method improvements are thought-through and by no means trivial. Validation issue: no in-vivo ground truth data, compare with other methods As both R1 and R3 agreed, obtaining in-vivo ground truth is impractical, which is also an interesting art of our real-world problem setting. In fact, we were aware of this issue and have tried our best to validate our method to the extent possible under such a constraint. 1) We show both qualitative results (visually confirmed by our surgeon co-authors) and quantitative evaluations (based on well-established PSNR and SSIM metrics where ground truth is missing [4, 9]). 2) We show run-time performance for the interest of potential real-time applications. 3) Considering no existing work for this new task, we gave ablation studies on possible alternatives of submodules (stereo depth estimation with [26]) and w/o tool segmentation module. We consider analysis like such is more valuable than comparing with methods that are known to fail (such as cannot handle tool occlusion). 4) We validated on two datasets, i.e., public Hamlyn data, and our own Da Vinci videos. Meanwhile, we admit this limitation, and will systematically explore more possible ways of validations in our future work, including manually-labelling ex-vivo simulations as suggested by reviewers, though simulations still cannot fully represent realistic artifacts such as smoke and blood. Experiment on tissue deformation We indeed demonstrate tissue deformation handling by showing qualitatively in supplementary video that the canonical model is static while the tissue in the scene is deforming. This attributes to our deformation field (see Sec. 3.2). Quantitatively, we deform the canonical model to the current input frame, compute the similarities between the live/canonical frames, and show they are aligned accurately (see Sec. 4.3). We will clarify these in the final version. We agree with R1 that liver manipulation will be more challenging with larger deformation. Since our in-house dataset (prostatectomy) and Hamlyn dataset [27] (partial nephrectomy) rarely have such significant tissue deformation, we did not evaluate in such cases. But, we also think this point is insightful and are very interested in exploring it in future. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Long, Yonghao,Li, Zhaoshuo,Yee, Chi Hang,Ng, Chi Fai,Taylor, Russell H.,Unberath, Mathias,Dou, Qi" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Surgical Data Science"
+        class="post-category">
+        Surgical Data Science
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Long, Yonghao"
+        class="post-tags">
+        Long, Yonghao
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Zhaoshuo"
+        class="post-tags">
+        Li, Zhaoshuo
+      </a> |  
+      
+      <a href="kittywong/tags#Yee, Chi Hang"
+        class="post-tags">
+        Yee, Chi Hang
+      </a> |  
+      
+      <a href="kittywong/tags#Ng, Chi Fai"
+        class="post-tags">
+        Ng, Chi Fai
+      </a> |  
+      
+      <a href="kittywong/tags#Taylor, Russell H."
+        class="post-tags">
+        Taylor, Russell H.
+      </a> |  
+      
+      <a href="kittywong/tags#Unberath, Mathias"
+        class="post-tags">
+        Unberath, Mathias
+      </a> |  
+      
+      <a href="kittywong/tags#Dou, Qi"
+        class="post-tags">
+        Dou, Qi
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yonghao Long, Zhaoshuo Li, Chi Hang Yee, Chi Fai Ng, Russell H. Taylor, Mathias Unberath, Qi Dou
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Reconstructing the scene of robotic surgery from the stereo endoscopic video is an important and promising topic in surgical data science, which potentially supports many applications such as surgical visual perception, robotic surgery education and intra-operative context awareness. However, current methods are mostly restricted to reconstructing static anatomy assuming no tissue deformation, tool occlusion and de-occlusion and camera movement. However, these assumptions are not always satisfied in minimal invasive robotic surgeries. In this work, we present an efficient reconstruction pipeline for highly dynamic surgical scenes that runs at 28 fps. Specifically, we design a transformer-based stereoscopic depth perception for efficient depth estimation and a light-weight tool segmentor to handle tool occlusion. After that, a dynamic reconstruction algorithm which can estimate the tissue deformation and camera movement, and aggregate the information over time is proposed for surgical scene reconstruction. We evaluate it on two datasets, the public Hamlyn Centre Endoscopic Video Dataset and our in-house DaVinci robotic surgery dataset. The results demonstrate that our method can recover the scene obstructed by the surgical tool and handle the movement of camera in complex surgical scenarios effectively at real-time speed.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_40">https://doi.org/10.1007/978-3-030-87202-1_40</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This manuscript presents an approach to reconstruct the 3D environment of an endoscopic scene captured by a stereo laparoscope. The main idea is to divide the problem into two components: 1) dense stereo depth map estimation and 2) depth map fusion accounting for camera motion and non-rigid soft tissue motion. The main contributions of this work is really to combine components from related works into one system (tool segmentation, depth map estimation, dynamic scene fusion) for solving a challenging and important problem in computer assisted surgery.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>This work presents a well thought-through pipeline for the task. There are existing methods to this one that have similar pipelines, but I have not seen one that also handles tool occlusions. This is an important component for real-world use</li>
+        <li>The manuscript reads very well and it is easy to follow</li>
+        <li>Results are strong and encouraging</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The technical contributions are not clearly stated. This work is clearly heavily inspired by previous works on dynamic RGBD fusion for example DynamicFusion (Newcombe et al. CVPR 2015) and more recent works. I expect that very similar results could be obtained by applying DynamicFusion with two modifications: 1) substitute depth coming from a depth sensor with depth coming from the stereo reconstruction. 2) Apply a mask to remove tool regions using a tool detector.</li>
+      </ul>
+
+      <p>So, what really is new or better than this adaptation of previous work? The authors are missing a survey of dynamic RGBD fusion including DynamicFusion, and clearly stating that they could be applied in the stereo MIS setting using dense stereo reconstructions. I think there is some novelty in this work for automatically removing tool regions, but novelty is limited in terms of the general reconstruction pipeline.</p>
+
+      <ul>
+        <li>
+          <p>Related to the previous point, the problem tackled by [7,21] is similar, but I think that the limitation of these works is over-emphasized compared to this submission. It would be quite trivial to apply a tool segmenter to remove tool pixels to those works. This article would have been much stronger to demonstrate that previous dynamic RGBD or stereo fusion algorithms using the same tool masks do not work as well as this approach.</p>
+        </li>
+        <li>
+          <p>There is no evaluation with ground truth. Certainly, this is not easy to obtain but it could have been done with a simulation study.</p>
+        </li>
+        <li>
+          <p>This method, as with all previous dynamic fusion system that incrementally build the scene has important failure cases that are not presented. The main ones are failure with sudden camera motion (fusion will fall in a local minimum), blurred frames (causing poor stereo reconstructions that will corrupt the model) and handling views with poor shape or texture characteristics (leading to fusion ambiguities). This kind of approach tends to break down over long video durations (where drift builds up in the fused model).</p>
+        </li>
+        <li>
+          <p>Deformations are relatively simple in the presented experiments. In real-world AR applications with e.g. the liver, there can be much stronger deformations when the liver is being manipulated. Dynamic fusion is much more challenging here, and I would have been much more convinced by the results if more challenging deformations such as liver manipulation were presented.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility checklist mostly agrees with the submission. However for
+:An analysis of statistical significance of reported differences in performance between methods”, N/A is selected. It was not clear to me how standard deviations in table 1 were computed from the manuscript, and why statistical significance tests could not have been performed using confidence intervals.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>My constructive feedback has been detailed in my previous comments.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>My justification is based on the positive aspects (the results are qualitatively convincing despite being tested on relatively simple deformations) balanced against the negative aspects (incremental work with respect to previous dynamic fusion systems especially in the broader context of computer vision, and lack of an experiment with ground truth evaluation).  Overall I am rating this submission as borderline-to-accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This manuscript presents a deep learning based framework for surgical scene reconstruction based on stereo camera data. The framework can perform 3D reconstruction under tissue deformation and tool occlusion, which are commonly known challenges in this topic. Both quantitative and qualitative results on in-vivo surgical data are provided to demonstrate the performance of the proposed framework.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>A transformer-based depth prediction network is used for stereo matching, and thus 3D surface reconstruction. This is a new use on surgical data of the work proposed in [11]. A slight modification has been made on the original STTR to make it more efficient.</p>
+
+      <p>For addressing tool occlusion, a separate UNet has been trained for tool segmentation, such that a binary mask can be then used for excluding the tool area from the recovered depth maps. In addition, tissue deformation is considered when estimating relative motion between time t and t+1. And a combined energy function of both camera pose and deformation is used.</p>
+
+      <p>A comparison study to the state-of-the-art [26] on in-vivo surgical data has been provided. Based on the measures provided, the proposed framework has shown better quantitative results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The main weakness of this manuscript is on its validation. There are some important components are not properly evaluated and discussed, e.g., camera motion estimation recovery and tool segmentation.</p>
+
+      <p>More details on both technical and experimental descriptions are needed for better illustrations of the proposed approach, e.g., tool segmentation and model fusion.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors have agreed to provide code and datasets to the public based the information provide in the checklist.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>To address tool occlusions in surgical videos, the authors have adopted a UNet to generate binary masks for tool segmentation. These masks are then used to exclude the regions of the image where the tools occupy before stereo matching. However, my understanding is that the effect of these  moving tools will have a major impact when estimating camera motion but not on stereo reconstruction using image pairs. It does not seem to be a harm including surgical tools stereo matching and reconstruction, before camera motion estimation. Can the authors provide more details or an explanation on this under Section “Efficient surgical tool segmentation”?</p>
+
+      <p>It is mentioned that to address the domain gap between training and evaluation data, an additional morphological operation is performed. It is not clear how much improvement of this step could provide to the segmentation task? And current validation is missing quantitative numbers of the tool segmentation accuracy. Can the authors briefly present these numbers in their validation section?</p>
+
+      <p>In Section 3.2, the authors mentioned that a Surfel contains an unordered list of tuple of variables. Is Surfel an element or a list of elements? Please remove “list of” if Surfel is defined as an element. In addition, what is typical number of surfers for representing a scene? Is there a minimum number to guarantee good camera motion estimation? How long is the time (criteria) that a surfel will be removed when not being observed?</p>
+
+      <p>In Section 4.1, please provide details on the optimizers used for STTR(-light) and Unet as well as the hyper parameters set for the training procedure. It would be also good the training time for the networks can be provided.</p>
+
+      <p>One of my major concerns for this work is it is missing the specific experiments on tissue deformation recovery. As one of the main contributions in this work is to perform 3D reconstruction and camera motion estimation under tissue deformation, a specific 3D accuracy assessment should then be provided on assessing the recovered tissue deformation. It might be difficult to perform this analysis on in-vivo, but I would like to encourage the authors to do this at least on an ex-vivo setting. The ground truth data can be obtained using an optical tracking device with fiducial markers placed on the deforming surface (deformation can be introduced manually or using a mechanical device).</p>
+
+      <p>The comparison study is performed based on SSIM and PSNR measures. These measures are not direct 3D measures for assessing the accuracy of reconstruction methods. The authors mentioned the difficulty of creating ground truth with additional sensors in in-vivo environments, which is understandable. I would suggest two alternatives to bring the study closer to 3D accuracy assessment. The first option is to manually label a set of sparse correspondences of pixels on the pairs of stereo in-vivo images as well as temporal pairs. This procedure can then provide a sparse 3D point cloud and temporal correspondences along the time axis. And the errors can be calculated based on comparing this GT with the output from the framework. The second option is to do this in an ex-vivo experimental where optical trackers can be used for collection the ground truth. MICCAI readers would expect high-quality experiments which can directly support the statements made regarding the novelty and superior performance, however, the provided measures currently do not seem to be sufficient to meet this requirement.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This work presents a sound framework for 3D scene reconstruction under tool occlusion and tissue deformation. The technical novelty of this paper is moderate and acceptable. However, the validation part of this manuscript is relatively weak and needs more experimental details as I mentioned in my comments. Given the timeframe of reviewing procedures, I would suggest a borderline acceptance for this paper and I am looking forward to seeing the rebuttals from the authors for improvements.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <ul>
+        <li>Brings new techniques (i.e., transformer) to a practical application.</li>
+        <li>Experiment on public dataset, results seem reproducible</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The fusion of segmentation and depth estimation in a single framework that can handle tissue deformation, tool occlusion and camera movement simultaneously.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Lack of experiment comparison with other alternative methods</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Results seem reproducible to me, as details of speed and video supplements are provided.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>The rationale of using transformer-based depth estimation is very limited. Why other depth estimation methods are not applicable here?</li>
+        <li>How to make sure the U-Net trained on [1] is applicable on data in [27]? How the framework handles the reconstruction if the segmentation fails?</li>
+        <li>Is there a limit for the length of video input? Setting video clips to 10s long is a bit short.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I appreciate the use of latest techniques in a real surgical application and the engineering effort of fusing all aspect of tools in a real time framework. Some concerns are from the lack of comparison with other alternative methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper was well-reviewed by three reviewers who borderline accept this paper. I would also join this recommendation. However, the reviewers raised some questions that should be addressed in the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors well addressed the raised questions from the reviewers.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The reviews pointed out two main issues: 1) differences wrt to previous work from computer vision on the same problem, albeit in its general setting, and 2) experimental validation. The authors have convincingly addressed problem 1) in their rebuttal, pointing out the differences. However, they mentioned that they were aware of problem 2) and acknowledge it’s a real practical issue. This is annoying. One cannot publish a reconstruction method without quantitative experimental validation, especially given that the method is a combination of existing ideas. I would thus not recommend acceptance of the paper at this point.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This submission, titled “E-DSSR: Efficient Dynamic Surgical Scene Reconstruction with Transformer-based Stereoscopic Depth Perception”, with reviewed by 3 experts with industrial background. The main criticisms were:</p>
+
+      <p>R1:		- clarity of manuscript (technical contribution not clearly stated, incomplete literature review, limitation of other works were over emphasized)
+		- no evaluation against ground truth
+		- efficacy of the approach for long video duration
+		- experiment may not be representative to real-world clinical scenario
+R2:		- validation
+R3:		- validation</p>
+
+      <p>That is, the main concern shared by all reviewers focused on the validation of the proposed work (i.e. lack of ground truth and/or comparative study against other methods). As the ground truth is difficult to obtain, this AC is satisfied with the rebuttal provided in this regard. As noted, authors have indicated the open-source availability of their work, thus 1) the reproducibility of their work is not of any concern, and 2) the potential impact of this work has increased. The quoted run-time (28fps) is also of significance.</p>
+
+      <p>R1’s concern regarding to the efficacy of this work for video with long duration was not addressed in the rebuttal. If accepted, an additional discussion about this should be added.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+
+  <p>We thank reviewers and AC for their time and effort in evaluating our paper. This is the first work to dynamically reconstruct 3D Da Vinci stereo endoscopic surgical scene and recover regions occluded by surgical tools, under challenges of endoscope movement and tissue deformation. Our work is well-reviewed by three experts in the field. All reviewers recognize our contribution in this new, important yet challenging problem setting, and highlight its value for real-world setting. There is currently no solution to this problem, and our proposed novel pipeline is accepted by all reviewers.</p>
+
+  <p>This rebuttal answers all remaining main questions, which ask for clarifications on differences with related work and validations about experiments.</p>
+
+  <ul>
+    <li>Differences with [7,12] and DynamicFusion (CVPR2015)</li>
+  </ul>
+
+  <p>Both [7,12] tackle an easier problem without considering tool occlusion. Instead, we solve the real-world situation to recover the entire surgical site including regions hidden by tools. To achieve this, we develop new model fusion strategies to consider cross-frame association under occlusion and topology changes of tool-tissue interactions (see Sec. 3.2).</p>
+
+  <p>DynamicFusion, proposed for natural videos, only considers a single object (usually human) and uses depth sensors as input (not possible in surgery). To address this limitation, we propose a real-time transformer-based stereo image depth estimation model and automated tool segmentation for clinical scenes. We also replace the dense volumetric TSDF with the sparse thus more efficient Surfels. Note that all these step-by-step method improvements are thought-through and by no means trivial.</p>
+
+  <ul>
+    <li>Validation issue: no in-vivo ground truth data, compare with other methods</li>
+  </ul>
+
+  <p>As both R1 and R3 agreed, obtaining in-vivo ground truth is impractical, which is also an interesting art of our real-world problem setting. In fact, we were aware of this issue and have tried our best to validate our method to the extent possible under such a constraint. 1) We show both qualitative results (visually confirmed by our surgeon co-authors) and quantitative evaluations (based on well-established PSNR and SSIM metrics where ground truth is missing [4, 9]). 2) We show run-time performance for the interest of potential real-time applications. 3) Considering no existing work for this new task, we gave ablation studies on possible alternatives of submodules (stereo depth estimation with [26]) and w/o tool segmentation module. We consider analysis like such is more valuable than comparing with methods that are known to fail (such as cannot handle tool occlusion). 4) We validated on two datasets, i.e., public Hamlyn data, and our own Da Vinci videos.</p>
+
+  <p>Meanwhile, we admit this limitation, and will systematically explore more possible ways of validations in our future work, including manually-labelling ex-vivo simulations as suggested by reviewers, though simulations still cannot fully represent realistic artifacts such as smoke and blood.</p>
+
+  <ul>
+    <li>Experiment on tissue deformation</li>
+  </ul>
+
+  <p>We indeed demonstrate tissue deformation handling by showing qualitatively in supplementary video that the canonical model is static while the tissue in the scene is deforming. This attributes to our deformation field (see Sec. 3.2). Quantitatively, we deform the canonical model to the current input frame, compute the similarities between the live/canonical frames, and show they are aligned accurately (see Sec. 4.3). We will clarify these in the final version.</p>
+
+  <p>We agree with R1 that liver manipulation will be more challenging with larger deformation. Since our in-house dataset (prostatectomy) and Hamlyn dataset [27] (partial nephrectomy) rarely have such significant tissue deformation, we did not evaluate in such cases. But, we also think this point is insightful and are very interested in exploring it in future.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0439-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0440-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Surgical Data Science"
+        class="post-category">
+        Surgical Data Science
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image-Guided Interventions and Surgery"
+        class="post-category">
+        Image-Guided Interventions and Surgery
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Long, Yonghao"
+        class="post-category">
+        Long, Yonghao
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Zhaoshuo"
+        class="post-category">
+        Li, Zhaoshuo
+      </a> |  
+      
+      <a href="kittywong/tags#Yee, Chi Hang"
+        class="post-category">
+        Yee, Chi Hang
+      </a> |  
+      
+      <a href="kittywong/tags#Ng, Chi Fai"
+        class="post-category">
+        Ng, Chi Fai
+      </a> |  
+      
+      <a href="kittywong/tags#Taylor, Russell H."
+        class="post-category">
+        Taylor, Russell H.
+      </a> |  
+      
+      <a href="kittywong/tags#Unberath, Mathias"
+        class="post-category">
+        Unberath, Mathias
+      </a> |  
+      
+      <a href="kittywong/tags#Dou, Qi"
+        class="post-category">
+        Dou, Qi
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0440/12/31/Paper0340">
+          CataNet: Predicting remaining cataract surgery duration
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0438/12/31/Paper2511">
+          Co-Generation and Segmentation for Generalized Surgical Instrument Segmentation on Unlabelled Data
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

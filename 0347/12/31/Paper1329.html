@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A Principled Approach to Failure Analysis and Model Repairment: Demonstration in Medical Imaging | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="A Principled Approach to Failure Analysis and Model Repairment: Demonstration in Medical Imaging" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Thomas Henn, Yasukazu Sakamoto, Clément Jacquet, Shunsuke Yoshizawa, Masamichi Andou, Stephen Tchen, Ryosuke Saga, Hiroyuki Ishihara, Katsuhiko Shimizu, Yingzhen Li, Ryutaro Tanno Abstract Machine learning models commonly exhibit unexpected failures post-deployment due to either data shifts or uncommon situations in the training environment. Domain experts typically go through the tedious process of inspecting the failure cases manually, identifying failure modes and then attempting to fix the model. In this work, we aim to standardise and bring principles to this process through answering two critical questions: (i) how do we know that we have identified meaningful and distinct failure types?; (ii) how can we validate that a model has, indeed, been repaired? We suggest that the quality of the identified failure types can be validated through measuring the intra- and inter-type generalisation after fine-tuning and introduce metrics to compare different subtyping methods. Furthermore, we argue that a model can be considered repaired if it achieves high accuracy on the failure types while retaining performance on the previously correct data. We combine these two ideas into a principled framework for evaluating the quality of both the identified failure subtypes and model repairment. We evaluate its utility on a classification and an object detection tasks. Our code is available at https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to paper https://doi.org/10.1007/978-3-030-87199-4_48 Link to the code repository https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to the dataset(s) https://medmnist.com/ Reviews Review #1 Please describe the contribution of the paper This paper proposed a general framework for analyzing and the repairment of the model in medical image analysis based on machine learning. This can arise more potential works in the future. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strength: A good trial to validate the failure cases in machine learning for medical image analysis. Although the main framework is simple, the results are good to support the claims in this work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weakness: The techinical contribution seems not sufficient. More experiments are expected to evaluate the proposed method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of this work seems OK. The hyperparameters are also presented in details. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a simple framework to validate the discovery of failure cases and the repairment of these cases in medical image analysis based on deep learning. The idea is interesting and provides a good innovation for future works. However, the main framework is a simple combination of intuitive metrics to identify the typical failures. For ‘independence’ criteria, the authors claimed that the failures cases should be independent to each other. However, this cannot be held in practical cases. The factors are usually related and the improvement on specific factor may help to other cases. I also expect the authors can evaluate the proposed method on more dataset since the claim of this work is very strong. The experiments on two datasets are not sufficient. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good innovation for failure identification in ML-based medical image analysis. However, the techinical contribution is not sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an approach for addressing failure analysis of machine learning methods. Their method standardizes and automates a process that is traditionally tedious and ad hoc. It consists of first clustering incorrect classifications and then retraining on these examples to improve classification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Failure analysis is an important part of machine learning model development and automating the process would be invaluable if it worked consistently. The idea of clustering failed cases is an interesting approach to the problem, which could allow the process to be automated without the expensive manual step currently required. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness in the paper is a differentiation between training and testing data in the proposed approach. One subsection has superscripts for training and testing, but the remaining paper omits these superscripts or reference to whether the data used for fine tuning is actually training or testing data. This is an important distinction if the approach were to be applied. Based on the results in table 2, my impression is that the suggested fine tuning is meant to use the testing data. If this is the case, then the proposed method would lead to overfitting in the classifier since it is using direct knowledge of the testing labels in the adjustment of the classifier. Such a process could be done on a validation set, but then evaluation would need to be performed on a held out test set, which does not seem to be the case here. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made available and the data is publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As mentioned above, the main issue I have is with using testing data for model fine tuning. Performance is expected to increase when testing data is used to train the model. Such a performance increase is not expected to be robust as it likely results in overfitting to the test data rather than resulting in a generalized classifier. I would suggest performing this fine tuning using a validation set and then evaluating both the original model and the fine tuned model on a held out test set to see if this process results in a truly improved classifier. In the example where the model was fine tuned on individual failure classes, the result would be multiple models for each of these classes (as shown in figure 2, none of these models works well across classes). It is unclear how such a model would be used prospectively as it requires identifying a failure type for the data without knowledge of the data. Would new cases first be assigned to a “failure” cluster (even if they are potentially correct) and then have that classifier applied to them? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Proposing refinement of the model on test data poses questions about how robust the method would be in a prospective application. Evaluation would need to be performed on a held out test set to validate the proposed approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper The authors propose an automatic method to discover a set of failure types automatically through gradient and feature space clustering, which they demonstrate can out-perform manual inspection. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a promising framework that proposes two metrics to evaluate the meaningfulness of a set of failure types in an objective and quantifiable way. Moreover, they demonstrate that automatic clustering can recover relevant clinical failure types such as undetected catheters close to the ultrasound probe in ICE-CD or the distinction between the two malignant classes in PathMNIST. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main novelty in the proposed work is in proposing two metrics to assess failure. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use open source data sets to test the feasibility of their method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a promising piece of work that has the potential to be clinically feasible. However, the approach is not clearly defined and the paper is confusing to read. It would be helpful if example clear images of failure types were included in the paper and further details and justification of how “correct” and “failure” cases were validated. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Promising method that warrants further investigation but not clearly described or presented. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes an automated framework for detecting and repairing failure for machine learning methods for medical imaging. The strength of the paper is the idea of the framework based on different metrics and repairment strategies. However, as presented, there are several issues that the reviewers point out. Please address all their comments, especially with respect to testing data and overfitting, clarity, highlighting what the technical contribution and novelty are. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work seems to be very interesting and relevant for the MICCAI audience. However, it seems like a lot of clarity in writing needs to be improved since all reviewers have some confusion about details. It was good to clear out the misunderstanding about the test data which R2 pointed out. However, there seems to be a lot of writing that needs to be tightened up and I do not think the paper is in a state that is ready to be published. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission proposes an automated approach for analyzing failure cases and identifying potential repairment of the model for medical image analysis. The reviewers agree that this is an interesting direction and that the idea has potential for future work. In the rebuttal, the authors addressed most of the concerns (e.g. differentiation between training and testing). I do agree with the reviewer that raise the issue that more experimentation would be needed to support the strong claims. However, I see the value of this submission as a great starting point, which could foster more research in this direction as it is currently “understudied in the MICCAI community” (rebuttal). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper offers a new perspective that has been understudied in the MICCAI community - failure analysis and model repairment. While the technical innovation might not be very high in this paper, it will serve as a good pointer for more research in this direction. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback We thank the meta-reviewer and reviewers for their constructive feedback. Failure analysis and understanding of machine learning models is essential in practice for developing reliable medical imaging applications, yet understudied in the MICCAI community. Indeed, in the face of new failure cases, we typically employ ad-hoc procedures to understand and fix the failures. In this work, we aim to standardise &amp; bring principles to this process by introducing the first framework for not only automatically deriving subtypes of failure cases and measuring their quality, but also repairing the models and verifying their generalisation. Finally, we will open-source the code upon publication. The main criticisms are summarised as: (1). The need for clarifications on the technical contributions and novelty. (R1) (2). The concern that the same test data might be used to both repair and evaluate (overfitting the test data). (R2) (3). The method’s exposition is hard to understand. (R3) Reg. (1), in addition to introducing a general framework to an under-explored but critical problem, we make several contributions that are worth highlighting. First, we put forward a set of desirable properties for meaningful failure types. Then, we propose novel surrogate metrics to assess those properties in practice. Moreover, we argue that model repairment should not only aim to fix the failures but also to retain performance on the previously correct data. We show specific instantiations of our framework and demonstrate that clustering in feature and gradient space can automatically identify clinically important failures and outperform manual inspection. Additionally, we show that repairment can be done not only by finetuning but also by continual learning methods such as Elastic Weight Consolidation (EWC) [1]. Furthermore, we share some insights such as fixing one failure type is easier than fixing them all at once, which is intuitive and useful when some failure types are higher priority than others. Reg. (2), we do not have this issue of test data leakage and we will clarify in text. We want the repaired models to generalise and thus each failure type is split into two sets, where one is used to repair the model (e.g., finetuning or EWC) and the other is used to evaluate generalisation. Our experiments show promising results in this direction. For example, Table. 2 is derived from images that are not seen by the models during either the initial training or repairment. As R2 also points out, this misunderstanding may have been likely due to our notations to denote these sets. Reg. (3), we will review the exposition of our method. Please see our responses to (1) and (2) for clarification on validation details, notations, and our method’s contributions. For example, in relation to (2), we will clarify how the data is first divided into failure types and then into training, validation, and testing sets using a consistent notation. We also address other points below: R1: Complete independence of failure types may not achievable in practice: We agree that the notion of independence is continuous, two failure types might not be 100% independent but 80% is more informative than 30% independence. We will clarify this point. R2: How can the models repaired on individual failure types be used in practice? How about selecting the model at test time by categorising the input image?: We think that R2’s suggestion is interesting. If the process of assigning each image to a failure cluster is consistent, the selected model would have better performance than a single general model as shown in Table 2. In addition, we suggest that fixing mistakes one by one could lead to better models. We add a discussion to sec 4.3. R3: Clearer examples of failure types should be included: We already provide examples in Fig. 3 and Fig. 4. We will add more detailed descriptions in the captions. Refs: [1] Kirkpatrick .et al, PNAS’17. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Thomas Henn, Yasukazu Sakamoto, Clément Jacquet, Shunsuke Yoshizawa, Masamichi Andou, Stephen Tchen, Ryosuke Saga, Hiroyuki Ishihara, Katsuhiko Shimizu, Yingzhen Li, Ryutaro Tanno Abstract Machine learning models commonly exhibit unexpected failures post-deployment due to either data shifts or uncommon situations in the training environment. Domain experts typically go through the tedious process of inspecting the failure cases manually, identifying failure modes and then attempting to fix the model. In this work, we aim to standardise and bring principles to this process through answering two critical questions: (i) how do we know that we have identified meaningful and distinct failure types?; (ii) how can we validate that a model has, indeed, been repaired? We suggest that the quality of the identified failure types can be validated through measuring the intra- and inter-type generalisation after fine-tuning and introduce metrics to compare different subtyping methods. Furthermore, we argue that a model can be considered repaired if it achieves high accuracy on the failure types while retaining performance on the previously correct data. We combine these two ideas into a principled framework for evaluating the quality of both the identified failure subtypes and model repairment. We evaluate its utility on a classification and an object detection tasks. Our code is available at https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to paper https://doi.org/10.1007/978-3-030-87199-4_48 Link to the code repository https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to the dataset(s) https://medmnist.com/ Reviews Review #1 Please describe the contribution of the paper This paper proposed a general framework for analyzing and the repairment of the model in medical image analysis based on machine learning. This can arise more potential works in the future. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strength: A good trial to validate the failure cases in machine learning for medical image analysis. Although the main framework is simple, the results are good to support the claims in this work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weakness: The techinical contribution seems not sufficient. More experiments are expected to evaluate the proposed method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of this work seems OK. The hyperparameters are also presented in details. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a simple framework to validate the discovery of failure cases and the repairment of these cases in medical image analysis based on deep learning. The idea is interesting and provides a good innovation for future works. However, the main framework is a simple combination of intuitive metrics to identify the typical failures. For ‘independence’ criteria, the authors claimed that the failures cases should be independent to each other. However, this cannot be held in practical cases. The factors are usually related and the improvement on specific factor may help to other cases. I also expect the authors can evaluate the proposed method on more dataset since the claim of this work is very strong. The experiments on two datasets are not sufficient. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good innovation for failure identification in ML-based medical image analysis. However, the techinical contribution is not sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an approach for addressing failure analysis of machine learning methods. Their method standardizes and automates a process that is traditionally tedious and ad hoc. It consists of first clustering incorrect classifications and then retraining on these examples to improve classification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Failure analysis is an important part of machine learning model development and automating the process would be invaluable if it worked consistently. The idea of clustering failed cases is an interesting approach to the problem, which could allow the process to be automated without the expensive manual step currently required. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness in the paper is a differentiation between training and testing data in the proposed approach. One subsection has superscripts for training and testing, but the remaining paper omits these superscripts or reference to whether the data used for fine tuning is actually training or testing data. This is an important distinction if the approach were to be applied. Based on the results in table 2, my impression is that the suggested fine tuning is meant to use the testing data. If this is the case, then the proposed method would lead to overfitting in the classifier since it is using direct knowledge of the testing labels in the adjustment of the classifier. Such a process could be done on a validation set, but then evaluation would need to be performed on a held out test set, which does not seem to be the case here. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made available and the data is publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As mentioned above, the main issue I have is with using testing data for model fine tuning. Performance is expected to increase when testing data is used to train the model. Such a performance increase is not expected to be robust as it likely results in overfitting to the test data rather than resulting in a generalized classifier. I would suggest performing this fine tuning using a validation set and then evaluating both the original model and the fine tuned model on a held out test set to see if this process results in a truly improved classifier. In the example where the model was fine tuned on individual failure classes, the result would be multiple models for each of these classes (as shown in figure 2, none of these models works well across classes). It is unclear how such a model would be used prospectively as it requires identifying a failure type for the data without knowledge of the data. Would new cases first be assigned to a “failure” cluster (even if they are potentially correct) and then have that classifier applied to them? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Proposing refinement of the model on test data poses questions about how robust the method would be in a prospective application. Evaluation would need to be performed on a held out test set to validate the proposed approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper The authors propose an automatic method to discover a set of failure types automatically through gradient and feature space clustering, which they demonstrate can out-perform manual inspection. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a promising framework that proposes two metrics to evaluate the meaningfulness of a set of failure types in an objective and quantifiable way. Moreover, they demonstrate that automatic clustering can recover relevant clinical failure types such as undetected catheters close to the ultrasound probe in ICE-CD or the distinction between the two malignant classes in PathMNIST. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main novelty in the proposed work is in proposing two metrics to assess failure. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use open source data sets to test the feasibility of their method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a promising piece of work that has the potential to be clinically feasible. However, the approach is not clearly defined and the paper is confusing to read. It would be helpful if example clear images of failure types were included in the paper and further details and justification of how “correct” and “failure” cases were validated. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Promising method that warrants further investigation but not clearly described or presented. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes an automated framework for detecting and repairing failure for machine learning methods for medical imaging. The strength of the paper is the idea of the framework based on different metrics and repairment strategies. However, as presented, there are several issues that the reviewers point out. Please address all their comments, especially with respect to testing data and overfitting, clarity, highlighting what the technical contribution and novelty are. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work seems to be very interesting and relevant for the MICCAI audience. However, it seems like a lot of clarity in writing needs to be improved since all reviewers have some confusion about details. It was good to clear out the misunderstanding about the test data which R2 pointed out. However, there seems to be a lot of writing that needs to be tightened up and I do not think the paper is in a state that is ready to be published. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission proposes an automated approach for analyzing failure cases and identifying potential repairment of the model for medical image analysis. The reviewers agree that this is an interesting direction and that the idea has potential for future work. In the rebuttal, the authors addressed most of the concerns (e.g. differentiation between training and testing). I do agree with the reviewer that raise the issue that more experimentation would be needed to support the strong claims. However, I see the value of this submission as a great starting point, which could foster more research in this direction as it is currently “understudied in the MICCAI community” (rebuttal). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper offers a new perspective that has been understudied in the MICCAI community - failure analysis and model repairment. While the technical innovation might not be very high in this paper, it will serve as a good pointer for more research in this direction. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback We thank the meta-reviewer and reviewers for their constructive feedback. Failure analysis and understanding of machine learning models is essential in practice for developing reliable medical imaging applications, yet understudied in the MICCAI community. Indeed, in the face of new failure cases, we typically employ ad-hoc procedures to understand and fix the failures. In this work, we aim to standardise &amp; bring principles to this process by introducing the first framework for not only automatically deriving subtypes of failure cases and measuring their quality, but also repairing the models and verifying their generalisation. Finally, we will open-source the code upon publication. The main criticisms are summarised as: (1). The need for clarifications on the technical contributions and novelty. (R1) (2). The concern that the same test data might be used to both repair and evaluate (overfitting the test data). (R2) (3). The method’s exposition is hard to understand. (R3) Reg. (1), in addition to introducing a general framework to an under-explored but critical problem, we make several contributions that are worth highlighting. First, we put forward a set of desirable properties for meaningful failure types. Then, we propose novel surrogate metrics to assess those properties in practice. Moreover, we argue that model repairment should not only aim to fix the failures but also to retain performance on the previously correct data. We show specific instantiations of our framework and demonstrate that clustering in feature and gradient space can automatically identify clinically important failures and outperform manual inspection. Additionally, we show that repairment can be done not only by finetuning but also by continual learning methods such as Elastic Weight Consolidation (EWC) [1]. Furthermore, we share some insights such as fixing one failure type is easier than fixing them all at once, which is intuitive and useful when some failure types are higher priority than others. Reg. (2), we do not have this issue of test data leakage and we will clarify in text. We want the repaired models to generalise and thus each failure type is split into two sets, where one is used to repair the model (e.g., finetuning or EWC) and the other is used to evaluate generalisation. Our experiments show promising results in this direction. For example, Table. 2 is derived from images that are not seen by the models during either the initial training or repairment. As R2 also points out, this misunderstanding may have been likely due to our notations to denote these sets. Reg. (3), we will review the exposition of our method. Please see our responses to (1) and (2) for clarification on validation details, notations, and our method’s contributions. For example, in relation to (2), we will clarify how the data is first divided into failure types and then into training, validation, and testing sets using a consistent notation. We also address other points below: R1: Complete independence of failure types may not achievable in practice: We agree that the notion of independence is continuous, two failure types might not be 100% independent but 80% is more informative than 30% independence. We will clarify this point. R2: How can the models repaired on individual failure types be used in practice? How about selecting the model at test time by categorising the input image?: We think that R2’s suggestion is interesting. If the process of assigning each image to a failure cluster is consistent, the selected model would have better performance than a single general model as shown in Table 2. In addition, we suggest that fixing mistakes one by one could lead to better models. We add a discussion to sec 4.3. R3: Clearer examples of failure types should be included: We already provide examples in Fig. 3 and Fig. 4. We will add more detailed descriptions in the captions. Refs: [1] Kirkpatrick .et al, PNAS’17. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0347/12/31/Paper1329" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0347/12/31/Paper1329" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0347-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Principled Approach to Failure Analysis and Model Repairment: Demonstration in Medical Imaging" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0347/12/31/Paper1329"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0347/12/31/Paper1329","headline":"A Principled Approach to Failure Analysis and Model Repairment: Demonstration in Medical Imaging","dateModified":"0348-01-02T00:00:00-05:17","datePublished":"0347-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Thomas Henn, Yasukazu Sakamoto, Clément Jacquet, Shunsuke Yoshizawa, Masamichi Andou, Stephen Tchen, Ryosuke Saga, Hiroyuki Ishihara, Katsuhiko Shimizu, Yingzhen Li, Ryutaro Tanno Abstract Machine learning models commonly exhibit unexpected failures post-deployment due to either data shifts or uncommon situations in the training environment. Domain experts typically go through the tedious process of inspecting the failure cases manually, identifying failure modes and then attempting to fix the model. In this work, we aim to standardise and bring principles to this process through answering two critical questions: (i) how do we know that we have identified meaningful and distinct failure types?; (ii) how can we validate that a model has, indeed, been repaired? We suggest that the quality of the identified failure types can be validated through measuring the intra- and inter-type generalisation after fine-tuning and introduce metrics to compare different subtyping methods. Furthermore, we argue that a model can be considered repaired if it achieves high accuracy on the failure types while retaining performance on the previously correct data. We combine these two ideas into a principled framework for evaluating the quality of both the identified failure subtypes and model repairment. We evaluate its utility on a classification and an object detection tasks. Our code is available at https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to paper https://doi.org/10.1007/978-3-030-87199-4_48 Link to the code repository https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment Link to the dataset(s) https://medmnist.com/ Reviews Review #1 Please describe the contribution of the paper This paper proposed a general framework for analyzing and the repairment of the model in medical image analysis based on machine learning. This can arise more potential works in the future. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strength: A good trial to validate the failure cases in machine learning for medical image analysis. Although the main framework is simple, the results are good to support the claims in this work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weakness: The techinical contribution seems not sufficient. More experiments are expected to evaluate the proposed method. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility of this work seems OK. The hyperparameters are also presented in details. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposed a simple framework to validate the discovery of failure cases and the repairment of these cases in medical image analysis based on deep learning. The idea is interesting and provides a good innovation for future works. However, the main framework is a simple combination of intuitive metrics to identify the typical failures. For ‘independence’ criteria, the authors claimed that the failures cases should be independent to each other. However, this cannot be held in practical cases. The factors are usually related and the improvement on specific factor may help to other cases. I also expect the authors can evaluate the proposed method on more dataset since the claim of this work is very strong. The experiments on two datasets are not sufficient. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Good innovation for failure identification in ML-based medical image analysis. However, the techinical contribution is not sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The authors propose an approach for addressing failure analysis of machine learning methods. Their method standardizes and automates a process that is traditionally tedious and ad hoc. It consists of first clustering incorrect classifications and then retraining on these examples to improve classification. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Failure analysis is an important part of machine learning model development and automating the process would be invaluable if it worked consistently. The idea of clustering failed cases is an interesting approach to the problem, which could allow the process to be automated without the expensive manual step currently required. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness in the paper is a differentiation between training and testing data in the proposed approach. One subsection has superscripts for training and testing, but the remaining paper omits these superscripts or reference to whether the data used for fine tuning is actually training or testing data. This is an important distinction if the approach were to be applied. Based on the results in table 2, my impression is that the suggested fine tuning is meant to use the testing data. If this is the case, then the proposed method would lead to overfitting in the classifier since it is using direct knowledge of the testing labels in the adjustment of the classifier. Such a process could be done on a validation set, but then evaluation would need to be performed on a held out test set, which does not seem to be the case here. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made available and the data is publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html As mentioned above, the main issue I have is with using testing data for model fine tuning. Performance is expected to increase when testing data is used to train the model. Such a performance increase is not expected to be robust as it likely results in overfitting to the test data rather than resulting in a generalized classifier. I would suggest performing this fine tuning using a validation set and then evaluating both the original model and the fine tuned model on a held out test set to see if this process results in a truly improved classifier. In the example where the model was fine tuned on individual failure classes, the result would be multiple models for each of these classes (as shown in figure 2, none of these models works well across classes). It is unclear how such a model would be used prospectively as it requires identifying a failure type for the data without knowledge of the data. Would new cases first be assigned to a “failure” cluster (even if they are potentially correct) and then have that classifier applied to them? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Proposing refinement of the model on test data poses questions about how robust the method would be in a prospective application. Evaluation would need to be performed on a held out test set to validate the proposed approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Somewhat confident Review #3 Please describe the contribution of the paper The authors propose an automatic method to discover a set of failure types automatically through gradient and feature space clustering, which they demonstrate can out-perform manual inspection. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This is a promising framework that proposes two metrics to evaluate the meaningfulness of a set of failure types in an objective and quantifiable way. Moreover, they demonstrate that automatic clustering can recover relevant clinical failure types such as undetected catheters close to the ultrasound probe in ICE-CD or the distinction between the two malignant classes in PathMNIST. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main novelty in the proposed work is in proposing two metrics to assess failure. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use open source data sets to test the feasibility of their method. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a promising piece of work that has the potential to be clinically feasible. However, the approach is not clearly defined and the paper is confusing to read. It would be helpful if example clear images of failure types were included in the paper and further details and justification of how “correct” and “failure” cases were validated. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Promising method that warrants further investigation but not clearly described or presented. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes an automated framework for detecting and repairing failure for machine learning methods for medical imaging. The strength of the paper is the idea of the framework based on different metrics and repairment strategies. However, as presented, there are several issues that the reviewers point out. Please address all their comments, especially with respect to testing data and overfitting, clarity, highlighting what the technical contribution and novelty are. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work seems to be very interesting and relevant for the MICCAI audience. However, it seems like a lot of clarity in writing needs to be improved since all reviewers have some confusion about details. It was good to clear out the misunderstanding about the test data which R2 pointed out. However, there seems to be a lot of writing that needs to be tightened up and I do not think the paper is in a state that is ready to be published. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This submission proposes an automated approach for analyzing failure cases and identifying potential repairment of the model for medical image analysis. The reviewers agree that this is an interesting direction and that the idea has potential for future work. In the rebuttal, the authors addressed most of the concerns (e.g. differentiation between training and testing). I do agree with the reviewer that raise the issue that more experimentation would be needed to support the strong claims. However, I see the value of this submission as a great starting point, which could foster more research in this direction as it is currently “understudied in the MICCAI community” (rebuttal). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper offers a new perspective that has been understudied in the MICCAI community - failure analysis and model repairment. While the technical innovation might not be very high in this paper, it will serve as a good pointer for more research in this direction. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Author Feedback We thank the meta-reviewer and reviewers for their constructive feedback. Failure analysis and understanding of machine learning models is essential in practice for developing reliable medical imaging applications, yet understudied in the MICCAI community. Indeed, in the face of new failure cases, we typically employ ad-hoc procedures to understand and fix the failures. In this work, we aim to standardise &amp; bring principles to this process by introducing the first framework for not only automatically deriving subtypes of failure cases and measuring their quality, but also repairing the models and verifying their generalisation. Finally, we will open-source the code upon publication. The main criticisms are summarised as: (1). The need for clarifications on the technical contributions and novelty. (R1) (2). The concern that the same test data might be used to both repair and evaluate (overfitting the test data). (R2) (3). The method’s exposition is hard to understand. (R3) Reg. (1), in addition to introducing a general framework to an under-explored but critical problem, we make several contributions that are worth highlighting. First, we put forward a set of desirable properties for meaningful failure types. Then, we propose novel surrogate metrics to assess those properties in practice. Moreover, we argue that model repairment should not only aim to fix the failures but also to retain performance on the previously correct data. We show specific instantiations of our framework and demonstrate that clustering in feature and gradient space can automatically identify clinically important failures and outperform manual inspection. Additionally, we show that repairment can be done not only by finetuning but also by continual learning methods such as Elastic Weight Consolidation (EWC) [1]. Furthermore, we share some insights such as fixing one failure type is easier than fixing them all at once, which is intuitive and useful when some failure types are higher priority than others. Reg. (2), we do not have this issue of test data leakage and we will clarify in text. We want the repaired models to generalise and thus each failure type is split into two sets, where one is used to repair the model (e.g., finetuning or EWC) and the other is used to evaluate generalisation. Our experiments show promising results in this direction. For example, Table. 2 is derived from images that are not seen by the models during either the initial training or repairment. As R2 also points out, this misunderstanding may have been likely due to our notations to denote these sets. Reg. (3), we will review the exposition of our method. Please see our responses to (1) and (2) for clarification on validation details, notations, and our method’s contributions. For example, in relation to (2), we will clarify how the data is first divided into failure types and then into training, validation, and testing sets using a consistent notation. We also address other points below: R1: Complete independence of failure types may not achievable in practice: We agree that the notion of independence is continuous, two failure types might not be 100% independent but 80% is more informative than 30% independence. We will clarify this point. R2: How can the models repaired on individual failure types be used in practice? How about selecting the model at test time by categorising the input image?: We think that R2’s suggestion is interesting. If the process of assigning each image to a failure cluster is consistent, the selected model would have better performance than a single general model as shown in Table 2. In addition, we suggest that fixing mistakes one by one could lead to better models. We add a discussion to sec 4.3. R3: Clearer examples of failure types should be included: We already provide examples in Fig. 3 and Fig. 4. We will add more detailed descriptions in the captions. Refs: [1] Kirkpatrick .et al, PNAS’17. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Henn, Thomas,Sakamoto, Yasukazu,Jacquet, Clément,Yoshizawa, Shunsuke,Andou, Masamichi,Tchen, Stephen,Saga, Ryosuke,Ishihara, Hiroyuki,Shimizu, Katsuhiko,Li, Yingzhen,Tanno, Ryutaro" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>A Principled Approach to Failure Analysis and Model Repairment: Demonstration in Medical Imaging</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a>
+      
+      <a 
+        href="kittywong/categories#Visualisation in Biomedical Imaging"
+        class="post-category">
+        Visualisation in Biomedical Imaging
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Henn, Thomas"
+        class="post-tags">
+        Henn, Thomas
+      </a> |  
+      
+      <a href="kittywong/tags#Sakamoto, Yasukazu"
+        class="post-tags">
+        Sakamoto, Yasukazu
+      </a> |  
+      
+      <a href="kittywong/tags#Jacquet, Clément"
+        class="post-tags">
+        Jacquet, Clément
+      </a> |  
+      
+      <a href="kittywong/tags#Yoshizawa, Shunsuke"
+        class="post-tags">
+        Yoshizawa, Shunsuke
+      </a> |  
+      
+      <a href="kittywong/tags#Andou, Masamichi"
+        class="post-tags">
+        Andou, Masamichi
+      </a> |  
+      
+      <a href="kittywong/tags#Tchen, Stephen"
+        class="post-tags">
+        Tchen, Stephen
+      </a> |  
+      
+      <a href="kittywong/tags#Saga, Ryosuke"
+        class="post-tags">
+        Saga, Ryosuke
+      </a> |  
+      
+      <a href="kittywong/tags#Ishihara, Hiroyuki"
+        class="post-tags">
+        Ishihara, Hiroyuki
+      </a> |  
+      
+      <a href="kittywong/tags#Shimizu, Katsuhiko"
+        class="post-tags">
+        Shimizu, Katsuhiko
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yingzhen"
+        class="post-tags">
+        Li, Yingzhen
+      </a> |  
+      
+      <a href="kittywong/tags#Tanno, Ryutaro"
+        class="post-tags">
+        Tanno, Ryutaro
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Thomas Henn, Yasukazu Sakamoto, Clément Jacquet, Shunsuke Yoshizawa, Masamichi Andou, Stephen Tchen, Ryosuke Saga, Hiroyuki Ishihara, Katsuhiko Shimizu, Yingzhen Li, Ryutaro Tanno
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Machine learning models commonly exhibit unexpected failures post-deployment due to either data shifts or uncommon situations in the training environment. Domain experts typically go through the tedious process of inspecting the failure cases manually, identifying failure modes and then attempting to fix the model. In this work, we aim to standardise and bring principles to this process through answering two critical questions: (i) how do we know that we have identified meaningful and distinct failure types?; (ii) how can we validate that a model has, indeed, been repaired? We suggest that the quality of the identified failure types can be validated through measuring the intra- and inter-type generalisation after fine-tuning and introduce metrics to compare different subtyping methods. Furthermore, we argue that a model can be considered repaired if it achieves high accuracy on the failure types while retaining performance on the previously correct data. We combine these two ideas into a principled framework for evaluating the quality of both the identified failure subtypes and model repairment. We evaluate its utility on a classification and an object detection tasks. Our code is available at https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_48">https://doi.org/10.1007/978-3-030-87199-4_48</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/Rokken-lab6/Failure-Analysis-and-Model-Repairment
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://medmnist.com/
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a general framework for analyzing and the repairment of the model in medical image analysis based on machine learning. This can arise more potential works in the future.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Strength:</p>
+      <ol>
+        <li>A good trial to validate the failure cases in machine learning for medical image analysis.</li>
+        <li>Although the main framework is simple, the results are good to support the claims in this work.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Weakness:</p>
+      <ol>
+        <li>The techinical contribution seems not sufficient.</li>
+        <li>More experiments are expected to evaluate the proposed method.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility of this work seems OK. The hyperparameters are also presented in details.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+
+      <p>This paper proposed a simple framework to validate the discovery of failure cases and the repairment of these cases in medical image analysis based on deep learning. The idea is interesting and provides a good innovation for future works. However, the main framework is a simple combination of intuitive metrics to identify the typical failures. For ‘independence’ criteria, the authors claimed that the failures cases should be independent to each other. However, this cannot be held in practical cases. The factors are usually related and the improvement on specific factor may help to other cases. I also expect the authors can evaluate the proposed method on more dataset since the claim of this work is very strong. The experiments on two datasets are not sufficient.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Good innovation for failure identification in ML-based medical image analysis. However, the techinical contribution is not sufficient.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an approach for addressing failure analysis of machine learning methods. Their method standardizes and automates a process that is traditionally tedious and ad hoc. It consists of first clustering incorrect classifications and then retraining on these examples to improve classification.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Failure analysis is an important part of machine learning model development and automating the process would be invaluable if it worked consistently. The idea of clustering failed cases is an interesting approach to the problem, which could allow the process to be automated without the expensive manual step currently required.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The main weakness in the paper is a differentiation between training and testing data in the proposed approach. One subsection has superscripts for training and testing, but the remaining paper omits these superscripts or reference to whether the data used for fine tuning is actually training or testing data. This is an important distinction if the approach were to be applied.</p>
+
+      <p>Based on the results in table 2, my impression is that the suggested fine tuning is meant to use the testing data. If this is the case, then the proposed method would lead to overfitting in the classifier since it is using direct knowledge of the testing labels in the adjustment of the classifier. Such a process could be done on a validation set, but then evaluation would need to be performed on a held out test set, which does not seem to be the case here.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The code will be made available and the data is publicly available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>As mentioned above, the main issue I have is with using testing data for model fine tuning. Performance is expected to increase when testing data is used to train the model. Such a performance increase is not expected to be robust as it likely results in overfitting to the test data rather than resulting in a generalized classifier. I would suggest performing this fine tuning using a validation set and then evaluating both the original model and the fine tuned model on a held out test set to see if this process results in a truly improved classifier.</p>
+
+      <p>In the example where the model was fine tuned on individual failure classes, the result would be multiple models for each of these classes (as shown in figure 2, none of these models works well across classes). It is unclear how such a model would be used prospectively as it requires identifying a failure type for the data without knowledge of the data. Would new cases first be assigned to a “failure” cluster (even if they are potentially correct) and then have that classifier applied to them?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Proposing refinement of the model on test data poses questions about how robust the method would be in a prospective application. Evaluation would need to be performed on a held out test set to validate the proposed approach.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an automatic method to discover a set of failure types automatically through gradient and feature space clustering, which they demonstrate can out-perform manual inspection.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This is a promising framework that proposes two metrics to evaluate the meaningfulness of a set of failure types in an objective and quantifiable way. Moreover, they demonstrate that automatic clustering can recover relevant clinical failure types such as undetected catheters close to the ultrasound probe in ICE-CD or the distinction between the two malignant classes in PathMNIST.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The main novelty in the proposed work is in proposing two metrics to assess failure.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors use open source data sets to test the feasibility of their method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This is a promising piece of work that has the potential to be clinically feasible. However, the approach is not clearly defined and the paper is confusing to read. It would be helpful if example clear images of failure types were included in the paper and further details and justification of how “correct” and “failure” cases were validated.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Promising method that warrants further investigation but not clearly described or presented.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper proposes an automated framework for detecting and repairing failure for machine learning methods for medical imaging. The strength of the paper is the idea of the framework based on different metrics and repairment strategies. However, as presented, there are several issues that the reviewers point out. Please address all their comments, especially with respect to testing data and overfitting, clarity, highlighting what the technical contribution and novelty are.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work seems to be very interesting and relevant for the MICCAI audience. However, it seems like a lot of clarity in writing needs to be improved since all reviewers have some confusion about details. It was good to clear out the misunderstanding about the test data which R2 pointed out. However, there seems to be a lot of writing that needs to be tightened up and I do not think the paper is in a state that is ready to be published.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>11</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This submission proposes an automated approach for analyzing failure cases and identifying potential repairment of the model for medical image analysis. The reviewers agree that this is an interesting direction and that the idea has potential for future work. In the rebuttal, the authors addressed most of the concerns (e.g. differentiation between training and testing). I do agree with the reviewer that raise the issue that more experimentation would be needed to support the strong claims.  However, I see the value of this submission as a great starting point, which could foster more research in this direction as it is currently “understudied in the MICCAI community” (rebuttal).</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper offers a new perspective that has been understudied in the MICCAI community - failure analysis and model repairment. While the technical innovation might not be very high in this paper, it will serve as a good pointer for more research in this direction.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>11</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the meta-reviewer and reviewers for their constructive feedback.
+Failure analysis and understanding of machine learning models is essential in practice for developing reliable medical imaging applications, yet understudied in the MICCAI community. Indeed, in the face of new failure cases, we typically employ ad-hoc procedures to understand and fix the failures. In this work, we aim to standardise &amp; bring principles to this process by introducing the first framework for not only automatically deriving subtypes of failure cases and measuring their quality, but also repairing the models and verifying their generalisation. Finally, we will open-source the code upon publication.</p>
+
+  <p>The main criticisms are summarised as:
+(1). The need for clarifications on the technical contributions and novelty. (R1)
+(2). The concern that the same test data might be used to both repair and evaluate (overfitting the test data). (R2)
+(3). The method’s exposition is hard to understand. (R3)</p>
+
+  <p>Reg. (1), in addition to introducing a general framework to an under-explored but critical problem, we make several contributions that are worth highlighting. First, we put forward a set of desirable properties for meaningful failure types. Then, we propose novel surrogate metrics to assess those properties in practice. Moreover, we argue that model repairment should not only aim to fix the failures but also to retain performance on the previously correct data. We show specific instantiations of our framework and demonstrate that clustering in feature and gradient space can automatically identify clinically important failures and outperform manual inspection. Additionally, we show that repairment can be done not only by finetuning but also by continual learning methods such as Elastic Weight Consolidation (EWC) [1]. Furthermore, we share some insights such as fixing one failure type is easier than fixing them all at once, which is intuitive and useful when some failure types are higher priority than others.</p>
+
+  <p>Reg. (2), we do not have this issue of test data leakage and we will clarify in text. We want the repaired models to generalise and thus each failure type is split into two sets, where one is used to repair the model (e.g., finetuning or EWC) and the other is used to evaluate generalisation. Our experiments show promising results in this direction. For example, Table. 2 is derived from images that are <em>not</em> seen by the models during either the initial training or repairment. As R2 also points out, this misunderstanding may have been likely due to our notations to denote these sets.</p>
+
+  <p>Reg. (3), we will review the exposition of our method. Please see our responses to (1) and (2) for clarification on validation details, notations, and our method’s contributions.
+For example, in relation to (2), we will clarify how the data is first divided into failure types and then into training, validation, and testing sets using a consistent notation.</p>
+
+  <p>We also address other points below:</p>
+
+  <p>R1: Complete independence of failure types may not achievable in practice: 
+We agree that the notion of independence is continuous, two failure types might not be 100% independent but 80% is more informative than 30% independence. We will clarify this point.</p>
+
+  <p>R2: How can the models repaired on individual failure types be used in practice? How about selecting the model at test time by categorising the input image?:
+We think that R2’s suggestion is interesting. If the process of assigning each image to a failure cluster is consistent, the selected model would have better performance than a single general model as shown in Table 2. In addition, we suggest that fixing mistakes one by one could lead to better models. We add a discussion to sec 4.3.</p>
+
+  <p>R3: Clearer examples of failure types should be included:
+We already provide examples in Fig. 3 and Fig. 4. We will add more detailed descriptions in the captions.</p>
+
+  <p>Refs:
+[1] Kirkpatrick .et al, PNAS’17.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0347-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0348-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Visualisation in Biomedical Imaging"
+        class="post-category">
+        Visualisation in Biomedical Imaging
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Henn, Thomas"
+        class="post-category">
+        Henn, Thomas
+      </a> |  
+      
+      <a href="kittywong/tags#Sakamoto, Yasukazu"
+        class="post-category">
+        Sakamoto, Yasukazu
+      </a> |  
+      
+      <a href="kittywong/tags#Jacquet, Clément"
+        class="post-category">
+        Jacquet, Clément
+      </a> |  
+      
+      <a href="kittywong/tags#Yoshizawa, Shunsuke"
+        class="post-category">
+        Yoshizawa, Shunsuke
+      </a> |  
+      
+      <a href="kittywong/tags#Andou, Masamichi"
+        class="post-category">
+        Andou, Masamichi
+      </a> |  
+      
+      <a href="kittywong/tags#Tchen, Stephen"
+        class="post-category">
+        Tchen, Stephen
+      </a> |  
+      
+      <a href="kittywong/tags#Saga, Ryosuke"
+        class="post-category">
+        Saga, Ryosuke
+      </a> |  
+      
+      <a href="kittywong/tags#Ishihara, Hiroyuki"
+        class="post-category">
+        Ishihara, Hiroyuki
+      </a> |  
+      
+      <a href="kittywong/tags#Shimizu, Katsuhiko"
+        class="post-category">
+        Shimizu, Katsuhiko
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yingzhen"
+        class="post-category">
+        Li, Yingzhen
+      </a> |  
+      
+      <a href="kittywong/tags#Tanno, Ryutaro"
+        class="post-category">
+        Tanno, Ryutaro
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0348/12/31/Paper1508">
+          Using Causal Analysis for Conceptual Deep Learning Explanation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0346/12/31/Paper1298">
+          Towards Semantic Interpretation of Thoracic Disease and COVID-19 Diagnosis Models
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

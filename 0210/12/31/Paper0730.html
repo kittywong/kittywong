@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Lesion-based Contrastive Learning for Diabetic Retinopathy Grading from Fundus Images | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Lesion-based Contrastive Learning for Diabetic Retinopathy Grading from Fundus Images" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Xiaoying Tang Abstract Manually annotating medical images is extremely expensive, especially for large-scale datasets. Self-supervised contrastive learning has been explored to learn feature representations from unlabeled images. However, unlike natural images, the application of contrastive learning to medical images is relatively limited. In this work, we propose a self-supervised framework, namely lesion-based contrastive learning for automated diabetic retinopathy (DR) grading. Instead of taking entire images as the input in the common contrastive learning scheme, lesion patches are employed to encourage the feature extractor to learn representations that are highly discriminative for DR grading. We also investigate different data augmentation operations in defining our contrastive prediction task. Extensive experiments are conducted on the publicly-accessible dataset EyePACS, demonstrating that our proposed framework performs outstandingly on DR grading in terms of both linear evaluation and transfer capacity evaluation. Link to paper https://doi.org/10.1007/978-3-030-87196-3_11 Link to the code repository https://github.com/YijinHuang/Lesion-based-Contrastive-Learning Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The experimental setup is properly described in the paper. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The experimental setup is properly described in the paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors should include other baselines: MoCo, Mixmatch and others. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reported in detail and the datasets used are free-public available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The experimental setup is properly described in the paper. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors should include other baselines: MoCo, Mixmatch and others. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, that is validated for automated diabetic retinopathy grading. The model learns features from lesion patches, which are extracted using a supervised Faster R-CNN network. Training is done by first applying transformations on each lesion patch, and then forcing the network to learn close representations for different versions of the same patch and distant representations for different patches. In test time, the feature extraction network is applied on the full image to get a feature vector that can be then used for diabetic retinopathy grading. Results in a few training data regime using images from the EyePACS dataset show better quadratic weighted kappa than a baseline contrastive learning approach, and comparable to the supervised counterpart. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Self supervised learning by means of contrastive learning have not been too explored in fundus images, and never before for diabetic retinopathy grading. The idea is interesting: DR lesions are small (especially in early stages) so traditional networks trained on downsized images usually fail to distinguish early stages. The proposed approach learns how lesions look like first, and then can be fine tuned to make the grading based on that. Results when only few samples are available for training are superior than the ones obtained by the supervised baseline. This indicates that anyone with e.g. 1.700 annotated images could get a model for grading with a 0.754 kappa value (3% better than its supervised counterpart). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. When more training data is available, the results of the method are comparable to those obtained by the supervised counterpart, so its advantage in that case is not so clear (as the pre-trained net needs fine tuning to the downstream task, so it has to use annotations, so why using this new model instead of a straightforward convnet for classification?) The confusion matrices in Fig. A2 show similar proportions of mistakes between close stages. I would have expected to see improvements there if the model is able to see lesions properly, as it would have been better to discriminate different amounts of lesions. This might be a consequence of excluding microaneurysms in the lesion detector, as they are an important sign to discriminate between stages 0 and 1 (which are the ones with the largest amount of mistakes). One of the main claims in the introduction is that lesions are small, so traditional networks: (1) trained on downsized images might fail to take them into consideration for grading; (2) trained on crops might take patches with no visible signs of DR as with lesions, and viceversa. Although these arguments make sense from a theoretical perspective, it would be nice to see a comparison with respect to (2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method is trained using public available data (IDRiD and EyePACS-Kaggle images). Authors claimed in the Reproducibility Response that they will release code once the paper is accepted, but no reference to that is included in the text. Ranges for hyperparameters are included in the text, but there’s no explanation about how they were chosen (which criterion?). No information about the sensitivity to changes in hyperparameter is reported. The statistical differences in the performance metric is not reported. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be nice to extend the evaluation by comparing the attribution maps obtained by the proposed model vs. the supervised counterpart. If the CL strategy was successful, then we should see that the attribution maps are more concentrated in lesions than those from the supervised counterpart. Were the rates of images belonging to each DR stage controlled when sampling 1%, 5%, 10%… of the training data? I struggled to see how a network that was trained on small patches can then be applied on a larger image in this case. From what I read on the paper, the authors used a ResNet50 + a one-layer MLP as the projection head. I understand that that the projection head takes the fixed size output of the feature extraction part of ResNet50 to map it to a fix vector, which is the one used as a representation during training. But then this head is not used, so the features that are actually applied for the downstream task are the ones that were previously the input to the one-layer MLP… and due to the global average pooling in that part of ResNet50, then the network can take inputs of any size and produce features of a fixed length. It would be nice to have that explained in the paper (or in a future journal version) to avoid confusion and improve its reproducibility. A journal version should include: An evaluation for detecting referrable DR cases (a much easier task than grading). A comparison with [20]. Attribution maps (e.g. GradCam or so) showing areas taken into account by the net. t-SNE visualization of the learned features for images of different DR grades. Some minor comments: Section 1, Page 1. “annotating” should be “annotation”. Section 2.3, Page 5. “don’t” should be “do not”. Section 3.1, Page 6. “are provide” should be “are provided”. Section 4, Page 8, “Conlusion” should be “Conclusion”. Fig. A 3. would benefit from including a first row showing the images without the annotations. In its current form is quite difficult to see the lesions. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall I have a good opinion of the paper. It is well written, well organized and the experiments are mostly ok. I have doubts regarding the marginal improvements observed when working with larger amounts of data. If authors can show at least that the class activation maps are more focused on lesions than the ones of the supervised counterparts, then that might increase the importance of the method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposed a self-supervised framework, namely lesion-based contrastive learning, for automated diabetic retinopathy grading based on fundus images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper innovatively applied self-supervised framework to the DR grading task, which provides a new solution for training an effective deep learning model under the condition of lacking diagnostic labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is still improvement space for experiment design and result analysis. The generality of the algorithm should be further verified in a wider range of medical image tasks. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper provides enough detail for reproduction. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Firstly, “Partial datasets are obtained by randomly sampling 1%/5%/10%/25%100%…” in Section 3.1. Could the authors explain why there is such a big gap between 25% and 100%. Secondly, the proposed method has no obvious advantages compared with other methods for DR grading in Fig.A2. Could the authors explain why it is able to enhance DR grading as stated in the last sentence of Section 3.3. Thirdly, please give the detail of testing set for DR grading, including the number of different severity DR. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is relatively novel for DR grading from fundus image, and the evaluation is sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, to perform automated DR grading. Given three consistent positive reviews, I recommend accepting this submission. The authors should address the detailed comments from the reviewers in the camera-ready manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Reviewer #1: Q4: We thank the reviewer for this valuable suggestion. Due to space limitations, we will provide more details in our future journal version. Reviewer #2: Q4.1: As we have described in section 3.3, when fine-tuning on the full training set, there is not much difference between the fully supervised method and CL methods. This is because when the training set is large, feature representations can be sufficiently learned under full supervision, and thus there may be no need for CL-based learning. However, when the dataset has limited annotations, such as the partial datasets in Table 3, the advantage of our proposed method becomes evident. Moreover, it can serve as a model initialization method in the case of full supervision. Based on unreported experimental results, the model initialized by the CL method converges faster than the one initialized with parameters from a model pre-trained on ImageNet. Q4.2: We agree with the reviewer that it might be a consequence of excluding microaneurysms in our lesion detector. The dataset adopted to train the lesion detector is relatively small, which is the main limitation of this work and one of our future explorations. We will build a larger dataset with high-quality lesion annotations (including microaneurysms) to improve our CL-based DR grading performance. Q4.3: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details in our future journal version. Q6: We will update the link to our released source codes in the final version. Most key hyperparameters in this work are carefully tuned manually. More details will be provided in our future journal version. Q7: We thank the reviewer for these valuable suggestions. We will make corresponding revisions, and also incorporate those suggestions in our future journal version. As for the comment on the sampling rate, in the partial datasets, we randomly sample data from the whole training set without any explicit constraint, but the random seed is fixed to ensure that the dataset used for each comparison experiment are the same. We notice that the sampling rate of each stage is close to the average. Reviewer #3: Q4: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details about generalization experiments in our future journal version. Q7.1: Experiments on 50% and 75% partial datasets are also conducted. The overall trend of the results is consistent with our conclusion. Because of space limitations, we prefer to show more results on datasets with limited annotations (1%/5%/10%/25%). We will provide more results in our future journal version. Q7.2: As shown in Fig. A2, due to a better feature representation learning capability, our proposed method improves the accuracy of stage 4 by 11.6% and gives more diagonal tendency compared to the fully-supervised method, which contributes to the improvement in the kappa metric. Q7.3: We thank the reviewer for this suggestion. We will provide more details on the testing dataset in the Appendix. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Xiaoying Tang Abstract Manually annotating medical images is extremely expensive, especially for large-scale datasets. Self-supervised contrastive learning has been explored to learn feature representations from unlabeled images. However, unlike natural images, the application of contrastive learning to medical images is relatively limited. In this work, we propose a self-supervised framework, namely lesion-based contrastive learning for automated diabetic retinopathy (DR) grading. Instead of taking entire images as the input in the common contrastive learning scheme, lesion patches are employed to encourage the feature extractor to learn representations that are highly discriminative for DR grading. We also investigate different data augmentation operations in defining our contrastive prediction task. Extensive experiments are conducted on the publicly-accessible dataset EyePACS, demonstrating that our proposed framework performs outstandingly on DR grading in terms of both linear evaluation and transfer capacity evaluation. Link to paper https://doi.org/10.1007/978-3-030-87196-3_11 Link to the code repository https://github.com/YijinHuang/Lesion-based-Contrastive-Learning Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The experimental setup is properly described in the paper. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The experimental setup is properly described in the paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors should include other baselines: MoCo, Mixmatch and others. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reported in detail and the datasets used are free-public available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The experimental setup is properly described in the paper. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors should include other baselines: MoCo, Mixmatch and others. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, that is validated for automated diabetic retinopathy grading. The model learns features from lesion patches, which are extracted using a supervised Faster R-CNN network. Training is done by first applying transformations on each lesion patch, and then forcing the network to learn close representations for different versions of the same patch and distant representations for different patches. In test time, the feature extraction network is applied on the full image to get a feature vector that can be then used for diabetic retinopathy grading. Results in a few training data regime using images from the EyePACS dataset show better quadratic weighted kappa than a baseline contrastive learning approach, and comparable to the supervised counterpart. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Self supervised learning by means of contrastive learning have not been too explored in fundus images, and never before for diabetic retinopathy grading. The idea is interesting: DR lesions are small (especially in early stages) so traditional networks trained on downsized images usually fail to distinguish early stages. The proposed approach learns how lesions look like first, and then can be fine tuned to make the grading based on that. Results when only few samples are available for training are superior than the ones obtained by the supervised baseline. This indicates that anyone with e.g. 1.700 annotated images could get a model for grading with a 0.754 kappa value (3% better than its supervised counterpart). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. When more training data is available, the results of the method are comparable to those obtained by the supervised counterpart, so its advantage in that case is not so clear (as the pre-trained net needs fine tuning to the downstream task, so it has to use annotations, so why using this new model instead of a straightforward convnet for classification?) The confusion matrices in Fig. A2 show similar proportions of mistakes between close stages. I would have expected to see improvements there if the model is able to see lesions properly, as it would have been better to discriminate different amounts of lesions. This might be a consequence of excluding microaneurysms in the lesion detector, as they are an important sign to discriminate between stages 0 and 1 (which are the ones with the largest amount of mistakes). One of the main claims in the introduction is that lesions are small, so traditional networks: (1) trained on downsized images might fail to take them into consideration for grading; (2) trained on crops might take patches with no visible signs of DR as with lesions, and viceversa. Although these arguments make sense from a theoretical perspective, it would be nice to see a comparison with respect to (2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method is trained using public available data (IDRiD and EyePACS-Kaggle images). Authors claimed in the Reproducibility Response that they will release code once the paper is accepted, but no reference to that is included in the text. Ranges for hyperparameters are included in the text, but there’s no explanation about how they were chosen (which criterion?). No information about the sensitivity to changes in hyperparameter is reported. The statistical differences in the performance metric is not reported. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be nice to extend the evaluation by comparing the attribution maps obtained by the proposed model vs. the supervised counterpart. If the CL strategy was successful, then we should see that the attribution maps are more concentrated in lesions than those from the supervised counterpart. Were the rates of images belonging to each DR stage controlled when sampling 1%, 5%, 10%… of the training data? I struggled to see how a network that was trained on small patches can then be applied on a larger image in this case. From what I read on the paper, the authors used a ResNet50 + a one-layer MLP as the projection head. I understand that that the projection head takes the fixed size output of the feature extraction part of ResNet50 to map it to a fix vector, which is the one used as a representation during training. But then this head is not used, so the features that are actually applied for the downstream task are the ones that were previously the input to the one-layer MLP… and due to the global average pooling in that part of ResNet50, then the network can take inputs of any size and produce features of a fixed length. It would be nice to have that explained in the paper (or in a future journal version) to avoid confusion and improve its reproducibility. A journal version should include: An evaluation for detecting referrable DR cases (a much easier task than grading). A comparison with [20]. Attribution maps (e.g. GradCam or so) showing areas taken into account by the net. t-SNE visualization of the learned features for images of different DR grades. Some minor comments: Section 1, Page 1. “annotating” should be “annotation”. Section 2.3, Page 5. “don’t” should be “do not”. Section 3.1, Page 6. “are provide” should be “are provided”. Section 4, Page 8, “Conlusion” should be “Conclusion”. Fig. A 3. would benefit from including a first row showing the images without the annotations. In its current form is quite difficult to see the lesions. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall I have a good opinion of the paper. It is well written, well organized and the experiments are mostly ok. I have doubts regarding the marginal improvements observed when working with larger amounts of data. If authors can show at least that the class activation maps are more focused on lesions than the ones of the supervised counterparts, then that might increase the importance of the method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposed a self-supervised framework, namely lesion-based contrastive learning, for automated diabetic retinopathy grading based on fundus images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper innovatively applied self-supervised framework to the DR grading task, which provides a new solution for training an effective deep learning model under the condition of lacking diagnostic labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is still improvement space for experiment design and result analysis. The generality of the algorithm should be further verified in a wider range of medical image tasks. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper provides enough detail for reproduction. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Firstly, “Partial datasets are obtained by randomly sampling 1%/5%/10%/25%100%…” in Section 3.1. Could the authors explain why there is such a big gap between 25% and 100%. Secondly, the proposed method has no obvious advantages compared with other methods for DR grading in Fig.A2. Could the authors explain why it is able to enhance DR grading as stated in the last sentence of Section 3.3. Thirdly, please give the detail of testing set for DR grading, including the number of different severity DR. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is relatively novel for DR grading from fundus image, and the evaluation is sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, to perform automated DR grading. Given three consistent positive reviews, I recommend accepting this submission. The authors should address the detailed comments from the reviewers in the camera-ready manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Reviewer #1: Q4: We thank the reviewer for this valuable suggestion. Due to space limitations, we will provide more details in our future journal version. Reviewer #2: Q4.1: As we have described in section 3.3, when fine-tuning on the full training set, there is not much difference between the fully supervised method and CL methods. This is because when the training set is large, feature representations can be sufficiently learned under full supervision, and thus there may be no need for CL-based learning. However, when the dataset has limited annotations, such as the partial datasets in Table 3, the advantage of our proposed method becomes evident. Moreover, it can serve as a model initialization method in the case of full supervision. Based on unreported experimental results, the model initialized by the CL method converges faster than the one initialized with parameters from a model pre-trained on ImageNet. Q4.2: We agree with the reviewer that it might be a consequence of excluding microaneurysms in our lesion detector. The dataset adopted to train the lesion detector is relatively small, which is the main limitation of this work and one of our future explorations. We will build a larger dataset with high-quality lesion annotations (including microaneurysms) to improve our CL-based DR grading performance. Q4.3: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details in our future journal version. Q6: We will update the link to our released source codes in the final version. Most key hyperparameters in this work are carefully tuned manually. More details will be provided in our future journal version. Q7: We thank the reviewer for these valuable suggestions. We will make corresponding revisions, and also incorporate those suggestions in our future journal version. As for the comment on the sampling rate, in the partial datasets, we randomly sample data from the whole training set without any explicit constraint, but the random seed is fixed to ensure that the dataset used for each comparison experiment are the same. We notice that the sampling rate of each stage is close to the average. Reviewer #3: Q4: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details about generalization experiments in our future journal version. Q7.1: Experiments on 50% and 75% partial datasets are also conducted. The overall trend of the results is consistent with our conclusion. Because of space limitations, we prefer to show more results on datasets with limited annotations (1%/5%/10%/25%). We will provide more results in our future journal version. Q7.2: As shown in Fig. A2, due to a better feature representation learning capability, our proposed method improves the accuracy of stage 4 by 11.6% and gives more diagonal tendency compared to the fully-supervised method, which contributes to the improvement in the kappa metric. Q7.3: We thank the reviewer for this suggestion. We will provide more details on the testing dataset in the Appendix. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0210/12/31/Paper0730" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0210/12/31/Paper0730" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0210-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Lesion-based Contrastive Learning for Diabetic Retinopathy Grading from Fundus Images" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0210/12/31/Paper0730"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0210/12/31/Paper0730","headline":"Lesion-based Contrastive Learning for Diabetic Retinopathy Grading from Fundus Images","dateModified":"0211-01-01T00:00:00-05:17","datePublished":"0210-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Xiaoying Tang Abstract Manually annotating medical images is extremely expensive, especially for large-scale datasets. Self-supervised contrastive learning has been explored to learn feature representations from unlabeled images. However, unlike natural images, the application of contrastive learning to medical images is relatively limited. In this work, we propose a self-supervised framework, namely lesion-based contrastive learning for automated diabetic retinopathy (DR) grading. Instead of taking entire images as the input in the common contrastive learning scheme, lesion patches are employed to encourage the feature extractor to learn representations that are highly discriminative for DR grading. We also investigate different data augmentation operations in defining our contrastive prediction task. Extensive experiments are conducted on the publicly-accessible dataset EyePACS, demonstrating that our proposed framework performs outstandingly on DR grading in terms of both linear evaluation and transfer capacity evaluation. Link to paper https://doi.org/10.1007/978-3-030-87196-3_11 Link to the code repository https://github.com/YijinHuang/Lesion-based-Contrastive-Learning Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The experimental setup is properly described in the paper. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The experimental setup is properly described in the paper. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors should include other baselines: MoCo, Mixmatch and others. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reported in detail and the datasets used are free-public available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The experimental setup is properly described in the paper. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors should include other baselines: MoCo, Mixmatch and others. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, that is validated for automated diabetic retinopathy grading. The model learns features from lesion patches, which are extracted using a supervised Faster R-CNN network. Training is done by first applying transformations on each lesion patch, and then forcing the network to learn close representations for different versions of the same patch and distant representations for different patches. In test time, the feature extraction network is applied on the full image to get a feature vector that can be then used for diabetic retinopathy grading. Results in a few training data regime using images from the EyePACS dataset show better quadratic weighted kappa than a baseline contrastive learning approach, and comparable to the supervised counterpart. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Self supervised learning by means of contrastive learning have not been too explored in fundus images, and never before for diabetic retinopathy grading. The idea is interesting: DR lesions are small (especially in early stages) so traditional networks trained on downsized images usually fail to distinguish early stages. The proposed approach learns how lesions look like first, and then can be fine tuned to make the grading based on that. Results when only few samples are available for training are superior than the ones obtained by the supervised baseline. This indicates that anyone with e.g. 1.700 annotated images could get a model for grading with a 0.754 kappa value (3% better than its supervised counterpart). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. When more training data is available, the results of the method are comparable to those obtained by the supervised counterpart, so its advantage in that case is not so clear (as the pre-trained net needs fine tuning to the downstream task, so it has to use annotations, so why using this new model instead of a straightforward convnet for classification?) The confusion matrices in Fig. A2 show similar proportions of mistakes between close stages. I would have expected to see improvements there if the model is able to see lesions properly, as it would have been better to discriminate different amounts of lesions. This might be a consequence of excluding microaneurysms in the lesion detector, as they are an important sign to discriminate between stages 0 and 1 (which are the ones with the largest amount of mistakes). One of the main claims in the introduction is that lesions are small, so traditional networks: (1) trained on downsized images might fail to take them into consideration for grading; (2) trained on crops might take patches with no visible signs of DR as with lesions, and viceversa. Although these arguments make sense from a theoretical perspective, it would be nice to see a comparison with respect to (2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The proposed method is trained using public available data (IDRiD and EyePACS-Kaggle images). Authors claimed in the Reproducibility Response that they will release code once the paper is accepted, but no reference to that is included in the text. Ranges for hyperparameters are included in the text, but there’s no explanation about how they were chosen (which criterion?). No information about the sensitivity to changes in hyperparameter is reported. The statistical differences in the performance metric is not reported. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be nice to extend the evaluation by comparing the attribution maps obtained by the proposed model vs. the supervised counterpart. If the CL strategy was successful, then we should see that the attribution maps are more concentrated in lesions than those from the supervised counterpart. Were the rates of images belonging to each DR stage controlled when sampling 1%, 5%, 10%… of the training data? I struggled to see how a network that was trained on small patches can then be applied on a larger image in this case. From what I read on the paper, the authors used a ResNet50 + a one-layer MLP as the projection head. I understand that that the projection head takes the fixed size output of the feature extraction part of ResNet50 to map it to a fix vector, which is the one used as a representation during training. But then this head is not used, so the features that are actually applied for the downstream task are the ones that were previously the input to the one-layer MLP… and due to the global average pooling in that part of ResNet50, then the network can take inputs of any size and produce features of a fixed length. It would be nice to have that explained in the paper (or in a future journal version) to avoid confusion and improve its reproducibility. A journal version should include: An evaluation for detecting referrable DR cases (a much easier task than grading). A comparison with [20]. Attribution maps (e.g. GradCam or so) showing areas taken into account by the net. t-SNE visualization of the learned features for images of different DR grades. Some minor comments: Section 1, Page 1. “annotating” should be “annotation”. Section 2.3, Page 5. “don’t” should be “do not”. Section 3.1, Page 6. “are provide” should be “are provided”. Section 4, Page 8, “Conlusion” should be “Conclusion”. Fig. A 3. would benefit from including a first row showing the images without the annotations. In its current form is quite difficult to see the lesions. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall I have a good opinion of the paper. It is well written, well organized and the experiments are mostly ok. I have doubts regarding the marginal improvements observed when working with larger amounts of data. If authors can show at least that the class activation maps are more focused on lesions than the ones of the supervised counterparts, then that might increase the importance of the method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposed a self-supervised framework, namely lesion-based contrastive learning, for automated diabetic retinopathy grading based on fundus images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper innovatively applied self-supervised framework to the DR grading task, which provides a new solution for training an effective deep learning model under the condition of lacking diagnostic labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is still improvement space for experiment design and result analysis. The generality of the algorithm should be further verified in a wider range of medical image tasks. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper provides enough detail for reproduction. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Firstly, “Partial datasets are obtained by randomly sampling 1%/5%/10%/25%100%…” in Section 3.1. Could the authors explain why there is such a big gap between 25% and 100%. Secondly, the proposed method has no obvious advantages compared with other methods for DR grading in Fig.A2. Could the authors explain why it is able to enhance DR grading as stated in the last sentence of Section 3.3. Thirdly, please give the detail of testing set for DR grading, including the number of different severity DR. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is relatively novel for DR grading from fundus image, and the evaluation is sufficient. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, to perform automated DR grading. Given three consistent positive reviews, I recommend accepting this submission. The authors should address the detailed comments from the reviewers in the camera-ready manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Reviewer #1: Q4: We thank the reviewer for this valuable suggestion. Due to space limitations, we will provide more details in our future journal version. Reviewer #2: Q4.1: As we have described in section 3.3, when fine-tuning on the full training set, there is not much difference between the fully supervised method and CL methods. This is because when the training set is large, feature representations can be sufficiently learned under full supervision, and thus there may be no need for CL-based learning. However, when the dataset has limited annotations, such as the partial datasets in Table 3, the advantage of our proposed method becomes evident. Moreover, it can serve as a model initialization method in the case of full supervision. Based on unreported experimental results, the model initialized by the CL method converges faster than the one initialized with parameters from a model pre-trained on ImageNet. Q4.2: We agree with the reviewer that it might be a consequence of excluding microaneurysms in our lesion detector. The dataset adopted to train the lesion detector is relatively small, which is the main limitation of this work and one of our future explorations. We will build a larger dataset with high-quality lesion annotations (including microaneurysms) to improve our CL-based DR grading performance. Q4.3: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details in our future journal version. Q6: We will update the link to our released source codes in the final version. Most key hyperparameters in this work are carefully tuned manually. More details will be provided in our future journal version. Q7: We thank the reviewer for these valuable suggestions. We will make corresponding revisions, and also incorporate those suggestions in our future journal version. As for the comment on the sampling rate, in the partial datasets, we randomly sample data from the whole training set without any explicit constraint, but the random seed is fixed to ensure that the dataset used for each comparison experiment are the same. We notice that the sampling rate of each stage is close to the average. Reviewer #3: Q4: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details about generalization experiments in our future journal version. Q7.1: Experiments on 50% and 75% partial datasets are also conducted. The overall trend of the results is consistent with our conclusion. Because of space limitations, we prefer to show more results on datasets with limited annotations (1%/5%/10%/25%). We will provide more results in our future journal version. Q7.2: As shown in Fig. A2, due to a better feature representation learning capability, our proposed method improves the accuracy of stage 4 by 11.6% and gives more diagonal tendency compared to the fully-supervised method, which contributes to the improvement in the kappa metric. Q7.3: We thank the reviewer for this suggestion. We will provide more details on the testing dataset in the Appendix. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Huang, Yijin,Lin, Li,Cheng, Pujin,Lyu, Junyan,Tang, Xiaoying" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Lesion-based Contrastive Learning for Diabetic Retinopathy Grading from Fundus Images</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Huang, Yijin"
+        class="post-tags">
+        Huang, Yijin
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Li"
+        class="post-tags">
+        Lin, Li
+      </a> |  
+      
+      <a href="kittywong/tags#Cheng, Pujin"
+        class="post-tags">
+        Cheng, Pujin
+      </a> |  
+      
+      <a href="kittywong/tags#Lyu, Junyan"
+        class="post-tags">
+        Lyu, Junyan
+      </a> |  
+      
+      <a href="kittywong/tags#Tang, Xiaoying"
+        class="post-tags">
+        Tang, Xiaoying
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Xiaoying Tang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Manually annotating medical images is extremely expensive, especially for large-scale datasets. Self-supervised contrastive learning has been explored to learn feature representations from unlabeled images. However, unlike natural images, the application of contrastive learning to medical images is relatively limited. In this work, we propose a self-supervised framework, namely lesion-based contrastive learning for automated diabetic retinopathy (DR) grading. Instead of taking entire images as the input in the common contrastive learning scheme, lesion patches are employed to encourage the feature extractor to learn representations that are highly discriminative for DR grading. We also investigate different data augmentation operations in defining our contrastive prediction task. Extensive experiments are conducted on the publicly-accessible dataset EyePACS, demonstrating that our proposed framework performs outstandingly on DR grading in terms of both linear evaluation and transfer capacity evaluation.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_11">https://doi.org/10.1007/978-3-030-87196-3_11</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/YijinHuang/Lesion-based-Contrastive-Learning
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The experimental setup is properly described in the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The experimental setup is properly described in the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The authors should include other baselines: MoCo, Mixmatch and others.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method is reported in detail and the datasets used are free-public available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The experimental setup is properly described in the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The authors should include other baselines: MoCo, Mixmatch and others.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, that is validated for automated diabetic retinopathy grading.
+The model learns features from lesion patches, which are extracted using a supervised Faster R-CNN network. Training is done by first applying transformations on each lesion patch, and then forcing the network to learn close representations for different versions of the same patch and distant representations for different patches.
+In test time, the feature extraction network is applied on the full image to get a feature vector that can be then used for diabetic retinopathy grading.
+Results in a few training data regime using images from the EyePACS dataset show better quadratic weighted kappa than a baseline contrastive learning approach, and comparable to the supervised counterpart.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Self supervised learning by means of contrastive learning have not been too explored in fundus images, and never before for diabetic retinopathy grading. The idea is interesting: DR lesions are small (especially in early stages) so traditional networks trained on downsized images usually fail to distinguish early stages. The proposed approach learns how lesions look like first, and then can be fine tuned to make the grading based on that.</p>
+
+      <p>Results when only few samples are available for training are superior than the ones obtained by the supervised baseline. This indicates that anyone with e.g. 1.700 annotated images could get a model for grading with a 0.754 kappa value (3% better than its supervised counterpart).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>When more training data is available, the results of the method are comparable to those obtained by the supervised counterpart, so its advantage in that case is not so clear (as the pre-trained net needs fine tuning to the downstream task, so it has to use annotations, so why using this new model instead of a straightforward convnet for classification?)</p>
+
+      <p>The confusion matrices in Fig. A2 show similar proportions of mistakes between close stages. I would have expected to see improvements there if the model is able to see lesions properly, as it would have been better to discriminate different amounts of lesions. This might be a consequence of excluding microaneurysms in the lesion detector, as they are an important sign to discriminate between stages 0 and 1 (which are the ones with the largest amount of mistakes).</p>
+
+      <p>One of the main claims in the introduction is that lesions are small, so traditional networks: (1) trained on downsized images might fail to take them into consideration for grading; (2) trained on crops might take patches with no visible signs of DR as with lesions, and viceversa. Although these arguments make sense from a theoretical perspective, it would be nice to see a comparison with respect to (2).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The proposed method is trained using public available data (IDRiD and EyePACS-Kaggle images).</p>
+
+      <p>Authors claimed in the Reproducibility Response that they will release code once the paper is accepted, but no reference to that is included in the text.</p>
+
+      <p>Ranges for hyperparameters are included in the text, but there’s no explanation about how they were chosen (which criterion?).
+No information about the sensitivity to changes in hyperparameter is reported.</p>
+
+      <p>The statistical differences in the performance metric is not reported.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>It would be nice to extend the evaluation by comparing the attribution maps obtained by the proposed model vs. the supervised counterpart. If the CL strategy was successful, then we should see that the attribution maps are more concentrated in lesions than those from the supervised counterpart.</p>
+
+      <p>Were the rates of images belonging to each DR stage controlled when sampling 1%, 5%, 10%… of the training data?</p>
+
+      <p>I struggled to see how a network that was trained on small patches can then be applied on a larger image in this case. From what I read on the paper, the authors used a ResNet50 + a one-layer MLP as the projection head. I understand that that the projection head takes the fixed size output of the feature extraction part of ResNet50 to map it to a fix vector, which is the one used as a representation during training. But then this head is not used, so the features that are actually applied for the downstream task are the ones that were previously the input to the one-layer MLP… and due to the global average pooling in that part of ResNet50, then the network can take inputs of any size and produce features of a fixed length. It would be nice to have that explained in the paper (or in a future journal version) to avoid confusion and improve its reproducibility.</p>
+
+      <p>A journal version should include:</p>
+      <ul>
+        <li>An evaluation for detecting referrable DR cases (a much easier task than grading).</li>
+        <li>A comparison with [20].</li>
+        <li>Attribution maps (e.g. GradCam or so) showing areas taken into account by the net.</li>
+        <li>t-SNE visualization of the learned features for images of different DR grades.</li>
+      </ul>
+
+      <p>Some minor comments:</p>
+
+      <ul>
+        <li>Section 1, Page 1. “annotating” should be “annotation”.</li>
+        <li>Section 2.3, Page 5. “don’t” should be “do not”.</li>
+        <li>Section 3.1, Page 6. “are provide” should be “are provided”.</li>
+        <li>Section 4, Page 8, “Conlusion” should be “Conclusion”.</li>
+        <li>Fig. A 3. would benefit from including a first row showing the images without the annotations. In its current form is quite difficult to see the lesions.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Overall I have a good opinion of the paper. It is well written, well organized and the experiments are mostly ok. I have doubts regarding the marginal improvements observed when working with larger amounts of data. If authors can show at least that the class activation maps are more focused on lesions than the ones of the supervised counterparts, then that might increase the importance of the method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work proposed a self-supervised framework, namely lesion-based contrastive learning, for automated diabetic retinopathy grading based on fundus images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This paper innovatively applied self-supervised framework to the DR grading task, which provides a new solution for training an effective deep learning model  under the condition of lacking diagnostic labels.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>There is still improvement space for experiment design and result analysis. The generality of the algorithm should be further verified in a wider range of medical image tasks.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>This paper provides enough detail for reproduction.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Firstly, “Partial datasets are obtained by randomly sampling 1%/5%/10%/25%100%…” in Section 3.1. Could the authors explain why there is such a big gap between 25% and 100%.
+Secondly, the proposed method has no obvious advantages compared with other methods for DR grading in Fig.A2. Could the authors explain why it is able to enhance DR grading as stated in the last sentence of Section 3.3.
+Thirdly, please give the detail of testing set for DR grading, including the number of different severity DR.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The method is relatively novel for DR grading from fundus image, and the evaluation is sufficient.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+
+      <p>This paper proposes a self-supervised deep learning method based on contrastive learning for mining features in fundus images, to perform automated DR grading. Given three consistent positive reviews, I recommend accepting this submission. The authors should address the detailed comments from the reviewers in the camera-ready manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Reviewer #1:
+Q4: We thank the reviewer for this valuable suggestion. Due to space limitations, we will provide more details in our future journal version.</p>
+
+  <p>Reviewer #2:
+Q4.1: As we have described in section 3.3, when fine-tuning on the full training set, there is not much difference between the fully supervised method and CL methods. This is because when the training set is large, feature representations can be sufficiently learned under full supervision, and thus there may be no need for CL-based learning. However, when the dataset has limited annotations, such as the partial datasets in Table 3, the advantage of our proposed method becomes evident. Moreover, it can serve as a model initialization method in the case of full supervision. Based on unreported experimental results, the model initialized by the CL method converges faster than the one initialized with parameters from a model pre-trained on ImageNet.</p>
+
+  <p>Q4.2: We agree with the reviewer that it might be a consequence of excluding microaneurysms in our lesion detector. The dataset adopted to train the lesion detector is relatively small, which is the main limitation of this work and one of our future explorations. We will build a larger dataset with high-quality lesion annotations (including microaneurysms) to improve our CL-based DR grading performance.</p>
+
+  <p>Q4.3: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details in our future journal version.</p>
+
+  <p>Q6: We will update the link to our released source codes in the final version. Most key hyperparameters in this work are carefully tuned manually. More details will be provided in our future journal version.</p>
+
+  <p>Q7: We thank the reviewer for these valuable suggestions. We will make corresponding revisions, and also incorporate those suggestions in our future journal version. As for the comment on the sampling rate, in the partial datasets, we randomly sample data from the whole training set without any explicit constraint, but the random seed is fixed to ensure that the dataset used for each comparison experiment are the same. We notice that the sampling rate of each stage is close to the average.</p>
+
+  <p>Reviewer #3:
+Q4: We thank the reviewer for this suggestion. Due to space limitations, we will provide more details about generalization experiments in our future journal version.</p>
+
+  <p>Q7.1: Experiments on 50% and 75% partial datasets are also conducted. The overall trend of the results is consistent with our conclusion. Because of space limitations, we prefer to show more results on datasets with limited annotations (1%/5%/10%/25%). We will provide more results in our future journal version.</p>
+
+  <p>Q7.2: As shown in Fig. A2, due to a better feature representation learning capability, our proposed method improves the accuracy of stage 4 by 11.6% and gives more diagonal tendency compared to the fully-supervised method, which contributes to the improvement in the kappa metric.</p>
+
+  <p>Q7.3: We thank the reviewer for this suggestion. We will provide more details on the testing dataset in the Appendix.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0210-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0211-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Huang, Yijin"
+        class="post-category">
+        Huang, Yijin
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Li"
+        class="post-category">
+        Lin, Li
+      </a> |  
+      
+      <a href="kittywong/tags#Cheng, Pujin"
+        class="post-category">
+        Cheng, Pujin
+      </a> |  
+      
+      <a href="kittywong/tags#Lyu, Junyan"
+        class="post-category">
+        Lyu, Junyan
+      </a> |  
+      
+      <a href="kittywong/tags#Tang, Xiaoying"
+        class="post-category">
+        Tang, Xiaoying
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0211/12/31/Paper0836">
+          SAR: Scale-Aware Restoration Learning for 3D Tumor Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0209/12/31/Paper0569">
+          SimTriplet: Simple Triplet Representation Learning with a Single GPU
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

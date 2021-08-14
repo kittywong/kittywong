@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Weakly Supervised Registration of Prostate MRI and Histopathology Images | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Weakly Supervised Registration of Prostate MRI and Histopathology Images" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Wei Shao, Indrani Bhattacharya, Simon J. C. Soerensen, Christian A. Kunder, Jeffrey B. Wang, Richard E. Fan, Pejman Ghanouni, James D. Brooks, Geoffrey A. Sonn, Mirabela Rusu Abstract The interpretation of prostate MRI suffers from low agreement across radiologists due to the subtle differences between cancer and normal tissue. Image registration addresses this issue by accurately mapping the ground-truth cancer labels from surgical histopathology images onto MRI. Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer. A major limitation of current automated registration approaches is that they require manual prostate segmentations, which is a time-consuming task, prone to errors. This paper presents a weakly supervised approach for affine and deformable registration of MRI and histopathology images without requiring prostate segmentations. We used manual prostate segmentations and mono-modal synthetic image pairs to train our registration networks to align prostate boundaries and local prostate features. Although prostate segmentations were used during the training of the network, such segmentations were not needed when registering unseen images at inference time. We trained and validated our registration network with 135 and 10 patients from an internal cohort, respectively. We tested the performance of our method using 16 patients from the internal cohort and 22 patients from an external cohort. The results show that our weakly supervised method has achieved significantly higher registration accuracy than a state-of-the-art method run without prostate segmentations. Our deep learning framework will ease the registration of MRI and histopathology images by obviating the need for prostate segmentations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_10 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper tackles the problem of intermodal registration between histology sections and pre-operative MRI slices in the prostate. Their main contribution is to develop a registration algorithm that does not need MRI prostate segmentations at inference. They use a VGG network to extract features from each image and use a low dimensional deformation model (affine + non-linear) to align both domains. They use a novel loss function that combines (i) the cross-alignment between modalities using the dice score between prostate masks available only during training and (ii) the alignment between randomly deformed copies of each domain using the MSE. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The manuscript is organized nicely: the problem is properly motivated, the goal is presented clearly and the main contributions are well explained. To the best knowledge of the authors and the reviewer, this is the second attempt to using neural networks for histopathology-MRI registration in the prostate, improving the results upon the previous work (ProsRegNet, [9]). They use a deformation model that can be found in the literatue (e.g., Shao et al. [9]) but many differences can be spotted regarding: The feature extractor used: VGG vs. ResNet. Model parameter computation: GAP + concatenation layer vs. correlation layer The loss function: a cross-domain term using the prostate segmentation (available only during training) from both MRI and histology images. Another strong point is that they show the feasibility of the model on two different cohorts: one coming from the same distribution as training data and another external cohort. Significant improvements (p&lt;0.05) are found compared to previous state-of-the-art using neural networks for registration. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern is that the authors did not explain clearly how their competitor method was trained: e.g., what parameters were used or whether prostate segmentations were used at training and/or inference or not. Hence, it is hard to properly assess the comparison results. The methodology presented here is not entirely novel. They use weakly supervised training that doesn’t require labels at inference time, quite relevant when using pre-operative MRI scans. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have commited to make their code available. However, some of the design decisions were not justified (e.g., hyperparameter selection). The cohort used for training is not publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the text is well written, I believe that some minor corrections will improve readability: Theta is used to represent the affine parameters and the nonlinear parameters separately. It may be worth using a superscript to distinguish them. What is the magnitude of distance metrics (landmark error, urethra deviation). Moreover, some decisions about the method used may be better justified in the text: The number of frozen layers from VGG. If the authors have tried different options it may be noted in the text why they decide to keep the presented configuration The weight losses used for each component: seg, int, reg. Finally, it will be interesting to know how the landmarks were placed in the corresponding image pairs. For example: spatially random or mainly at the boundaries? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the formulation is not entirely novel, they use several ideas togehter and apply them for the first time to alignment of intra-operative MRI scancs and histopathology sections. They show the benefit of their models in two different cohorts for several metrics. Hence, I believe that this paper should be probably accepted. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper To compare two MRI to pathology registration methods. One based on grey level and the other on manual prostate segmentation. A dataset comprising 135 training and 22 test cases consisted of MRI and images of cut slices from pathology specimen pre-molded using 3D prostate segmentation models obtained from MRI. The grey value-based registration method used an ImageNet pre-trained VGG network that was partially retrained to produce a registration transformation. A downloaded but undescribed ProsRegNet was used to align based on segmentation. The resulting DICE overlap and other performance measures show a slight improvement of the gray value-based method over the segmentation-based method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Well-written paper. Good dataset. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The claim should be limited to pathology images compiled using a 3D mold. This mold preforms the pathology specimen, which is crucial in the alignment process. Wihtout the mold the registration becomes much more difficult and the claim is definitely not justified in these cases. The use of a set of patients that underwent prostatectomy introduced a bias in any method that will use this data. The authors claim that: “Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer.” Which is not true. The current most common case of MRI is low risk cancer patients that may or may not have clinically significant cancer requiring treatment such as prostatectomy. It is crucial for a radiologist to learn to discriminate cases with or without signs of clinically significant cancer. The selection to prostatectomy excludes cases without clinically significant cancer. This introduce a significant bias. I think this data set is very relevant to the problem of determining the size of a prostate cancer for treatment and various other related topics. It is a bit strange that segmentation methods perform slightly worse. The segmentation presumably is used for the 3D mold model. The segmentation of the prostaet on the specimen should than be relatively simple. Aligning that to the 3D model should be fine right? The details of the mold segmentation are missing to verify this. The segmentation based registration method selected is chosen because it was the only one that was available for download. I VGG was a dedicated algorithm fine tued to the problem at hand. I miss description of the downloaded method. There is always a disadvantage to ‘‘being” the algorithm compared to, as it will probably not receive the same amount of attention as the authors’ method. A sens a light bias. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Considering my review above I could imagine this may not be easily reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See above Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great dataset and intersting to discuss at a meeting. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper presents a novel regsitration framework that aligns the Histopathology Images with the cancer labels and the pre-operative MRI images without the cancer labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The registration algorithm is novel, the application has significant clinical value, the conclusion is supported real-world data and fair settings for all compared methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear why the authors refer to their algorithms as un-supervised registration methods since the prostate segmentation is used in the training process, although the authors claim that the prostate segmentation is not used in the testing scenario. This point also challege the authors’ claim that one of the main advantage of their algorithm is that the prostate segmentation is not needed during the test stage, This is weird to some extent, in my opinion. Some key(or state-of-the-art) references in the medical image registration are missing. The novelty(what has been changed?) of the algorithm should be justifed over the existing registration methods. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is of great value if the author can elaborate more about the differences between their proposed registration algroithm and the compared state-of-the-art method ProsRegNet. It is also very helpful if the authors can add experiments that compare ProsRegNet and the proposed methods, where the prostate segmentaons are also used in the training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing is good, and the registration algorithm is well illustrated with moderate validations. The major point that hinders the reviewer to a strong accept is that the reviewer doubt the authors’ claim of the advantage of not using the prostate segmentations, since prostate segmentation is still utilized in the training stage. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although an interesting work with a long-standing challenge in prostate MR-to-histo registration, there are a few important comments from all three reviewers need to be addressed: 1) a better review and perhaps additional references in weakly supervised registration methods should be acknowledged and discussed (for future work, compared) would help to better position this work (as commented by Reviewer 1 and 3); 2) a strong rebuttal to comments raised by Reviewer 2, in regarding to the clinical relevance of the experimental design and results, is also needed; 3) address the comments on the compared segmentation methods, raised by all three Reviewers - is it a fair comparison or a comparison with existing method without any adaptation to the proposed one fine-tuned for the data/application? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The use of the technical differences to the existing registration frameworks to argue for their novelty claim, e.g. ResNet vs. VGG, a combination of two existing losses, MSE and label-driven dice. This does not justify a strong claim of novelty or avoiding reasonable comparing/discussing/acknowledging these prior work. I also agree with three reviewers that the justification for not using segmentation needs to be a stronger, as this mr-tohisto registration task has a primary goal for retrospective validation and automatic segmenting prostate from either MR or WSI isn’t challenging. The rebuttal did not address the issues on the fair comparison. More importantly, the results may be misleading in current presentation with much inferior results from an un-optimised segmentation-based method that also is arguably easier to get better performance. However, given the nature of the preliminary results with a small data set, i consider the work has the potentials to be strengthened and could make an much greater impact. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 20 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work tackles one of the MIC challenges that has been researched extensively in the past and yet not resolved with a clinically acceptable solution. The proposed solution is another interesting approach with promising results. Authors adequately addressed reviewers’ comments and concerns in their rebuttal response. Overall, I find this work of interest for MICCAI 2021 audience. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors rebuttal accounted for most of the critical issues raised in the first round. Their response to the bias caused by the patients’ cohort is convincing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive comments. Abbreviation: Reviewer (R). Clarification of the need for discarding prostate segmentations at inference and comparison with the ProsRegNet method. (R1, R2, R3) While prostate segmentations on MRI are required for ultrasound-MRI fusion targeted biopsy, such segmentations are not routinely performed in men undergoing prostatectomy after conventional prostate biopsy. Moreover, pathologists do not segment the prostate on digital histopathology. Since prostate segmentation on MRI and histopathology are not always immediately available and gland segmentation is a time-consuming task prone to errors, there is value in registration of MRI and histopathology without the need for gland segmentation. The major advantage of our method is that it avoids the above shortcomings of prostate segmentation by not relying on it at inference. Since the goal of this paper is to develop a registration approach that does not require prostate segmentation, both our method and the competing ProsRegNet method were tested without using prostate segmentations. Describe the differences between the proposed method and the ProsRegNet method. (R1, R2, R3) (a) Network architecture. The ProsRegNet method used ResNet101 while our method used VGG16 for feature extraction. The ProsRegNet method used a correlation layer to compute the correlation between feature maps while our method used the global average pooling layer to reduce the size of each feature map. (b) Loss function. The ProsRegNet method used the mean squared error (MSE) as the training loss. Our proposed method used MSE and two additional terms: the Dice coefficient loss to align the prostate boundaries and the regularization loss to guarantee the smoothness of the transformations. (c) Training dataset. The ProsRegNet method used masked synthetic unimodal image pairs for the training. The proposed method used unmasked synthetic unimodal image pairs, unmasked real multimodal image pairs, and manual prostate masks for the training. Discuss previous weakly supervised registration methods to justify the novelty of the proposed method. (R1, R3) Many weakly supervised registration methods have been proposed for image registration [A-C]. Our method used both label-driven and image-driven losses, unlike Hu et al. that only used label-based loss [A]. Moreover, others used multimodal losses for the training [B-C], however, these methods are not suitable for registration of MRI and histopathology due to their large differences in appearance. A. Hu, Y., et al. “Label-driven weakly-supervised learning for multimodal deformable image registration.” ISBI 2018. B. Balakrishnan, G., et al. “VoxelMorph: a learning framework for deformable medical image registration.” IEEE TMI 38.8 (2019): 1788-1800. C. de Vos, B., et al. “A deep learning framework for unsupervised affine and deformable image registration.” MEDIA 52 (2019): 128-143. Biased caused by the use of patients that underwent radical prostatectomy. (R2) We acknowledge that the use of patients undergoing prostatectomy might introduce spectrum bias in our cohort that does not translate into other populations (e.g., candidates for active surveillance). However, we used grade as a surrogate for the aggressive disease since it has been demonstrated to be the most powerful predictor of outcome in localized prostate cancer. Moreover, grade is also used for clinical decisions (e.g., selection of patients for active surveillance). As such, radical prostatectomy cases are ideal for model building as they allow: (1) precise registration of MR and histopathology images, (2) provide ground truth cancer label at every voxel within the prostate and (3) diversity of low- and high-grade cancers as they often coexist within the same lesion. However, such granularity of labels cannot be achieved in subjects that only undergo biopsy as the prostate is only sampled at the biopsy sites. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Wei Shao, Indrani Bhattacharya, Simon J. C. Soerensen, Christian A. Kunder, Jeffrey B. Wang, Richard E. Fan, Pejman Ghanouni, James D. Brooks, Geoffrey A. Sonn, Mirabela Rusu Abstract The interpretation of prostate MRI suffers from low agreement across radiologists due to the subtle differences between cancer and normal tissue. Image registration addresses this issue by accurately mapping the ground-truth cancer labels from surgical histopathology images onto MRI. Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer. A major limitation of current automated registration approaches is that they require manual prostate segmentations, which is a time-consuming task, prone to errors. This paper presents a weakly supervised approach for affine and deformable registration of MRI and histopathology images without requiring prostate segmentations. We used manual prostate segmentations and mono-modal synthetic image pairs to train our registration networks to align prostate boundaries and local prostate features. Although prostate segmentations were used during the training of the network, such segmentations were not needed when registering unseen images at inference time. We trained and validated our registration network with 135 and 10 patients from an internal cohort, respectively. We tested the performance of our method using 16 patients from the internal cohort and 22 patients from an external cohort. The results show that our weakly supervised method has achieved significantly higher registration accuracy than a state-of-the-art method run without prostate segmentations. Our deep learning framework will ease the registration of MRI and histopathology images by obviating the need for prostate segmentations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_10 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper tackles the problem of intermodal registration between histology sections and pre-operative MRI slices in the prostate. Their main contribution is to develop a registration algorithm that does not need MRI prostate segmentations at inference. They use a VGG network to extract features from each image and use a low dimensional deformation model (affine + non-linear) to align both domains. They use a novel loss function that combines (i) the cross-alignment between modalities using the dice score between prostate masks available only during training and (ii) the alignment between randomly deformed copies of each domain using the MSE. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The manuscript is organized nicely: the problem is properly motivated, the goal is presented clearly and the main contributions are well explained. To the best knowledge of the authors and the reviewer, this is the second attempt to using neural networks for histopathology-MRI registration in the prostate, improving the results upon the previous work (ProsRegNet, [9]). They use a deformation model that can be found in the literatue (e.g., Shao et al. [9]) but many differences can be spotted regarding: The feature extractor used: VGG vs. ResNet. Model parameter computation: GAP + concatenation layer vs. correlation layer The loss function: a cross-domain term using the prostate segmentation (available only during training) from both MRI and histology images. Another strong point is that they show the feasibility of the model on two different cohorts: one coming from the same distribution as training data and another external cohort. Significant improvements (p&lt;0.05) are found compared to previous state-of-the-art using neural networks for registration. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern is that the authors did not explain clearly how their competitor method was trained: e.g., what parameters were used or whether prostate segmentations were used at training and/or inference or not. Hence, it is hard to properly assess the comparison results. The methodology presented here is not entirely novel. They use weakly supervised training that doesn’t require labels at inference time, quite relevant when using pre-operative MRI scans. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have commited to make their code available. However, some of the design decisions were not justified (e.g., hyperparameter selection). The cohort used for training is not publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the text is well written, I believe that some minor corrections will improve readability: Theta is used to represent the affine parameters and the nonlinear parameters separately. It may be worth using a superscript to distinguish them. What is the magnitude of distance metrics (landmark error, urethra deviation). Moreover, some decisions about the method used may be better justified in the text: The number of frozen layers from VGG. If the authors have tried different options it may be noted in the text why they decide to keep the presented configuration The weight losses used for each component: seg, int, reg. Finally, it will be interesting to know how the landmarks were placed in the corresponding image pairs. For example: spatially random or mainly at the boundaries? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the formulation is not entirely novel, they use several ideas togehter and apply them for the first time to alignment of intra-operative MRI scancs and histopathology sections. They show the benefit of their models in two different cohorts for several metrics. Hence, I believe that this paper should be probably accepted. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper To compare two MRI to pathology registration methods. One based on grey level and the other on manual prostate segmentation. A dataset comprising 135 training and 22 test cases consisted of MRI and images of cut slices from pathology specimen pre-molded using 3D prostate segmentation models obtained from MRI. The grey value-based registration method used an ImageNet pre-trained VGG network that was partially retrained to produce a registration transformation. A downloaded but undescribed ProsRegNet was used to align based on segmentation. The resulting DICE overlap and other performance measures show a slight improvement of the gray value-based method over the segmentation-based method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Well-written paper. Good dataset. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The claim should be limited to pathology images compiled using a 3D mold. This mold preforms the pathology specimen, which is crucial in the alignment process. Wihtout the mold the registration becomes much more difficult and the claim is definitely not justified in these cases. The use of a set of patients that underwent prostatectomy introduced a bias in any method that will use this data. The authors claim that: “Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer.” Which is not true. The current most common case of MRI is low risk cancer patients that may or may not have clinically significant cancer requiring treatment such as prostatectomy. It is crucial for a radiologist to learn to discriminate cases with or without signs of clinically significant cancer. The selection to prostatectomy excludes cases without clinically significant cancer. This introduce a significant bias. I think this data set is very relevant to the problem of determining the size of a prostate cancer for treatment and various other related topics. It is a bit strange that segmentation methods perform slightly worse. The segmentation presumably is used for the 3D mold model. The segmentation of the prostaet on the specimen should than be relatively simple. Aligning that to the 3D model should be fine right? The details of the mold segmentation are missing to verify this. The segmentation based registration method selected is chosen because it was the only one that was available for download. I VGG was a dedicated algorithm fine tued to the problem at hand. I miss description of the downloaded method. There is always a disadvantage to ‘‘being” the algorithm compared to, as it will probably not receive the same amount of attention as the authors’ method. A sens a light bias. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Considering my review above I could imagine this may not be easily reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See above Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great dataset and intersting to discuss at a meeting. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper presents a novel regsitration framework that aligns the Histopathology Images with the cancer labels and the pre-operative MRI images without the cancer labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The registration algorithm is novel, the application has significant clinical value, the conclusion is supported real-world data and fair settings for all compared methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear why the authors refer to their algorithms as un-supervised registration methods since the prostate segmentation is used in the training process, although the authors claim that the prostate segmentation is not used in the testing scenario. This point also challege the authors’ claim that one of the main advantage of their algorithm is that the prostate segmentation is not needed during the test stage, This is weird to some extent, in my opinion. Some key(or state-of-the-art) references in the medical image registration are missing. The novelty(what has been changed?) of the algorithm should be justifed over the existing registration methods. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is of great value if the author can elaborate more about the differences between their proposed registration algroithm and the compared state-of-the-art method ProsRegNet. It is also very helpful if the authors can add experiments that compare ProsRegNet and the proposed methods, where the prostate segmentaons are also used in the training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing is good, and the registration algorithm is well illustrated with moderate validations. The major point that hinders the reviewer to a strong accept is that the reviewer doubt the authors’ claim of the advantage of not using the prostate segmentations, since prostate segmentation is still utilized in the training stage. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although an interesting work with a long-standing challenge in prostate MR-to-histo registration, there are a few important comments from all three reviewers need to be addressed: 1) a better review and perhaps additional references in weakly supervised registration methods should be acknowledged and discussed (for future work, compared) would help to better position this work (as commented by Reviewer 1 and 3); 2) a strong rebuttal to comments raised by Reviewer 2, in regarding to the clinical relevance of the experimental design and results, is also needed; 3) address the comments on the compared segmentation methods, raised by all three Reviewers - is it a fair comparison or a comparison with existing method without any adaptation to the proposed one fine-tuned for the data/application? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The use of the technical differences to the existing registration frameworks to argue for their novelty claim, e.g. ResNet vs. VGG, a combination of two existing losses, MSE and label-driven dice. This does not justify a strong claim of novelty or avoiding reasonable comparing/discussing/acknowledging these prior work. I also agree with three reviewers that the justification for not using segmentation needs to be a stronger, as this mr-tohisto registration task has a primary goal for retrospective validation and automatic segmenting prostate from either MR or WSI isn’t challenging. The rebuttal did not address the issues on the fair comparison. More importantly, the results may be misleading in current presentation with much inferior results from an un-optimised segmentation-based method that also is arguably easier to get better performance. However, given the nature of the preliminary results with a small data set, i consider the work has the potentials to be strengthened and could make an much greater impact. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 20 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work tackles one of the MIC challenges that has been researched extensively in the past and yet not resolved with a clinically acceptable solution. The proposed solution is another interesting approach with promising results. Authors adequately addressed reviewers’ comments and concerns in their rebuttal response. Overall, I find this work of interest for MICCAI 2021 audience. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors rebuttal accounted for most of the critical issues raised in the first round. Their response to the bias caused by the patients’ cohort is convincing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive comments. Abbreviation: Reviewer (R). Clarification of the need for discarding prostate segmentations at inference and comparison with the ProsRegNet method. (R1, R2, R3) While prostate segmentations on MRI are required for ultrasound-MRI fusion targeted biopsy, such segmentations are not routinely performed in men undergoing prostatectomy after conventional prostate biopsy. Moreover, pathologists do not segment the prostate on digital histopathology. Since prostate segmentation on MRI and histopathology are not always immediately available and gland segmentation is a time-consuming task prone to errors, there is value in registration of MRI and histopathology without the need for gland segmentation. The major advantage of our method is that it avoids the above shortcomings of prostate segmentation by not relying on it at inference. Since the goal of this paper is to develop a registration approach that does not require prostate segmentation, both our method and the competing ProsRegNet method were tested without using prostate segmentations. Describe the differences between the proposed method and the ProsRegNet method. (R1, R2, R3) (a) Network architecture. The ProsRegNet method used ResNet101 while our method used VGG16 for feature extraction. The ProsRegNet method used a correlation layer to compute the correlation between feature maps while our method used the global average pooling layer to reduce the size of each feature map. (b) Loss function. The ProsRegNet method used the mean squared error (MSE) as the training loss. Our proposed method used MSE and two additional terms: the Dice coefficient loss to align the prostate boundaries and the regularization loss to guarantee the smoothness of the transformations. (c) Training dataset. The ProsRegNet method used masked synthetic unimodal image pairs for the training. The proposed method used unmasked synthetic unimodal image pairs, unmasked real multimodal image pairs, and manual prostate masks for the training. Discuss previous weakly supervised registration methods to justify the novelty of the proposed method. (R1, R3) Many weakly supervised registration methods have been proposed for image registration [A-C]. Our method used both label-driven and image-driven losses, unlike Hu et al. that only used label-based loss [A]. Moreover, others used multimodal losses for the training [B-C], however, these methods are not suitable for registration of MRI and histopathology due to their large differences in appearance. A. Hu, Y., et al. “Label-driven weakly-supervised learning for multimodal deformable image registration.” ISBI 2018. B. Balakrishnan, G., et al. “VoxelMorph: a learning framework for deformable medical image registration.” IEEE TMI 38.8 (2019): 1788-1800. C. de Vos, B., et al. “A deep learning framework for unsupervised affine and deformable image registration.” MEDIA 52 (2019): 128-143. Biased caused by the use of patients that underwent radical prostatectomy. (R2) We acknowledge that the use of patients undergoing prostatectomy might introduce spectrum bias in our cohort that does not translate into other populations (e.g., candidates for active surveillance). However, we used grade as a surrogate for the aggressive disease since it has been demonstrated to be the most powerful predictor of outcome in localized prostate cancer. Moreover, grade is also used for clinical decisions (e.g., selection of patients for active surveillance). As such, radical prostatectomy cases are ideal for model building as they allow: (1) precise registration of MR and histopathology images, (2) provide ground truth cancer label at every voxel within the prostate and (3) diversity of low- and high-grade cancers as they often coexist within the same lesion. However, such granularity of labels cannot be achieved in subjects that only undergo biopsy as the prostate is only sampled at the biopsy sites. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0409/12/31/Paper0760" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0409/12/31/Paper0760" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0409-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Weakly Supervised Registration of Prostate MRI and Histopathology Images" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0409/12/31/Paper0760"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0409/12/31/Paper0760","headline":"Weakly Supervised Registration of Prostate MRI and Histopathology Images","dateModified":"0410-01-02T00:00:00-05:17","datePublished":"0409-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Wei Shao, Indrani Bhattacharya, Simon J. C. Soerensen, Christian A. Kunder, Jeffrey B. Wang, Richard E. Fan, Pejman Ghanouni, James D. Brooks, Geoffrey A. Sonn, Mirabela Rusu Abstract The interpretation of prostate MRI suffers from low agreement across radiologists due to the subtle differences between cancer and normal tissue. Image registration addresses this issue by accurately mapping the ground-truth cancer labels from surgical histopathology images onto MRI. Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer. A major limitation of current automated registration approaches is that they require manual prostate segmentations, which is a time-consuming task, prone to errors. This paper presents a weakly supervised approach for affine and deformable registration of MRI and histopathology images without requiring prostate segmentations. We used manual prostate segmentations and mono-modal synthetic image pairs to train our registration networks to align prostate boundaries and local prostate features. Although prostate segmentations were used during the training of the network, such segmentations were not needed when registering unseen images at inference time. We trained and validated our registration network with 135 and 10 patients from an internal cohort, respectively. We tested the performance of our method using 16 patients from the internal cohort and 22 patients from an external cohort. The results show that our weakly supervised method has achieved significantly higher registration accuracy than a state-of-the-art method run without prostate segmentations. Our deep learning framework will ease the registration of MRI and histopathology images by obviating the need for prostate segmentations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_10 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper tackles the problem of intermodal registration between histology sections and pre-operative MRI slices in the prostate. Their main contribution is to develop a registration algorithm that does not need MRI prostate segmentations at inference. They use a VGG network to extract features from each image and use a low dimensional deformation model (affine + non-linear) to align both domains. They use a novel loss function that combines (i) the cross-alignment between modalities using the dice score between prostate masks available only during training and (ii) the alignment between randomly deformed copies of each domain using the MSE. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The manuscript is organized nicely: the problem is properly motivated, the goal is presented clearly and the main contributions are well explained. To the best knowledge of the authors and the reviewer, this is the second attempt to using neural networks for histopathology-MRI registration in the prostate, improving the results upon the previous work (ProsRegNet, [9]). They use a deformation model that can be found in the literatue (e.g., Shao et al. [9]) but many differences can be spotted regarding: The feature extractor used: VGG vs. ResNet. Model parameter computation: GAP + concatenation layer vs. correlation layer The loss function: a cross-domain term using the prostate segmentation (available only during training) from both MRI and histology images. Another strong point is that they show the feasibility of the model on two different cohorts: one coming from the same distribution as training data and another external cohort. Significant improvements (p&lt;0.05) are found compared to previous state-of-the-art using neural networks for registration. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. My main concern is that the authors did not explain clearly how their competitor method was trained: e.g., what parameters were used or whether prostate segmentations were used at training and/or inference or not. Hence, it is hard to properly assess the comparison results. The methodology presented here is not entirely novel. They use weakly supervised training that doesn’t require labels at inference time, quite relevant when using pre-operative MRI scans. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors have commited to make their code available. However, some of the design decisions were not justified (e.g., hyperparameter selection). The cohort used for training is not publicly available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html While the text is well written, I believe that some minor corrections will improve readability: Theta is used to represent the affine parameters and the nonlinear parameters separately. It may be worth using a superscript to distinguish them. What is the magnitude of distance metrics (landmark error, urethra deviation). Moreover, some decisions about the method used may be better justified in the text: The number of frozen layers from VGG. If the authors have tried different options it may be noted in the text why they decide to keep the presented configuration The weight losses used for each component: seg, int, reg. Finally, it will be interesting to know how the landmarks were placed in the corresponding image pairs. For example: spatially random or mainly at the boundaries? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the formulation is not entirely novel, they use several ideas togehter and apply them for the first time to alignment of intra-operative MRI scancs and histopathology sections. They show the benefit of their models in two different cohorts for several metrics. Hence, I believe that this paper should be probably accepted. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper To compare two MRI to pathology registration methods. One based on grey level and the other on manual prostate segmentation. A dataset comprising 135 training and 22 test cases consisted of MRI and images of cut slices from pathology specimen pre-molded using 3D prostate segmentation models obtained from MRI. The grey value-based registration method used an ImageNet pre-trained VGG network that was partially retrained to produce a registration transformation. A downloaded but undescribed ProsRegNet was used to align based on segmentation. The resulting DICE overlap and other performance measures show a slight improvement of the gray value-based method over the segmentation-based method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Well-written paper. Good dataset. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The claim should be limited to pathology images compiled using a 3D mold. This mold preforms the pathology specimen, which is crucial in the alignment process. Wihtout the mold the registration becomes much more difficult and the claim is definitely not justified in these cases. The use of a set of patients that underwent prostatectomy introduced a bias in any method that will use this data. The authors claim that: “Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer.” Which is not true. The current most common case of MRI is low risk cancer patients that may or may not have clinically significant cancer requiring treatment such as prostatectomy. It is crucial for a radiologist to learn to discriminate cases with or without signs of clinically significant cancer. The selection to prostatectomy excludes cases without clinically significant cancer. This introduce a significant bias. I think this data set is very relevant to the problem of determining the size of a prostate cancer for treatment and various other related topics. It is a bit strange that segmentation methods perform slightly worse. The segmentation presumably is used for the 3D mold model. The segmentation of the prostaet on the specimen should than be relatively simple. Aligning that to the 3D model should be fine right? The details of the mold segmentation are missing to verify this. The segmentation based registration method selected is chosen because it was the only one that was available for download. I VGG was a dedicated algorithm fine tued to the problem at hand. I miss description of the downloaded method. There is always a disadvantage to ‘‘being” the algorithm compared to, as it will probably not receive the same amount of attention as the authors’ method. A sens a light bias. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Considering my review above I could imagine this may not be easily reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See above Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Great dataset and intersting to discuss at a meeting. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper presents a novel regsitration framework that aligns the Histopathology Images with the cancer labels and the pre-operative MRI images without the cancer labels. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The registration algorithm is novel, the application has significant clinical value, the conclusion is supported real-world data and fair settings for all compared methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear why the authors refer to their algorithms as un-supervised registration methods since the prostate segmentation is used in the training process, although the authors claim that the prostate segmentation is not used in the testing scenario. This point also challege the authors’ claim that one of the main advantage of their algorithm is that the prostate segmentation is not needed during the test stage, This is weird to some extent, in my opinion. Some key(or state-of-the-art) references in the medical image registration are missing. The novelty(what has been changed?) of the algorithm should be justifed over the existing registration methods. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is of great value if the author can elaborate more about the differences between their proposed registration algroithm and the compared state-of-the-art method ProsRegNet. It is also very helpful if the authors can add experiments that compare ProsRegNet and the proposed methods, where the prostate segmentaons are also used in the training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The writing is good, and the registration algorithm is well illustrated with moderate validations. The major point that hinders the reviewer to a strong accept is that the reviewer doubt the authors’ claim of the advantage of not using the prostate segmentations, since prostate segmentation is still utilized in the training stage. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Although an interesting work with a long-standing challenge in prostate MR-to-histo registration, there are a few important comments from all three reviewers need to be addressed: 1) a better review and perhaps additional references in weakly supervised registration methods should be acknowledged and discussed (for future work, compared) would help to better position this work (as commented by Reviewer 1 and 3); 2) a strong rebuttal to comments raised by Reviewer 2, in regarding to the clinical relevance of the experimental design and results, is also needed; 3) address the comments on the compared segmentation methods, raised by all three Reviewers - is it a fair comparison or a comparison with existing method without any adaptation to the proposed one fine-tuned for the data/application? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The use of the technical differences to the existing registration frameworks to argue for their novelty claim, e.g. ResNet vs. VGG, a combination of two existing losses, MSE and label-driven dice. This does not justify a strong claim of novelty or avoiding reasonable comparing/discussing/acknowledging these prior work. I also agree with three reviewers that the justification for not using segmentation needs to be a stronger, as this mr-tohisto registration task has a primary goal for retrospective validation and automatic segmenting prostate from either MR or WSI isn’t challenging. The rebuttal did not address the issues on the fair comparison. More importantly, the results may be misleading in current presentation with much inferior results from an un-optimised segmentation-based method that also is arguably easier to get better performance. However, given the nature of the preliminary results with a small data set, i consider the work has the potentials to be strengthened and could make an much greater impact. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 20 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work tackles one of the MIC challenges that has been researched extensively in the past and yet not resolved with a clinically acceptable solution. The proposed solution is another interesting approach with promising results. Authors adequately addressed reviewers’ comments and concerns in their rebuttal response. Overall, I find this work of interest for MICCAI 2021 audience. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors rebuttal accounted for most of the critical issues raised in the first round. Their response to the bias caused by the patients’ cohort is convincing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for their constructive comments. Abbreviation: Reviewer (R). Clarification of the need for discarding prostate segmentations at inference and comparison with the ProsRegNet method. (R1, R2, R3) While prostate segmentations on MRI are required for ultrasound-MRI fusion targeted biopsy, such segmentations are not routinely performed in men undergoing prostatectomy after conventional prostate biopsy. Moreover, pathologists do not segment the prostate on digital histopathology. Since prostate segmentation on MRI and histopathology are not always immediately available and gland segmentation is a time-consuming task prone to errors, there is value in registration of MRI and histopathology without the need for gland segmentation. The major advantage of our method is that it avoids the above shortcomings of prostate segmentation by not relying on it at inference. Since the goal of this paper is to develop a registration approach that does not require prostate segmentation, both our method and the competing ProsRegNet method were tested without using prostate segmentations. Describe the differences between the proposed method and the ProsRegNet method. (R1, R2, R3) (a) Network architecture. The ProsRegNet method used ResNet101 while our method used VGG16 for feature extraction. The ProsRegNet method used a correlation layer to compute the correlation between feature maps while our method used the global average pooling layer to reduce the size of each feature map. (b) Loss function. The ProsRegNet method used the mean squared error (MSE) as the training loss. Our proposed method used MSE and two additional terms: the Dice coefficient loss to align the prostate boundaries and the regularization loss to guarantee the smoothness of the transformations. (c) Training dataset. The ProsRegNet method used masked synthetic unimodal image pairs for the training. The proposed method used unmasked synthetic unimodal image pairs, unmasked real multimodal image pairs, and manual prostate masks for the training. Discuss previous weakly supervised registration methods to justify the novelty of the proposed method. (R1, R3) Many weakly supervised registration methods have been proposed for image registration [A-C]. Our method used both label-driven and image-driven losses, unlike Hu et al. that only used label-based loss [A]. Moreover, others used multimodal losses for the training [B-C], however, these methods are not suitable for registration of MRI and histopathology due to their large differences in appearance. A. Hu, Y., et al. “Label-driven weakly-supervised learning for multimodal deformable image registration.” ISBI 2018. B. Balakrishnan, G., et al. “VoxelMorph: a learning framework for deformable medical image registration.” IEEE TMI 38.8 (2019): 1788-1800. C. de Vos, B., et al. “A deep learning framework for unsupervised affine and deformable image registration.” MEDIA 52 (2019): 128-143. Biased caused by the use of patients that underwent radical prostatectomy. (R2) We acknowledge that the use of patients undergoing prostatectomy might introduce spectrum bias in our cohort that does not translate into other populations (e.g., candidates for active surveillance). However, we used grade as a surrogate for the aggressive disease since it has been demonstrated to be the most powerful predictor of outcome in localized prostate cancer. Moreover, grade is also used for clinical decisions (e.g., selection of patients for active surveillance). As such, radical prostatectomy cases are ideal for model building as they allow: (1) precise registration of MR and histopathology images, (2) provide ground truth cancer label at every voxel within the prostate and (3) diversity of low- and high-grade cancers as they often coexist within the same lesion. However, such granularity of labels cannot be achieved in subjects that only undergo biopsy as the prostate is only sampled at the biopsy sites. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Shao, Wei,Bhattacharya, Indrani,Soerensen, Simon J. C.,Kunder, Christian A.,Wang, Jeffrey B.,Fan, Richard E.,Ghanouni, Pejman,Brooks, James D.,Sonn, Geoffrey A.,Rusu, Mirabela" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Weakly Supervised Registration of Prostate MRI and Histopathology Images</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Shao, Wei"
+        class="post-tags">
+        Shao, Wei
+      </a> |  
+      
+      <a href="kittywong/tags#Bhattacharya, Indrani"
+        class="post-tags">
+        Bhattacharya, Indrani
+      </a> |  
+      
+      <a href="kittywong/tags#Soerensen, Simon J. C."
+        class="post-tags">
+        Soerensen, Simon J. C.
+      </a> |  
+      
+      <a href="kittywong/tags#Kunder, Christian A."
+        class="post-tags">
+        Kunder, Christian A.
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Jeffrey B."
+        class="post-tags">
+        Wang, Jeffrey B.
+      </a> |  
+      
+      <a href="kittywong/tags#Fan, Richard E."
+        class="post-tags">
+        Fan, Richard E.
+      </a> |  
+      
+      <a href="kittywong/tags#Ghanouni, Pejman"
+        class="post-tags">
+        Ghanouni, Pejman
+      </a> |  
+      
+      <a href="kittywong/tags#Brooks, James D."
+        class="post-tags">
+        Brooks, James D.
+      </a> |  
+      
+      <a href="kittywong/tags#Sonn, Geoffrey A."
+        class="post-tags">
+        Sonn, Geoffrey A.
+      </a> |  
+      
+      <a href="kittywong/tags#Rusu, Mirabela"
+        class="post-tags">
+        Rusu, Mirabela
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Wei Shao, Indrani Bhattacharya, Simon J. C. Soerensen, Christian A. Kunder, Jeffrey B. Wang, Richard E. Fan, Pejman Ghanouni, James D. Brooks, Geoffrey A. Sonn, Mirabela Rusu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The interpretation of prostate MRI suffers from low agreement across radiologists due to the subtle differences between cancer and normal tissue. Image registration addresses this issue by accurately mapping the ground-truth cancer labels from surgical histopathology images onto MRI. Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer. A major limitation of current automated registration approaches is that they require manual prostate segmentations, which is a time-consuming task, prone to errors. This paper presents a weakly supervised approach for affine and deformable registration of MRI and histopathology images without requiring prostate segmentations. We used manual prostate segmentations and mono-modal synthetic image pairs to train our registration networks to align prostate boundaries and local prostate features. Although prostate segmentations were used during the training of the network, such segmentations were not needed when registering unseen images at inference time. We trained and validated our registration network with 135 and 10 patients from an internal cohort, respectively. We tested the performance of our method using 16 patients from the internal cohort and 22 patients from an external cohort. The results show that our weakly supervised method has achieved significantly higher registration accuracy than a state-of-the-art method run without prostate segmentations. Our deep learning framework will ease the registration of MRI and histopathology images by obviating the need for prostate segmentations.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_10">https://doi.org/10.1007/978-3-030-87202-1_10</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper tackles the problem of intermodal registration between histology sections and pre-operative MRI slices in the prostate. Their main contribution is to develop a registration algorithm that does not need MRI prostate segmentations at inference. They use a VGG network to extract features from each image and use a low dimensional deformation model (affine + non-linear) to align both domains. They use a novel loss function that combines (i)  the cross-alignment between modalities using the dice score between prostate masks available only during training and (ii) the alignment between randomly deformed copies of each domain using the MSE.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The manuscript is organized nicely: the problem is properly motivated, the goal is presented clearly and the main contributions are well explained. To the best knowledge of the authors and the reviewer, this is the second attempt to using neural networks for histopathology-MRI registration in the prostate, improving the results upon the previous work (ProsRegNet, [9]).</p>
+
+      <p>They use a deformation model that can be found in the literatue (e.g., Shao et al. [9]) but many differences can be spotted regarding:</p>
+      <ul>
+        <li>The feature extractor used: VGG vs. ResNet.</li>
+        <li>Model parameter computation: GAP + concatenation layer vs. correlation layer</li>
+        <li>The loss function: a cross-domain term using the prostate segmentation (available only during training) from both MRI and histology images.</li>
+      </ul>
+
+      <p>Another strong point is that they show the feasibility of the model on two different cohorts: one coming from the same distribution as training data and another external cohort. Significant improvements (p&lt;0.05) are found compared to previous state-of-the-art using neural networks for registration.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>My main concern is that the authors did not explain clearly how their competitor method was trained: e.g., what parameters were used or whether prostate segmentations were used at training and/or inference or not. Hence, it is hard to properly assess the comparison results.</p>
+
+      <p>The methodology presented here is not entirely novel. They use weakly supervised training that doesn’t require labels at inference time, quite relevant when using pre-operative MRI scans.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors have commited to make their code available. However, some of the design decisions were not justified (e.g., hyperparameter selection).</p>
+
+      <p>The cohort used for training is not publicly available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>While the text is well written, I believe that some minor corrections will improve readability:</p>
+      <ul>
+        <li>Theta is used to represent the affine parameters and the nonlinear parameters separately. It may be worth using a superscript to distinguish them.</li>
+        <li>What is the magnitude of distance metrics (landmark error, urethra deviation).</li>
+      </ul>
+
+      <p>Moreover, some decisions about the method used may be better justified in the text:</p>
+      <ul>
+        <li>The number of frozen layers from VGG. If the authors have tried different options it may be noted in the text why they decide to keep the presented configuration</li>
+        <li>The weight losses used for each component: seg, int, reg.</li>
+      </ul>
+
+      <p>Finally, it will be interesting to know how the landmarks were placed in the corresponding image pairs. For example: spatially random or mainly at the boundaries?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>While the formulation is not entirely novel, they use several ideas togehter and apply them for the first time to alignment of intra-operative MRI scancs and histopathology sections. They show the benefit of their models in two different cohorts for several metrics. Hence, I believe that this paper should be probably accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>To compare two MRI to pathology registration methods. One based on grey level and the other on manual prostate segmentation. A dataset comprising  135 training and 22 test cases consisted of MRI and images of cut slices from pathology specimen pre-molded using 3D prostate segmentation models obtained from MRI. The grey value-based registration method used an ImageNet pre-trained VGG network that was partially retrained to produce a registration transformation. A downloaded but undescribed ProsRegNet was used to align based on segmentation. The resulting DICE overlap and other performance measures show a slight improvement of the gray value-based method over the segmentation-based method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Well-written paper. Good dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The claim should be limited to pathology images compiled using a 3D mold. This mold preforms the pathology specimen, which is crucial in the alignment process. Wihtout the mold the registration becomes much more difficult and the claim is definitely not justified in these cases.</p>
+
+      <p>The use of a set of patients that underwent prostatectomy introduced a bias in any method that will use this data. The authors claim that: “Cancer labels achieved by image registration can be used to improve radiologists’ interpretation of MRI by training deep learning models for early detection of prostate cancer.” Which is not true. The current most common case of MRI is low risk cancer patients that may or may not have clinically significant cancer requiring treatment such as prostatectomy. It is crucial for a radiologist to learn to discriminate cases with or without signs of clinically significant cancer. The selection to prostatectomy excludes cases without clinically significant cancer. This introduce a significant bias. I think this data set is very relevant to the problem of determining the size of a prostate cancer for treatment and various other related topics.</p>
+
+      <p>It is a bit strange that segmentation methods perform slightly worse. The segmentation presumably is used for the 3D mold model. The segmentation of the prostaet on the specimen should than be relatively simple. Aligning that to the 3D model should be fine right? The details of the mold segmentation are missing to verify this.</p>
+
+      <p>The segmentation based registration method selected is chosen because it was the only one that was available for download. I VGG was a dedicated algorithm fine tued to the problem at hand. I miss description of the downloaded method. There is always a disadvantage to ‘‘being” the algorithm compared to, as it will probably not receive the same amount of attention as the authors’ method. A sens a light bias.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Considering my review above I could imagine this may not be easily reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>See above</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Great dataset and intersting to discuss at a meeting.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a novel regsitration framework that aligns the Histopathology Images with the cancer labels and the pre-operative MRI images without the cancer labels.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The registration algorithm is novel, the application has significant clinical value, the conclusion is supported real-world data and fair settings for all compared methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>It is not clear why the authors refer to their algorithms as un-supervised registration methods since the prostate segmentation is used in the training process, although the authors claim that the prostate segmentation is not used in the testing scenario. This point also challege the authors’ claim that one of the main advantage of their algorithm is that the prostate segmentation is not needed during the test stage, This is weird to some extent, in my opinion.</li>
+        <li>Some key(or state-of-the-art) references in the medical image registration are missing.</li>
+        <li>The novelty(what has been changed?) of the algorithm should be justifed over the existing registration methods.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Satisfactory.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>It is of great value if the author can elaborate more about the differences between their proposed registration algroithm and the compared state-of-the-art method ProsRegNet.</li>
+        <li>It is also very helpful if the authors can add experiments that compare ProsRegNet and the proposed methods, where the prostate segmentaons are also used in the training.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The writing is good, and the registration algorithm is well illustrated with moderate validations.</p>
+
+      <p>The major point that hinders the reviewer to a strong accept is that the reviewer doubt the authors’ claim of the advantage of not using the prostate segmentations, since prostate segmentation is still utilized in the training stage.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Although an interesting work with a long-standing challenge in prostate MR-to-histo registration, there are a few important comments from all three reviewers need to be addressed: 1) a better review and perhaps additional references in weakly supervised registration methods should be acknowledged and discussed (for future work, compared) would help to better position this work (as commented by Reviewer 1 and 3); 2) a strong rebuttal to comments raised by Reviewer 2, in regarding to the clinical relevance of the experimental design and results, is also needed; 3) address the comments on the compared segmentation methods, raised by all three Reviewers - is it a fair comparison or a comparison with existing method without any adaptation to the proposed one fine-tuned for the data/application?</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The use of the technical differences to the existing registration frameworks to argue for their novelty claim, e.g. ResNet vs. VGG, a combination of two existing losses, MSE and label-driven dice. This does not justify a strong claim of novelty or avoiding reasonable comparing/discussing/acknowledging these prior work. <br />
+I also agree with three reviewers that the justification for not using segmentation needs to be a stronger, as this mr-tohisto registration task has a primary goal for retrospective validation and automatic segmenting prostate from either MR or WSI isn’t challenging. The rebuttal did not address the issues on the fair comparison. More importantly, the results may be misleading in current presentation with much inferior results from an un-optimised segmentation-based method that also is arguably easier to get better performance.
+However, given the nature of the preliminary results with a small data set, i consider the work has the potentials to be strengthened and could make an much greater impact.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>20</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work tackles one of the MIC challenges that has been researched extensively in the past and yet not resolved with a clinically acceptable solution. The proposed solution is another interesting approach with promising results. Authors adequately addressed reviewers’ comments and concerns in their rebuttal response. Overall, I find this work of interest for MICCAI 2021 audience.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors rebuttal accounted for most of the critical issues raised in the first round. Their response to the bias caused by the patients’ cohort is convincing.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their constructive comments. Abbreviation: Reviewer (R).</p>
+
+  <ol>
+    <li>
+      <p>Clarification of the need for discarding prostate segmentations at inference and comparison with the ProsRegNet method. (R1, R2, R3)
+While prostate segmentations on MRI are required for ultrasound-MRI fusion targeted biopsy, such segmentations are not routinely performed in men undergoing prostatectomy after conventional prostate biopsy. Moreover, pathologists do not segment the prostate on digital histopathology. Since prostate segmentation on MRI and histopathology are not always immediately available and gland segmentation is a time-consuming task prone to errors, there is value in registration of MRI and histopathology without the need for gland segmentation. The major advantage of our method is that it avoids the above shortcomings of prostate segmentation by not relying on it at inference. Since the goal of this paper is to develop a registration approach that does not require prostate segmentation, both our method and the competing ProsRegNet method were tested without using prostate segmentations.</p>
+    </li>
+    <li>
+      <p>Describe the differences between the proposed method and the ProsRegNet method. (R1, R2, R3)
+(a)	Network architecture. The ProsRegNet method used ResNet101 while our method used VGG16 for feature extraction. The ProsRegNet method used a correlation layer to compute the correlation between feature maps while our method used the global average pooling layer to reduce the size of each feature map. 
+(b)	Loss function. The ProsRegNet method used the mean squared error (MSE) as the training loss. Our proposed method used MSE and two additional terms: the Dice coefficient loss to align the prostate boundaries and the regularization loss to guarantee the smoothness of the transformations.
+(c)	Training dataset. The ProsRegNet method used masked synthetic unimodal image pairs for the training. The proposed method used unmasked synthetic unimodal image pairs, unmasked real multimodal image pairs, and manual prostate masks for the training.</p>
+    </li>
+    <li>
+      <p>Discuss previous weakly supervised registration methods to justify the novelty of the proposed method. (R1, R3)
+Many weakly supervised registration methods have been proposed for image registration [A-C]. Our method used both label-driven and image-driven losses, unlike Hu et al. that only used label-based loss [A]. Moreover, others used multimodal losses for the training [B-C], however, these methods are not suitable for registration of MRI and histopathology due to their large differences in appearance. 
+A.	Hu, Y., et al. “Label-driven weakly-supervised learning for multimodal deformable image registration.” ISBI 2018.
+B.	Balakrishnan, G., et al. “VoxelMorph: a learning framework for deformable medical image registration.” IEEE TMI 38.8 (2019): 1788-1800.
+C.	de Vos, B., et al. “A deep learning framework for unsupervised affine and deformable image registration.” MEDIA 52 (2019): 128-143.</p>
+    </li>
+    <li>
+      <p>Biased caused by the use of patients that underwent radical prostatectomy. (R2)
+We acknowledge that the use of patients undergoing prostatectomy might introduce spectrum bias in our cohort that does not translate into other populations (e.g., candidates for active surveillance). However, we used grade as a surrogate for the aggressive disease since it has been demonstrated to be the most powerful predictor of outcome in localized prostate cancer. Moreover, grade is also used for clinical decisions (e.g., selection of patients for active surveillance). As such, radical prostatectomy cases are ideal for model building as they allow: (1) precise registration of MR and histopathology images, (2) provide ground truth cancer label at every voxel within the prostate and (3) diversity of low- and high-grade cancers as they often coexist within the same lesion. However, such granularity of labels cannot be achieved in subjects that only undergo biopsy as the prostate is only sampled at the biopsy sites.</p>
+    </li>
+  </ol>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0409-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0410-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Shao, Wei"
+        class="post-category">
+        Shao, Wei
+      </a> |  
+      
+      <a href="kittywong/tags#Bhattacharya, Indrani"
+        class="post-category">
+        Bhattacharya, Indrani
+      </a> |  
+      
+      <a href="kittywong/tags#Soerensen, Simon J. C."
+        class="post-category">
+        Soerensen, Simon J. C.
+      </a> |  
+      
+      <a href="kittywong/tags#Kunder, Christian A."
+        class="post-category">
+        Kunder, Christian A.
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Jeffrey B."
+        class="post-category">
+        Wang, Jeffrey B.
+      </a> |  
+      
+      <a href="kittywong/tags#Fan, Richard E."
+        class="post-category">
+        Fan, Richard E.
+      </a> |  
+      
+      <a href="kittywong/tags#Ghanouni, Pejman"
+        class="post-category">
+        Ghanouni, Pejman
+      </a> |  
+      
+      <a href="kittywong/tags#Brooks, James D."
+        class="post-category">
+        Brooks, James D.
+      </a> |  
+      
+      <a href="kittywong/tags#Sonn, Geoffrey A."
+        class="post-category">
+        Sonn, Geoffrey A.
+      </a> |  
+      
+      <a href="kittywong/tags#Rusu, Mirabela"
+        class="post-category">
+        Rusu, Mirabela
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0410/12/31/Paper0889">
+          4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0408/12/31/Paper0759">
+          SAME: Deformable Image Registration based on Self-supervised Anatomical Embeddings
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

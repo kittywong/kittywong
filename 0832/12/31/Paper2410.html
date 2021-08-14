@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Richard J. Chen, Ming Y. Lu, Muhammad Shaban, Chengkuan Chen, Tiffany Y. Chen, Drew F. K. Williamson, Faisal Mahmood Abstract Cancer prognostication is a challenging task in computational pathology that requires context-aware representations of histology features to adequately infer patient survival. Despite the advancements made in weakly-supervised deep learning, many approaches are not context-aware and are unable to model important morphological feature interactions between cell identities and tissue types that are prognostic for patient survival. In this work, we present Patch-GCN, a context-aware, spatially-resolved patch-based graph convolutional network that hierarchically aggregates instance-level histology features to model local- and global-level topological structures in the tumor microenvironment. We validate Patch-GCN with 4,370 gigapixel WSIs across five different cancer types from the Cancer Genome Atlas (TCGA), and demonstrate that Patch-GCN outperforms all prior weakly-supervised approaches by 3.58-9.46\%. Our code and corresponding models are publicly available at https://github.com/mahmoodlab/Patch-GCN. Link to paper https://doi.org/10.1007/978-3-030-87237-3_33 Link to the code repository https://github.com/mahmoodlab/Patch-GCN Link to the dataset(s) https://portal.gdc.cancer.gov Reviews Review #1 Please describe the contribution of the paper This paper proposed a Patch-GCN for WSI survival prediction. The patch-GCN is context, spatial-aware graph convolutional network. It aggregates instance-level features using attention-based MIL for WSI-level prediction. Five different cancer types from TCGA dataset are used for validation. Results compared with prior weakly-supervised survival prediction have shown its superior performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The consideration of conxtext and spatial information of patches is interesting. Context-aware features are modeld between adjacent image patches and this idea is the main contribution of the paper. Nice visualization by showing attention heatmap which could help readers understand the interpretability of the proposed Patch-GCN. Extensive experiments on five cancer types which could show the generability of the proposed model across cancer types. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim that the proposed model could learn context-aware features that than other GCN-based models. However, constructed graph of the Patch-GCN is about 2302*2302 receptive field size and it is not clear how strong the context-aware features are within this quite small region. Besides, it seems DeepGraphConv could perform better on UCEC data and the average is about 0.636 vs 0.620 which shows the proposed model doesn’t improve much. From Fig 1, it seems each patient has a very large number of patches and the authors mentioned that some patients have graph sizes as large as 100K instances. Compared with DeepGraphConv which has around 1K sampled patches in their original report, the slight improvement (0.636 vs 0.620) is coming from up to 100 times more complexity which seems not worthy in practice. It is interesting to see performance of the proposed model if fewer patches are sampled and they might not be adjacent patches. Several important implementation and experiments details are missing which make readers have difficulty to understand and reproduce the proposed model, like risk attention heatmap. See my full comments in detailed comment section. There are some recent GCN-based WSI models are proposed using graph clustering which could also be used for learning context-aware features. It is better to discuss or compare with them. “Graph Attention Multi-instance Learning for Accurate Colorectal Cancer Staging”, MICCAI 2020. “CGC-net: cell graph convolutional network for grading of colorectal cancer histology images”, ICCVW 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Not easy to reproduce as important details are missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear about the size of H(L), it should be LMd_out and need to clarify. Also, dense connections after the output of each GCN layer are quite confusing. What is the output size after such dense layers ? Is there only one attention-based pooling layer performed on H(L) ? Since H(L) has the size of LMd_out and it seems not possible to use only one pooling layer on the stack of 2D tensors. You may use L attention-based pooling layers on each graph features which is M*d_out. Then how to pool WSI-level features from graph-level features ? It is not clear how the attention heatmap is produces. If weights are from attention-based pooling, it is important to clearly define the FattnMIL operation in the paper with notations. In experiments, Kaplan-Meier curves is used to stratify patients into high and low risk group. It is not clear how this is done. What is the cutoff value to do such stratification ? Baseline models like DeepAttnMISL and DeepGraphConv actually didn’t sample so many patches in their reports. Did the authors use the same experiment settings in comparisons ? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The consideration of context-aware is interesting but important details are missing which make readers not understand the whole framework clearly. Improvements compared with GCN-based methods are very slight in most cases but the authors have to sample 10x more patches than state-of-the-art methods. It brings concerns about efficiency in practice. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper developed a patch-level GCN-based model for cancer survival prediction, which was able to utilize spatial information of patches extracted from whole slide images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The model was developed and validated on datasets of 5 different cancer types from the TCGA. The proposed model didn’t rely on ROI annotations and can be trained with weak labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It would be nice if authors could discuss main innovations of this work. The strategy of constructing graph based on Euclidean space has been used in prior works. For example, Ding et.al.,[1] developed a feature-enhanced graph network (FENet) for genetic mutation prediction. They considered patches as graph nodes and the euclidean distance between two patches determines if there will be an edge between two nodes, Discussions how hyper-parameters/models were selected with cross validation may be needed. The paper reported results from 5-fold cross validation, so if the model was selected based on left-out validation, the model could be overfitted to the validation set. More details on the experiment of the DeepGraphConv model may be needed. e.g., as discussed in 5.1, in the DeepGraphConv experiment, patches were randomly selected, while all patches were included in the proposed model. Also as shown in the Table 1, the performance difference between DeepGraphConv and Patch-GCN was relatively small. I was wondering if the performance difference was caused by the number of selected patches instead of different graph construction ways. [1] Ding K, Liu Q, Lee E, Zhou M, Lu A, Zhang S. Feature-Enhanced Graph Networks for Genetic Mutational Prediction Using Histopathological Images in Colon Cancer. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2020 Oct 4 (pp. 294-304). Springer, Cham. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper performed experiments on the publicly available TCGA dataset and the authors have detailed plans to make training/validation code publicly available upon acceptance. Thus, I think the reproducibility of this work is good. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Are node features fine-tuned on whole slide images? Given the large domain gap between natural images and whole slide image, it might be interesting to consider fine-tune node features or pre-train node feature extractors on whole slide image dataset using unsupervised learning methods. Did authors use FFPE slides or frozen sections from TCGA for experiments? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The main strength of this paper is that the authors performed many experiments and validated the model on multiple datasets. However, as mentioned above, discussion on how the innovation in this paper is different from prior works may be needed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper ‘Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks’ describes Patch-GCN, a graph convolution network-based method to infer patient survival in WSIs. The GCN aggregates the contextual features in the WSI in a hierarchical manner by representing it as a graph where nodes are image patches and edges exist between neighboring image patches. The method is validated on WSIs across five different cancer types in the TCGA dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation to use a graph-based hierarchical approach to combine local and global features in WSI is intuitive, as cell-based morphological features as well as tissue-based neighborhood features are important for histopathological image analysis. The paper effectively utilizes the feature hierarchy in a GCN-based framework which is well-formulated to analyze the extremely large-sized WSIs to predict patient survival. Comparison with existing weakly-supervised methods is performed on five different cancer types from TCGA dataset. The proposed method outperforms state-of-the-art methods in 4/5 cancer types. The paper is well-written and organized. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The author may want to explain why the concordance indices are lower (0.5-0-6 range) for 3/5 cancer types on which evaluation was performed. Only the GBMLGG type shows a c-Index of &gt; 0.8. Hence, the authors could comment on the practical usability of the proposed GCN method. The authors mention that 4 GPUs with a batch size 1 were used for training the model. It would be interesting to know the total model footprint and how much is the complexity to predict survival in the full WSI. This is an important consideration to determine if the models can be used in clinical settings. It is stated that ‘To evaluate Patch-GCN, we trained our proposed model using 5-fold cross-validation for each cancer type, in which each dataset was split into 5 80/20 partitions for training and validation’. Were these partitions formed on the WSI level or patch level? How was the model regularized to prevent overfitting? The authors may want to comment in the discussion why the proposed method is not as good as DeepGraphConv only for the UCEC dataset. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory response as dataset and code can be made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The validations could be further explained as it is not clear how the training, validation and test data was divided. Information leaks could take place if the patches from same WSI were used in training and validation. Typos should be corrected E.g. ‘Path-GCN’ Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper describes a novel patch-based GCN model for predicting patient survival in histopathological WSI. The method is validated on the TCGA datasets for 5 cancer types and suggests improvement over most existing methods. It can perform a WSI-level analysis using a hierarchical approach. In my opinion it can be a valuable contribution in the field. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. Please clarify these mentioned problems in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. The authors have addressed most of the concerns in the rebuttal such as performance discussion, experimental setting details, and computational complexity. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers thought positively about the paper. The idea is novel and well motivated. Various questions were raised and were addressed well in the rebuttal. Thus I recommend the paper to be accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers all think that this is a well-written paper, and the experimental results are extensive (validation on 5 cancer datasets). R3 concerns about the paper innovative aspects were strong. In the rebuttal, the authors briefly clarified how their work differs from existing state-of-the-art methods. However, such clarification remain limited. —this needs to be further addressed in the final version. So, yes, incremental, but incremental with a compelling narrative and extensive experiments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers for their thoughtful feedback. We are encouraged that Patch-GCN was received positively for its contributions in learning context-aware features in WSIs without using ROIs (R2, R3, R5), as well as attention heatmaps that visualize prognostic image regions (R2). We are glad that all reviewers found our work to be well organized, and appreciate the validation in using 5 cancer types from the TCGA with comparisons to multiple SOTA methods (R2, 3, 5). We address the main reviewer comments below and will incorporate all feedback. DeepGraphConv (DGC) performing better on UCEC Though DGC has higher c-Index on UCEC, we note that in comparison to other cancer types, cancer prognosis in UCEC correlates with global-level morphological determinants such as tumor size and depth of tumor invasion in the myometrium, rather than cell-to-cell mediated interactions between tumor cells and other cell types. As a result, features such as tumor-lymphocyte co-localization learned via Patch-GCN may not be the most prognostic for risk stratification in UCEC, which may be better captured via approaches like DGC and Attention MIL. Despite the performance differences in this one cancer type, in our overall results, Patch-GCN consistently improves over all prior methods in 4 out of 5 cancer types in the TCGA, which demonstrates the generalizability of Patch-GCN in learning context-aware features to improve prognosis. We reported results for all cancer types to initiate an open discussion on how differing modeling strategies can be created for learning cancer-specific prognostic biomarkers, which we will include in the discussion section of our final submission. GCN Complexity The “100x” increase in number of patches was not a computational barrier for practical implementation of GCNs for WSIs. Current mini-batching procedures for graphs in PyTorch can efficiently perform inference / back-prop in &lt; 1 sec on large 100K graphs (see GitHub). Using a single GPU, training Patch-GCN via 5-fold CV can be done in &lt; 5 hours. Though including all available tissue patches does increase training time, our method follows the current standard-of-care for pathologists which exhaustively examines all tissue on each slide for accurate staging and prognosis. GCNs that randomly sample a limited number of patches would not only be unable to learn important context-aware features for cancer prognosis such as tumor-lymphocyte co-localization, but also fail to visualize / discover these features as prognostic biomarkers for future medical support decision systems. Related Work Raju et al. similarly follows DGC in randomly sampling “k” patches (our implementation of DGC is more similar to Raju et al. in that we similarly apply an attention head). Ding et al. is similar to our method in connecting nodes via spatial distance, but also randomly samples “k” patches. We discuss Zhou et al. in Section 2.1 (Ref 21). Our work is distinct in that we use all patches and interpret WSIs as point clouds, and demonstrate via attention maps (Section 5.2) that Patch-GCN is able to learn context-aware features that are specific for cancer prognostication with robust validation. Experimental Details 5-fold CV was done on the patient-level. Models were not selected via left-out, and were trained with the same (default) hyperparameters. Only FFPE slides were used. Node features were not fine tuned, but we agree it is worth considering in future studies. Only one global pooling layer is used, performed on top of all nodes in the graph at the last layer. For KM curves, the median percentile was used for low and high risk. We will reflect all additional details in our final submission. Reproducibility We make available our code for reproducibility at https://github.com/miccai2021anon/2410, which should elucidate comments on complexity, attention heatmaps, implementation details of Patch-GCN and other baselines, validation, and hyperparameters. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Richard J. Chen, Ming Y. Lu, Muhammad Shaban, Chengkuan Chen, Tiffany Y. Chen, Drew F. K. Williamson, Faisal Mahmood Abstract Cancer prognostication is a challenging task in computational pathology that requires context-aware representations of histology features to adequately infer patient survival. Despite the advancements made in weakly-supervised deep learning, many approaches are not context-aware and are unable to model important morphological feature interactions between cell identities and tissue types that are prognostic for patient survival. In this work, we present Patch-GCN, a context-aware, spatially-resolved patch-based graph convolutional network that hierarchically aggregates instance-level histology features to model local- and global-level topological structures in the tumor microenvironment. We validate Patch-GCN with 4,370 gigapixel WSIs across five different cancer types from the Cancer Genome Atlas (TCGA), and demonstrate that Patch-GCN outperforms all prior weakly-supervised approaches by 3.58-9.46\%. Our code and corresponding models are publicly available at https://github.com/mahmoodlab/Patch-GCN. Link to paper https://doi.org/10.1007/978-3-030-87237-3_33 Link to the code repository https://github.com/mahmoodlab/Patch-GCN Link to the dataset(s) https://portal.gdc.cancer.gov Reviews Review #1 Please describe the contribution of the paper This paper proposed a Patch-GCN for WSI survival prediction. The patch-GCN is context, spatial-aware graph convolutional network. It aggregates instance-level features using attention-based MIL for WSI-level prediction. Five different cancer types from TCGA dataset are used for validation. Results compared with prior weakly-supervised survival prediction have shown its superior performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The consideration of conxtext and spatial information of patches is interesting. Context-aware features are modeld between adjacent image patches and this idea is the main contribution of the paper. Nice visualization by showing attention heatmap which could help readers understand the interpretability of the proposed Patch-GCN. Extensive experiments on five cancer types which could show the generability of the proposed model across cancer types. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim that the proposed model could learn context-aware features that than other GCN-based models. However, constructed graph of the Patch-GCN is about 2302*2302 receptive field size and it is not clear how strong the context-aware features are within this quite small region. Besides, it seems DeepGraphConv could perform better on UCEC data and the average is about 0.636 vs 0.620 which shows the proposed model doesn’t improve much. From Fig 1, it seems each patient has a very large number of patches and the authors mentioned that some patients have graph sizes as large as 100K instances. Compared with DeepGraphConv which has around 1K sampled patches in their original report, the slight improvement (0.636 vs 0.620) is coming from up to 100 times more complexity which seems not worthy in practice. It is interesting to see performance of the proposed model if fewer patches are sampled and they might not be adjacent patches. Several important implementation and experiments details are missing which make readers have difficulty to understand and reproduce the proposed model, like risk attention heatmap. See my full comments in detailed comment section. There are some recent GCN-based WSI models are proposed using graph clustering which could also be used for learning context-aware features. It is better to discuss or compare with them. “Graph Attention Multi-instance Learning for Accurate Colorectal Cancer Staging”, MICCAI 2020. “CGC-net: cell graph convolutional network for grading of colorectal cancer histology images”, ICCVW 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Not easy to reproduce as important details are missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear about the size of H(L), it should be LMd_out and need to clarify. Also, dense connections after the output of each GCN layer are quite confusing. What is the output size after such dense layers ? Is there only one attention-based pooling layer performed on H(L) ? Since H(L) has the size of LMd_out and it seems not possible to use only one pooling layer on the stack of 2D tensors. You may use L attention-based pooling layers on each graph features which is M*d_out. Then how to pool WSI-level features from graph-level features ? It is not clear how the attention heatmap is produces. If weights are from attention-based pooling, it is important to clearly define the FattnMIL operation in the paper with notations. In experiments, Kaplan-Meier curves is used to stratify patients into high and low risk group. It is not clear how this is done. What is the cutoff value to do such stratification ? Baseline models like DeepAttnMISL and DeepGraphConv actually didn’t sample so many patches in their reports. Did the authors use the same experiment settings in comparisons ? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The consideration of context-aware is interesting but important details are missing which make readers not understand the whole framework clearly. Improvements compared with GCN-based methods are very slight in most cases but the authors have to sample 10x more patches than state-of-the-art methods. It brings concerns about efficiency in practice. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper developed a patch-level GCN-based model for cancer survival prediction, which was able to utilize spatial information of patches extracted from whole slide images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The model was developed and validated on datasets of 5 different cancer types from the TCGA. The proposed model didn’t rely on ROI annotations and can be trained with weak labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It would be nice if authors could discuss main innovations of this work. The strategy of constructing graph based on Euclidean space has been used in prior works. For example, Ding et.al.,[1] developed a feature-enhanced graph network (FENet) for genetic mutation prediction. They considered patches as graph nodes and the euclidean distance between two patches determines if there will be an edge between two nodes, Discussions how hyper-parameters/models were selected with cross validation may be needed. The paper reported results from 5-fold cross validation, so if the model was selected based on left-out validation, the model could be overfitted to the validation set. More details on the experiment of the DeepGraphConv model may be needed. e.g., as discussed in 5.1, in the DeepGraphConv experiment, patches were randomly selected, while all patches were included in the proposed model. Also as shown in the Table 1, the performance difference between DeepGraphConv and Patch-GCN was relatively small. I was wondering if the performance difference was caused by the number of selected patches instead of different graph construction ways. [1] Ding K, Liu Q, Lee E, Zhou M, Lu A, Zhang S. Feature-Enhanced Graph Networks for Genetic Mutational Prediction Using Histopathological Images in Colon Cancer. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2020 Oct 4 (pp. 294-304). Springer, Cham. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper performed experiments on the publicly available TCGA dataset and the authors have detailed plans to make training/validation code publicly available upon acceptance. Thus, I think the reproducibility of this work is good. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Are node features fine-tuned on whole slide images? Given the large domain gap between natural images and whole slide image, it might be interesting to consider fine-tune node features or pre-train node feature extractors on whole slide image dataset using unsupervised learning methods. Did authors use FFPE slides or frozen sections from TCGA for experiments? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The main strength of this paper is that the authors performed many experiments and validated the model on multiple datasets. However, as mentioned above, discussion on how the innovation in this paper is different from prior works may be needed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper ‘Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks’ describes Patch-GCN, a graph convolution network-based method to infer patient survival in WSIs. The GCN aggregates the contextual features in the WSI in a hierarchical manner by representing it as a graph where nodes are image patches and edges exist between neighboring image patches. The method is validated on WSIs across five different cancer types in the TCGA dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation to use a graph-based hierarchical approach to combine local and global features in WSI is intuitive, as cell-based morphological features as well as tissue-based neighborhood features are important for histopathological image analysis. The paper effectively utilizes the feature hierarchy in a GCN-based framework which is well-formulated to analyze the extremely large-sized WSIs to predict patient survival. Comparison with existing weakly-supervised methods is performed on five different cancer types from TCGA dataset. The proposed method outperforms state-of-the-art methods in 4/5 cancer types. The paper is well-written and organized. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The author may want to explain why the concordance indices are lower (0.5-0-6 range) for 3/5 cancer types on which evaluation was performed. Only the GBMLGG type shows a c-Index of &gt; 0.8. Hence, the authors could comment on the practical usability of the proposed GCN method. The authors mention that 4 GPUs with a batch size 1 were used for training the model. It would be interesting to know the total model footprint and how much is the complexity to predict survival in the full WSI. This is an important consideration to determine if the models can be used in clinical settings. It is stated that ‘To evaluate Patch-GCN, we trained our proposed model using 5-fold cross-validation for each cancer type, in which each dataset was split into 5 80/20 partitions for training and validation’. Were these partitions formed on the WSI level or patch level? How was the model regularized to prevent overfitting? The authors may want to comment in the discussion why the proposed method is not as good as DeepGraphConv only for the UCEC dataset. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory response as dataset and code can be made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The validations could be further explained as it is not clear how the training, validation and test data was divided. Information leaks could take place if the patches from same WSI were used in training and validation. Typos should be corrected E.g. ‘Path-GCN’ Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper describes a novel patch-based GCN model for predicting patient survival in histopathological WSI. The method is validated on the TCGA datasets for 5 cancer types and suggests improvement over most existing methods. It can perform a WSI-level analysis using a hierarchical approach. In my opinion it can be a valuable contribution in the field. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. Please clarify these mentioned problems in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. The authors have addressed most of the concerns in the rebuttal such as performance discussion, experimental setting details, and computational complexity. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers thought positively about the paper. The idea is novel and well motivated. Various questions were raised and were addressed well in the rebuttal. Thus I recommend the paper to be accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers all think that this is a well-written paper, and the experimental results are extensive (validation on 5 cancer datasets). R3 concerns about the paper innovative aspects were strong. In the rebuttal, the authors briefly clarified how their work differs from existing state-of-the-art methods. However, such clarification remain limited. —this needs to be further addressed in the final version. So, yes, incremental, but incremental with a compelling narrative and extensive experiments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers for their thoughtful feedback. We are encouraged that Patch-GCN was received positively for its contributions in learning context-aware features in WSIs without using ROIs (R2, R3, R5), as well as attention heatmaps that visualize prognostic image regions (R2). We are glad that all reviewers found our work to be well organized, and appreciate the validation in using 5 cancer types from the TCGA with comparisons to multiple SOTA methods (R2, 3, 5). We address the main reviewer comments below and will incorporate all feedback. DeepGraphConv (DGC) performing better on UCEC Though DGC has higher c-Index on UCEC, we note that in comparison to other cancer types, cancer prognosis in UCEC correlates with global-level morphological determinants such as tumor size and depth of tumor invasion in the myometrium, rather than cell-to-cell mediated interactions between tumor cells and other cell types. As a result, features such as tumor-lymphocyte co-localization learned via Patch-GCN may not be the most prognostic for risk stratification in UCEC, which may be better captured via approaches like DGC and Attention MIL. Despite the performance differences in this one cancer type, in our overall results, Patch-GCN consistently improves over all prior methods in 4 out of 5 cancer types in the TCGA, which demonstrates the generalizability of Patch-GCN in learning context-aware features to improve prognosis. We reported results for all cancer types to initiate an open discussion on how differing modeling strategies can be created for learning cancer-specific prognostic biomarkers, which we will include in the discussion section of our final submission. GCN Complexity The “100x” increase in number of patches was not a computational barrier for practical implementation of GCNs for WSIs. Current mini-batching procedures for graphs in PyTorch can efficiently perform inference / back-prop in &lt; 1 sec on large 100K graphs (see GitHub). Using a single GPU, training Patch-GCN via 5-fold CV can be done in &lt; 5 hours. Though including all available tissue patches does increase training time, our method follows the current standard-of-care for pathologists which exhaustively examines all tissue on each slide for accurate staging and prognosis. GCNs that randomly sample a limited number of patches would not only be unable to learn important context-aware features for cancer prognosis such as tumor-lymphocyte co-localization, but also fail to visualize / discover these features as prognostic biomarkers for future medical support decision systems. Related Work Raju et al. similarly follows DGC in randomly sampling “k” patches (our implementation of DGC is more similar to Raju et al. in that we similarly apply an attention head). Ding et al. is similar to our method in connecting nodes via spatial distance, but also randomly samples “k” patches. We discuss Zhou et al. in Section 2.1 (Ref 21). Our work is distinct in that we use all patches and interpret WSIs as point clouds, and demonstrate via attention maps (Section 5.2) that Patch-GCN is able to learn context-aware features that are specific for cancer prognostication with robust validation. Experimental Details 5-fold CV was done on the patient-level. Models were not selected via left-out, and were trained with the same (default) hyperparameters. Only FFPE slides were used. Node features were not fine tuned, but we agree it is worth considering in future studies. Only one global pooling layer is used, performed on top of all nodes in the graph at the last layer. For KM curves, the median percentile was used for low and high risk. We will reflect all additional details in our final submission. Reproducibility We make available our code for reproducibility at https://github.com/miccai2021anon/2410, which should elucidate comments on complexity, attention heatmaps, implementation details of Patch-GCN and other baselines, validation, and hyperparameters. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0832/12/31/Paper2410" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0832/12/31/Paper2410" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0832-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0832/12/31/Paper2410"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0832/12/31/Paper2410","headline":"Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks","dateModified":"0833-01-05T00:00:00-05:17","datePublished":"0832-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Richard J. Chen, Ming Y. Lu, Muhammad Shaban, Chengkuan Chen, Tiffany Y. Chen, Drew F. K. Williamson, Faisal Mahmood Abstract Cancer prognostication is a challenging task in computational pathology that requires context-aware representations of histology features to adequately infer patient survival. Despite the advancements made in weakly-supervised deep learning, many approaches are not context-aware and are unable to model important morphological feature interactions between cell identities and tissue types that are prognostic for patient survival. In this work, we present Patch-GCN, a context-aware, spatially-resolved patch-based graph convolutional network that hierarchically aggregates instance-level histology features to model local- and global-level topological structures in the tumor microenvironment. We validate Patch-GCN with 4,370 gigapixel WSIs across five different cancer types from the Cancer Genome Atlas (TCGA), and demonstrate that Patch-GCN outperforms all prior weakly-supervised approaches by 3.58-9.46\\%. Our code and corresponding models are publicly available at https://github.com/mahmoodlab/Patch-GCN. Link to paper https://doi.org/10.1007/978-3-030-87237-3_33 Link to the code repository https://github.com/mahmoodlab/Patch-GCN Link to the dataset(s) https://portal.gdc.cancer.gov Reviews Review #1 Please describe the contribution of the paper This paper proposed a Patch-GCN for WSI survival prediction. The patch-GCN is context, spatial-aware graph convolutional network. It aggregates instance-level features using attention-based MIL for WSI-level prediction. Five different cancer types from TCGA dataset are used for validation. Results compared with prior weakly-supervised survival prediction have shown its superior performance. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The consideration of conxtext and spatial information of patches is interesting. Context-aware features are modeld between adjacent image patches and this idea is the main contribution of the paper. Nice visualization by showing attention heatmap which could help readers understand the interpretability of the proposed Patch-GCN. Extensive experiments on five cancer types which could show the generability of the proposed model across cancer types. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim that the proposed model could learn context-aware features that than other GCN-based models. However, constructed graph of the Patch-GCN is about 2302*2302 receptive field size and it is not clear how strong the context-aware features are within this quite small region. Besides, it seems DeepGraphConv could perform better on UCEC data and the average is about 0.636 vs 0.620 which shows the proposed model doesn’t improve much. From Fig 1, it seems each patient has a very large number of patches and the authors mentioned that some patients have graph sizes as large as 100K instances. Compared with DeepGraphConv which has around 1K sampled patches in their original report, the slight improvement (0.636 vs 0.620) is coming from up to 100 times more complexity which seems not worthy in practice. It is interesting to see performance of the proposed model if fewer patches are sampled and they might not be adjacent patches. Several important implementation and experiments details are missing which make readers have difficulty to understand and reproduce the proposed model, like risk attention heatmap. See my full comments in detailed comment section. There are some recent GCN-based WSI models are proposed using graph clustering which could also be used for learning context-aware features. It is better to discuss or compare with them. “Graph Attention Multi-instance Learning for Accurate Colorectal Cancer Staging”, MICCAI 2020. “CGC-net: cell graph convolutional network for grading of colorectal cancer histology images”, ICCVW 2019. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Not easy to reproduce as important details are missing. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is not clear about the size of H(L), it should be LMd_out and need to clarify. Also, dense connections after the output of each GCN layer are quite confusing. What is the output size after such dense layers ? Is there only one attention-based pooling layer performed on H(L) ? Since H(L) has the size of LMd_out and it seems not possible to use only one pooling layer on the stack of 2D tensors. You may use L attention-based pooling layers on each graph features which is M*d_out. Then how to pool WSI-level features from graph-level features ? It is not clear how the attention heatmap is produces. If weights are from attention-based pooling, it is important to clearly define the FattnMIL operation in the paper with notations. In experiments, Kaplan-Meier curves is used to stratify patients into high and low risk group. It is not clear how this is done. What is the cutoff value to do such stratification ? Baseline models like DeepAttnMISL and DeepGraphConv actually didn’t sample so many patches in their reports. Did the authors use the same experiment settings in comparisons ? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The consideration of context-aware is interesting but important details are missing which make readers not understand the whole framework clearly. Improvements compared with GCN-based methods are very slight in most cases but the authors have to sample 10x more patches than state-of-the-art methods. It brings concerns about efficiency in practice. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The paper developed a patch-level GCN-based model for cancer survival prediction, which was able to utilize spatial information of patches extracted from whole slide images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The model was developed and validated on datasets of 5 different cancer types from the TCGA. The proposed model didn’t rely on ROI annotations and can be trained with weak labels. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It would be nice if authors could discuss main innovations of this work. The strategy of constructing graph based on Euclidean space has been used in prior works. For example, Ding et.al.,[1] developed a feature-enhanced graph network (FENet) for genetic mutation prediction. They considered patches as graph nodes and the euclidean distance between two patches determines if there will be an edge between two nodes, Discussions how hyper-parameters/models were selected with cross validation may be needed. The paper reported results from 5-fold cross validation, so if the model was selected based on left-out validation, the model could be overfitted to the validation set. More details on the experiment of the DeepGraphConv model may be needed. e.g., as discussed in 5.1, in the DeepGraphConv experiment, patches were randomly selected, while all patches were included in the proposed model. Also as shown in the Table 1, the performance difference between DeepGraphConv and Patch-GCN was relatively small. I was wondering if the performance difference was caused by the number of selected patches instead of different graph construction ways. [1] Ding K, Liu Q, Lee E, Zhou M, Lu A, Zhang S. Feature-Enhanced Graph Networks for Genetic Mutational Prediction Using Histopathological Images in Colon Cancer. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2020 Oct 4 (pp. 294-304). Springer, Cham. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper performed experiments on the publicly available TCGA dataset and the authors have detailed plans to make training/validation code publicly available upon acceptance. Thus, I think the reproducibility of this work is good. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Are node features fine-tuned on whole slide images? Given the large domain gap between natural images and whole slide image, it might be interesting to consider fine-tune node features or pre-train node feature extractors on whole slide image dataset using unsupervised learning methods. Did authors use FFPE slides or frozen sections from TCGA for experiments? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The main strength of this paper is that the authors performed many experiments and validated the model on multiple datasets. However, as mentioned above, discussion on how the innovation in this paper is different from prior works may be needed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper ‘Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks’ describes Patch-GCN, a graph convolution network-based method to infer patient survival in WSIs. The GCN aggregates the contextual features in the WSI in a hierarchical manner by representing it as a graph where nodes are image patches and edges exist between neighboring image patches. The method is validated on WSIs across five different cancer types in the TCGA dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation to use a graph-based hierarchical approach to combine local and global features in WSI is intuitive, as cell-based morphological features as well as tissue-based neighborhood features are important for histopathological image analysis. The paper effectively utilizes the feature hierarchy in a GCN-based framework which is well-formulated to analyze the extremely large-sized WSIs to predict patient survival. Comparison with existing weakly-supervised methods is performed on five different cancer types from TCGA dataset. The proposed method outperforms state-of-the-art methods in 4/5 cancer types. The paper is well-written and organized. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The author may want to explain why the concordance indices are lower (0.5-0-6 range) for 3/5 cancer types on which evaluation was performed. Only the GBMLGG type shows a c-Index of &gt; 0.8. Hence, the authors could comment on the practical usability of the proposed GCN method. The authors mention that 4 GPUs with a batch size 1 were used for training the model. It would be interesting to know the total model footprint and how much is the complexity to predict survival in the full WSI. This is an important consideration to determine if the models can be used in clinical settings. It is stated that ‘To evaluate Patch-GCN, we trained our proposed model using 5-fold cross-validation for each cancer type, in which each dataset was split into 5 80/20 partitions for training and validation’. Were these partitions formed on the WSI level or patch level? How was the model regularized to prevent overfitting? The authors may want to comment in the discussion why the proposed method is not as good as DeepGraphConv only for the UCEC dataset. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Satisfactory response as dataset and code can be made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The validations could be further explained as it is not clear how the training, validation and test data was divided. Information leaks could take place if the patches from same WSI were used in training and validation. Typos should be corrected E.g. ‘Path-GCN’ Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper describes a novel patch-based GCN model for predicting patient survival in histopathological WSI. The method is validated on the TCGA datasets for 5 cancer types and suggests improvement over most existing methods. It can perform a WSI-level analysis using a hierarchical approach. In my opinion it can be a valuable contribution in the field. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. Please clarify these mentioned problems in the rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. The authors have addressed most of the concerns in the rebuttal such as performance discussion, experimental setting details, and computational complexity. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. All reviewers thought positively about the paper. The idea is novel and well motivated. Various questions were raised and were addressed well in the rebuttal. Thus I recommend the paper to be accepted. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The reviewers all think that this is a well-written paper, and the experimental results are extensive (validation on 5 cancer datasets). R3 concerns about the paper innovative aspects were strong. In the rebuttal, the authors briefly clarified how their work differs from existing state-of-the-art methods. However, such clarification remain limited. —this needs to be further addressed in the final version. So, yes, incremental, but incremental with a compelling narrative and extensive experiments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the reviewers for their thoughtful feedback. We are encouraged that Patch-GCN was received positively for its contributions in learning context-aware features in WSIs without using ROIs (R2, R3, R5), as well as attention heatmaps that visualize prognostic image regions (R2). We are glad that all reviewers found our work to be well organized, and appreciate the validation in using 5 cancer types from the TCGA with comparisons to multiple SOTA methods (R2, 3, 5). We address the main reviewer comments below and will incorporate all feedback. DeepGraphConv (DGC) performing better on UCEC Though DGC has higher c-Index on UCEC, we note that in comparison to other cancer types, cancer prognosis in UCEC correlates with global-level morphological determinants such as tumor size and depth of tumor invasion in the myometrium, rather than cell-to-cell mediated interactions between tumor cells and other cell types. As a result, features such as tumor-lymphocyte co-localization learned via Patch-GCN may not be the most prognostic for risk stratification in UCEC, which may be better captured via approaches like DGC and Attention MIL. Despite the performance differences in this one cancer type, in our overall results, Patch-GCN consistently improves over all prior methods in 4 out of 5 cancer types in the TCGA, which demonstrates the generalizability of Patch-GCN in learning context-aware features to improve prognosis. We reported results for all cancer types to initiate an open discussion on how differing modeling strategies can be created for learning cancer-specific prognostic biomarkers, which we will include in the discussion section of our final submission. GCN Complexity The “100x” increase in number of patches was not a computational barrier for practical implementation of GCNs for WSIs. Current mini-batching procedures for graphs in PyTorch can efficiently perform inference / back-prop in &lt; 1 sec on large 100K graphs (see GitHub). Using a single GPU, training Patch-GCN via 5-fold CV can be done in &lt; 5 hours. Though including all available tissue patches does increase training time, our method follows the current standard-of-care for pathologists which exhaustively examines all tissue on each slide for accurate staging and prognosis. GCNs that randomly sample a limited number of patches would not only be unable to learn important context-aware features for cancer prognosis such as tumor-lymphocyte co-localization, but also fail to visualize / discover these features as prognostic biomarkers for future medical support decision systems. Related Work Raju et al. similarly follows DGC in randomly sampling “k” patches (our implementation of DGC is more similar to Raju et al. in that we similarly apply an attention head). Ding et al. is similar to our method in connecting nodes via spatial distance, but also randomly samples “k” patches. We discuss Zhou et al. in Section 2.1 (Ref 21). Our work is distinct in that we use all patches and interpret WSIs as point clouds, and demonstrate via attention maps (Section 5.2) that Patch-GCN is able to learn context-aware features that are specific for cancer prognostication with robust validation. Experimental Details 5-fold CV was done on the patient-level. Models were not selected via left-out, and were trained with the same (default) hyperparameters. Only FFPE slides were used. Node features were not fine tuned, but we agree it is worth considering in future studies. Only one global pooling layer is used, performed on top of all nodes in the graph at the last layer. For KM curves, the median percentile was used for low and high risk. We will reflect all additional details in our final submission. Reproducibility We make available our code for reproducibility at https://github.com/miccai2021anon/2410, which should elucidate comments on complexity, attention heatmaps, implementation details of Patch-GCN and other baselines, validation, and hyperparameters. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Chen, Richard J.,Lu, Ming Y.,Shaban, Muhammad,Chen, Chengkuan,Chen, Tiffany Y.,Williamson, Drew F. K.,Mahmood, Faisal" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Computational (Integrative) Pathology"
+        class="post-category">
+        Computational (Integrative) Pathology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Chen, Richard J."
+        class="post-tags">
+        Chen, Richard J.
+      </a> |  
+      
+      <a href="kittywong/tags#Lu, Ming Y."
+        class="post-tags">
+        Lu, Ming Y.
+      </a> |  
+      
+      <a href="kittywong/tags#Shaban, Muhammad"
+        class="post-tags">
+        Shaban, Muhammad
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Chengkuan"
+        class="post-tags">
+        Chen, Chengkuan
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Tiffany Y."
+        class="post-tags">
+        Chen, Tiffany Y.
+      </a> |  
+      
+      <a href="kittywong/tags#Williamson, Drew F. K."
+        class="post-tags">
+        Williamson, Drew F. K.
+      </a> |  
+      
+      <a href="kittywong/tags#Mahmood, Faisal"
+        class="post-tags">
+        Mahmood, Faisal
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Richard J. Chen, Ming Y. Lu, Muhammad Shaban, Chengkuan Chen, Tiffany Y. Chen, Drew F. K. Williamson, Faisal Mahmood
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Cancer prognostication is a challenging task in computational pathology that requires context-aware representations of histology features to adequately infer patient survival. Despite the advancements made in weakly-supervised deep learning, many approaches are not context-aware and are unable to model important morphological feature interactions between cell identities and tissue types that are prognostic for patient survival. In this work, we present Patch-GCN, a context-aware, spatially-resolved patch-based graph convolutional network that hierarchically aggregates instance-level histology features to model local- and global-level topological structures in the tumor microenvironment. We validate Patch-GCN with 4,370 gigapixel WSIs across five different cancer types from the Cancer Genome Atlas (TCGA), and demonstrate that Patch-GCN outperforms all prior weakly-supervised approaches by 3.58-9.46\%. Our code and corresponding models are publicly available at https://github.com/mahmoodlab/Patch-GCN.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87237-3_33">https://doi.org/10.1007/978-3-030-87237-3_33</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/mahmoodlab/Patch-GCN
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://portal.gdc.cancer.gov
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a Patch-GCN for WSI survival prediction. The patch-GCN is context, spatial-aware graph convolutional network. It aggregates instance-level features using attention-based MIL for WSI-level prediction. Five different cancer types from TCGA dataset are used for validation. Results compared with prior weakly-supervised survival prediction have shown its superior performance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The consideration of conxtext and spatial information of patches is interesting. Context-aware features are modeld between adjacent image patches and this idea is the main contribution of the paper.</li>
+        <li>Nice visualization by showing attention heatmap which could help readers understand the interpretability of the proposed Patch-GCN.</li>
+        <li>Extensive experiments on five cancer types which could show the generability of the proposed model across cancer types.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The authors claim that the proposed model could learn context-aware features that than other GCN-based models. However, constructed graph of the Patch-GCN is about 2302*2302 receptive field size and it is not clear how strong the context-aware features are within this quite small region. Besides, it seems DeepGraphConv could perform better on UCEC data and the average is about 0.636 vs 0.620 which shows the proposed model doesn’t improve much.</li>
+        <li>From Fig 1, it seems each patient has a very large number of patches and the authors mentioned that some patients have graph sizes as large as 100K instances. Compared with DeepGraphConv which has around 1K sampled patches in their original report, the slight improvement (0.636 vs 0.620) is coming from up to 100 times more complexity which seems not worthy in practice.</li>
+        <li>It is interesting to see performance of the proposed model if fewer patches are sampled and they might not be adjacent patches.</li>
+        <li>Several important implementation and experiments details are missing which make readers have difficulty to understand and reproduce the proposed model, like risk attention heatmap. See my full comments in detailed comment section.</li>
+        <li>There are some recent GCN-based WSI models are proposed using graph clustering which could also be used for learning context-aware features. It is better to discuss or compare with them.
+“Graph Attention Multi-instance Learning for Accurate Colorectal Cancer Staging”, MICCAI 2020.
+“CGC-net: cell graph convolutional network for grading of colorectal cancer histology images”, ICCVW 2019.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Not easy to reproduce as important details are missing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>It is not clear about the size of H(L), it should be L<em>M</em>d_out and need to clarify. Also, dense connections after the output of each GCN layer are quite confusing. What is the output size after such dense layers ?</li>
+        <li>Is there only one attention-based pooling layer performed on H(L) ? Since H(L) has the size of L<em>M</em>d_out and it seems not possible to use only one pooling layer on the stack of 2D tensors. You may use L attention-based pooling layers on each graph features which is M*d_out.</li>
+        <li>Then how to pool WSI-level features from graph-level features ?</li>
+        <li>It is not clear how the attention heatmap is produces. If weights are from attention-based pooling, it is important to clearly define the FattnMIL operation in the paper with notations.</li>
+        <li>In experiments, Kaplan-Meier curves is used to stratify patients into high and low risk group. It is not clear how this is done. What is the cutoff value to do such stratification ?</li>
+        <li>Baseline models like DeepAttnMISL and DeepGraphConv actually didn’t sample so many patches in their reports. Did the authors use the same experiment settings in comparisons ?</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The consideration of context-aware is interesting but important details are missing which make readers not understand the whole framework clearly. Improvements compared with GCN-based methods are very slight in most cases but the authors have to sample 10x more patches than state-of-the-art methods. It brings concerns about efficiency in practice.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper developed a patch-level GCN-based model for cancer survival prediction, which was able to utilize spatial information of patches extracted from whole slide images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The model was developed and validated on datasets of 5 different cancer types from the TCGA.</li>
+        <li>The proposed model didn’t rely on ROI annotations and can be trained with weak labels.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>It would be nice if authors could discuss main innovations of this work. The strategy of constructing graph based on Euclidean space has been used in prior works. For example, Ding et.al.,[1] developed a feature-enhanced graph network (FENet) for genetic mutation prediction. They considered patches as graph nodes and the euclidean distance between two patches determines if there will be an edge between two nodes,</p>
+        </li>
+        <li>
+          <p>Discussions how hyper-parameters/models were selected with cross validation may be needed. The paper reported results from 5-fold cross validation, so if the model was selected based on left-out validation,  the model could be overfitted to the validation set.</p>
+        </li>
+        <li>
+          <p>More details on the experiment of the DeepGraphConv model may be needed. e.g., as discussed in 5.1, in the DeepGraphConv experiment, patches were randomly selected, while all patches were included in the proposed model. Also as shown in the Table 1, the performance difference between  DeepGraphConv and Patch-GCN was relatively small. I was wondering if the performance difference was caused by the number of selected patches instead of different graph construction ways.</p>
+        </li>
+      </ul>
+
+      <p>[1] Ding K, Liu Q, Lee E, Zhou M, Lu A, Zhang S. Feature-Enhanced Graph Networks for Genetic Mutational Prediction Using Histopathological Images in Colon Cancer. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2020 Oct 4 (pp. 294-304). Springer, Cham.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper performed experiments on the publicly available TCGA dataset and the authors have detailed plans to make training/validation code publicly available upon acceptance. Thus, I think the reproducibility of this work is good.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Are node features fine-tuned on whole slide images? Given the large domain gap between natural images and whole slide image, it might be interesting to consider fine-tune node features or pre-train node feature extractors on whole slide image dataset using unsupervised learning methods.</li>
+        <li>Did authors use FFPE slides or frozen sections from TCGA for experiments?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The main strength of this paper is that the authors performed many experiments and validated the model on multiple datasets. However, as mentioned above, discussion on how the innovation in this paper is different from prior works may be needed.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper ‘Whole Slide Images are 2D Point Clouds: Context-Aware Survival Prediction using Patch-based Graph Convolutional Networks’ describes Patch-GCN, a graph convolution network-based method to infer patient survival in WSIs. The GCN aggregates the contextual features in the WSI in a hierarchical manner by representing it as a graph where nodes are image patches and edges exist between neighboring image patches. The method is validated on WSIs across five different cancer types in the TCGA dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The motivation to use a graph-based hierarchical approach to combine local and global features in WSI is intuitive, as cell-based morphological features as well as tissue-based neighborhood features are important for histopathological image analysis. The paper effectively utilizes the feature hierarchy in a GCN-based framework which is well-formulated to analyze the extremely large-sized WSIs to predict patient survival.</li>
+        <li>Comparison with existing weakly-supervised methods is performed on five different cancer types from TCGA dataset. The proposed method outperforms state-of-the-art methods in 4/5 cancer types.</li>
+        <li>The paper is well-written and organized.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The author may want to explain why the concordance indices are lower (0.5-0-6 range) for 3/5 cancer types on which evaluation was performed. Only the GBMLGG type shows a c-Index of &gt; 0.8. Hence, the authors could comment on the practical usability of the proposed GCN method.</li>
+        <li>The authors mention that 4 GPUs with a batch size 1 were used for training the model. It would be interesting to know the total model footprint and how much is the complexity to predict survival in the full WSI. This is an important consideration to determine if the models can be used in clinical settings.</li>
+        <li>It is stated that ‘To evaluate Patch-GCN, we trained our proposed model using 5-fold cross-validation for each cancer type, in which each dataset was split into 5 80/20 partitions for training and validation’. Were these partitions formed on the WSI level or patch level? How was the model regularized to prevent overfitting?</li>
+        <li>The authors may want to comment in the discussion why the proposed method is not as good as DeepGraphConv only for the UCEC dataset.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Satisfactory response as dataset and code can be made available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>The validations could be further explained as it is not clear how the training, validation and test data was divided. Information leaks could take place if the patches from same WSI were used in training and validation.</li>
+        <li>Typos should be corrected E.g. ‘Path-GCN’</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper describes a novel patch-based GCN model for predicting patient survival in histopathological WSI. The method is validated on the TCGA datasets for 5 cancer types and suggests improvement over most existing methods. It can perform a WSI-level analysis using a hierarchical approach. In my opinion it can be a valuable contribution in the field.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. Please clarify these mentioned problems in the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper presents a Patch-GCN model for survival prediction from whole slide images, which aggregates instance-level features using attention-based MIL. The reviewers have brought up well constructed arguments to the limitations of the paper. Comparing to the GCN based survival prediction methods, the proposed method achieves slightly better results in most cases (not all) with the price of sampling 10x more patches. Some important points are missing, such as generation of attention heatmap, experimental setting details, computational complexity, when and why the proposed method can achieve better results comparing with DeepGraphConv, discussion of the key difference between the proposed method and those recent GCN based methods. The authors have addressed most of the concerns in the rebuttal such as performance discussion, experimental setting details, and computational complexity.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>All reviewers thought positively about the paper. The idea is novel and well motivated. Various questions were raised and were addressed well in the rebuttal. Thus I recommend the paper to be accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The reviewers all think that this is a well-written paper, and the experimental results are extensive (validation on 5 cancer datasets). R3 concerns about the paper innovative aspects were strong. In the rebuttal, the authors briefly clarified how their work differs from existing state-of-the-art methods. However, such clarification remain limited. —this needs to be further addressed in the final version.  So, yes, incremental, but incremental with a compelling narrative and extensive experiments.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their thoughtful feedback. We are encouraged that Patch-GCN was received positively for its contributions in learning context-aware features in WSIs without using ROIs (R2, R3, R5), as well as attention heatmaps that visualize prognostic image regions (R2). We are glad that all reviewers found our work to be well organized, and appreciate the validation in using 5 cancer types from the TCGA with comparisons to multiple SOTA methods (R2, 3, 5). We address the main reviewer comments below and will incorporate all feedback.</p>
+
+  <p>DeepGraphConv (DGC) performing better on UCEC
+Though DGC has higher c-Index on UCEC, we note that in comparison to other cancer types, cancer prognosis in UCEC correlates with global-level morphological determinants such as tumor size and depth of tumor invasion in the myometrium, rather than cell-to-cell mediated interactions between tumor cells and other cell types. As a result, features such as tumor-lymphocyte co-localization learned via Patch-GCN may not be the most prognostic for risk stratification in UCEC, which may be better captured via approaches like DGC and Attention MIL. Despite the performance differences in this one cancer type, in our overall results, Patch-GCN consistently improves over all prior methods in 4 out of 5 cancer types in the TCGA, which demonstrates the generalizability of Patch-GCN in learning context-aware features to improve prognosis. We reported results for all cancer types to initiate an open discussion on how differing modeling strategies can be created for learning cancer-specific prognostic biomarkers, which we will include in the discussion section of our final submission.</p>
+
+  <p>GCN Complexity 
+The “100x” increase in number of patches was not a computational barrier for practical implementation of GCNs for WSIs. Current mini-batching procedures for graphs in PyTorch can efficiently perform inference / back-prop in &lt; 1 sec on large 100K graphs (see GitHub). Using a single GPU, training Patch-GCN via 5-fold CV can be done in &lt; 5 hours. Though including all available tissue patches does increase training time, our method follows the current standard-of-care for pathologists which exhaustively examines all tissue on each slide for accurate staging and prognosis. GCNs that randomly sample a limited number of patches would not only be unable to learn important context-aware features for cancer prognosis such as tumor-lymphocyte co-localization, but also fail to visualize / discover these features as prognostic biomarkers for future medical support decision systems.</p>
+
+  <p>Related Work
+Raju et al. similarly follows DGC in randomly sampling “k” patches (our implementation of DGC is more similar to Raju et al. in that we similarly apply an attention head). Ding et al. is similar to our method in connecting nodes via spatial distance, but also randomly samples “k” patches. We discuss Zhou et al. in Section 2.1 (Ref 21). Our work is distinct in that we use all patches and interpret WSIs as point clouds, and demonstrate via attention maps (Section 5.2) that Patch-GCN is able to learn context-aware features that are specific for cancer prognostication with robust validation.</p>
+
+  <p>Experimental Details
+5-fold CV was done on the patient-level. Models were not selected via left-out, and were trained with the same (default) hyperparameters. Only FFPE slides were used. Node features were not fine tuned, but we agree it is worth considering in future studies. Only one global pooling layer is used, performed on top of all nodes in the graph at the last layer. For KM curves, the median percentile was used for low and high risk. We will reflect all additional details in our final submission.</p>
+
+  <p>Reproducibility
+We make available our code for reproducibility at https://github.com/miccai2021anon/2410, which should elucidate comments on complexity, attention heatmaps, implementation details of Patch-GCN and other baselines, validation, and hyperparameters.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0832-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0833-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Computational (Integrative) Pathology"
+        class="post-category">
+        Computational (Integrative) Pathology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Histopathology"
+        class="post-category">
+        Modalities - Histopathology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Chen, Richard J."
+        class="post-category">
+        Chen, Richard J.
+      </a> |  
+      
+      <a href="kittywong/tags#Lu, Ming Y."
+        class="post-category">
+        Lu, Ming Y.
+      </a> |  
+      
+      <a href="kittywong/tags#Shaban, Muhammad"
+        class="post-category">
+        Shaban, Muhammad
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Chengkuan"
+        class="post-category">
+        Chen, Chengkuan
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Tiffany Y."
+        class="post-category">
+        Chen, Tiffany Y.
+      </a> |  
+      
+      <a href="kittywong/tags#Williamson, Drew F. K."
+        class="post-category">
+        Williamson, Drew F. K.
+      </a> |  
+      
+      <a href="kittywong/tags#Mahmood, Faisal"
+        class="post-category">
+        Mahmood, Faisal
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0833/12/31/Paper2416">
+          Pay Attention with Focus: A Novel Learning Scheme for Classification of Whole Slide Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0831/12/31/Paper2323">
+          Accounting for Dependencies in Deep Learning based Multiple Instance Learning for Whole Slide Imaging
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

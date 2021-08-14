@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yudi Sang, Dan Ruan Abstract Deformable registration of phase-resolved lung images is an important procedure to appreciate respiratory motion and enhance image quality. Compared to high-resolution fan-beam CTs (FBCTs), cone-beam CTs (CBCTs) are more readily available for on-table acquisition in companion with treatment. However, CBCT registration is challenging because classic regularization energies in convention methods usually cannot overcome the strong artifacts and the lack of structural details. In this study, we propose to learn an implicit feasibility prior of respiratory motion and incorporate it in a plug-and-play (PnP) fashion into the training of an unsupervised image registration network to improve registration accuracy and robustness to noise and artifacts. In particular, we propose a novel approach to develop a feasibility descriptor from a set of deformation vector fields (DVFs) generated from FBCTs. Subsequently, this FBCT-derived feasibility descriptor was used as a spatially variant regularizer on DVF Jacobian during the unsupervised training for 4D-CBCT registration. In doing so, the higher-quality, higher-confidence information from FBCT is transferred into the much challenging problem of CBCT registration, without explicit FB-CB synthesis. The method was evaluated using manually identified landmarks on real CBCTs and automatically detected landmarks on simulated CBCTs. The method presented good robustness to noise and artifacts and generated physically more feasible DVFs. The target registration errors on the real and simulated data were (1.63+/-0.98) and (2.16+/-1.91) mm, respectively, significantly better than the classic bending energy regularization in both the conventional method in SimpleElastix and the unsupervised network. The average registration time was 0.04 s. Link to paper https://doi.org/10.1007/978-3-030-87202-1_11 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a method for machine learning based image registration, whereby an appropriate constraint term is learnt from some high quality image data, in this case FBCT, and used to constrain the registration of lower quality data, in this case CBCT. The method is evaluated on real and simulated cbct data Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method for learning and utilising the constraint is, as far as I know, novel – but is also relatively simple and generalisable and a similar approach could be used for other applications The paper is very well written and easy to follow, and provides all important details. The method appears to give good results (although the data used for the evaluation is somewhat limited) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A relatively small number of datasets are used throughout the paper, both for training the feasibility descriptor and for training and testing the dvf inference network There is no discussion of previous works that have tried to learn a regularisation for image registration, e.g. Hu et al miccai 2018, Adversarial Deformation Regularization for Training Image Registration Neural Networks – this makes it difficult to assess the novelty of the proposed method and its strengths and weaknesses compared to previous methods Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used in the paper is all freely available data (provided by others, not the authors) which helps to reproduce their results and/or compare alternative methods. The code used in the paper does not appear to be made available. Overall the method is very well described and most information is provided that would be required to reproduce it – the only information I could not see was a description of which image pairs were chose for each dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I thought the paper was very well written, easy to follow, and presented a very interesting and potentially useful method. But I do have a number of comments that should be taken into account when revising/extending the paper, e.g. for a journal publication. In general the intro was good, but as noted above a key omission was any discussion of previous works that have attempted to learn a constraint for image registration. Another important point, that should be discussed in the intro and/or discussion sections, is the assumption that FBCT data provides a good representation of the true motion. However, it is well known that FBCT data can often be affected by ‘sorting artefacts’, which occur when there is irregular motion, as 4dct sorted algorithms are generally based on the assumption of perfectly reproducible motion from one breath to another – this can affect both fbct and cbct, although the nature of the artefacts can be quite different due to the differences in how the modalities are acquired. The datasets from dir-labs that were used for training the feasibility descriptor have relatively few artefacts compared to a lot of clinical data (presumably as they selected the most ‘artefact free’ datasets they had for their study) – but there are still clearly artefacts present in many of the datasets. I do not think the proposed method necessarily needs any modifications due to this, but this issue should at least be acknowledged and discussed, rather than assuming that the fbct images provide a good representation of the true motion. The overall approach of the proposed method is clearly explained and seems very sensible to me. There are some details of how the feasibility descriptor was trained that I think could be improved: firstly data from more individuals should be used, as there can be large variations in lung motion, particularly amongst lung cancer patients, and its unlikely this will be well captured using data from just 10 individuals – but related to this and my previous comment, you should ensure that the images used for training as good quality and are as artefact-free as possible. It is not clear how the 15 image pairs per patient were chosen, or why 15 (and not more of less) were used – in addition, the terms ‘scans’ and ‘images’ do not always seem to be used consistently (most of the time it seems that scan means the full 4d dataset from an individual, whereas image is a single 3d volume from within the scan – but there are other times, e.g. ‘a set of ten FBCT images from the DIR-Lab dataset’ where image seems to mean the full 4d dataset). The authors acknowledge that the registration method used to generate the training data for the feasibility descriptor could potentially be improved, and one issue in particular I would consider trying to improve for future work is using a registration algorithm that can account for the sliding motion between the lungs and chest wall. I am also not sure I agree with the approach of generating 5 results for each image pair with different weighting for the BP regularisation, as this means that some of the results being used for the training may not be using an appropriate weight for that dataset and hence may not give a good representation of the true motion. I appreciate that finding an optimal value for the BP weight is challenging, and may vary from patient to patient, but I do not see how including multiple results where it is likely that some of them are not very good, will help. The evaluation experiments are ok, but would have benefitted from more data (although I acknowledge that there is not a great deal of freely available cbct data out there). I like the idea of using simulated data to provide extra data and enabling more landmarks to be tracked more accurately for the evaluation, however, I think this could have been generated in a better way than by adding the fbct to the low-acquisition time cbct. There are a number of freely available software toolkits that can be used to simulate cbcts from fbct images relatively easily (e.g. openRTK, TIGRE) which could have been used to simulate cbct scans with standard acquisition times and so would not have needed the ‘correction’ required for the short acquisition time simulations, and should produce images much more similar to real cbcts. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is well thought through, and seems to produce good results that are better than alternative methods (albeit on limited data) – it is also a generalisable approach that could be used for a number of other applications. However, for this specific application I think some of the details could have been improved, and the evaluation could have been more thorough What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this work, the author propose a registration method for CBCT images. The proposed method has two steps. In the first step, a conventional method is used to register a dataset of FBCT images that are “easy” to register. A autoencoder is then trained to encode Jacobian matrices maps of the produced FBCT deformations. In the second step, a Unet is train to generate deformation on CBCT image pair using a standard registation loss plus a second loss to penalize unrealistic deformation i.e. deformation incorrectly encoded by the autoencoder of step one. In the numerical experiment, the proposed method give better results than conventional registration or deep learning registration without the proposed prior. In a visual inspection example, the proposed method seems to produce more realistic results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Shape prior using autoencoder has already been used for image reconstruction or image segmentation but, as far as I know, never to learn a prior for image registration. The experiment are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. some clarification on details can be provided . especially of the way hyperparameters were chosen to be sure that the comparison is not biased. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance basic reproducibility information are provided Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Remarks/comments: — clarity of equation 2 can be improved. “F_T(Im,v)” can be replaced by “Im o v”. Maybe “v=U(Im,If)” should also be written somewhere. — the authors should also clarify how the hypermparameters where chosen. Is the penalization weight for either BP or the proposed approach were set in an optimal way? If mu was chosen to maximize performance on the test set, the results will be biased. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting and, as far as I know, novel but details about the way hyperparameters are chosen should be checked to be sure about the fairness of the experimental setup What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposes a learning-based registration approach for CBCT lung images. These images are often affected by strong imaging artifacts which makes image registration difficult. Here, the authors propose to constrain the deformation field via a prior of respiratory motion. This prior is a convolutional autoencoder trained on Jacobians of deformation fields which are obtained by the registration of pairs of high resolution FBCT lung images. For training of the registration network of CBCT images, the difference between the Jacobian of the current estimated deformation field and the output of the autoencoder are added to the loss function. The prior can be interpreted as a learned regularization. The method is evaluated on a dataset of real and synthetic CBCT images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • This is a nice approach to infer information from high quality images to registration of low-quality images. • The concept of learning a regularization is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The evaluation is very limited. Missing is, e.g.: Comparisons to other methods, both traditional and learning-based, should be added. How close are the resulting DVFs from the reference DVFs? How good is the performance of the feasibility descriptor? And how much is the registration accuracy dependent on this performance? • The dataset for training and testing is very small, no cross-validation is performed. • Related work on learning a regularization is missing. Relevant could be, e.g. Hu et al, 2018. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code available Publicly available data is used, which is described adequately. The hyperparameter selection is not transparent, both for training parameters and network architecture. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors address an interesting problem: inferring implicit information from higher resolution and higher quality data and using this for the regularization of image registration of data with lower quality. Their proposed solution is interesting. My main concern is, however, the limited evaluation. The dataset is very small (20 patients). Do some patients have multiple images, or how is it possible to create a data split of 25/5/5 images? It is unclear if the anatomical landmarks used for evaluation were annotated by a clinical expert or by somebody else. Also, the TRE is often not enough to evaluate registration accuracy. Other metrics should be considered, e.g. based on image similarity or property of deformation field. For example, it would be interesting to compare the estimated fields with the reference fields used to train the feasibility descriptor. The method was compared to simpleElastix and a learning-based approach employing a U-Net architecture (with and without bending energy as regularization). Is this approach similar to VoxelMorph? Where are the differences? Is it also possible to employ the feasibility descriptor as a regularization in a traditional method? This would broaden the impact and applicability of this method and should be discussed and evaluated. One other weakness is that a discussion of related work in the area of learning priors and regularizations is missing. Relevant could be, e.g. Hu et al: Adversarial Deformation Regularization for Training Image Registration Neural Networks, MICCAI 2018. What about any pathologies? It should be evaluated how well for example abnormal respiratory motion can be captured by a registration trained with this regularizer. For future work, I would recommend expanding the evaluation by increasing the dataset size and conducting more experiments, e.g., those I suggested before. Considering other imaging modalities and anatomies could be interesting. Another idea would be to simultaneously train the feasibility descriptor and the deformation field, instead of sequential training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I see merit in the proposed method, also beyond the application which was presented in the work, but the evaluation is too limited to recommend clear acceptance. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a learned feasibility constraint based on simulated low-quality CBCT data to train a learning based registration network. The paper contains a neat novel idea that could have an impact even beyond U-Net like registration frameworks. Unfortunately, the source code will not be released. The quality of reviews for this paper was exceptionally high and all reviewers recommend acceptance, I therefore follow their judgement completely. The authors should carefully address the reviewers suggestions in particular revising the (at times) unclear description, incorporate discussion of related prior work (e.g. Hu et al. 2018) and aim to incorporate a larger sample size in future work and release source code. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the constructive comments. We have modified the manuscript accordingly and would like to make the following clarifications. The 4D-lung dataset contains 4D-CBCT scans from 20 patients. Each patient has multiple scans. The training, validation, and testing sets contain 10, 5, and 5 patients, respectively. In the training set, 25 scans from the 10 patients were used for data augmentation purpose. The hyperparameters for the network were tuned based on the learning curves of the validation set. In SimpleElastix registration, multiple regularization weights were tried and was manually tuned to optimize the performance of each test case. Note that in practice there is no access to ground truth for such tuning. Therefore, the quantitative SimpleElastix results can be considered as a performance upper bound. A single weight for bending energy penalty in classic B-spline method might not be sufficient to accommodate the spatially heterogeneous respiratory motion. Therefore, we generated DVF training samples using classic registration with various values of trade-off parameters, and expected the learned manifold could integrate them and address different local trade-offs. This motion prior can be further improved with more sophisticated DVF generation methods. We plan to publicize the code upon a journal publication. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yudi Sang, Dan Ruan Abstract Deformable registration of phase-resolved lung images is an important procedure to appreciate respiratory motion and enhance image quality. Compared to high-resolution fan-beam CTs (FBCTs), cone-beam CTs (CBCTs) are more readily available for on-table acquisition in companion with treatment. However, CBCT registration is challenging because classic regularization energies in convention methods usually cannot overcome the strong artifacts and the lack of structural details. In this study, we propose to learn an implicit feasibility prior of respiratory motion and incorporate it in a plug-and-play (PnP) fashion into the training of an unsupervised image registration network to improve registration accuracy and robustness to noise and artifacts. In particular, we propose a novel approach to develop a feasibility descriptor from a set of deformation vector fields (DVFs) generated from FBCTs. Subsequently, this FBCT-derived feasibility descriptor was used as a spatially variant regularizer on DVF Jacobian during the unsupervised training for 4D-CBCT registration. In doing so, the higher-quality, higher-confidence information from FBCT is transferred into the much challenging problem of CBCT registration, without explicit FB-CB synthesis. The method was evaluated using manually identified landmarks on real CBCTs and automatically detected landmarks on simulated CBCTs. The method presented good robustness to noise and artifacts and generated physically more feasible DVFs. The target registration errors on the real and simulated data were (1.63+/-0.98) and (2.16+/-1.91) mm, respectively, significantly better than the classic bending energy regularization in both the conventional method in SimpleElastix and the unsupervised network. The average registration time was 0.04 s. Link to paper https://doi.org/10.1007/978-3-030-87202-1_11 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a method for machine learning based image registration, whereby an appropriate constraint term is learnt from some high quality image data, in this case FBCT, and used to constrain the registration of lower quality data, in this case CBCT. The method is evaluated on real and simulated cbct data Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method for learning and utilising the constraint is, as far as I know, novel – but is also relatively simple and generalisable and a similar approach could be used for other applications The paper is very well written and easy to follow, and provides all important details. The method appears to give good results (although the data used for the evaluation is somewhat limited) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A relatively small number of datasets are used throughout the paper, both for training the feasibility descriptor and for training and testing the dvf inference network There is no discussion of previous works that have tried to learn a regularisation for image registration, e.g. Hu et al miccai 2018, Adversarial Deformation Regularization for Training Image Registration Neural Networks – this makes it difficult to assess the novelty of the proposed method and its strengths and weaknesses compared to previous methods Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used in the paper is all freely available data (provided by others, not the authors) which helps to reproduce their results and/or compare alternative methods. The code used in the paper does not appear to be made available. Overall the method is very well described and most information is provided that would be required to reproduce it – the only information I could not see was a description of which image pairs were chose for each dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I thought the paper was very well written, easy to follow, and presented a very interesting and potentially useful method. But I do have a number of comments that should be taken into account when revising/extending the paper, e.g. for a journal publication. In general the intro was good, but as noted above a key omission was any discussion of previous works that have attempted to learn a constraint for image registration. Another important point, that should be discussed in the intro and/or discussion sections, is the assumption that FBCT data provides a good representation of the true motion. However, it is well known that FBCT data can often be affected by ‘sorting artefacts’, which occur when there is irregular motion, as 4dct sorted algorithms are generally based on the assumption of perfectly reproducible motion from one breath to another – this can affect both fbct and cbct, although the nature of the artefacts can be quite different due to the differences in how the modalities are acquired. The datasets from dir-labs that were used for training the feasibility descriptor have relatively few artefacts compared to a lot of clinical data (presumably as they selected the most ‘artefact free’ datasets they had for their study) – but there are still clearly artefacts present in many of the datasets. I do not think the proposed method necessarily needs any modifications due to this, but this issue should at least be acknowledged and discussed, rather than assuming that the fbct images provide a good representation of the true motion. The overall approach of the proposed method is clearly explained and seems very sensible to me. There are some details of how the feasibility descriptor was trained that I think could be improved: firstly data from more individuals should be used, as there can be large variations in lung motion, particularly amongst lung cancer patients, and its unlikely this will be well captured using data from just 10 individuals – but related to this and my previous comment, you should ensure that the images used for training as good quality and are as artefact-free as possible. It is not clear how the 15 image pairs per patient were chosen, or why 15 (and not more of less) were used – in addition, the terms ‘scans’ and ‘images’ do not always seem to be used consistently (most of the time it seems that scan means the full 4d dataset from an individual, whereas image is a single 3d volume from within the scan – but there are other times, e.g. ‘a set of ten FBCT images from the DIR-Lab dataset’ where image seems to mean the full 4d dataset). The authors acknowledge that the registration method used to generate the training data for the feasibility descriptor could potentially be improved, and one issue in particular I would consider trying to improve for future work is using a registration algorithm that can account for the sliding motion between the lungs and chest wall. I am also not sure I agree with the approach of generating 5 results for each image pair with different weighting for the BP regularisation, as this means that some of the results being used for the training may not be using an appropriate weight for that dataset and hence may not give a good representation of the true motion. I appreciate that finding an optimal value for the BP weight is challenging, and may vary from patient to patient, but I do not see how including multiple results where it is likely that some of them are not very good, will help. The evaluation experiments are ok, but would have benefitted from more data (although I acknowledge that there is not a great deal of freely available cbct data out there). I like the idea of using simulated data to provide extra data and enabling more landmarks to be tracked more accurately for the evaluation, however, I think this could have been generated in a better way than by adding the fbct to the low-acquisition time cbct. There are a number of freely available software toolkits that can be used to simulate cbcts from fbct images relatively easily (e.g. openRTK, TIGRE) which could have been used to simulate cbct scans with standard acquisition times and so would not have needed the ‘correction’ required for the short acquisition time simulations, and should produce images much more similar to real cbcts. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is well thought through, and seems to produce good results that are better than alternative methods (albeit on limited data) – it is also a generalisable approach that could be used for a number of other applications. However, for this specific application I think some of the details could have been improved, and the evaluation could have been more thorough What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this work, the author propose a registration method for CBCT images. The proposed method has two steps. In the first step, a conventional method is used to register a dataset of FBCT images that are “easy” to register. A autoencoder is then trained to encode Jacobian matrices maps of the produced FBCT deformations. In the second step, a Unet is train to generate deformation on CBCT image pair using a standard registation loss plus a second loss to penalize unrealistic deformation i.e. deformation incorrectly encoded by the autoencoder of step one. In the numerical experiment, the proposed method give better results than conventional registration or deep learning registration without the proposed prior. In a visual inspection example, the proposed method seems to produce more realistic results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Shape prior using autoencoder has already been used for image reconstruction or image segmentation but, as far as I know, never to learn a prior for image registration. The experiment are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. some clarification on details can be provided . especially of the way hyperparameters were chosen to be sure that the comparison is not biased. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance basic reproducibility information are provided Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Remarks/comments: — clarity of equation 2 can be improved. “F_T(Im,v)” can be replaced by “Im o v”. Maybe “v=U(Im,If)” should also be written somewhere. — the authors should also clarify how the hypermparameters where chosen. Is the penalization weight for either BP or the proposed approach were set in an optimal way? If mu was chosen to maximize performance on the test set, the results will be biased. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting and, as far as I know, novel but details about the way hyperparameters are chosen should be checked to be sure about the fairness of the experimental setup What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposes a learning-based registration approach for CBCT lung images. These images are often affected by strong imaging artifacts which makes image registration difficult. Here, the authors propose to constrain the deformation field via a prior of respiratory motion. This prior is a convolutional autoencoder trained on Jacobians of deformation fields which are obtained by the registration of pairs of high resolution FBCT lung images. For training of the registration network of CBCT images, the difference between the Jacobian of the current estimated deformation field and the output of the autoencoder are added to the loss function. The prior can be interpreted as a learned regularization. The method is evaluated on a dataset of real and synthetic CBCT images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • This is a nice approach to infer information from high quality images to registration of low-quality images. • The concept of learning a regularization is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The evaluation is very limited. Missing is, e.g.: Comparisons to other methods, both traditional and learning-based, should be added. How close are the resulting DVFs from the reference DVFs? How good is the performance of the feasibility descriptor? And how much is the registration accuracy dependent on this performance? • The dataset for training and testing is very small, no cross-validation is performed. • Related work on learning a regularization is missing. Relevant could be, e.g. Hu et al, 2018. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code available Publicly available data is used, which is described adequately. The hyperparameter selection is not transparent, both for training parameters and network architecture. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors address an interesting problem: inferring implicit information from higher resolution and higher quality data and using this for the regularization of image registration of data with lower quality. Their proposed solution is interesting. My main concern is, however, the limited evaluation. The dataset is very small (20 patients). Do some patients have multiple images, or how is it possible to create a data split of 25/5/5 images? It is unclear if the anatomical landmarks used for evaluation were annotated by a clinical expert or by somebody else. Also, the TRE is often not enough to evaluate registration accuracy. Other metrics should be considered, e.g. based on image similarity or property of deformation field. For example, it would be interesting to compare the estimated fields with the reference fields used to train the feasibility descriptor. The method was compared to simpleElastix and a learning-based approach employing a U-Net architecture (with and without bending energy as regularization). Is this approach similar to VoxelMorph? Where are the differences? Is it also possible to employ the feasibility descriptor as a regularization in a traditional method? This would broaden the impact and applicability of this method and should be discussed and evaluated. One other weakness is that a discussion of related work in the area of learning priors and regularizations is missing. Relevant could be, e.g. Hu et al: Adversarial Deformation Regularization for Training Image Registration Neural Networks, MICCAI 2018. What about any pathologies? It should be evaluated how well for example abnormal respiratory motion can be captured by a registration trained with this regularizer. For future work, I would recommend expanding the evaluation by increasing the dataset size and conducting more experiments, e.g., those I suggested before. Considering other imaging modalities and anatomies could be interesting. Another idea would be to simultaneously train the feasibility descriptor and the deformation field, instead of sequential training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I see merit in the proposed method, also beyond the application which was presented in the work, but the evaluation is too limited to recommend clear acceptance. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a learned feasibility constraint based on simulated low-quality CBCT data to train a learning based registration network. The paper contains a neat novel idea that could have an impact even beyond U-Net like registration frameworks. Unfortunately, the source code will not be released. The quality of reviews for this paper was exceptionally high and all reviewers recommend acceptance, I therefore follow their judgement completely. The authors should carefully address the reviewers suggestions in particular revising the (at times) unclear description, incorporate discussion of related prior work (e.g. Hu et al. 2018) and aim to incorporate a larger sample size in future work and release source code. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the constructive comments. We have modified the manuscript accordingly and would like to make the following clarifications. The 4D-lung dataset contains 4D-CBCT scans from 20 patients. Each patient has multiple scans. The training, validation, and testing sets contain 10, 5, and 5 patients, respectively. In the training set, 25 scans from the 10 patients were used for data augmentation purpose. The hyperparameters for the network were tuned based on the learning curves of the validation set. In SimpleElastix registration, multiple regularization weights were tried and was manually tuned to optimize the performance of each test case. Note that in practice there is no access to ground truth for such tuning. Therefore, the quantitative SimpleElastix results can be considered as a performance upper bound. A single weight for bending energy penalty in classic B-spline method might not be sufficient to accommodate the spatially heterogeneous respiratory motion. Therefore, we generated DVF training samples using classic registration with various values of trade-off parameters, and expected the learned manifold could integrate them and address different local trade-offs. This motion prior can be further improved with more sophisticated DVF generation methods. We plan to publicize the code upon a journal publication. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0410/12/31/Paper0889" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0410/12/31/Paper0889" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0410-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0410/12/31/Paper0889"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0410/12/31/Paper0889","headline":"4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer","dateModified":"0411-01-02T00:00:00-05:17","datePublished":"0410-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yudi Sang, Dan Ruan Abstract Deformable registration of phase-resolved lung images is an important procedure to appreciate respiratory motion and enhance image quality. Compared to high-resolution fan-beam CTs (FBCTs), cone-beam CTs (CBCTs) are more readily available for on-table acquisition in companion with treatment. However, CBCT registration is challenging because classic regularization energies in convention methods usually cannot overcome the strong artifacts and the lack of structural details. In this study, we propose to learn an implicit feasibility prior of respiratory motion and incorporate it in a plug-and-play (PnP) fashion into the training of an unsupervised image registration network to improve registration accuracy and robustness to noise and artifacts. In particular, we propose a novel approach to develop a feasibility descriptor from a set of deformation vector fields (DVFs) generated from FBCTs. Subsequently, this FBCT-derived feasibility descriptor was used as a spatially variant regularizer on DVF Jacobian during the unsupervised training for 4D-CBCT registration. In doing so, the higher-quality, higher-confidence information from FBCT is transferred into the much challenging problem of CBCT registration, without explicit FB-CB synthesis. The method was evaluated using manually identified landmarks on real CBCTs and automatically detected landmarks on simulated CBCTs. The method presented good robustness to noise and artifacts and generated physically more feasible DVFs. The target registration errors on the real and simulated data were (1.63+/-0.98) and (2.16+/-1.91) mm, respectively, significantly better than the classic bending energy regularization in both the conventional method in SimpleElastix and the unsupervised network. The average registration time was 0.04 s. Link to paper https://doi.org/10.1007/978-3-030-87202-1_11 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a method for machine learning based image registration, whereby an appropriate constraint term is learnt from some high quality image data, in this case FBCT, and used to constrain the registration of lower quality data, in this case CBCT. The method is evaluated on real and simulated cbct data Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method for learning and utilising the constraint is, as far as I know, novel – but is also relatively simple and generalisable and a similar approach could be used for other applications The paper is very well written and easy to follow, and provides all important details. The method appears to give good results (although the data used for the evaluation is somewhat limited) Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A relatively small number of datasets are used throughout the paper, both for training the feasibility descriptor and for training and testing the dvf inference network There is no discussion of previous works that have tried to learn a regularisation for image registration, e.g. Hu et al miccai 2018, Adversarial Deformation Regularization for Training Image Registration Neural Networks – this makes it difficult to assess the novelty of the proposed method and its strengths and weaknesses compared to previous methods Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used in the paper is all freely available data (provided by others, not the authors) which helps to reproduce their results and/or compare alternative methods. The code used in the paper does not appear to be made available. Overall the method is very well described and most information is provided that would be required to reproduce it – the only information I could not see was a description of which image pairs were chose for each dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall I thought the paper was very well written, easy to follow, and presented a very interesting and potentially useful method. But I do have a number of comments that should be taken into account when revising/extending the paper, e.g. for a journal publication. In general the intro was good, but as noted above a key omission was any discussion of previous works that have attempted to learn a constraint for image registration. Another important point, that should be discussed in the intro and/or discussion sections, is the assumption that FBCT data provides a good representation of the true motion. However, it is well known that FBCT data can often be affected by ‘sorting artefacts’, which occur when there is irregular motion, as 4dct sorted algorithms are generally based on the assumption of perfectly reproducible motion from one breath to another – this can affect both fbct and cbct, although the nature of the artefacts can be quite different due to the differences in how the modalities are acquired. The datasets from dir-labs that were used for training the feasibility descriptor have relatively few artefacts compared to a lot of clinical data (presumably as they selected the most ‘artefact free’ datasets they had for their study) – but there are still clearly artefacts present in many of the datasets. I do not think the proposed method necessarily needs any modifications due to this, but this issue should at least be acknowledged and discussed, rather than assuming that the fbct images provide a good representation of the true motion. The overall approach of the proposed method is clearly explained and seems very sensible to me. There are some details of how the feasibility descriptor was trained that I think could be improved: firstly data from more individuals should be used, as there can be large variations in lung motion, particularly amongst lung cancer patients, and its unlikely this will be well captured using data from just 10 individuals – but related to this and my previous comment, you should ensure that the images used for training as good quality and are as artefact-free as possible. It is not clear how the 15 image pairs per patient were chosen, or why 15 (and not more of less) were used – in addition, the terms ‘scans’ and ‘images’ do not always seem to be used consistently (most of the time it seems that scan means the full 4d dataset from an individual, whereas image is a single 3d volume from within the scan – but there are other times, e.g. ‘a set of ten FBCT images from the DIR-Lab dataset’ where image seems to mean the full 4d dataset). The authors acknowledge that the registration method used to generate the training data for the feasibility descriptor could potentially be improved, and one issue in particular I would consider trying to improve for future work is using a registration algorithm that can account for the sliding motion between the lungs and chest wall. I am also not sure I agree with the approach of generating 5 results for each image pair with different weighting for the BP regularisation, as this means that some of the results being used for the training may not be using an appropriate weight for that dataset and hence may not give a good representation of the true motion. I appreciate that finding an optimal value for the BP weight is challenging, and may vary from patient to patient, but I do not see how including multiple results where it is likely that some of them are not very good, will help. The evaluation experiments are ok, but would have benefitted from more data (although I acknowledge that there is not a great deal of freely available cbct data out there). I like the idea of using simulated data to provide extra data and enabling more landmarks to be tracked more accurately for the evaluation, however, I think this could have been generated in a better way than by adding the fbct to the low-acquisition time cbct. There are a number of freely available software toolkits that can be used to simulate cbcts from fbct images relatively easily (e.g. openRTK, TIGRE) which could have been used to simulate cbct scans with standard acquisition times and so would not have needed the ‘correction’ required for the short acquisition time simulations, and should produce images much more similar to real cbcts. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is well thought through, and seems to produce good results that are better than alternative methods (albeit on limited data) – it is also a generalisable approach that could be used for a number of other applications. However, for this specific application I think some of the details could have been improved, and the evaluation could have been more thorough What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this work, the author propose a registration method for CBCT images. The proposed method has two steps. In the first step, a conventional method is used to register a dataset of FBCT images that are “easy” to register. A autoencoder is then trained to encode Jacobian matrices maps of the produced FBCT deformations. In the second step, a Unet is train to generate deformation on CBCT image pair using a standard registation loss plus a second loss to penalize unrealistic deformation i.e. deformation incorrectly encoded by the autoencoder of step one. In the numerical experiment, the proposed method give better results than conventional registration or deep learning registration without the proposed prior. In a visual inspection example, the proposed method seems to produce more realistic results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Shape prior using autoencoder has already been used for image reconstruction or image segmentation but, as far as I know, never to learn a prior for image registration. The experiment are convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. some clarification on details can be provided . especially of the way hyperparameters were chosen to be sure that the comparison is not biased. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance basic reproducibility information are provided Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Remarks/comments: — clarity of equation 2 can be improved. “F_T(Im,v)” can be replaced by “Im o v”. Maybe “v=U(Im,If)” should also be written somewhere. — the authors should also clarify how the hypermparameters where chosen. Is the penalization weight for either BP or the proposed approach were set in an optimal way? If mu was chosen to maximize performance on the test set, the results will be biased. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting and, as far as I know, novel but details about the way hyperparameters are chosen should be checked to be sure about the fairness of the experimental setup What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This work proposes a learning-based registration approach for CBCT lung images. These images are often affected by strong imaging artifacts which makes image registration difficult. Here, the authors propose to constrain the deformation field via a prior of respiratory motion. This prior is a convolutional autoencoder trained on Jacobians of deformation fields which are obtained by the registration of pairs of high resolution FBCT lung images. For training of the registration network of CBCT images, the difference between the Jacobian of the current estimated deformation field and the output of the autoencoder are added to the loss function. The prior can be interpreted as a learned regularization. The method is evaluated on a dataset of real and synthetic CBCT images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. • This is a nice approach to infer information from high quality images to registration of low-quality images. • The concept of learning a regularization is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. • The evaluation is very limited. Missing is, e.g.: Comparisons to other methods, both traditional and learning-based, should be added. How close are the resulting DVFs from the reference DVFs? How good is the performance of the feasibility descriptor? And how much is the registration accuracy dependent on this performance? • The dataset for training and testing is very small, no cross-validation is performed. • Related work on learning a regularization is missing. Relevant could be, e.g. Hu et al, 2018. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code available Publicly available data is used, which is described adequately. The hyperparameter selection is not transparent, both for training parameters and network architecture. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors address an interesting problem: inferring implicit information from higher resolution and higher quality data and using this for the regularization of image registration of data with lower quality. Their proposed solution is interesting. My main concern is, however, the limited evaluation. The dataset is very small (20 patients). Do some patients have multiple images, or how is it possible to create a data split of 25/5/5 images? It is unclear if the anatomical landmarks used for evaluation were annotated by a clinical expert or by somebody else. Also, the TRE is often not enough to evaluate registration accuracy. Other metrics should be considered, e.g. based on image similarity or property of deformation field. For example, it would be interesting to compare the estimated fields with the reference fields used to train the feasibility descriptor. The method was compared to simpleElastix and a learning-based approach employing a U-Net architecture (with and without bending energy as regularization). Is this approach similar to VoxelMorph? Where are the differences? Is it also possible to employ the feasibility descriptor as a regularization in a traditional method? This would broaden the impact and applicability of this method and should be discussed and evaluated. One other weakness is that a discussion of related work in the area of learning priors and regularizations is missing. Relevant could be, e.g. Hu et al: Adversarial Deformation Regularization for Training Image Registration Neural Networks, MICCAI 2018. What about any pathologies? It should be evaluated how well for example abnormal respiratory motion can be captured by a registration trained with this regularizer. For future work, I would recommend expanding the evaluation by increasing the dataset size and conducting more experiments, e.g., those I suggested before. Considering other imaging modalities and anatomies could be interesting. Another idea would be to simultaneously train the feasibility descriptor and the deformation field, instead of sequential training. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I see merit in the proposed method, also beyond the application which was presented in the work, but the evaluation is too limited to recommend clear acceptance. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a learned feasibility constraint based on simulated low-quality CBCT data to train a learning based registration network. The paper contains a neat novel idea that could have an impact even beyond U-Net like registration frameworks. Unfortunately, the source code will not be released. The quality of reviews for this paper was exceptionally high and all reviewers recommend acceptance, I therefore follow their judgement completely. The authors should carefully address the reviewers suggestions in particular revising the (at times) unclear description, incorporate discussion of related prior work (e.g. Hu et al. 2018) and aim to incorporate a larger sample size in future work and release source code. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers for the constructive comments. We have modified the manuscript accordingly and would like to make the following clarifications. The 4D-lung dataset contains 4D-CBCT scans from 20 patients. Each patient has multiple scans. The training, validation, and testing sets contain 10, 5, and 5 patients, respectively. In the training set, 25 scans from the 10 patients were used for data augmentation purpose. The hyperparameters for the network were tuned based on the learning curves of the validation set. In SimpleElastix registration, multiple regularization weights were tried and was manually tuned to optimize the performance of each test case. Note that in practice there is no access to ground truth for such tuning. Therefore, the quantitative SimpleElastix results can be considered as a performance upper bound. A single weight for bending energy penalty in classic B-spline method might not be sufficient to accommodate the spatially heterogeneous respiratory motion. Therefore, we generated DVF training samples using classic registration with various values of trade-off parameters, and expected the learned manifold could integrate them and address different local trade-offs. This motion prior can be further improved with more sophisticated DVF generation methods. We plan to publicize the code upon a journal publication. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Sang, Yudi,Ruan, Dan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>4D-CBCT Registration with a FBCT-derived Plug-and-Play Feasibility Regularizer</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Sang, Yudi"
+        class="post-tags">
+        Sang, Yudi
+      </a> |  
+      
+      <a href="kittywong/tags#Ruan, Dan"
+        class="post-tags">
+        Ruan, Dan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yudi Sang, Dan Ruan
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Deformable registration of phase-resolved lung images is an important procedure to appreciate respiratory motion and enhance image quality. Compared to high-resolution fan-beam CTs (FBCTs), cone-beam CTs (CBCTs) are more readily available for on-table acquisition in companion with treatment. However, CBCT registration is challenging because classic regularization energies in convention methods usually cannot overcome the strong artifacts and the lack of structural details. In this study, we propose to learn an implicit feasibility prior of respiratory motion and incorporate it in a plug-and-play (PnP) fashion into the training of an unsupervised image registration network to improve registration accuracy and robustness to noise and artifacts. In particular, we propose a novel approach to develop a feasibility descriptor from a set of deformation vector fields (DVFs) generated from FBCTs. Subsequently, this FBCT-derived feasibility descriptor was used as a spatially variant regularizer on DVF Jacobian during the unsupervised training for 4D-CBCT registration. In doing so, the higher-quality, higher-confidence information from FBCT is transferred into the much challenging problem of CBCT registration, without explicit FB-CB synthesis. The method was evaluated using manually identified landmarks on real CBCTs and automatically detected landmarks on simulated CBCTs. The method presented good robustness to noise and artifacts and generated physically more feasible DVFs. The target registration errors on the real and simulated data were (1.63+/-0.98) and (2.16+/-1.91) mm, respectively, significantly better than the classic bending energy regularization in both the conventional method in SimpleElastix and the unsupervised network. The average registration time was 0.04 s.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_11">https://doi.org/10.1007/978-3-030-87202-1_11</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a method for machine learning based image registration, whereby an appropriate constraint term is learnt from some high quality image data, in this case FBCT, and used to constrain the registration of lower quality data, in this case CBCT. The method is evaluated on real and simulated cbct data</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The method for learning and utilising the constraint is, as far as I know, novel – but is also relatively simple and generalisable and a similar approach could be used for other applications
+The paper is very well written and easy to follow, and provides all important details.
+The method appears to give good results (although the data used for the evaluation is somewhat limited)</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>A relatively small number of datasets are used throughout the paper, both for training the feasibility descriptor and for training and testing the dvf inference network
+There is no discussion of previous works that have tried to learn a regularisation for image registration, e.g. Hu et al miccai 2018, Adversarial Deformation Regularization for Training Image Registration Neural Networks – this makes it difficult to assess the novelty of the proposed method and its strengths and weaknesses compared to previous methods</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The data used in the paper is all freely available data (provided by others, not the authors) which helps to reproduce their results and/or compare alternative methods. The code used in the paper does not appear to be made available. Overall the method is very well described and most information is provided that would be required to reproduce it – the only information I could not see was a description of which image pairs were chose for each dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall I thought the paper was very well written, easy to follow, and presented a very interesting and potentially useful method. But I do have a number of comments that should be taken into account when revising/extending the paper, e.g. for a journal publication.
+In general the intro was good, but as noted above a key omission was any discussion of previous works that have attempted to learn a constraint for image registration. Another important point, that should be discussed in the intro and/or discussion sections, is the assumption that FBCT data provides a good representation of the true motion. However, it is well known that FBCT data can often be affected by ‘sorting artefacts’, which occur when there is irregular motion, as 4dct sorted algorithms are generally based on the assumption of perfectly reproducible motion from one breath to another – this can affect both fbct and cbct, although the nature of the artefacts can be quite different due to the differences in how the modalities are acquired. The datasets from dir-labs that were used for training the feasibility descriptor have relatively few artefacts compared to a lot of clinical data (presumably as they selected the most ‘artefact free’ datasets they had for their study) – but there are still clearly artefacts present in many of the datasets. I do not think the proposed method necessarily needs any modifications due to this, but this issue should at least be acknowledged and discussed, rather than assuming that the fbct images provide a good representation of the true motion.
+The overall approach of the proposed method is clearly explained and seems very sensible to me. There are some details of how the feasibility descriptor was trained that I think could be improved: firstly data from more individuals should be used, as there can be large variations in lung motion, particularly amongst lung cancer patients, and its unlikely this will be well captured using data from just 10 individuals – but related to this and my previous comment, you should ensure that the images used for training as good quality and are as artefact-free as possible. It is not clear how the 15 image pairs per patient were chosen, or why 15 (and not more of less) were used – in addition, the terms ‘scans’ and ‘images’ do not always seem to be used consistently (most of the time it seems that scan means the full 4d dataset from an individual, whereas image is a single 3d volume from within the scan – but there are other times, e.g. ‘a set of ten FBCT images from the DIR-Lab dataset’ where image seems to mean the full 4d dataset). The authors acknowledge that the registration method used to generate the training data for the feasibility descriptor could potentially be improved, and one issue in particular I would consider trying to improve for future work is using a registration algorithm that can account for the sliding motion between the lungs and chest wall. I am also not sure I agree with the approach of generating 5 results for each image pair with different weighting for the BP regularisation, as this means that some of the results being used for the training may not be using an appropriate weight for that dataset and hence may not give a good representation of the true motion. I appreciate that finding an optimal value for the BP weight is challenging, and may vary from patient to patient, but I do not see how including multiple results where it is likely that some of them are not very good, will help.
+The evaluation experiments are ok, but would have benefitted from more data (although I acknowledge that there is not a great deal of freely available cbct data out there). I like the idea of using simulated data to provide extra data and enabling more landmarks to be tracked more accurately for the evaluation, however, I think this could have been generated in a better way than by adding the fbct to the low-acquisition time cbct. There are a number of freely available software toolkits that can be used to simulate cbcts from fbct images relatively easily (e.g. openRTK, TIGRE) which could have been used to simulate cbct scans with standard acquisition times and so would not have needed the ‘correction’ required for the short acquisition time simulations, and should produce images much more similar to real cbcts.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Method is well thought through, and seems to produce good results that are better than alternative methods (albeit on limited data) – it is also a generalisable approach that could be used for a number of other applications. However, for this specific application I think some of the details could have been improved, and the evaluation could have been more thorough</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+
+      <p>In this work, the author propose a registration method for CBCT images. The proposed method has two steps. In the first step, a conventional method is used to register a dataset of FBCT images that are “easy” to register. A autoencoder is then trained to encode Jacobian matrices maps of the produced FBCT deformations.
+In the second step, a Unet is train to generate deformation on CBCT image pair using a standard registation loss plus a second loss to penalize unrealistic deformation i.e. deformation incorrectly encoded by the autoencoder of step one.</p>
+
+      <p>In the numerical experiment, the proposed method give better results than conventional registration or 
+deep learning registration without the proposed prior.
+In a visual inspection example, the proposed method seems to produce more realistic results</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+
+      <p>Shape prior using autoencoder has already been used for image reconstruction or image segmentation but, as far as I know, never to learn a prior for image registration.</p>
+
+      <p>The experiment are convincing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>some clarification on details can be provided . 
+especially of the way hyperparameters were chosen to be sure that the comparison is not biased.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>basic reproducibility information are provided</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+
+      <p>Remarks/comments:</p>
+
+      <p>— clarity of equation 2 can be improved.
+“F_T(Im,v)” can be replaced by “Im o v”. Maybe “v=U(Im,If)” should also be written somewhere.</p>
+
+      <p>— the authors should also clarify how the hypermparameters where chosen.</p>
+      <ul>
+        <li>Is the penalization weight for either BP or the proposed approach were set in an optimal way?</li>
+        <li>If mu was chosen to maximize performance on the test set, the results will be biased.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The idea is interesting and, as far as I know, novel but details about the way hyperparameters are chosen should be checked to be sure about the fairness of the experimental setup</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work proposes a learning-based registration approach for CBCT lung images. These images are often affected by strong imaging artifacts which makes image registration difficult. Here, the authors propose to constrain the deformation field via a prior of respiratory motion. This prior is a convolutional autoencoder trained on Jacobians of deformation fields which are obtained by the registration of pairs of high resolution FBCT lung images. For training of the registration network of CBCT images, the difference between the Jacobian of the current estimated deformation field and the output of the autoencoder are added to the loss function. The prior can be interpreted as a learned regularization.</p>
+
+      <p>The method is evaluated on a dataset of real and synthetic CBCT images.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>•	This is a nice approach to infer information from high quality images to registration of low-quality images. 
+•	The concept of learning a regularization is interesting.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>•	The evaluation is very limited. Missing is, e.g.:
+Comparisons to other methods, both traditional and learning-based, should be added. 
+How close are the resulting DVFs from the reference DVFs?
+How good is the performance of the feasibility descriptor? And how much is the registration accuracy dependent on this performance? 
+•	The dataset for training and testing is very small, no cross-validation is performed.
+•	Related work on learning a regularization is missing. Relevant could be, e.g.
+Hu et al,  2018.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>No code available
+Publicly available data is used, which is described adequately.
+The hyperparameter selection is not transparent, both for training parameters and network architecture.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The authors address an interesting problem: inferring implicit information from higher resolution and higher quality data and using this for the regularization of image registration of data with lower quality. Their proposed solution is interesting.</p>
+
+      <p>My main concern is, however, the limited evaluation. The dataset is very small (20 patients). Do some patients have multiple images, or how is it possible to create a data split of 25/5/5 images? It is unclear if the anatomical landmarks used for evaluation were annotated by a clinical expert or by somebody else. Also, the TRE is often not enough to evaluate registration accuracy. Other metrics should be considered, e.g. based on image similarity or property of deformation field. For example, it would be interesting to compare the estimated fields with the reference fields used to train the feasibility descriptor. 
+The method was compared to simpleElastix and a learning-based approach employing a U-Net architecture (with and without bending energy as regularization). Is this approach similar to VoxelMorph? Where are the differences? Is it also possible to employ the feasibility descriptor as a regularization in a traditional method? This would broaden the impact and applicability of this method and should be discussed and evaluated.</p>
+
+      <p>One other weakness is that a discussion of related work in the area of learning priors and regularizations is missing. Relevant could be, e.g.
+Hu et al: Adversarial Deformation Regularization for Training Image Registration Neural Networks, MICCAI 2018.</p>
+
+      <p>What about any pathologies? It should be evaluated how well for example abnormal respiratory motion can be captured by a registration trained with this regularizer.</p>
+
+      <p>For future work, I would recommend expanding the evaluation by increasing the dataset size and conducting more experiments, e.g., those I suggested before. Considering other imaging modalities and anatomies could be interesting.
+Another idea would be to simultaneously train the feasibility descriptor and the deformation field, instead of sequential training.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I see merit in the proposed method, also beyond the application which was presented in the work, but the evaluation is too limited to recommend clear acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work proposes a learned feasibility constraint based on simulated low-quality CBCT data to train a learning based registration network. The paper contains a neat novel idea that could have an impact even beyond U-Net like registration frameworks. Unfortunately, the source code will not be released. The quality of reviews for this paper was exceptionally high and all reviewers recommend acceptance, I therefore follow their judgement completely. The authors should carefully address the reviewers suggestions in particular revising the (at times) unclear description, incorporate discussion of related prior work (e.g. Hu et al. 2018) and aim to incorporate a larger sample size in future work and release source code.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for the constructive comments. We have modified the manuscript accordingly and would like to make the following clarifications.</p>
+
+  <ul>
+    <li>
+      <p>The 4D-lung dataset contains 4D-CBCT scans from 20 patients. Each patient has multiple scans. The training, validation, and testing sets contain 10, 5, and 5 patients, respectively. In the training set, 25 scans from the 10 patients were used for data augmentation purpose.</p>
+    </li>
+    <li>
+      <p>The hyperparameters for the network were tuned based on the learning curves of the validation set. In SimpleElastix registration, multiple regularization weights were tried and was manually tuned to optimize the performance of each test case. Note that in practice there is no access to ground truth for such tuning. Therefore, the quantitative SimpleElastix results can be considered as a performance upper bound.</p>
+    </li>
+    <li>
+      <p>A single weight for bending energy penalty in classic B-spline method might not be sufficient to accommodate the spatially heterogeneous respiratory motion. Therefore, we generated DVF training samples using classic registration with various values of trade-off parameters, and expected the learned manifold could integrate them and address different local trade-offs. This motion prior can be further improved with more sophisticated DVF generation methods.</p>
+    </li>
+    <li>
+      <p>We plan to publicize the code upon a journal publication.</p>
+    </li>
+  </ul>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0410-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0411-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Sang, Yudi"
+        class="post-category">
+        Sang, Yudi
+      </a> |  
+      
+      <a href="kittywong/tags#Ruan, Dan"
+        class="post-category">
+        Ruan, Dan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0411/12/31/Paper0947">
+          Unsupervised Diffeomorphic Surface Registration and Non-Linear Modelling
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0409/12/31/Paper0760">
+          Weakly Supervised Registration of Prostate MRI and Histopathology Images
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>U-DuDoNet: Unpaired dual-domain network for CT metal artifact reduction | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="U-DuDoNet: Unpaired dual-domain network for CT metal artifact reduction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yuanyuan Lyu, Jiajun Fu, Cheng Peng, S. Kevin Zhou Abstract Recently, both supervised and unsupervised deep learning methods have been widely applied on the CT metal artifact reduction (MAR) task. Supervised methods such as Dual Domain Network (Du-DoNet) work well on simulation data; however, their performance on clinical data is limited due to domain gap. Unsupervised methods are more generalized, but do not eliminate artifacts completely through the sole processing on the image domain. To combine the advantages of both MAR methods, we propose an unpaired dual-domain network (U-DuDoNet) trained using unpaired data. Unlike the artifact disentanglement network (ADN) that utilizes multiple encoders and decoders for disentangling content from artifact, our U-DuDoNet directly models the artifact generation process through additions in both sinogram and image domains, which is theoretically justified by an additive property associated with metal artifact. Our design includes a self-learned sinogram prior net, which provides guidance for restoring the information in the sinogram domain, and cyclic constraints for artifact reduction and addition on unpaired data. Extensive experiments on simulation data and clinical images demonstrate that our novel framework outperforms the state-of-the-art unpaired approaches. Link to paper https://doi.org/10.1007/978-3-030-87231-1_29 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposed a network for unpaird data, based on a dual-domain network for MAR. More concrete, the unpaired learning is done via cycle loss, with a 2-phase network. The network was conpared to other SOTA on simulated and real data. Furthermore, the authors did an abation study. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The results of the proposed method are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The description of the method is not comprehensive. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code is given. The description of the parameters in the experiments are very confusing and not clear. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I am very puzzled about the derivation of the additive property. as far as i understood, it is based on the assumption, that the artifacts appear mainly due to beam hardening. How far is this assumption valid? There should be also other effects, such as scattering for real data. The method/network was not very clearly presented. While I see that the framework structure is complicated, it should be also/better described in words what is happening. The reader has a hard time to remember all the abbreviations. Furthermore, it is not clear, why so many losses are computed, and how the sum of all losses is back propagated. Also: it is stated that the P-net is pre-trained. where does it come from? (also not stated in the experiments). They evaluate all data on supervised and unsupervised models. However, while they motivate the work with a bad generalization when training in simulated data, the paper does not underline this point. Furthermore, they also train the supervised methods on real data. So, if that data is available, what is the advantage of the proposed unsupervised approach? It would also be nice to have some kind of quantitative values for the real data. (Since you are mainly proposing you method for real data…) I would also like an more detailed discussion on the qualitative results. Where does the metal mask come from? are all SOTA methods getting the same mask? Unfortunately, it was not clear to me how the networks for the ablation study look. Maybe that could be explained in more detail (or with an additional image?) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The network itself and the ideas behind it are not well explained. There are too many open questions to the method to present it to MICCAI. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed a new dual-domain network (U-DuDoNet) for CT metal artefact removal (MAR). The motivation - decomposition of signal (i.e. additive property) is interesting. Three U-Nets are used to build the whole system. The method is evaluated on both synthetic and clinical datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. see below the 7th point Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. see below the 7th point Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the code is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The motivation is clear and interesting. Some details should be clarified, see below my concerns. (1) How easy or hard to trade off the configuration of the loss functions? Do we really need that much regularization (cyclic, adversarial)? Although I understood the motivation for imposing each regularization, it is crucial to show the relationship of each loss versus the reconstruction performance/accuracy. The figure of the cost function (e.g. plot each regularization loss) is helpful to check if the methods under different configurations are converged and really well trained. (2) I am curious that the Prior network (P-Net) seems to play the most important role in the method, e.g. I see there is a 1.2dB improvement of I^ca in Table 2 when P-Net was plugged in. Is the P-Net supervised trained? If so, the P-Net had already known the knowledge of missing data i.e. the null space of the imaging system (or data acquisition), then the method is not really unsupervised. If so, the contribution of this paper is very limited. I checked some recent unsupervised training for image reconstruction or artefact removal, e.g. see the below [1][2][3]. It is very important in the revision to clarify the links or difference between these related unsupervised reconstruction techniques [1][2][3] and the proposed here. [1] ‘Unsupervised adversarial image reconstruction’, Pajot et al. 2019 [2] ‘Rare: Image reconstruction using deep priors learned without groundtruth’, Liu et al. 2020 [2] ‘Equivariant Imaging: Learning Beyond the Range Space’, Chen et al. 2021 (3) The notation system could be simplified for easy following. It is better to show the metric and error map in Fig 3,4. It is helpful to report the architectures (layers, Conv kernels, etc) and full training details for both P-Net, S-Net, I-Net and the whole system. Releasing the code and data should be helpful to the community. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting, the proposed method achieved good results on the synthetic and clinical datasets. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors improved the DuDoNet so that it didn’t require the paired training data (clean and metal artifact corrupted CT). The authors provide the proof of additive property of metal artifacts in CT images which justifies their loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is that they adapt the DuDoNet for unpaired training data to improve the robustness of CT metal artifact reduction. Paired clean and metal-artifact corrupted CT is hard to acquire and therefore DuDoNet is mainly dependent on simulation data. This limits generalization to real CT data particularly with strong streaking artifacts. The proposed U-DuDoNet seems to tackle this challenge. It also proposes the novel formulation with cyclic metal artifact reduction constraint and sinogram synthesis which avoids the disentangled latent space learning with the mathematical proof of additive property for metal artifacts. The experimental validation on simulated and clinical CT data is convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this paper is the lack of consideration of scanner geometry in CT reconstruction. Metal artifacts will be different based on CT back projection type (e.g., parallel, fan beam, helical). Previously, DuDoNet uses parallel beam conversion modules to deal with this challenge, but U-DuDoNet will be more sensitive to CT back projection variance in unpaired training data. This also creates the challenge in dealing with metal artifacts in z-direction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper provides the details of tunable parameters for U-DuDoNet training. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The improvement on back projection module would be necessary to take account into the inconsistency in metal artifact behaviors in unpaired data from different CT scanner geometry. 3D extension will be recommended to capture the metal artifacts in z-direction. Providing code and data will be definitely plus if expanded into a journal version. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and easy to read. Mathematical derivation and cost function is well defined. The experimental validation on both simulated and real dataset is convincing. This paper is well motivated to tackled the challenge in creating paired training data in clinical CT. The proposed method is novel to adapt the existing DuDoNet with cyclic constraint and sinogram synthesis. The weakness on inversion module can be further improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #4 Please describe the contribution of the paper Proposed a novel framework for unpaired CT image metal artifact reduction. Has quite comprehensive experiments results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A new framework for unpaired ct image metal artifact reduction. Specifically, the author try to remove the artifact from both sinogram and ct image domain without paired data, which is quite useful to the clinical ct application. From this point, this paper is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main claim of this paper is not very solid. As the authors claims, one contribution of this paper is to prove that the metal artifact is additional. However, this proof is based on a incorrect assumption that “Comparing with metal, the attenuation coefficient of body tissue is almost constant with respect to E”. From my standpoint, the attenuation coefficient is change with to the E. Please give more explanation and reference. The author claim that previous method (ADN) need complicated‘ encoder. However, from table 1, the the running time of proposed method is double of the ADN’s. ADN needs 38ms, while the proposed method need 63.59. From this point, the proposed method is seems like more complicated. Please give more explanation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The detail of this paper is clear. If the author release the code, it would not difficult to reproduce the result of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Question: Why need two components to represent the artifact. i.e., a_{I} and a_{s}. It seems like not obey the proof equation (3), in which the artifact only represented by one single term. Suggestions: The author could detail the symbol of figure 2 in legend. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea of remove the artifact from both sinogram and ct image domain in a unpaired manner is quite interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The work proposes a deep learning method for metal artifact reduction from CT scans. The proposed work has several contributions: 1- the use of unpaired learning, 2- an improvement over SOTA, 3- evaluation on real and simulated data. The majority of the reviewers also acknowledge these contributions. However, the paper has some major weaknesses. Authors are invited for rebuttal to address these comments. Major points are summarized below. Major More explanation about the additive property should be provided as in its current form it is not clear and convincing (Rev 1 and 5), This is the most important concern raised by two reviewers. A statistical significance test, for PSNR and SSIM values, should be performed to report the p values. Especially between the proposed method and ADN for image domain CT data. A similar statistical significance analysis should also be performed for the quantitative values presented in Table 2. The need for an unsupervised method should be better motivated. I understand the motivation of using paired clinical data not being available in real life. However, an unpaired supervised method could be developed as well if clinical data is available. The authors should clarify the links or difference between related unsupervised reconstruction techniques (Rev2) More details about the Pnet and how it is trained should be included (Rev 1and 2) The authors are strongly advised to release the code for the reproducibility of the work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Most of the comments were addressed by the authors. However, I encourage the authors to repeat the statistical significance tests for the SSIM values for the proposed vs ADN method. By looking at table 2 the difference is 0.008 and I don’t think the p value would be &lt;0.05. This analysis should be included in the final version. Finally, MICCAI is encouraging reproducible research. Therefore, I hope the authors will make their code available (this is not stated in the rebuttal). Looking forward to reading the final improved version of this works and the authors’ presentation at the MICCAI meeting. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on unpaired learning framework for CT metal artifacts removal. The unpaired setting is important for metal artifacts removal since paired training data is hard to be obtained. The reviewers mostly feel positive but have concerns on statistical significance, role of P-Net, comparison with related works, scanner geometry in CT reconstruction, etc. The response clarified these concerns. This work tackles an important task in CT reconstruction under unpaired setting, and shows improvements. It can be accepted. The authors should carefully consider these comments in reviews, and clarified them in the final version. Moreover, the codes should be released for reproducibility. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed methodology brings an improvement to the SOTA and improves the ability to remove artefacts in the process of image reconstruction. The responses of the authors to AC and reviewers is complete and properly addresses all the issues raised. Further, the authors provide additional results based on reviewers requests for quality of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback We thank the reviewers and AC for their comments and will revise the paper accordingly. Additive property (R1, R5) We agree with R1 that beam hardening and scattering both lead to streaks. However, Park’s work (TMI, 2016) shows that a well-modeled beam hardening corrector removes most streaks in a phantom experiment (see Fig. 7). Thus, we build the additive property based on such assumptions. We agree with R5 that the attenuation coefficient always changes with energy. However, the coefficient of metal changes much rapidly comparing with soft tissues/bones (see Fig.2 in DuDoNet++). Thus, we follow DuDoNet++ and simplify the equations. Unpaired learning (R1) Supervised learning must have paired ground truth for error back-propagation. Due to inevitable patient movement and breathing between different scans, paired clean and metal-affected images are impossible to obtain. Registration can reduce but not eliminate the mismatch, moreover, the presence of metal artifacts increases the difficulty of registration. Therefore we propose unpaired learning for MAR of real images. R1 misunderstood our experimental setup on page 6 (Baseline). We train supervised models on simulation data only and test them on simulation and real data. Comparison with other unsupervised methods (R2) Liu’s work is related to noise2noise based on the assumption of zero-mean noise while we are not based on noise2noise at all. Chen’s work achieves self-supervised learning via considering the commutative property of transformation and forward+inverse operators, which we don’t use. While our framework shares a similar idea with Pajot’s work, that is, unsupervised learning is achieved in cyclic data recovery and degradation process, there have three differences: (i) A predefined degradation operator F would limit the performance when artifact modeling fails. Instead, U-DuDoNet learns to extract real metal artifacts and generate corrupted images via addition. (ii) Pajot’s work only learns from corrupted images, while our model also considers unpaired clean images/sinograms in which data statistics help to remove artifacts. (iii) Our model restores data in dual domains. P-Net (R2) For training data generation, we randomly choose a metal mask and a clean sinogram (forward project a clean image) and then set the values of a clean sinogram within a metal trace to 0. Thus, the P-net is self-learned. We respectively disagree with R2 that supervised P-Net leads to limited novelty: (i) The performance of P-Net itself is limited (PSNR/SSIM: 31.29dB/0.737). The extremely low SSIMs are due to strong secondary artifacts and smoothed tissue around the metal. (ii) We do not use the output of P-Net directly but plug P-Net softly in our framework to guide sinogram restoration, see the first term in Eq. (11). Also, Fig.3 in Supp shows that the guided S^a_p can only give a rough estimation. The details and edges with metal trace are well recovered in the restored S^a_se as cyclic unpaired learning and dual-domain learning also play important roles. Geometry (R4) We agree that geometry affects MAR performance on real data. (i) To accommodate an arbitrary input image with unknown geometry, U-DuDoNet obtains a sinogram using a simulated fan-beam geometry (320 angles x 320 detectors), which may differ from its real one. But the results show that our MAR method can apply well to a real image. (ii) As shown by MAR results on multiple real CT images in Supp, U-DoDuNet with a coarse, simulated geometry would handle such geometry differences with a SE-IE architecture. (iii) MAR in 3D geometry (helical, cone-beam) is still an open question. Running time Our model is simpler than ADN since FP/FBP layers cost 38.41ms (58.6%) and the network only costs 27.18ms. Statistical test We did T-Tests per request, which show that U-DuDoNet performs significantly better than ADN and RCN and variant models in ablation with T values &gt; 23.02 and p values &lt; 1e-103. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yuanyuan Lyu, Jiajun Fu, Cheng Peng, S. Kevin Zhou Abstract Recently, both supervised and unsupervised deep learning methods have been widely applied on the CT metal artifact reduction (MAR) task. Supervised methods such as Dual Domain Network (Du-DoNet) work well on simulation data; however, their performance on clinical data is limited due to domain gap. Unsupervised methods are more generalized, but do not eliminate artifacts completely through the sole processing on the image domain. To combine the advantages of both MAR methods, we propose an unpaired dual-domain network (U-DuDoNet) trained using unpaired data. Unlike the artifact disentanglement network (ADN) that utilizes multiple encoders and decoders for disentangling content from artifact, our U-DuDoNet directly models the artifact generation process through additions in both sinogram and image domains, which is theoretically justified by an additive property associated with metal artifact. Our design includes a self-learned sinogram prior net, which provides guidance for restoring the information in the sinogram domain, and cyclic constraints for artifact reduction and addition on unpaired data. Extensive experiments on simulation data and clinical images demonstrate that our novel framework outperforms the state-of-the-art unpaired approaches. Link to paper https://doi.org/10.1007/978-3-030-87231-1_29 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposed a network for unpaird data, based on a dual-domain network for MAR. More concrete, the unpaired learning is done via cycle loss, with a 2-phase network. The network was conpared to other SOTA on simulated and real data. Furthermore, the authors did an abation study. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The results of the proposed method are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The description of the method is not comprehensive. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code is given. The description of the parameters in the experiments are very confusing and not clear. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I am very puzzled about the derivation of the additive property. as far as i understood, it is based on the assumption, that the artifacts appear mainly due to beam hardening. How far is this assumption valid? There should be also other effects, such as scattering for real data. The method/network was not very clearly presented. While I see that the framework structure is complicated, it should be also/better described in words what is happening. The reader has a hard time to remember all the abbreviations. Furthermore, it is not clear, why so many losses are computed, and how the sum of all losses is back propagated. Also: it is stated that the P-net is pre-trained. where does it come from? (also not stated in the experiments). They evaluate all data on supervised and unsupervised models. However, while they motivate the work with a bad generalization when training in simulated data, the paper does not underline this point. Furthermore, they also train the supervised methods on real data. So, if that data is available, what is the advantage of the proposed unsupervised approach? It would also be nice to have some kind of quantitative values for the real data. (Since you are mainly proposing you method for real data…) I would also like an more detailed discussion on the qualitative results. Where does the metal mask come from? are all SOTA methods getting the same mask? Unfortunately, it was not clear to me how the networks for the ablation study look. Maybe that could be explained in more detail (or with an additional image?) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The network itself and the ideas behind it are not well explained. There are too many open questions to the method to present it to MICCAI. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed a new dual-domain network (U-DuDoNet) for CT metal artefact removal (MAR). The motivation - decomposition of signal (i.e. additive property) is interesting. Three U-Nets are used to build the whole system. The method is evaluated on both synthetic and clinical datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. see below the 7th point Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. see below the 7th point Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the code is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The motivation is clear and interesting. Some details should be clarified, see below my concerns. (1) How easy or hard to trade off the configuration of the loss functions? Do we really need that much regularization (cyclic, adversarial)? Although I understood the motivation for imposing each regularization, it is crucial to show the relationship of each loss versus the reconstruction performance/accuracy. The figure of the cost function (e.g. plot each regularization loss) is helpful to check if the methods under different configurations are converged and really well trained. (2) I am curious that the Prior network (P-Net) seems to play the most important role in the method, e.g. I see there is a 1.2dB improvement of I^ca in Table 2 when P-Net was plugged in. Is the P-Net supervised trained? If so, the P-Net had already known the knowledge of missing data i.e. the null space of the imaging system (or data acquisition), then the method is not really unsupervised. If so, the contribution of this paper is very limited. I checked some recent unsupervised training for image reconstruction or artefact removal, e.g. see the below [1][2][3]. It is very important in the revision to clarify the links or difference between these related unsupervised reconstruction techniques [1][2][3] and the proposed here. [1] ‘Unsupervised adversarial image reconstruction’, Pajot et al. 2019 [2] ‘Rare: Image reconstruction using deep priors learned without groundtruth’, Liu et al. 2020 [2] ‘Equivariant Imaging: Learning Beyond the Range Space’, Chen et al. 2021 (3) The notation system could be simplified for easy following. It is better to show the metric and error map in Fig 3,4. It is helpful to report the architectures (layers, Conv kernels, etc) and full training details for both P-Net, S-Net, I-Net and the whole system. Releasing the code and data should be helpful to the community. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting, the proposed method achieved good results on the synthetic and clinical datasets. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors improved the DuDoNet so that it didn’t require the paired training data (clean and metal artifact corrupted CT). The authors provide the proof of additive property of metal artifacts in CT images which justifies their loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is that they adapt the DuDoNet for unpaired training data to improve the robustness of CT metal artifact reduction. Paired clean and metal-artifact corrupted CT is hard to acquire and therefore DuDoNet is mainly dependent on simulation data. This limits generalization to real CT data particularly with strong streaking artifacts. The proposed U-DuDoNet seems to tackle this challenge. It also proposes the novel formulation with cyclic metal artifact reduction constraint and sinogram synthesis which avoids the disentangled latent space learning with the mathematical proof of additive property for metal artifacts. The experimental validation on simulated and clinical CT data is convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this paper is the lack of consideration of scanner geometry in CT reconstruction. Metal artifacts will be different based on CT back projection type (e.g., parallel, fan beam, helical). Previously, DuDoNet uses parallel beam conversion modules to deal with this challenge, but U-DuDoNet will be more sensitive to CT back projection variance in unpaired training data. This also creates the challenge in dealing with metal artifacts in z-direction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper provides the details of tunable parameters for U-DuDoNet training. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The improvement on back projection module would be necessary to take account into the inconsistency in metal artifact behaviors in unpaired data from different CT scanner geometry. 3D extension will be recommended to capture the metal artifacts in z-direction. Providing code and data will be definitely plus if expanded into a journal version. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and easy to read. Mathematical derivation and cost function is well defined. The experimental validation on both simulated and real dataset is convincing. This paper is well motivated to tackled the challenge in creating paired training data in clinical CT. The proposed method is novel to adapt the existing DuDoNet with cyclic constraint and sinogram synthesis. The weakness on inversion module can be further improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #4 Please describe the contribution of the paper Proposed a novel framework for unpaired CT image metal artifact reduction. Has quite comprehensive experiments results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A new framework for unpaired ct image metal artifact reduction. Specifically, the author try to remove the artifact from both sinogram and ct image domain without paired data, which is quite useful to the clinical ct application. From this point, this paper is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main claim of this paper is not very solid. As the authors claims, one contribution of this paper is to prove that the metal artifact is additional. However, this proof is based on a incorrect assumption that “Comparing with metal, the attenuation coefficient of body tissue is almost constant with respect to E”. From my standpoint, the attenuation coefficient is change with to the E. Please give more explanation and reference. The author claim that previous method (ADN) need complicated‘ encoder. However, from table 1, the the running time of proposed method is double of the ADN’s. ADN needs 38ms, while the proposed method need 63.59. From this point, the proposed method is seems like more complicated. Please give more explanation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The detail of this paper is clear. If the author release the code, it would not difficult to reproduce the result of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Question: Why need two components to represent the artifact. i.e., a_{I} and a_{s}. It seems like not obey the proof equation (3), in which the artifact only represented by one single term. Suggestions: The author could detail the symbol of figure 2 in legend. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea of remove the artifact from both sinogram and ct image domain in a unpaired manner is quite interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The work proposes a deep learning method for metal artifact reduction from CT scans. The proposed work has several contributions: 1- the use of unpaired learning, 2- an improvement over SOTA, 3- evaluation on real and simulated data. The majority of the reviewers also acknowledge these contributions. However, the paper has some major weaknesses. Authors are invited for rebuttal to address these comments. Major points are summarized below. Major More explanation about the additive property should be provided as in its current form it is not clear and convincing (Rev 1 and 5), This is the most important concern raised by two reviewers. A statistical significance test, for PSNR and SSIM values, should be performed to report the p values. Especially between the proposed method and ADN for image domain CT data. A similar statistical significance analysis should also be performed for the quantitative values presented in Table 2. The need for an unsupervised method should be better motivated. I understand the motivation of using paired clinical data not being available in real life. However, an unpaired supervised method could be developed as well if clinical data is available. The authors should clarify the links or difference between related unsupervised reconstruction techniques (Rev2) More details about the Pnet and how it is trained should be included (Rev 1and 2) The authors are strongly advised to release the code for the reproducibility of the work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Most of the comments were addressed by the authors. However, I encourage the authors to repeat the statistical significance tests for the SSIM values for the proposed vs ADN method. By looking at table 2 the difference is 0.008 and I don’t think the p value would be &lt;0.05. This analysis should be included in the final version. Finally, MICCAI is encouraging reproducible research. Therefore, I hope the authors will make their code available (this is not stated in the rebuttal). Looking forward to reading the final improved version of this works and the authors’ presentation at the MICCAI meeting. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on unpaired learning framework for CT metal artifacts removal. The unpaired setting is important for metal artifacts removal since paired training data is hard to be obtained. The reviewers mostly feel positive but have concerns on statistical significance, role of P-Net, comparison with related works, scanner geometry in CT reconstruction, etc. The response clarified these concerns. This work tackles an important task in CT reconstruction under unpaired setting, and shows improvements. It can be accepted. The authors should carefully consider these comments in reviews, and clarified them in the final version. Moreover, the codes should be released for reproducibility. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed methodology brings an improvement to the SOTA and improves the ability to remove artefacts in the process of image reconstruction. The responses of the authors to AC and reviewers is complete and properly addresses all the issues raised. Further, the authors provide additional results based on reviewers requests for quality of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback We thank the reviewers and AC for their comments and will revise the paper accordingly. Additive property (R1, R5) We agree with R1 that beam hardening and scattering both lead to streaks. However, Park’s work (TMI, 2016) shows that a well-modeled beam hardening corrector removes most streaks in a phantom experiment (see Fig. 7). Thus, we build the additive property based on such assumptions. We agree with R5 that the attenuation coefficient always changes with energy. However, the coefficient of metal changes much rapidly comparing with soft tissues/bones (see Fig.2 in DuDoNet++). Thus, we follow DuDoNet++ and simplify the equations. Unpaired learning (R1) Supervised learning must have paired ground truth for error back-propagation. Due to inevitable patient movement and breathing between different scans, paired clean and metal-affected images are impossible to obtain. Registration can reduce but not eliminate the mismatch, moreover, the presence of metal artifacts increases the difficulty of registration. Therefore we propose unpaired learning for MAR of real images. R1 misunderstood our experimental setup on page 6 (Baseline). We train supervised models on simulation data only and test them on simulation and real data. Comparison with other unsupervised methods (R2) Liu’s work is related to noise2noise based on the assumption of zero-mean noise while we are not based on noise2noise at all. Chen’s work achieves self-supervised learning via considering the commutative property of transformation and forward+inverse operators, which we don’t use. While our framework shares a similar idea with Pajot’s work, that is, unsupervised learning is achieved in cyclic data recovery and degradation process, there have three differences: (i) A predefined degradation operator F would limit the performance when artifact modeling fails. Instead, U-DuDoNet learns to extract real metal artifacts and generate corrupted images via addition. (ii) Pajot’s work only learns from corrupted images, while our model also considers unpaired clean images/sinograms in which data statistics help to remove artifacts. (iii) Our model restores data in dual domains. P-Net (R2) For training data generation, we randomly choose a metal mask and a clean sinogram (forward project a clean image) and then set the values of a clean sinogram within a metal trace to 0. Thus, the P-net is self-learned. We respectively disagree with R2 that supervised P-Net leads to limited novelty: (i) The performance of P-Net itself is limited (PSNR/SSIM: 31.29dB/0.737). The extremely low SSIMs are due to strong secondary artifacts and smoothed tissue around the metal. (ii) We do not use the output of P-Net directly but plug P-Net softly in our framework to guide sinogram restoration, see the first term in Eq. (11). Also, Fig.3 in Supp shows that the guided S^a_p can only give a rough estimation. The details and edges with metal trace are well recovered in the restored S^a_se as cyclic unpaired learning and dual-domain learning also play important roles. Geometry (R4) We agree that geometry affects MAR performance on real data. (i) To accommodate an arbitrary input image with unknown geometry, U-DuDoNet obtains a sinogram using a simulated fan-beam geometry (320 angles x 320 detectors), which may differ from its real one. But the results show that our MAR method can apply well to a real image. (ii) As shown by MAR results on multiple real CT images in Supp, U-DoDuNet with a coarse, simulated geometry would handle such geometry differences with a SE-IE architecture. (iii) MAR in 3D geometry (helical, cone-beam) is still an open question. Running time Our model is simpler than ADN since FP/FBP layers cost 38.41ms (58.6%) and the network only costs 27.18ms. Statistical test We did T-Tests per request, which show that U-DuDoNet performs significantly better than ADN and RCN and variant models in ablation with T values &gt; 23.02 and p values &lt; 1e-103. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0628/12/31/Paper1201" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0628/12/31/Paper1201" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0628-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="U-DuDoNet: Unpaired dual-domain network for CT metal artifact reduction" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0628/12/31/Paper1201"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0628/12/31/Paper1201","headline":"U-DuDoNet: Unpaired dual-domain network for CT metal artifact reduction","dateModified":"0629-01-04T00:00:00-05:17","datePublished":"0628-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yuanyuan Lyu, Jiajun Fu, Cheng Peng, S. Kevin Zhou Abstract Recently, both supervised and unsupervised deep learning methods have been widely applied on the CT metal artifact reduction (MAR) task. Supervised methods such as Dual Domain Network (Du-DoNet) work well on simulation data; however, their performance on clinical data is limited due to domain gap. Unsupervised methods are more generalized, but do not eliminate artifacts completely through the sole processing on the image domain. To combine the advantages of both MAR methods, we propose an unpaired dual-domain network (U-DuDoNet) trained using unpaired data. Unlike the artifact disentanglement network (ADN) that utilizes multiple encoders and decoders for disentangling content from artifact, our U-DuDoNet directly models the artifact generation process through additions in both sinogram and image domains, which is theoretically justified by an additive property associated with metal artifact. Our design includes a self-learned sinogram prior net, which provides guidance for restoring the information in the sinogram domain, and cyclic constraints for artifact reduction and addition on unpaired data. Extensive experiments on simulation data and clinical images demonstrate that our novel framework outperforms the state-of-the-art unpaired approaches. Link to paper https://doi.org/10.1007/978-3-030-87231-1_29 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposed a network for unpaird data, based on a dual-domain network for MAR. More concrete, the unpaired learning is done via cycle loss, with a 2-phase network. The network was conpared to other SOTA on simulated and real data. Furthermore, the authors did an abation study. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The results of the proposed method are promising. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The description of the method is not comprehensive. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No code is given. The description of the parameters in the experiments are very confusing and not clear. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I am very puzzled about the derivation of the additive property. as far as i understood, it is based on the assumption, that the artifacts appear mainly due to beam hardening. How far is this assumption valid? There should be also other effects, such as scattering for real data. The method/network was not very clearly presented. While I see that the framework structure is complicated, it should be also/better described in words what is happening. The reader has a hard time to remember all the abbreviations. Furthermore, it is not clear, why so many losses are computed, and how the sum of all losses is back propagated. Also: it is stated that the P-net is pre-trained. where does it come from? (also not stated in the experiments). They evaluate all data on supervised and unsupervised models. However, while they motivate the work with a bad generalization when training in simulated data, the paper does not underline this point. Furthermore, they also train the supervised methods on real data. So, if that data is available, what is the advantage of the proposed unsupervised approach? It would also be nice to have some kind of quantitative values for the real data. (Since you are mainly proposing you method for real data…) I would also like an more detailed discussion on the qualitative results. Where does the metal mask come from? are all SOTA methods getting the same mask? Unfortunately, it was not clear to me how the networks for the ablation study look. Maybe that could be explained in more detail (or with an additional image?) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The network itself and the ideas behind it are not well explained. There are too many open questions to the method to present it to MICCAI. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposed a new dual-domain network (U-DuDoNet) for CT metal artefact removal (MAR). The motivation - decomposition of signal (i.e. additive property) is interesting. Three U-Nets are used to build the whole system. The method is evaluated on both synthetic and clinical datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. see below the 7th point Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. see below the 7th point Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance the code is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The motivation is clear and interesting. Some details should be clarified, see below my concerns. (1) How easy or hard to trade off the configuration of the loss functions? Do we really need that much regularization (cyclic, adversarial)? Although I understood the motivation for imposing each regularization, it is crucial to show the relationship of each loss versus the reconstruction performance/accuracy. The figure of the cost function (e.g. plot each regularization loss) is helpful to check if the methods under different configurations are converged and really well trained. (2) I am curious that the Prior network (P-Net) seems to play the most important role in the method, e.g. I see there is a 1.2dB improvement of I^ca in Table 2 when P-Net was plugged in. Is the P-Net supervised trained? If so, the P-Net had already known the knowledge of missing data i.e. the null space of the imaging system (or data acquisition), then the method is not really unsupervised. If so, the contribution of this paper is very limited. I checked some recent unsupervised training for image reconstruction or artefact removal, e.g. see the below [1][2][3]. It is very important in the revision to clarify the links or difference between these related unsupervised reconstruction techniques [1][2][3] and the proposed here. [1] ‘Unsupervised adversarial image reconstruction’, Pajot et al. 2019 [2] ‘Rare: Image reconstruction using deep priors learned without groundtruth’, Liu et al. 2020 [2] ‘Equivariant Imaging: Learning Beyond the Range Space’, Chen et al. 2021 (3) The notation system could be simplified for easy following. It is better to show the metric and error map in Fig 3,4. It is helpful to report the architectures (layers, Conv kernels, etc) and full training details for both P-Net, S-Net, I-Net and the whole system. Releasing the code and data should be helpful to the community. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea is interesting, the proposed method achieved good results on the synthetic and clinical datasets. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors improved the DuDoNet so that it didn’t require the paired training data (clean and metal artifact corrupted CT). The authors provide the proof of additive property of metal artifacts in CT images which justifies their loss function. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is that they adapt the DuDoNet for unpaired training data to improve the robustness of CT metal artifact reduction. Paired clean and metal-artifact corrupted CT is hard to acquire and therefore DuDoNet is mainly dependent on simulation data. This limits generalization to real CT data particularly with strong streaking artifacts. The proposed U-DuDoNet seems to tackle this challenge. It also proposes the novel formulation with cyclic metal artifact reduction constraint and sinogram synthesis which avoids the disentangled latent space learning with the mathematical proof of additive property for metal artifacts. The experimental validation on simulated and clinical CT data is convincing. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main weakness of this paper is the lack of consideration of scanner geometry in CT reconstruction. Metal artifacts will be different based on CT back projection type (e.g., parallel, fan beam, helical). Previously, DuDoNet uses parallel beam conversion modules to deal with this challenge, but U-DuDoNet will be more sensitive to CT back projection variance in unpaired training data. This also creates the challenge in dealing with metal artifacts in z-direction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper provides the details of tunable parameters for U-DuDoNet training. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The improvement on back projection module would be necessary to take account into the inconsistency in metal artifact behaviors in unpaired data from different CT scanner geometry. 3D extension will be recommended to capture the metal artifacts in z-direction. Providing code and data will be definitely plus if expanded into a journal version. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper is well written and easy to read. Mathematical derivation and cost function is well defined. The experimental validation on both simulated and real dataset is convincing. This paper is well motivated to tackled the challenge in creating paired training data in clinical CT. The proposed method is novel to adapt the existing DuDoNet with cyclic constraint and sinogram synthesis. The weakness on inversion module can be further improved. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Review #4 Please describe the contribution of the paper Proposed a novel framework for unpaired CT image metal artifact reduction. Has quite comprehensive experiments results Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A new framework for unpaired ct image metal artifact reduction. Specifically, the author try to remove the artifact from both sinogram and ct image domain without paired data, which is quite useful to the clinical ct application. From this point, this paper is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main claim of this paper is not very solid. As the authors claims, one contribution of this paper is to prove that the metal artifact is additional. However, this proof is based on a incorrect assumption that “Comparing with metal, the attenuation coefficient\u000e of body tissue is almost constant with respect to E”. From my standpoint, the attenuation coefficient is change with to the E. Please give more explanation and reference. The author claim that previous method (ADN) need complicated‘ encoder. However, from table 1, the the running time of proposed method is double of the ADN’s. ADN needs 38ms, while the proposed method need 63.59. From this point, the proposed method is seems like more complicated. Please give more explanation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The detail of this paper is clear. If the author release the code, it would not difficult to reproduce the result of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Question: Why need two components to represent the artifact. i.e., a_{I} and a_{s}. It seems like not obey the proof equation (3), in which the artifact only represented by one single term. Suggestions: The author could detail the symbol of figure 2 in legend. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The idea of remove the artifact from both sinogram and ct image domain in a unpaired manner is quite interesting. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The work proposes a deep learning method for metal artifact reduction from CT scans. The proposed work has several contributions: 1- the use of unpaired learning, 2- an improvement over SOTA, 3- evaluation on real and simulated data. The majority of the reviewers also acknowledge these contributions. However, the paper has some major weaknesses. Authors are invited for rebuttal to address these comments. Major points are summarized below. Major More explanation about the additive property should be provided as in its current form it is not clear and convincing (Rev 1 and 5), This is the most important concern raised by two reviewers. A statistical significance test, for PSNR and SSIM values, should be performed to report the p values. Especially between the proposed method and ADN for image domain CT data. A similar statistical significance analysis should also be performed for the quantitative values presented in Table 2. The need for an unsupervised method should be better motivated. I understand the motivation of using paired clinical data not being available in real life. However, an unpaired supervised method could be developed as well if clinical data is available. The authors should clarify the links or difference between related unsupervised reconstruction techniques (Rev2) More details about the Pnet and how it is trained should be included (Rev 1and 2) The authors are strongly advised to release the code for the reproducibility of the work. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Most of the comments were addressed by the authors. However, I encourage the authors to repeat the statistical significance tests for the SSIM values for the proposed vs ADN method. By looking at table 2 the difference is 0.008 and I don’t think the p value would be &lt;0.05. This analysis should be included in the final version. Finally, MICCAI is encouraging reproducible research. Therefore, I hope the authors will make their code available (this is not stated in the rebuttal). Looking forward to reading the final improved version of this works and the authors’ presentation at the MICCAI meeting. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on unpaired learning framework for CT metal artifacts removal. The unpaired setting is important for metal artifacts removal since paired training data is hard to be obtained. The reviewers mostly feel positive but have concerns on statistical significance, role of P-Net, comparison with related works, scanner geometry in CT reconstruction, etc. The response clarified these concerns. This work tackles an important task in CT reconstruction under unpaired setting, and shows improvements. It can be accepted. The authors should carefully consider these comments in reviews, and clarified them in the final version. Moreover, the codes should be released for reproducibility. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The proposed methodology brings an improvement to the SOTA and improves the ability to remove artefacts in the process of image reconstruction. The responses of the authors to AC and reviewers is complete and properly addresses all the issues raised. Further, the authors provide additional results based on reviewers requests for quality of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Author Feedback We thank the reviewers and AC for their comments and will revise the paper accordingly. Additive property (R1, R5) We agree with R1 that beam hardening and scattering both lead to streaks. However, Park’s work (TMI, 2016) shows that a well-modeled beam hardening corrector removes most streaks in a phantom experiment (see Fig. 7). Thus, we build the additive property based on such assumptions. We agree with R5 that the attenuation coefficient always changes with energy. However, the coefficient of metal changes much rapidly comparing with soft tissues/bones (see Fig.2 in DuDoNet++). Thus, we follow DuDoNet++ and simplify the equations. Unpaired learning (R1) Supervised learning must have paired ground truth for error back-propagation. Due to inevitable patient movement and breathing between different scans, paired clean and metal-affected images are impossible to obtain. Registration can reduce but not eliminate the mismatch, moreover, the presence of metal artifacts increases the difficulty of registration. Therefore we propose unpaired learning for MAR of real images. R1 misunderstood our experimental setup on page 6 (Baseline). We train supervised models on simulation data only and test them on simulation and real data. Comparison with other unsupervised methods (R2) Liu’s work is related to noise2noise based on the assumption of zero-mean noise while we are not based on noise2noise at all. Chen’s work achieves self-supervised learning via considering the commutative property of transformation and forward+inverse operators, which we don’t use. While our framework shares a similar idea with Pajot’s work, that is, unsupervised learning is achieved in cyclic data recovery and degradation process, there have three differences: (i) A predefined degradation operator F would limit the performance when artifact modeling fails. Instead, U-DuDoNet learns to extract real metal artifacts and generate corrupted images via addition. (ii) Pajot’s work only learns from corrupted images, while our model also considers unpaired clean images/sinograms in which data statistics help to remove artifacts. (iii) Our model restores data in dual domains. P-Net (R2) For training data generation, we randomly choose a metal mask and a clean sinogram (forward project a clean image) and then set the values of a clean sinogram within a metal trace to 0. Thus, the P-net is self-learned. We respectively disagree with R2 that supervised P-Net leads to limited novelty: (i) The performance of P-Net itself is limited (PSNR/SSIM: 31.29dB/0.737). The extremely low SSIMs are due to strong secondary artifacts and smoothed tissue around the metal. (ii) We do not use the output of P-Net directly but plug P-Net softly in our framework to guide sinogram restoration, see the first term in Eq. (11). Also, Fig.3 in Supp shows that the guided S^a_p can only give a rough estimation. The details and edges with metal trace are well recovered in the restored S^a_se as cyclic unpaired learning and dual-domain learning also play important roles. Geometry (R4) We agree that geometry affects MAR performance on real data. (i) To accommodate an arbitrary input image with unknown geometry, U-DuDoNet obtains a sinogram using a simulated fan-beam geometry (320 angles x 320 detectors), which may differ from its real one. But the results show that our MAR method can apply well to a real image. (ii) As shown by MAR results on multiple real CT images in Supp, U-DoDuNet with a coarse, simulated geometry would handle such geometry differences with a SE-IE architecture. (iii) MAR in 3D geometry (helical, cone-beam) is still an open question. Running time Our model is simpler than ADN since FP/FBP layers cost 38.41ms (58.6%) and the network only costs 27.18ms. Statistical test We did T-Tests per request, which show that U-DuDoNet performs significantly better than ADN and RCN and variant models in ablation with T values &gt; 23.02 and p values &lt; 1e-103. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Lyu, Yuanyuan,Fu, Jiajun,Peng, Cheng,Zhou, S. Kevin" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>U-DuDoNet: Unpaired dual-domain network for CT metal artifact reduction</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Lyu, Yuanyuan"
+        class="post-tags">
+        Lyu, Yuanyuan
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Jiajun"
+        class="post-tags">
+        Fu, Jiajun
+      </a> |  
+      
+      <a href="kittywong/tags#Peng, Cheng"
+        class="post-tags">
+        Peng, Cheng
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, S. Kevin"
+        class="post-tags">
+        Zhou, S. Kevin
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yuanyuan Lyu, Jiajun Fu, Cheng Peng, S. Kevin Zhou
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Recently, both supervised and unsupervised deep learning methods have been widely applied on the CT metal artifact reduction (MAR) task. Supervised methods such as Dual Domain Network (Du-DoNet) work well on simulation data; however, their performance on clinical data is limited due to domain gap. Unsupervised methods are more generalized, but do not eliminate artifacts completely through the sole processing on the image domain. To combine the advantages of both MAR methods, we propose an unpaired dual-domain network (U-DuDoNet) trained using unpaired data. Unlike the artifact disentanglement network (ADN) that utilizes multiple encoders and decoders for disentangling content from artifact, our U-DuDoNet directly models the artifact generation process through additions in both sinogram and image domains, which is theoretically justified by an additive property associated with metal artifact. Our design includes a self-learned sinogram prior net, which provides guidance for restoring the information in the sinogram domain, and cyclic constraints for artifact reduction and addition on unpaired data. Extensive experiments on simulation data and clinical images demonstrate that our novel framework outperforms the state-of-the-art unpaired approaches.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87231-1_29">https://doi.org/10.1007/978-3-030-87231-1_29</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposed a network for unpaird data, based on a dual-domain network for MAR.
+More concrete, the unpaired learning is done via cycle loss, with a 2-phase network.
+The network was conpared to other SOTA on simulated and real data.
+Furthermore, the authors did an abation study.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The results of the proposed method are promising.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The description of the method is not comprehensive.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>No code is given. 
+The description of the parameters in the experiments are very confusing and not clear.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I am very puzzled about the derivation of the additive property. as far as i understood, it is based on the assumption, that the artifacts appear mainly due to beam hardening. How far is this assumption valid? There should be also other effects, such as scattering for real data.</p>
+
+      <p>The method/network was not very clearly presented. While I see that the framework structure is complicated, it should be also/better described in words what is happening. The reader has a hard time to remember all the abbreviations.
+Furthermore, it is not clear, why so many losses are computed, and how the sum of all losses is back propagated.
+Also: it is stated that the P-net is pre-trained. where does it come from? (also not stated in the experiments).</p>
+
+      <p>They evaluate all data on supervised and unsupervised models. However, while they motivate the work with a bad generalization when training in simulated data, the paper does not underline this point. Furthermore, they also train the supervised methods on real data. So, if that data is available, what is the advantage of the proposed unsupervised approach?
+It would also be nice to have some kind of quantitative values for the real data. (Since you are mainly proposing you method for real data…)
+I would also like an more detailed discussion on the qualitative results.</p>
+
+      <p>Where does the metal mask come from? are all SOTA methods getting the same mask?</p>
+
+      <p>Unfortunately, it was not clear to me how the networks for the ablation study look. Maybe that could be explained in more detail (or with an additional image?)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The network itself and the ideas behind it are not well explained.
+There are too many open questions to the method to present it to MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a new dual-domain network (U-DuDoNet) for CT metal artefact removal (MAR). The motivation - decomposition of signal (i.e. additive property) is interesting. Three U-Nets are used to build the whole system. The method is evaluated on both synthetic and clinical datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>see below the 7th point</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>see below the 7th point</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>the code is not available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The motivation is clear and interesting. Some details should be clarified, see below my concerns.</p>
+
+      <p>(1) How easy or hard to trade off the configuration of the loss functions? Do we really need that much regularization (cyclic, adversarial)? Although I understood the motivation for imposing each regularization, it is crucial to show the relationship of each loss versus the reconstruction performance/accuracy. The figure of the cost function (e.g. plot each regularization loss) is helpful to check if the methods under different configurations are converged and really well trained.</p>
+
+      <p>(2) I am curious that the Prior network (P-Net) seems to play the most important role in the method, e.g. I see there is a 1.2dB improvement of I^ca in Table 2 when P-Net was plugged in. Is the P-Net supervised trained? If so, the P-Net had already known the knowledge of missing data i.e. the null space of the imaging system (or data acquisition), then the method is not really unsupervised. If so, the contribution of this paper is very limited. I checked some recent unsupervised training for image reconstruction or artefact removal, e.g. see the below [1][2][3]. It is very important in the revision to clarify the links or difference between these related unsupervised reconstruction techniques [1][2][3] and the proposed here.</p>
+
+      <p>[1] ‘Unsupervised adversarial image reconstruction’, Pajot et al. 2019
+[2] ‘Rare: Image reconstruction using deep priors learned without groundtruth’, Liu et al. 2020
+[2] ‘Equivariant Imaging: Learning Beyond the Range Space’, Chen et al. 2021</p>
+
+      <p>(3) The notation system could be simplified for easy following. It is better to show the metric and error map in Fig 3,4. It is helpful to report the architectures (layers, Conv kernels, etc) and full training details for both P-Net, S-Net, I-Net and the whole system. Releasing the code and data should be helpful to the community.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The idea is interesting, the proposed method achieved good results on the synthetic and clinical datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors improved the DuDoNet so that it didn’t require the paired training data (clean and metal artifact corrupted CT). The authors provide the proof of additive property of metal artifacts in CT images which justifies their loss function.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength of this paper is that they adapt the DuDoNet for unpaired training data to improve the robustness of CT metal artifact reduction. Paired clean and metal-artifact corrupted CT is hard to acquire and therefore DuDoNet is mainly dependent on simulation data. This limits generalization to real CT data particularly with strong streaking artifacts. The proposed U-DuDoNet seems to tackle this challenge. It also proposes the novel formulation with cyclic metal artifact reduction constraint and sinogram synthesis which avoids the disentangled latent space learning with the mathematical proof of additive property for metal artifacts. The experimental validation on simulated and clinical CT data is convincing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The main weakness of this paper is the lack of consideration of scanner geometry in CT reconstruction. Metal artifacts will be different based on CT back projection type (e.g., parallel, fan beam, helical). Previously, DuDoNet uses parallel beam conversion modules to deal with this challenge, but U-DuDoNet will be more sensitive to CT back projection variance in unpaired training data. This also creates the challenge in dealing with metal artifacts in z-direction.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper provides the details of tunable parameters for U-DuDoNet training.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The improvement on back projection module would be necessary to take account into the inconsistency in metal artifact behaviors in unpaired data from different CT scanner geometry. 3D extension will be recommended to capture the metal artifacts in z-direction. Providing code and data will be definitely plus if expanded into a journal version.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper is well written and easy to read. Mathematical derivation and cost function is well defined. The experimental validation on both simulated and real dataset is convincing. This paper is well motivated to tackled the challenge in creating paired training data in clinical CT. The proposed method is novel to adapt the existing DuDoNet with cyclic constraint and sinogram synthesis. The weakness on inversion module can be further improved.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-4">Review #4</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <ol>
+        <li>Proposed a novel framework for unpaired CT image metal artifact reduction.</li>
+        <li>Has quite comprehensive experiments results</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>A new framework for unpaired ct image metal artifact reduction.</li>
+      </ol>
+
+      <p>Specifically, the author  try to remove  the artifact from both sinogram and ct image  domain without paired data, which is quite useful to the clinical ct application. From this point, this paper is interesting.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The main claim of this paper is not very solid.  As the authors claims, one contribution of this paper is to prove that the metal artifact is additional. However, this proof is based on a incorrect assumption that “Comparing with metal, the attenuation  coefficient of body tissue is
+almost constant with respect to E”.  From my standpoint, the attenuation coefficient is change with to the E. Please give more explanation and reference.</p>
+        </li>
+        <li>
+          <p>The author claim that previous  method (ADN) need  complicated‘ encoder. However, from table 1, the the running time of proposed method is double of the ADN’s. ADN needs 38ms, while the proposed method need 63.59. From this point, the proposed method is seems like more complicated. Please give more explanation.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The detail of this paper is clear. If the author release the code, it would not difficult to reproduce the result of this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Question:</p>
+      <ol>
+        <li>Why need two components to represent the artifact. i.e., a_{I} and a_{s}. It seems like not obey the proof equation (3), in which the artifact only represented by one single term.</li>
+      </ol>
+
+      <p>Suggestions:</p>
+      <ol>
+        <li>The author could detail the symbol of figure 2 in legend.</li>
+        <li></li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The idea of remove the artifact from both sinogram and ct image domain in a unpaired manner is quite interesting.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The work proposes a deep learning method for metal artifact reduction from CT scans. The proposed work has several contributions: 1- the use of unpaired learning, 2- an improvement over SOTA, 3- evaluation on real and simulated data. The majority of the reviewers also acknowledge these contributions. However, the paper has some major weaknesses. Authors are invited for rebuttal to address these comments. Major points are summarized below.</p>
+
+      <p>Major
+More explanation about the additive property should be provided as in its current form it is not clear and convincing (Rev 1 and 5), This is the most important concern raised by two reviewers.</p>
+
+      <p>A statistical significance test, for PSNR and SSIM values, should be performed to report the p values. Especially between the proposed method and ADN for image domain CT data. A similar statistical significance analysis should also be performed for the quantitative values presented in Table 2.</p>
+
+      <p>The need for an unsupervised method should be better motivated. I understand the motivation of using paired clinical data not being available in real life. However, an unpaired supervised method could be developed as well if clinical data is available.</p>
+
+      <p>The authors should clarify the links or difference between related unsupervised reconstruction techniques (Rev2)</p>
+
+      <p>More details about the Pnet and how it is trained should be included (Rev 1and 2)</p>
+
+      <p>The authors are strongly advised to release the code for the reproducibility of the work.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Most of the comments were addressed by the authors. However, I encourage the authors to repeat the statistical significance tests for the SSIM values for the proposed vs ADN method. By looking at table 2 the difference is 0.008 and I don’t think the p value would be &lt;0.05. This analysis should be included in the final version. Finally, MICCAI is encouraging reproducible research. Therefore, I hope the authors will make their code available (this is not stated in the rebuttal). Looking forward to reading the final improved version of this works and the authors’ presentation at the MICCAI meeting.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper works on unpaired learning framework for CT metal artifacts removal. The unpaired setting is important for metal artifacts removal since paired training data is hard to be obtained. The reviewers mostly feel positive but have concerns on statistical significance, role of P-Net, comparison with related works, scanner geometry in CT reconstruction, etc. The response clarified these concerns. This work tackles an important task in CT reconstruction under unpaired setting, and shows improvements. It can be accepted. The authors should carefully consider these comments in reviews, and clarified them in the final version. Moreover, the codes should be released for reproducibility.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The proposed methodology brings an improvement to the SOTA and improves the ability to remove artefacts in the process of image reconstruction. The responses of the authors to AC and reviewers is complete and properly addresses all the issues raised. Further, the authors provide additional results based on reviewers requests for quality of the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers and AC for their comments and will revise the paper accordingly.</p>
+
+  <ul>
+    <li>Additive property (R1, R5)
+We agree with R1 that beam hardening and scattering both lead to streaks. However, Park’s work (TMI, 2016) shows that a well-modeled beam hardening corrector removes most streaks in a phantom experiment (see Fig. 7). Thus, we build the additive property based on such assumptions.</li>
+  </ul>
+
+  <p>We agree with R5 that the attenuation coefficient always changes with energy. However, the coefficient of metal changes much rapidly comparing with soft tissues/bones (see Fig.2 in DuDoNet++). Thus, we follow DuDoNet++ and simplify the equations.</p>
+
+  <ul>
+    <li>Unpaired learning (R1)
+Supervised learning must have paired ground truth for error back-propagation. Due to inevitable patient movement and breathing between different scans, paired clean and metal-affected images are impossible to obtain. Registration can reduce but not eliminate the mismatch, moreover, the presence of metal artifacts increases the difficulty of registration. Therefore we propose unpaired learning for MAR of real images.</li>
+  </ul>
+
+  <p>R1 misunderstood our experimental setup on page 6 (Baseline). We train supervised models on simulation data only and test them on simulation and real data.</p>
+
+  <ul>
+    <li>Comparison with other unsupervised methods (R2)</li>
+  </ul>
+
+  <p>Liu’s work is related to noise2noise based on the assumption of zero-mean noise while we are not based on noise2noise at all.</p>
+
+  <p>Chen’s work achieves self-supervised learning via considering the commutative property of transformation and forward+inverse operators, which we don’t use.</p>
+
+  <p>While our framework shares a similar idea with Pajot’s work, that is, unsupervised learning is achieved in cyclic data recovery and degradation process, there have three differences:
+(i) A predefined degradation operator F would limit the performance when artifact modeling fails. Instead, U-DuDoNet learns to extract real metal artifacts and generate corrupted images via addition.
+(ii) Pajot’s work only learns from corrupted images, while our model also considers unpaired clean images/sinograms in which data statistics help to remove artifacts.
+(iii) Our model restores data in dual domains.</p>
+
+  <ul>
+    <li>P-Net (R2)
+For training data generation, we randomly choose a metal mask and a clean sinogram (forward project a clean image) and then set the values of a clean sinogram within a metal trace to 0. Thus, the P-net is self-learned.</li>
+  </ul>
+
+  <p>We respectively disagree with R2 that supervised P-Net leads to limited novelty:
+(i) The performance of P-Net itself is limited (PSNR/SSIM: 31.29dB/0.737). The extremely low SSIMs are due to strong secondary artifacts and smoothed tissue around the metal.
+(ii) We do not use the output of P-Net directly but plug P-Net softly in our framework to guide sinogram restoration, see the first term in Eq. (11). Also, Fig.3 in Supp shows that the guided S^a_p can only give a rough estimation. The details and edges with metal trace are well recovered in the restored S^a_se as cyclic unpaired learning and dual-domain learning also play important roles.</p>
+
+  <ul>
+    <li>Geometry (R4)
+We agree that geometry affects MAR performance on real data.</li>
+  </ul>
+
+  <p>(i) To accommodate an arbitrary input image with unknown geometry, U-DuDoNet obtains a sinogram using a simulated fan-beam geometry (320 angles x 320 detectors), which may differ from its real one. But the results show that our MAR method can apply well to a real image.</p>
+
+  <p>(ii) As shown by MAR results on multiple real CT images in Supp, U-DoDuNet with a coarse, simulated geometry would handle such geometry differences with a SE-IE architecture.</p>
+
+  <p>(iii) MAR in 3D geometry (helical, cone-beam) is still an open question.</p>
+
+  <ul>
+    <li>
+      <p>Running time
+Our model is simpler than ADN since FP/FBP layers cost 38.41ms (58.6%) and the network only costs 27.18ms.</p>
+    </li>
+    <li>
+      <p>Statistical test
+We did T-Tests per request, which show that U-DuDoNet performs significantly better than ADN and RCN and variant models in ablation with T values &gt; 23.02 and p values &lt; 1e-103.</p>
+    </li>
+  </ul>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0628-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0629-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Lyu, Yuanyuan"
+        class="post-category">
+        Lyu, Yuanyuan
+      </a> |  
+      
+      <a href="kittywong/tags#Fu, Jiajun"
+        class="post-category">
+        Fu, Jiajun
+      </a> |  
+      
+      <a href="kittywong/tags#Peng, Cheng"
+        class="post-category">
+        Peng, Cheng
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, S. Kevin"
+        class="post-category">
+        Zhou, S. Kevin
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0629/12/31/Paper1223">
+          Task Transformer Network for Joint MRI Reconstruction and Super-Resolution
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0627/12/31/Paper1189">
+          Learnable Multi-scale Fourier Interpolation for Sparse View CT Image Reconstruction
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

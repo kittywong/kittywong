@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Medical Image Registration Based on Uncoupled Learning and Accumulative Enhancement | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Medical Image Registration Based on Uncoupled Learning and Accumulative Enhancement" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yucheng Shu, Hao Wang, Bin Xiao, Xiuli Bi, Weisheng Li Abstract As a basic building block in medical image analysis, image registration has been greatly developed since the emergence of modern deep neural networks. Compared to non-learning-based methods, the latest approaches can learn task-specific features spontaneously, thus generate the registration results with one round of inference. However, when large inter-image distortion occurs, the stability of existing methods can be strongly affected. To alleviate this problem, the iterative framework based on coarse-to-fine strategies has been introduced in recent works. However, their networks at each iteration step are relatively independent, which is not an optimal solution for the reinforcement of image features. What is more, the moving and the fixed images are often concatenated or fed to identical network layers. Consequently, the iterative learning and warping on the moving image can be entangled with the fixed image. In order to address these issues, we present a novel medical image registration framework, namely ULAE-net, to continuously enhance the spatial transformation and establish more profound contextual dependencies under a compact network layout. Extensive experiments on 3D brain MRI data sets demonstrate that our method has greatly improved the registration performance, thereby outperforms state-of-the-art methods under large-scale deformations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_1 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose an unsupervised registration model ULAE-net which introduces accumulative warping enhancement (AWE) and an Uncoupled Spatial Encoder (USE). The USE (i) produces a feature fusion of the feature maps produced by two encoders (i.e. fixed (F) and moving (M) image encoders), where the moving image encoder utilises atrous spatial pyramid pooling (ASPP) while the fixed image encoder uses standard strided convolutions between scales. The proposed AWE passes the moving image through the network and computes the deformation fields at one scale per iteration (in a coarse-to-fine fashion), warping the input M at each iteration by the deformation field of the current iteration to provide an updated input M_i to the same network for the subsequent iteration. The USE and AWE components allow the network to more effectively learn image registration with limited training data compared to existing models (VoxelMorph and LapIRN). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The feature fusion of the fixed encoder features to the moving encoder features is novel, where most existing methods either (a) use a single encoder to take a pair of images as inputs, or (b) which use two independent encoders. Additionally, the iterative deformation of an input image M by the predicted transformations by coarse-to-fine transformations predicted iteratively by the same network at three spatial scales (corresponding to each iteration) seems novel as well and allows the network to be quite compact. The authors demonstrate quantitatively improved performance of ULAE-net over the widely used Voxelmorph baseline, and the more recent LapIRN [18] model, which is another coarse-to-fine network which does not employ an iterative deformation approach (via multiple passes of the network), nor are there multiple encoder branches for the input images. The proposed framework using both uncoupled spatial encoders and accumulative warping enhancement appears to provide a tangible benefit for learned unsupervised registration compared to the baseline methods, and an ablation study demonstrates the benefit of each component. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The methods are not described with sufficient clarity. It is unclear exactly how the final deformation is computed, since 3 iterations of the same network are used to compute deformations at three respective spatial scales (phi_1, phi_2, phi_3), which are in turn used to warp M for each subsequent iteration; yet due to the change in input M at each iteration, the predicted deformation fields (particularly phi_1, phi_2) will be different at each subsequent iteration. It is unclear therefore how these deformation fields are composed across iterations to obtain the final transformation (both for training and at test-time). Is the final deformation actually a composition of phi_3, phi_2, phi_1 from iteration 3, with phi_2 and phi_1 from iteration 2, and phi_1 from iteration 1? Do gradients need to be computed across all three iterations during training (and how much computational expense does this add during training)? The authors state as one of the paper’s three contributions that a “multi-window loss” is proposed. The proposed loss appears to be identical to the formulation of the similarity pyramid loss proposed in reference [18]. However, the authors of the current work do not describe the use of image losses at different spatial scales, which was part of the motivation for this loss in [18]; in fact the current work does not provide an explanation of how this loss is computed at each iteration. Is it computed at each iteration with the full resolution images, after a trilinear upsampling of coarse deformation fields (as opposed to the multi-resolution approach in [18])? While the proposed method shows improvements over the baseline models, the proposed design is not very clearly motivated; the authors state that some existing learned registration models (e.g. Voxelmorph) are ‘not able to model long-range relationships between the images’, and that for those which use coarse-to-fine deformation strategies to address this (e.g. [11, 9, 26]), downsides include that “the moving and fixed images are often concatenated as the input of a single net routine, or independently feed to similar feature encoders, which is relatively rigid and may not suitable for the dynamic generation of the deformation fields.” What is meant exactly by “dynamic generation of deformation fields”, and what is there that suggests that these models may not be suitable? “VoxelMorph: A Learning Framework for Deformable Medical Image Registration” (Balakrishnan, 2018) has demonstrated that Voxelmorph, the worst performing baseline model in the current paper, which has fewer than half of the parameters of the proposed model, performs extremely well when trained on thousands of examples of brain MR images, contradicting somewhat that such models are ‘not able to model long-range relationships between the images’. The proposed model clearly performs better than the other models, but the motivation could be improved. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use publicly available datasets, the Mindboggle101 and IXI datasets. Code is not made available however, and the methods lack sufficient clarity to re-implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Section 2.2, the authors describe the feature fusion module: “Moreover, as shown in Fig.2, in order to learn a better contextual relationship between two images, we also apply an alternating fusion module to append the fixed encoding information to the moving encoding routine.” Fig. 2 illustrates that not only are the features of the fixed encoder appended to the moving encoder features, but also additionally the fused features are then once again fused to the fixed encoder features (before passing to a skip-connection). This step is not described in the text. What is the rationale or inspiration behind this? It seems it would require additional memory during training and inference - does it provide a tangible benefit? In Section 2.3, the authors describe the calculation of the first accumulative step (Acc_1) as warping the input moving image M by an upsampled phi_1 displacement field, producing a roughly aligned intermediate moving image M_1. M_1 (together with fixed image F) is then passed back into the network to obtain phi_2, and presumably this is repeated to obtain phi_3. This process involves passing 3 different warped forms of the input image (M, M_1 and M_2) into the network, and featuremaps for phi_1 and phi_2 generated in the first two passes of the network are used to iteratively deform the moving image for each consecutive pass. Eq. 2 suggests the final deformation field is obtained through composition of the deformation fields across the three spatial scales (phi_1, phi_2, phi_3). However, it seems that phi_1 and phi_2 generated in their respective fowrard passes of the network will be different subsequent forward passes of the network (since the moving image input changes at each pass, i.e. M, M_1, M_2). It is unclear how gradients are computed in this setting, and the paper would benefit from an explanation of this process, and what the trade-offs are, as it seems this could be a very computationally expensive process to store gradients for three passes of the network. Specifically, do multiple sets of feature maps corresponding to different forward passes need to be stored to compute the gradients? For each moving image M, are there 3 sets of gradients computed for the encoder and decoder up to phi_1 (since featuremaps up to this point get computed for each of the 3 passes of the network to compute the final phi), 2 sets of gradients computed in the decoder up to phi_2, and 1 set of gradients computed for the decoder up to phi_3? This needs clarification. Clarification of how the final transformation phi is computed would also benefit readers, as discussed in ‘Weaknesses’ above. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel approach for feature fusion of dual encoders for image registration, as well as an iterative accumulative approach for computing multi-resolution composed transformations. The results demonstrate clear improvements in performance on publicly available datasets when training with relatively few samples. These would be of interest to the research community. However, the unconvincing motivation and lack of clarity of some of the methods are limiting factors, and the paper would benefit from improvements in both these areas. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a new framework to do medical image registration. The authors demonstrate that the framework could contribute to the current registration methods in two manifolds: Coarse-to-fine strategy and separate learning of fixed and moving images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Generally speaking, this manuscript is easy to follow and understand. They provide better numbers compared with current solutions such as VM and LapIRN. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main issue is that it is hard for me to get excited with this paper. From my point of view, the paper keeps combining different components. What the paper is demonstrating is that we should do the registration from coarse-to-fine and use separate branches to learn the semantic features. It is totally not a surprise for me to see they can bring improvements, although maybe not exactly in the literature of registration, but definitely in general medical image computing literatures for many times. I do not see enough evident to support their arguments. For example, the authors say that the coarse-to-fine registration workflow should have share the same branches and they say the proposed methods are better than the current solutions. However, I do not see the comparison with the recurrent network and LapIRN. I would be convinced if you show me that the proposed methods can be better than the these two while keep other things exactly the same. Not just compare with the numbers of official LapIRN. Similarly, if you are saying ASPP is especially important for the application, you should provide more evident. How about use another kinds of block with the same parameters? For me the results are very vague. Adding things to your framework is always easy to get higher numbers. The authors seems to add a lot of things into the framework but do not convince me the chosen strategies are the best or not. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results make sense for me, I think it is reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well-written. The authors refer to the fixed images as F while use F stands for a different thing in Fig. 2. It can be confusing. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I do not see enough novelty; the experiments are not enough to demonstrate their argument. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper An integrated encoder with feature fusion and an accumulative enhancement mechanism similar to Coarse-to-fine registration strategy was proposed to solve the large inter-image distortion problem. Further, an multi-scale loss function was proposed in cooperate with the framework to enhance the accumulative enhancement mechanism. The framework was compact and the registration performance was improved greatly. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The accumulative enhancement mechanism similar to Coarse-to-fine registration strategy could improve registration performance greatly without network complexity Increasing was impressive. The integration of ASPP module with U-net like registration network was quit smart and effective. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Theoretical innovation was weak. The main contribution focused on methodology. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promised releasing the project on Github after anonymous review. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1）Lack of comparative experiments with Coarse-to-fine registration methods and more effective registration methods trained with segmentation information. 2）there isn’t loss function in Figure 1. 3) what is Ncc_omigai in eq. 3 4) please give the reason of using ‘+’ in eq. 2 Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? one network solve the accumulative enhancement mechanism What is the ranking of this paper in your review stack? 4 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors are invited to write a response. The reviewers agree that exploring the iterative feature-fusion method is interesting. However, there are serious concerns with the paper which in my opinion place it as a borderline rejection. . However, with overall borderline reviews, the authors are given an opportunity to respond. The paper is confusing and makes several confusing remarks. See for example part 4 of Reviewer 1’s comments – the statements are vague and often incorrect. The authors also seem to miss important literature in both review and comparison – including a ton of coarse-to-fine literature. They also cite the recurrent cascades paper, but do not compare to it. Overall, the reviewers find limited novelty in the work, given the extensive literature that has proposed the same insights. It would be very important for the authors to improve this aspect of the paper. Importantly, a significant difference between the proposed model and the baselines is a substantial increase in the number of trainable parameters – how does increasing the network size in the baselines compare? How does the proposed network compare to other cascade networks? Obviously the authors should not do this for rebuttal, but perhaps address this omission or why these are not appropriate comparisons. The brains in Figure 4 are upside down. Please fix this. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I appreciate the author’s rebuttal, addressing some of the important points. I believe paper remains quite borderline, with several important questions remaining about the experiments (for example, how were the baselines tuned? Using the default hyper-parameter is inappropriate, of course, as the used data is different than those original papers, and the authors certainly tunes their own algorithm to these data). The comparisons mentioned in the rebuttal are also required in the paper – showing models with substantially different numbers of parameters is quite misleading. Having said this, I think this paper has some interesting architectural ideas that might warrant discussion at MICCAI, and I recommend acceptance. I believe several points were not addressed that need to be addressed in the camera ready, if the paper is accepted in the end – please see the reviewer comments, but especially please reduce the hand-wavy claims/language brought up by Reviewer 1. These are hypothetical claims and are mostly incorrect. Also please add the new results (e.g. larger VM model). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The strength of this work is a novel and elegant formulation for capturing long-range co-dependencies in pair-wise registration. The experiments are also strong and include SOTA baselines (LapIRN and not just VM). Despite some criticism of reviewers about limited clarity, the figures are easy to follow, the authors promise to release code and the ablation study is helpful. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposes a deep registration network which has different encoders for moving and target images and which makes use of a multi-step registration strategy. There were some concerns regarding the clarity of the manuscript as well as with regards to experimental results (in particular, comparisons with respect to other coarse to fine or multistep methods). These concerns unfortunately remain after the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Author Feedback On behalf of my co-authors, we appreciate the reviewers for the positive and constructive comments. We strongly agree with meta reviewer’s comment that “exploring the iterative feature-fusion method is interesting”, and it is also the basic motivation of this paper. However, there are some issues and misunderstandings that we would like to clarify: The calculation of the final deformation field. (Meta reviewer [MR] and reviewer 1 [R1]) The main concern is that the input will change at each iteration, thus the final deformation may be miscalculated. The first half of this comment is right, as the registration is performed accumulatively. However, we can still effectively construct connections between the flows of different iterations base on Eq.2. Please note that the final deformation phi is not simply computed by adding phi1, phi2, and phi3 (phi1+phi2+phi3 is wrong because as R1 mentioned, the input at each step will change). On the contrary, we calculate the final flow recursively. For example, at Acc2, the flow phi1 from Acc1 has to be warped firstly by phi2 as coordinate alignment and then added back to phi2. This step will guarantee that we can finally acquire the correct flow. We have also verified that with extensive tests. The update of the gradient. (MR, R1) As mentioned in the paper, one merit of our method is to effectively perform registration under the accumulative layout with end-to-end training. Unlike other iterative methods, we do not have to divide the training into multiple stages, and the loss is only computed once on W, F, and the final flow. Therefore, the gradients at the frontend of the net can be computed by multiple times. Specifically, just like Recurrent NN, in our net if a Tensor is used more than one time, the gradient associated to it is the sum of the gradients corresponding to each iteration. It can cost more computational expense, however, as shown in Table.1, we still have lower Flops and Parameters than LapIRN while achieved better performances. The review and comparison of related literature. (MR, R3, R4) Thank you very much for raising this issue. In fact, during the research, we have conducted relative experiments on Recursive Cascaded Networks (3-cas VM), and we also doubled channels of Voxelmorph (DBVM) to test the performances. The 3-cas VM got similar results as AWE in Table.2. DBVM spends 640G flops and 1.58M params but only got 0.589 AVG in Mindboggle101. It indicates that simply stacking more channels may only bring minor improvements. Moreover, considering that the LapIRN in MICCAI2020 have already set the highest bar among all the related iterative methods, and due to the space limitation, we have decided not to list these results in the manuscript. However, we are confident with our proposed method, and we will try to make appropriate revisions at the camera-ready stage or provide detailed results in the extended journal version. The comment: “…the extensive literature that has proposed the same insights…” (MR) We appreciate all the suggestions from the reviewers. However, on this comment, we have to express our disagreement. As mentioned above, the reviewer agrees that “exploring the iterative feature-fusion method is interesting”. Also in recent years, many works were proposed in this area, and we can find that directly add iterations to the network is not effective enough. In this paper, we have analyzed the major challenge in current works and proposed a novel framework to continuously enhance the spatial transformation under an uncoupled learning mechanism. We are excited to release our code and trained model after the review. We believe that our work is beneficial to the community and will bring inspirations to medical image registration researches. Thanks again for the valuable comments. We hope that our clarifications could resolve your concerns, and we would like to make appropriate revisions in accordance with the author-guides during the following stage. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yucheng Shu, Hao Wang, Bin Xiao, Xiuli Bi, Weisheng Li Abstract As a basic building block in medical image analysis, image registration has been greatly developed since the emergence of modern deep neural networks. Compared to non-learning-based methods, the latest approaches can learn task-specific features spontaneously, thus generate the registration results with one round of inference. However, when large inter-image distortion occurs, the stability of existing methods can be strongly affected. To alleviate this problem, the iterative framework based on coarse-to-fine strategies has been introduced in recent works. However, their networks at each iteration step are relatively independent, which is not an optimal solution for the reinforcement of image features. What is more, the moving and the fixed images are often concatenated or fed to identical network layers. Consequently, the iterative learning and warping on the moving image can be entangled with the fixed image. In order to address these issues, we present a novel medical image registration framework, namely ULAE-net, to continuously enhance the spatial transformation and establish more profound contextual dependencies under a compact network layout. Extensive experiments on 3D brain MRI data sets demonstrate that our method has greatly improved the registration performance, thereby outperforms state-of-the-art methods under large-scale deformations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_1 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose an unsupervised registration model ULAE-net which introduces accumulative warping enhancement (AWE) and an Uncoupled Spatial Encoder (USE). The USE (i) produces a feature fusion of the feature maps produced by two encoders (i.e. fixed (F) and moving (M) image encoders), where the moving image encoder utilises atrous spatial pyramid pooling (ASPP) while the fixed image encoder uses standard strided convolutions between scales. The proposed AWE passes the moving image through the network and computes the deformation fields at one scale per iteration (in a coarse-to-fine fashion), warping the input M at each iteration by the deformation field of the current iteration to provide an updated input M_i to the same network for the subsequent iteration. The USE and AWE components allow the network to more effectively learn image registration with limited training data compared to existing models (VoxelMorph and LapIRN). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The feature fusion of the fixed encoder features to the moving encoder features is novel, where most existing methods either (a) use a single encoder to take a pair of images as inputs, or (b) which use two independent encoders. Additionally, the iterative deformation of an input image M by the predicted transformations by coarse-to-fine transformations predicted iteratively by the same network at three spatial scales (corresponding to each iteration) seems novel as well and allows the network to be quite compact. The authors demonstrate quantitatively improved performance of ULAE-net over the widely used Voxelmorph baseline, and the more recent LapIRN [18] model, which is another coarse-to-fine network which does not employ an iterative deformation approach (via multiple passes of the network), nor are there multiple encoder branches for the input images. The proposed framework using both uncoupled spatial encoders and accumulative warping enhancement appears to provide a tangible benefit for learned unsupervised registration compared to the baseline methods, and an ablation study demonstrates the benefit of each component. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The methods are not described with sufficient clarity. It is unclear exactly how the final deformation is computed, since 3 iterations of the same network are used to compute deformations at three respective spatial scales (phi_1, phi_2, phi_3), which are in turn used to warp M for each subsequent iteration; yet due to the change in input M at each iteration, the predicted deformation fields (particularly phi_1, phi_2) will be different at each subsequent iteration. It is unclear therefore how these deformation fields are composed across iterations to obtain the final transformation (both for training and at test-time). Is the final deformation actually a composition of phi_3, phi_2, phi_1 from iteration 3, with phi_2 and phi_1 from iteration 2, and phi_1 from iteration 1? Do gradients need to be computed across all three iterations during training (and how much computational expense does this add during training)? The authors state as one of the paper’s three contributions that a “multi-window loss” is proposed. The proposed loss appears to be identical to the formulation of the similarity pyramid loss proposed in reference [18]. However, the authors of the current work do not describe the use of image losses at different spatial scales, which was part of the motivation for this loss in [18]; in fact the current work does not provide an explanation of how this loss is computed at each iteration. Is it computed at each iteration with the full resolution images, after a trilinear upsampling of coarse deformation fields (as opposed to the multi-resolution approach in [18])? While the proposed method shows improvements over the baseline models, the proposed design is not very clearly motivated; the authors state that some existing learned registration models (e.g. Voxelmorph) are ‘not able to model long-range relationships between the images’, and that for those which use coarse-to-fine deformation strategies to address this (e.g. [11, 9, 26]), downsides include that “the moving and fixed images are often concatenated as the input of a single net routine, or independently feed to similar feature encoders, which is relatively rigid and may not suitable for the dynamic generation of the deformation fields.” What is meant exactly by “dynamic generation of deformation fields”, and what is there that suggests that these models may not be suitable? “VoxelMorph: A Learning Framework for Deformable Medical Image Registration” (Balakrishnan, 2018) has demonstrated that Voxelmorph, the worst performing baseline model in the current paper, which has fewer than half of the parameters of the proposed model, performs extremely well when trained on thousands of examples of brain MR images, contradicting somewhat that such models are ‘not able to model long-range relationships between the images’. The proposed model clearly performs better than the other models, but the motivation could be improved. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use publicly available datasets, the Mindboggle101 and IXI datasets. Code is not made available however, and the methods lack sufficient clarity to re-implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Section 2.2, the authors describe the feature fusion module: “Moreover, as shown in Fig.2, in order to learn a better contextual relationship between two images, we also apply an alternating fusion module to append the fixed encoding information to the moving encoding routine.” Fig. 2 illustrates that not only are the features of the fixed encoder appended to the moving encoder features, but also additionally the fused features are then once again fused to the fixed encoder features (before passing to a skip-connection). This step is not described in the text. What is the rationale or inspiration behind this? It seems it would require additional memory during training and inference - does it provide a tangible benefit? In Section 2.3, the authors describe the calculation of the first accumulative step (Acc_1) as warping the input moving image M by an upsampled phi_1 displacement field, producing a roughly aligned intermediate moving image M_1. M_1 (together with fixed image F) is then passed back into the network to obtain phi_2, and presumably this is repeated to obtain phi_3. This process involves passing 3 different warped forms of the input image (M, M_1 and M_2) into the network, and featuremaps for phi_1 and phi_2 generated in the first two passes of the network are used to iteratively deform the moving image for each consecutive pass. Eq. 2 suggests the final deformation field is obtained through composition of the deformation fields across the three spatial scales (phi_1, phi_2, phi_3). However, it seems that phi_1 and phi_2 generated in their respective fowrard passes of the network will be different subsequent forward passes of the network (since the moving image input changes at each pass, i.e. M, M_1, M_2). It is unclear how gradients are computed in this setting, and the paper would benefit from an explanation of this process, and what the trade-offs are, as it seems this could be a very computationally expensive process to store gradients for three passes of the network. Specifically, do multiple sets of feature maps corresponding to different forward passes need to be stored to compute the gradients? For each moving image M, are there 3 sets of gradients computed for the encoder and decoder up to phi_1 (since featuremaps up to this point get computed for each of the 3 passes of the network to compute the final phi), 2 sets of gradients computed in the decoder up to phi_2, and 1 set of gradients computed for the decoder up to phi_3? This needs clarification. Clarification of how the final transformation phi is computed would also benefit readers, as discussed in ‘Weaknesses’ above. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel approach for feature fusion of dual encoders for image registration, as well as an iterative accumulative approach for computing multi-resolution composed transformations. The results demonstrate clear improvements in performance on publicly available datasets when training with relatively few samples. These would be of interest to the research community. However, the unconvincing motivation and lack of clarity of some of the methods are limiting factors, and the paper would benefit from improvements in both these areas. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a new framework to do medical image registration. The authors demonstrate that the framework could contribute to the current registration methods in two manifolds: Coarse-to-fine strategy and separate learning of fixed and moving images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Generally speaking, this manuscript is easy to follow and understand. They provide better numbers compared with current solutions such as VM and LapIRN. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main issue is that it is hard for me to get excited with this paper. From my point of view, the paper keeps combining different components. What the paper is demonstrating is that we should do the registration from coarse-to-fine and use separate branches to learn the semantic features. It is totally not a surprise for me to see they can bring improvements, although maybe not exactly in the literature of registration, but definitely in general medical image computing literatures for many times. I do not see enough evident to support their arguments. For example, the authors say that the coarse-to-fine registration workflow should have share the same branches and they say the proposed methods are better than the current solutions. However, I do not see the comparison with the recurrent network and LapIRN. I would be convinced if you show me that the proposed methods can be better than the these two while keep other things exactly the same. Not just compare with the numbers of official LapIRN. Similarly, if you are saying ASPP is especially important for the application, you should provide more evident. How about use another kinds of block with the same parameters? For me the results are very vague. Adding things to your framework is always easy to get higher numbers. The authors seems to add a lot of things into the framework but do not convince me the chosen strategies are the best or not. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results make sense for me, I think it is reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well-written. The authors refer to the fixed images as F while use F stands for a different thing in Fig. 2. It can be confusing. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I do not see enough novelty; the experiments are not enough to demonstrate their argument. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper An integrated encoder with feature fusion and an accumulative enhancement mechanism similar to Coarse-to-fine registration strategy was proposed to solve the large inter-image distortion problem. Further, an multi-scale loss function was proposed in cooperate with the framework to enhance the accumulative enhancement mechanism. The framework was compact and the registration performance was improved greatly. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The accumulative enhancement mechanism similar to Coarse-to-fine registration strategy could improve registration performance greatly without network complexity Increasing was impressive. The integration of ASPP module with U-net like registration network was quit smart and effective. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Theoretical innovation was weak. The main contribution focused on methodology. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promised releasing the project on Github after anonymous review. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1）Lack of comparative experiments with Coarse-to-fine registration methods and more effective registration methods trained with segmentation information. 2）there isn’t loss function in Figure 1. 3) what is Ncc_omigai in eq. 3 4) please give the reason of using ‘+’ in eq. 2 Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? one network solve the accumulative enhancement mechanism What is the ranking of this paper in your review stack? 4 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors are invited to write a response. The reviewers agree that exploring the iterative feature-fusion method is interesting. However, there are serious concerns with the paper which in my opinion place it as a borderline rejection. . However, with overall borderline reviews, the authors are given an opportunity to respond. The paper is confusing and makes several confusing remarks. See for example part 4 of Reviewer 1’s comments – the statements are vague and often incorrect. The authors also seem to miss important literature in both review and comparison – including a ton of coarse-to-fine literature. They also cite the recurrent cascades paper, but do not compare to it. Overall, the reviewers find limited novelty in the work, given the extensive literature that has proposed the same insights. It would be very important for the authors to improve this aspect of the paper. Importantly, a significant difference between the proposed model and the baselines is a substantial increase in the number of trainable parameters – how does increasing the network size in the baselines compare? How does the proposed network compare to other cascade networks? Obviously the authors should not do this for rebuttal, but perhaps address this omission or why these are not appropriate comparisons. The brains in Figure 4 are upside down. Please fix this. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I appreciate the author’s rebuttal, addressing some of the important points. I believe paper remains quite borderline, with several important questions remaining about the experiments (for example, how were the baselines tuned? Using the default hyper-parameter is inappropriate, of course, as the used data is different than those original papers, and the authors certainly tunes their own algorithm to these data). The comparisons mentioned in the rebuttal are also required in the paper – showing models with substantially different numbers of parameters is quite misleading. Having said this, I think this paper has some interesting architectural ideas that might warrant discussion at MICCAI, and I recommend acceptance. I believe several points were not addressed that need to be addressed in the camera ready, if the paper is accepted in the end – please see the reviewer comments, but especially please reduce the hand-wavy claims/language brought up by Reviewer 1. These are hypothetical claims and are mostly incorrect. Also please add the new results (e.g. larger VM model). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The strength of this work is a novel and elegant formulation for capturing long-range co-dependencies in pair-wise registration. The experiments are also strong and include SOTA baselines (LapIRN and not just VM). Despite some criticism of reviewers about limited clarity, the figures are easy to follow, the authors promise to release code and the ablation study is helpful. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposes a deep registration network which has different encoders for moving and target images and which makes use of a multi-step registration strategy. There were some concerns regarding the clarity of the manuscript as well as with regards to experimental results (in particular, comparisons with respect to other coarse to fine or multistep methods). These concerns unfortunately remain after the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Author Feedback On behalf of my co-authors, we appreciate the reviewers for the positive and constructive comments. We strongly agree with meta reviewer’s comment that “exploring the iterative feature-fusion method is interesting”, and it is also the basic motivation of this paper. However, there are some issues and misunderstandings that we would like to clarify: The calculation of the final deformation field. (Meta reviewer [MR] and reviewer 1 [R1]) The main concern is that the input will change at each iteration, thus the final deformation may be miscalculated. The first half of this comment is right, as the registration is performed accumulatively. However, we can still effectively construct connections between the flows of different iterations base on Eq.2. Please note that the final deformation phi is not simply computed by adding phi1, phi2, and phi3 (phi1+phi2+phi3 is wrong because as R1 mentioned, the input at each step will change). On the contrary, we calculate the final flow recursively. For example, at Acc2, the flow phi1 from Acc1 has to be warped firstly by phi2 as coordinate alignment and then added back to phi2. This step will guarantee that we can finally acquire the correct flow. We have also verified that with extensive tests. The update of the gradient. (MR, R1) As mentioned in the paper, one merit of our method is to effectively perform registration under the accumulative layout with end-to-end training. Unlike other iterative methods, we do not have to divide the training into multiple stages, and the loss is only computed once on W, F, and the final flow. Therefore, the gradients at the frontend of the net can be computed by multiple times. Specifically, just like Recurrent NN, in our net if a Tensor is used more than one time, the gradient associated to it is the sum of the gradients corresponding to each iteration. It can cost more computational expense, however, as shown in Table.1, we still have lower Flops and Parameters than LapIRN while achieved better performances. The review and comparison of related literature. (MR, R3, R4) Thank you very much for raising this issue. In fact, during the research, we have conducted relative experiments on Recursive Cascaded Networks (3-cas VM), and we also doubled channels of Voxelmorph (DBVM) to test the performances. The 3-cas VM got similar results as AWE in Table.2. DBVM spends 640G flops and 1.58M params but only got 0.589 AVG in Mindboggle101. It indicates that simply stacking more channels may only bring minor improvements. Moreover, considering that the LapIRN in MICCAI2020 have already set the highest bar among all the related iterative methods, and due to the space limitation, we have decided not to list these results in the manuscript. However, we are confident with our proposed method, and we will try to make appropriate revisions at the camera-ready stage or provide detailed results in the extended journal version. The comment: “…the extensive literature that has proposed the same insights…” (MR) We appreciate all the suggestions from the reviewers. However, on this comment, we have to express our disagreement. As mentioned above, the reviewer agrees that “exploring the iterative feature-fusion method is interesting”. Also in recent years, many works were proposed in this area, and we can find that directly add iterations to the network is not effective enough. In this paper, we have analyzed the major challenge in current works and proposed a novel framework to continuously enhance the spatial transformation under an uncoupled learning mechanism. We are excited to release our code and trained model after the review. We believe that our work is beneficial to the community and will bring inspirations to medical image registration researches. Thanks again for the valuable comments. We hope that our clarifications could resolve your concerns, and we would like to make appropriate revisions in accordance with the author-guides during the following stage. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0400/12/31/Paper0179" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0400/12/31/Paper0179" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0400-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Medical Image Registration Based on Uncoupled Learning and Accumulative Enhancement" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0400/12/31/Paper0179"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0400/12/31/Paper0179","headline":"Medical Image Registration Based on Uncoupled Learning and Accumulative Enhancement","dateModified":"0401-01-02T00:00:00-05:17","datePublished":"0400-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yucheng Shu, Hao Wang, Bin Xiao, Xiuli Bi, Weisheng Li Abstract As a basic building block in medical image analysis, image registration has been greatly developed since the emergence of modern deep neural networks. Compared to non-learning-based methods, the latest approaches can learn task-specific features spontaneously, thus generate the registration results with one round of inference. However, when large inter-image distortion occurs, the stability of existing methods can be strongly affected. To alleviate this problem, the iterative framework based on coarse-to-fine strategies has been introduced in recent works. However, their networks at each iteration step are relatively independent, which is not an optimal solution for the reinforcement of image features. What is more, the moving and the fixed images are often concatenated or fed to identical network layers. Consequently, the iterative learning and warping on the moving image can be entangled with the fixed image. In order to address these issues, we present a novel medical image registration framework, namely ULAE-net, to continuously enhance the spatial transformation and establish more profound contextual dependencies under a compact network layout. Extensive experiments on 3D brain MRI data sets demonstrate that our method has greatly improved the registration performance, thereby outperforms state-of-the-art methods under large-scale deformations. Link to paper https://doi.org/10.1007/978-3-030-87202-1_1 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose an unsupervised registration model ULAE-net which introduces accumulative warping enhancement (AWE) and an Uncoupled Spatial Encoder (USE). The USE (i) produces a feature fusion of the feature maps produced by two encoders (i.e. fixed (F) and moving (M) image encoders), where the moving image encoder utilises atrous spatial pyramid pooling (ASPP) while the fixed image encoder uses standard strided convolutions between scales. The proposed AWE passes the moving image through the network and computes the deformation fields at one scale per iteration (in a coarse-to-fine fashion), warping the input M at each iteration by the deformation field of the current iteration to provide an updated input M_i to the same network for the subsequent iteration. The USE and AWE components allow the network to more effectively learn image registration with limited training data compared to existing models (VoxelMorph and LapIRN). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The feature fusion of the fixed encoder features to the moving encoder features is novel, where most existing methods either (a) use a single encoder to take a pair of images as inputs, or (b) which use two independent encoders. Additionally, the iterative deformation of an input image M by the predicted transformations by coarse-to-fine transformations predicted iteratively by the same network at three spatial scales (corresponding to each iteration) seems novel as well and allows the network to be quite compact. The authors demonstrate quantitatively improved performance of ULAE-net over the widely used Voxelmorph baseline, and the more recent LapIRN [18] model, which is another coarse-to-fine network which does not employ an iterative deformation approach (via multiple passes of the network), nor are there multiple encoder branches for the input images. The proposed framework using both uncoupled spatial encoders and accumulative warping enhancement appears to provide a tangible benefit for learned unsupervised registration compared to the baseline methods, and an ablation study demonstrates the benefit of each component. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The methods are not described with sufficient clarity. It is unclear exactly how the final deformation is computed, since 3 iterations of the same network are used to compute deformations at three respective spatial scales (phi_1, phi_2, phi_3), which are in turn used to warp M for each subsequent iteration; yet due to the change in input M at each iteration, the predicted deformation fields (particularly phi_1, phi_2) will be different at each subsequent iteration. It is unclear therefore how these deformation fields are composed across iterations to obtain the final transformation (both for training and at test-time). Is the final deformation actually a composition of phi_3, phi_2, phi_1 from iteration 3, with phi_2 and phi_1 from iteration 2, and phi_1 from iteration 1? Do gradients need to be computed across all three iterations during training (and how much computational expense does this add during training)? The authors state as one of the paper’s three contributions that a “multi-window loss” is proposed. The proposed loss appears to be identical to the formulation of the similarity pyramid loss proposed in reference [18]. However, the authors of the current work do not describe the use of image losses at different spatial scales, which was part of the motivation for this loss in [18]; in fact the current work does not provide an explanation of how this loss is computed at each iteration. Is it computed at each iteration with the full resolution images, after a trilinear upsampling of coarse deformation fields (as opposed to the multi-resolution approach in [18])? While the proposed method shows improvements over the baseline models, the proposed design is not very clearly motivated; the authors state that some existing learned registration models (e.g. Voxelmorph) are ‘not able to model long-range relationships between the images’, and that for those which use coarse-to-fine deformation strategies to address this (e.g. [11, 9, 26]), downsides include that “the moving and fixed images are often concatenated as the input of a single net routine, or independently feed to similar feature encoders, which is relatively rigid and may not suitable for the dynamic generation of the deformation fields.” What is meant exactly by “dynamic generation of deformation fields”, and what is there that suggests that these models may not be suitable? “VoxelMorph: A Learning Framework for Deformable Medical Image Registration” (Balakrishnan, 2018) has demonstrated that Voxelmorph, the worst performing baseline model in the current paper, which has fewer than half of the parameters of the proposed model, performs extremely well when trained on thousands of examples of brain MR images, contradicting somewhat that such models are ‘not able to model long-range relationships between the images’. The proposed model clearly performs better than the other models, but the motivation could be improved. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors use publicly available datasets, the Mindboggle101 and IXI datasets. Code is not made available however, and the methods lack sufficient clarity to re-implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In Section 2.2, the authors describe the feature fusion module: “Moreover, as shown in Fig.2, in order to learn a better contextual relationship between two images, we also apply an alternating fusion module to append the fixed encoding information to the moving encoding routine.” Fig. 2 illustrates that not only are the features of the fixed encoder appended to the moving encoder features, but also additionally the fused features are then once again fused to the fixed encoder features (before passing to a skip-connection). This step is not described in the text. What is the rationale or inspiration behind this? It seems it would require additional memory during training and inference - does it provide a tangible benefit? In Section 2.3, the authors describe the calculation of the first accumulative step (Acc_1) as warping the input moving image M by an upsampled phi_1 displacement field, producing a roughly aligned intermediate moving image M_1. M_1 (together with fixed image F) is then passed back into the network to obtain phi_2, and presumably this is repeated to obtain phi_3. This process involves passing 3 different warped forms of the input image (M, M_1 and M_2) into the network, and featuremaps for phi_1 and phi_2 generated in the first two passes of the network are used to iteratively deform the moving image for each consecutive pass. Eq. 2 suggests the final deformation field is obtained through composition of the deformation fields across the three spatial scales (phi_1, phi_2, phi_3). However, it seems that phi_1 and phi_2 generated in their respective fowrard passes of the network will be different subsequent forward passes of the network (since the moving image input changes at each pass, i.e. M, M_1, M_2). It is unclear how gradients are computed in this setting, and the paper would benefit from an explanation of this process, and what the trade-offs are, as it seems this could be a very computationally expensive process to store gradients for three passes of the network. Specifically, do multiple sets of feature maps corresponding to different forward passes need to be stored to compute the gradients? For each moving image M, are there 3 sets of gradients computed for the encoder and decoder up to phi_1 (since featuremaps up to this point get computed for each of the 3 passes of the network to compute the final phi), 2 sets of gradients computed in the decoder up to phi_2, and 1 set of gradients computed for the decoder up to phi_3? This needs clarification. Clarification of how the final transformation phi is computed would also benefit readers, as discussed in ‘Weaknesses’ above. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper proposes a novel approach for feature fusion of dual encoders for image registration, as well as an iterative accumulative approach for computing multi-resolution composed transformations. The results demonstrate clear improvements in performance on publicly available datasets when training with relatively few samples. These would be of interest to the research community. However, the unconvincing motivation and lack of clarity of some of the methods are limiting factors, and the paper would benefit from improvements in both these areas. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper presents a new framework to do medical image registration. The authors demonstrate that the framework could contribute to the current registration methods in two manifolds: Coarse-to-fine strategy and separate learning of fixed and moving images. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Generally speaking, this manuscript is easy to follow and understand. They provide better numbers compared with current solutions such as VM and LapIRN. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The main issue is that it is hard for me to get excited with this paper. From my point of view, the paper keeps combining different components. What the paper is demonstrating is that we should do the registration from coarse-to-fine and use separate branches to learn the semantic features. It is totally not a surprise for me to see they can bring improvements, although maybe not exactly in the literature of registration, but definitely in general medical image computing literatures for many times. I do not see enough evident to support their arguments. For example, the authors say that the coarse-to-fine registration workflow should have share the same branches and they say the proposed methods are better than the current solutions. However, I do not see the comparison with the recurrent network and LapIRN. I would be convinced if you show me that the proposed methods can be better than the these two while keep other things exactly the same. Not just compare with the numbers of official LapIRN. Similarly, if you are saying ASPP is especially important for the application, you should provide more evident. How about use another kinds of block with the same parameters? For me the results are very vague. Adding things to your framework is always easy to get higher numbers. The authors seems to add a lot of things into the framework but do not convince me the chosen strategies are the best or not. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The results make sense for me, I think it is reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well-written. The authors refer to the fixed images as F while use F stands for a different thing in Fig. 2. It can be confusing. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I do not see enough novelty; the experiments are not enough to demonstrate their argument. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper An integrated encoder with feature fusion and an accumulative enhancement mechanism similar to Coarse-to-fine registration strategy was proposed to solve the large inter-image distortion problem. Further, an multi-scale loss function was proposed in cooperate with the framework to enhance the accumulative enhancement mechanism. The framework was compact and the registration performance was improved greatly. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The accumulative enhancement mechanism similar to Coarse-to-fine registration strategy could improve registration performance greatly without network complexity Increasing was impressive. The integration of ASPP module with U-net like registration network was quit smart and effective. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Theoretical innovation was weak. The main contribution focused on methodology. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promised releasing the project on Github after anonymous review. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html 1）Lack of comparative experiments with Coarse-to-fine registration methods and more effective registration methods trained with segmentation information. 2）there isn’t loss function in Figure 1. 3) what is Ncc_omigai in eq. 3 4) please give the reason of using ‘+’ in eq. 2 Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? one network solve the accumulative enhancement mechanism What is the ranking of this paper in your review stack? 4 Number of papers in your stack 6 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The authors are invited to write a response. The reviewers agree that exploring the iterative feature-fusion method is interesting. However, there are serious concerns with the paper which in my opinion place it as a borderline rejection. . However, with overall borderline reviews, the authors are given an opportunity to respond. The paper is confusing and makes several confusing remarks. See for example part 4 of Reviewer 1’s comments – the statements are vague and often incorrect. The authors also seem to miss important literature in both review and comparison – including a ton of coarse-to-fine literature. They also cite the recurrent cascades paper, but do not compare to it. Overall, the reviewers find limited novelty in the work, given the extensive literature that has proposed the same insights. It would be very important for the authors to improve this aspect of the paper. Importantly, a significant difference between the proposed model and the baselines is a substantial increase in the number of trainable parameters – how does increasing the network size in the baselines compare? How does the proposed network compare to other cascade networks? Obviously the authors should not do this for rebuttal, but perhaps address this omission or why these are not appropriate comparisons. The brains in Figure 4 are upside down. Please fix this. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I appreciate the author’s rebuttal, addressing some of the important points. I believe paper remains quite borderline, with several important questions remaining about the experiments (for example, how were the baselines tuned? Using the default hyper-parameter is inappropriate, of course, as the used data is different than those original papers, and the authors certainly tunes their own algorithm to these data). The comparisons mentioned in the rebuttal are also required in the paper – showing models with substantially different numbers of parameters is quite misleading. Having said this, I think this paper has some interesting architectural ideas that might warrant discussion at MICCAI, and I recommend acceptance. I believe several points were not addressed that need to be addressed in the camera ready, if the paper is accepted in the end – please see the reviewer comments, but especially please reduce the hand-wavy claims/language brought up by Reviewer 1. These are hypothetical claims and are mostly incorrect. Also please add the new results (e.g. larger VM model). After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The strength of this work is a novel and elegant formulation for capturing long-range co-dependencies in pair-wise registration. The experiments are also strong and include SOTA baselines (LapIRN and not just VM). Despite some criticism of reviewers about limited clarity, the figures are easy to follow, the authors promise to release code and the ablation study is helpful. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work proposes a deep registration network which has different encoders for moving and target images and which makes use of a multi-step registration strategy. There were some concerns regarding the clarity of the manuscript as well as with regards to experimental results (in particular, comparisons with respect to other coarse to fine or multistep methods). These concerns unfortunately remain after the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 16 Author Feedback On behalf of my co-authors, we appreciate the reviewers for the positive and constructive comments. We strongly agree with meta reviewer’s comment that “exploring the iterative feature-fusion method is interesting”, and it is also the basic motivation of this paper. However, there are some issues and misunderstandings that we would like to clarify: The calculation of the final deformation field. (Meta reviewer [MR] and reviewer 1 [R1]) The main concern is that the input will change at each iteration, thus the final deformation may be miscalculated. The first half of this comment is right, as the registration is performed accumulatively. However, we can still effectively construct connections between the flows of different iterations base on Eq.2. Please note that the final deformation phi is not simply computed by adding phi1, phi2, and phi3 (phi1+phi2+phi3 is wrong because as R1 mentioned, the input at each step will change). On the contrary, we calculate the final flow recursively. For example, at Acc2, the flow phi1 from Acc1 has to be warped firstly by phi2 as coordinate alignment and then added back to phi2. This step will guarantee that we can finally acquire the correct flow. We have also verified that with extensive tests. The update of the gradient. (MR, R1) As mentioned in the paper, one merit of our method is to effectively perform registration under the accumulative layout with end-to-end training. Unlike other iterative methods, we do not have to divide the training into multiple stages, and the loss is only computed once on W, F, and the final flow. Therefore, the gradients at the frontend of the net can be computed by multiple times. Specifically, just like Recurrent NN, in our net if a Tensor is used more than one time, the gradient associated to it is the sum of the gradients corresponding to each iteration. It can cost more computational expense, however, as shown in Table.1, we still have lower Flops and Parameters than LapIRN while achieved better performances. The review and comparison of related literature. (MR, R3, R4) Thank you very much for raising this issue. In fact, during the research, we have conducted relative experiments on Recursive Cascaded Networks (3-cas VM), and we also doubled channels of Voxelmorph (DBVM) to test the performances. The 3-cas VM got similar results as AWE in Table.2. DBVM spends 640G flops and 1.58M params but only got 0.589 AVG in Mindboggle101. It indicates that simply stacking more channels may only bring minor improvements. Moreover, considering that the LapIRN in MICCAI2020 have already set the highest bar among all the related iterative methods, and due to the space limitation, we have decided not to list these results in the manuscript. However, we are confident with our proposed method, and we will try to make appropriate revisions at the camera-ready stage or provide detailed results in the extended journal version. The comment: “…the extensive literature that has proposed the same insights…” (MR) We appreciate all the suggestions from the reviewers. However, on this comment, we have to express our disagreement. As mentioned above, the reviewer agrees that “exploring the iterative feature-fusion method is interesting”. Also in recent years, many works were proposed in this area, and we can find that directly add iterations to the network is not effective enough. In this paper, we have analyzed the major challenge in current works and proposed a novel framework to continuously enhance the spatial transformation under an uncoupled learning mechanism. We are excited to release our code and trained model after the review. We believe that our work is beneficial to the community and will bring inspirations to medical image registration researches. Thanks again for the valuable comments. We hope that our clarifications could resolve your concerns, and we would like to make appropriate revisions in accordance with the author-guides during the following stage. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Shu, Yucheng,Wang, Hao,Xiao, Bin,Bi, Xiuli,Li, Weisheng" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Medical Image Registration Based on Uncoupled Learning and Accumulative Enhancement</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Shu, Yucheng"
+        class="post-tags">
+        Shu, Yucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Hao"
+        class="post-tags">
+        Wang, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Bin"
+        class="post-tags">
+        Xiao, Bin
+      </a> |  
+      
+      <a href="kittywong/tags#Bi, Xiuli"
+        class="post-tags">
+        Bi, Xiuli
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Weisheng"
+        class="post-tags">
+        Li, Weisheng
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yucheng Shu, Hao Wang, Bin Xiao, Xiuli Bi, Weisheng Li
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>As a basic building block in medical image analysis, image registration has been greatly developed since the emergence of modern deep neural networks. Compared to non-learning-based methods, the latest approaches can learn task-specific features spontaneously, thus generate the registration results with one round of inference. However, when large inter-image distortion occurs, the stability of existing methods can be strongly affected. To alleviate this problem, the iterative framework based on coarse-to-fine strategies has been introduced in recent works. However, their networks at each iteration step are relatively independent, which is not an optimal solution for the reinforcement of image features. What is more, the moving and the  fixed images are often concatenated or fed to identical network layers. Consequently, the iterative learning and warping on the moving image can be entangled with the fixed image. In order to address these issues, we present a novel medical image registration framework, namely ULAE-net, to continuously enhance the spatial transformation and establish more profound contextual dependencies under a compact network layout. Extensive experiments on 3D brain MRI data sets demonstrate that our method has greatly improved the registration performance, thereby outperforms state-of-the-art methods under large-scale deformations.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_1">https://doi.org/10.1007/978-3-030-87202-1_1</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an unsupervised registration model ULAE-net which introduces accumulative warping enhancement (AWE) and an Uncoupled Spatial Encoder (USE). The USE (i) produces a feature fusion of the feature maps produced by two encoders (i.e. fixed (F) and moving (M) image encoders), where the moving image encoder utilises atrous spatial pyramid pooling (ASPP) while the fixed image encoder uses standard strided convolutions between scales. The proposed AWE passes the moving image through the network and computes the deformation fields at one scale per iteration (in a coarse-to-fine fashion), warping the input M at each iteration by the deformation field of the current iteration to provide an updated input M_i to the same network for the subsequent iteration. The USE and AWE components allow the network to more effectively learn image registration with limited training data compared to existing models (VoxelMorph and LapIRN).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The feature fusion of the fixed encoder features to the moving encoder features is novel, where most existing methods either (a) use a single encoder to take a pair of images as inputs, or (b) which use two independent encoders. Additionally, the iterative deformation of an input image M by the predicted transformations by coarse-to-fine transformations predicted iteratively by the same network at three spatial scales (corresponding to each iteration) seems novel as well and allows the network to be quite compact.</p>
+        </li>
+        <li>
+          <p>The authors demonstrate quantitatively improved performance of ULAE-net over the widely used Voxelmorph baseline, and the more recent LapIRN [18] model, which is another coarse-to-fine network which does not employ an iterative deformation approach (via multiple passes of the network), nor are there multiple encoder branches for the input images.</p>
+        </li>
+        <li>
+          <p>The proposed framework using both uncoupled spatial encoders and accumulative warping enhancement appears to provide a tangible benefit for learned unsupervised registration compared to the baseline methods, and an ablation study demonstrates the benefit of each component.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The methods are not described with sufficient clarity.</p>
+        </li>
+        <li>
+          <p>It is unclear exactly how the final deformation is computed, since 3 iterations of the same network are used to compute deformations at three respective spatial scales (phi_1, phi_2, phi_3), which are in turn used to warp M for each subsequent iteration; yet due to the change in input M at each iteration, the predicted deformation fields (particularly phi_1, phi_2) will be different at each subsequent iteration. It is unclear therefore how these deformation fields are composed across iterations to obtain the final transformation (both for training and at test-time). Is the final deformation actually a composition of phi_3, phi_2, phi_1 from iteration 3, with phi_2 and phi_1 from iteration 2, and phi_1 from iteration 1? Do gradients need to be computed across all three iterations during training (and how much computational expense does this add during training)?</p>
+        </li>
+        <li>
+          <p>The authors state as one of the paper’s three contributions that a “multi-window loss” is proposed. The proposed loss appears to be identical to the formulation of the similarity pyramid loss proposed in reference [18]. However, the authors of the current work do not describe the use of image losses at different spatial scales, which was part of the motivation for this loss in [18]; in fact the current work does not provide an explanation of how this loss is computed at each iteration. Is it computed at each iteration with the full resolution images, after a trilinear upsampling of coarse deformation fields (as opposed to the multi-resolution approach in [18])?</p>
+        </li>
+        <li>
+          <p>While the proposed method shows improvements over the baseline models, the proposed design is not very clearly motivated; the authors state that some existing learned registration models (e.g. Voxelmorph) are ‘not able to model long-range relationships between the images’, and that for those which use coarse-to-fine deformation strategies to address this (e.g. [11, 9, 26]), downsides include that “the moving and fixed images are often concatenated as the input of a single net routine, or independently feed to similar feature encoders, which is relatively rigid and may not suitable for the dynamic generation of the deformation fields.” What is meant exactly by “dynamic generation of deformation fields”, and what is there that suggests that these models may not be suitable? “VoxelMorph: A Learning Framework for Deformable Medical Image Registration” (Balakrishnan, 2018) has demonstrated that Voxelmorph, the worst performing baseline model in the current paper, which has fewer than half of the parameters of the proposed model, performs extremely well when trained on thousands of examples of brain MR images, contradicting somewhat that such models are ‘not able to model long-range relationships between the images’. The proposed model clearly performs better than the other models, but the motivation could be improved.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>The authors use publicly available datasets, the Mindboggle101 and IXI datasets.</li>
+        <li>Code is not made available however, and the methods lack sufficient clarity to re-implement.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>In Section 2.2, the authors describe the feature fusion module: “Moreover, as shown in Fig.2, in order to learn a better contextual relationship between two images, we also apply an alternating fusion module to append the fixed encoding information to the moving encoding routine.” Fig. 2 illustrates that not only are the features of the fixed encoder appended to the moving encoder features, but also additionally the fused features are then once again fused to the fixed encoder features (before passing to a skip-connection). This step is not described in the text. What is the rationale or inspiration behind this? It seems it would require additional memory during training and inference - does it provide a tangible benefit?</p>
+        </li>
+        <li>
+          <p>In Section 2.3, the authors describe the calculation of the first accumulative step (Acc_1) as warping the input moving image M by an upsampled phi_1 displacement field, producing a roughly aligned intermediate moving image M_1. M_1 (together with fixed image F) is then passed back into the network to obtain phi_2, and presumably this is repeated to obtain phi_3. This process involves passing 3 different warped forms of the input image (M, M_1 and M_2) into the network, and featuremaps for phi_1 and phi_2 generated in the first two passes of the network are used to iteratively deform the moving image for each consecutive pass. Eq. 2 suggests the final deformation field is obtained through composition of the deformation fields across the three spatial scales (phi_1, phi_2, phi_3). However, it seems that phi_1 and phi_2 generated in their respective fowrard passes of the network will be different subsequent forward passes of the network (since the moving image input changes at each pass, i.e. M, M_1, M_2). It is unclear how gradients are computed in this setting, and the paper would benefit from an explanation of this process, and what the trade-offs are, as it seems this could be a very computationally expensive process to store gradients for three passes of the network. Specifically, do multiple sets of feature maps corresponding to different forward passes need to be stored to compute the gradients? For each moving image M, are there 3 sets of gradients computed for the encoder and decoder up to phi_1 (since featuremaps up to this point get computed for each of the 3 passes of the network to compute the final phi), 2 sets of gradients computed in the decoder up to phi_2, and 1 set of gradients computed for the decoder up to phi_3? This needs clarification.</p>
+        </li>
+        <li>
+          <p>Clarification of how the final transformation phi is computed would also benefit readers, as discussed in ‘Weaknesses’ above.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The paper proposes a novel approach for feature fusion of dual encoders for image registration, as well as an iterative accumulative approach for computing multi-resolution composed transformations. The results demonstrate clear improvements in performance on publicly available datasets when training with relatively few samples. These would be of interest to the research community.</p>
+        </li>
+        <li>
+          <p>However, the unconvincing motivation and lack of clarity of some of the methods are limiting factors, and the paper would benefit from improvements in both these areas.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a new framework to do medical image registration. The authors demonstrate that the framework could contribute to the current registration methods in two manifolds: Coarse-to-fine strategy and separate learning of fixed and moving images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>Generally speaking, this manuscript is easy to follow and understand.</li>
+        <li>They provide better numbers compared with current solutions such as VM and LapIRN.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The main issue is that it is hard for me to get excited with this paper. From my point of view, the paper keeps combining different components. What the paper is demonstrating is that we should do the registration from coarse-to-fine and use separate branches to learn the semantic features. It is totally not a surprise for me to see they can bring improvements, although maybe not exactly in the literature of registration, but definitely in general medical image computing literatures for many times.</li>
+        <li>I do not see enough evident to support their arguments. For example, the authors say that the coarse-to-fine registration workflow should have share the same branches and they say the proposed methods are better than the current solutions. However, I do not see the comparison with the recurrent network and LapIRN. I would be convinced if you show me that the proposed methods can be better than the these two while keep other things exactly the same. Not just compare with the numbers of official LapIRN. Similarly, if you are saying ASPP is especially important for the application, you should provide more evident. How about use another kinds of block with the same parameters? For me the results are very vague. Adding things to your framework is always easy to get higher numbers. The authors seems to add a lot of things into the framework but do not convince me the chosen strategies are the best or not.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The results make sense for me, I think it is reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall, the paper is well-written. The authors refer to the fixed images as F while use F stands for a different thing in Fig. 2. It can be confusing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I do not see enough novelty; the experiments are not enough to demonstrate their argument.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>An integrated encoder with feature fusion and an accumulative enhancement mechanism similar to Coarse-to-fine registration strategy was proposed to solve the large inter-image distortion problem. Further, an multi-scale loss function was proposed in cooperate with the framework to enhance the accumulative enhancement mechanism. The framework was compact and the registration performance was improved greatly.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The accumulative enhancement mechanism similar to Coarse-to-fine registration strategy could improve registration performance greatly without network complexity Increasing was impressive.
+The integration of ASPP module with U-net like registration network was quit smart and effective.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Theoretical innovation was weak. The main contribution  focused on methodology.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors promised  releasing the project on Github after anonymous review.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>1）Lack of comparative experiments with Coarse-to-fine registration methods and more effective registration methods trained with segmentation information. 
+2）there isn’t loss function in Figure 1. 
+3) what is Ncc_omigai in eq. 3
+4) please give the reason of using ‘+’ in eq. 2</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>one network solve the accumulative enhancement mechanism</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The authors are invited to write a response. The reviewers agree that exploring the iterative feature-fusion method is interesting. However, there are serious concerns with the paper which in my opinion place it as a borderline rejection. . However, with overall borderline reviews, the authors are given an opportunity to respond.</p>
+
+      <p>The paper is confusing and makes several confusing remarks. See for example part 4 of Reviewer 1’s comments – the statements are vague and often incorrect. The authors also seem to miss important literature in both review and comparison – including a ton of coarse-to-fine literature. They also cite the recurrent cascades paper, but do not compare to it. Overall, the reviewers find limited novelty in the work, given the extensive literature that has proposed the same insights. It would be very important for the authors to improve this aspect of the paper.</p>
+
+      <p>Importantly, a significant difference between the proposed model and the baselines is a substantial increase in the number of trainable parameters – how does increasing the network size in the baselines compare? How does the proposed network compare to other cascade networks? Obviously the authors should not do this for rebuttal, but perhaps address this omission or why these are not appropriate comparisons.</p>
+
+      <p>The brains in Figure 4 are upside down. Please fix this.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>I appreciate the author’s rebuttal, addressing some of the important points. I believe paper remains quite borderline, with several important questions remaining about the experiments (for example, how were the baselines tuned? Using the default hyper-parameter is inappropriate, of course, as the used data is different than those original papers, and the authors certainly tunes their own algorithm to these data). The comparisons mentioned in the rebuttal are also required in the paper – showing models with substantially different numbers of parameters is quite misleading.</p>
+
+      <p>Having said this, I think this paper has some interesting architectural ideas that might warrant discussion at MICCAI, and I recommend acceptance.</p>
+
+      <p>I believe several points were not addressed that need to be addressed in the camera ready, if the paper is accepted in the end – please see the reviewer comments, but especially please reduce the hand-wavy claims/language brought up by Reviewer 1. These are hypothetical claims and are mostly incorrect. Also please add the new results (e.g. larger VM model).</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The strength of this work is a novel and elegant formulation for capturing long-range co-dependencies in pair-wise registration. The experiments are also strong and include SOTA baselines (LapIRN and not just VM). Despite some criticism of reviewers about limited clarity, the figures are easy to follow, the authors promise to release code and the ablation study is helpful.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work proposes a deep registration network which has different encoders for moving and target images and which makes use of a multi-step registration strategy. There were some concerns regarding the clarity of the manuscript as well as with regards to experimental results (in particular, comparisons with respect to other coarse to fine or multistep methods). These concerns unfortunately remain after the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>16</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>On behalf of my co-authors, we appreciate the reviewers for the positive and constructive comments. We strongly agree with meta reviewer’s comment that “exploring the iterative feature-fusion method is interesting”, and it is also the basic motivation of this paper. However, there are some issues and misunderstandings that we would like to clarify:</p>
+  <ol>
+    <li>The calculation of the final deformation field. (Meta reviewer [MR] and reviewer 1 [R1])
+The main concern is that the input will change at each iteration, thus the final deformation may be miscalculated. The first half of this comment is right, as the registration is performed accumulatively. However, we can still effectively construct connections between the flows of different iterations base on Eq.2. Please note that the final deformation phi is not simply computed by adding phi1, phi2, and phi3 (phi1+phi2+phi3 is wrong because as R1 mentioned, the input at each step will change). On the contrary, we calculate the final flow recursively. For example, at Acc2, the flow phi1 from Acc1 has to be warped firstly by phi2 as coordinate alignment and then added back to phi2. This step will guarantee that we can finally acquire the correct flow. We have also verified that with extensive tests.</li>
+    <li>The update of the gradient. (MR, R1)
+As mentioned in the paper, one merit of our method is to effectively perform registration under the accumulative layout with end-to-end training. Unlike other iterative methods, we do not have to divide the training into multiple stages, and the loss is only computed once on W, F, and the final flow. Therefore, the gradients at the frontend of the net can be computed by multiple times. Specifically, just like Recurrent NN, in our net if a Tensor is used more than one time, the gradient associated to it is the sum of the gradients corresponding to each iteration. It can cost more computational expense, however, as shown in Table.1, we still have lower Flops and Parameters than LapIRN while achieved better performances.</li>
+    <li>The review and comparison of related literature. (MR, R3, R4)
+Thank you very much for raising this issue. In fact, during the research, we have conducted relative experiments on Recursive Cascaded Networks (3-cas VM), and we also doubled channels of Voxelmorph (DBVM) to test the performances. The 3-cas VM got similar results as AWE in Table.2. DBVM spends 640G flops and 1.58M params but only got 0.589 AVG in Mindboggle101. It indicates that simply stacking more channels may only bring minor improvements. Moreover, considering that the LapIRN in MICCAI2020 have already set the highest bar among all the related iterative methods, and due to the space limitation, we have decided not to list these results in the manuscript. However, we are confident with our proposed method, and we will try to make appropriate revisions at the camera-ready stage or provide detailed results in the extended journal version.</li>
+    <li>The comment: “…the extensive literature that has proposed the same insights…” (MR)
+We appreciate all the suggestions from the reviewers. However, on this comment, we have to express our disagreement. As mentioned above, the reviewer agrees that “exploring the iterative feature-fusion method is interesting”. Also in recent years, many works were proposed in this area, and we can find that directly add iterations to the network is not effective enough. In this paper, we have analyzed the major challenge in current works and proposed a novel framework to continuously enhance the spatial transformation under an uncoupled learning mechanism. We are excited to release our code and trained model after the review. We believe that our work is beneficial to the community and will bring inspirations to medical image registration researches.
+Thanks again for the valuable comments. We hope that our clarifications could resolve your concerns, and we would like to make appropriate revisions in accordance with the author-guides during the following stage.</li>
+  </ol>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0400-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0401-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Shu, Yucheng"
+        class="post-category">
+        Shu, Yucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Hao"
+        class="post-category">
+        Wang, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Xiao, Bin"
+        class="post-category">
+        Xiao, Bin
+      </a> |  
+      
+      <a href="kittywong/tags#Bi, Xiuli"
+        class="post-category">
+        Bi, Xiuli
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Weisheng"
+        class="post-category">
+        Li, Weisheng
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0401/12/31/Paper0219">
+          Atlas-Based Segmentation of Intracochlear Anatomy in Metal Artifact Affected CT Images of the Ear with Co-trained Deep Neural Networks
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0359/12/31/Paper2364">
+          Uncertainty Aware Deep Reinforcement Learning for Anatomical Landmark Detection in Medical Images
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

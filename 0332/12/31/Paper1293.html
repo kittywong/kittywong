@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Personalized Retrogress-Resilient Framework for Real-World Medical Federated Learning | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Personalized Retrogress-Resilient Framework for Real-World Medical Federated Learning" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Chen, Meilu Zhu, Chen Yang, Yixuan Yuan Abstract Nowadays, deep learning methods with large-scale datasets can produce clinically useful models for computer-aided diagnosis. However, the privacy and ethical concerns are increasingly critical, which make it difficult to collect large quantities of data from multiple institutions. Federated Learning (FL) provides a promising decentralized solution to train model collaboratively by exchanging client models instead of private data. However, the server aggregation of existing FL methods is observed to degrade the model performance in real-world medical FL setting, which is termed as retrogress. To address this problem, we propose a personalized retrogress-resilient framework to produce a superior personalized model for each client. Specifically, we devise a Progressive Fourier Aggregation (PFA) at the server to achieve more stable and effective global knowledge gathering by integrating client models from low-frequency to high-frequency gradually. Moreover, with an introduced deputy model to receive the aggregated server model, we design a Deputy-Enhanced Transfer (DET) strategy at the client and conduct three steps of Recover-Exchange-Sublimate to ameliorate the personalized local model by transferring the global knowledge smoothly. Extensive experiments on real-world dermoscopic FL dataset prove that our personalized retrogress-resilient framework outperforms state-of-the-art FL methods, as well as the generalization on an out-of-distribution cohort. The code and dataset are available at https://github.com/CityU-AIM-Group/PRR-FL. Link to paper https://doi.org/10.1007/978-3-030-87199-4_33 Link to the code repository https://github.com/CityU-AIM-Group/PRR-FL Link to the dataset(s) https://github.com/CityU-AIM-Group/PRR-FL Reviews Review #1 Please describe the contribution of the paper The authors investigate the problem of federated learning on datasets with real-world distribution shifts (due to imaging devices etc.). They aim to improve upon other FL algorithms through model personalization, based on the observation that local model performance typically drops directly after each aggregation step (termed “retrogress” here). As the main contribution, a method is proposed that combines central model aggregation as a low pass parameter aggregation via the Fourier space of the parameters/ Conv kernels and model distillation techniques during local training. The method is evaluated in simulated FL on a multi-centric dermoscopic dataset and compares favorably to several baselines. OOD generalization on an unseen institution is also improved by the method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. As far as I know novel aggregation method in Fourier-transformed parameter space Well written and good to follow Comparison to several baselines performed Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some details of the method are not stated clearly (duration of DET? FedBN?) Hyperparameter tuning method not described The Out-of-distribution Generalization part (Sec 3.4.) is not well explained. I.e. which model/ client model was used and how the datasets differ. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Hyperparameters seem complete Public datasets used Description of the study cohort (class statistics) included, but not complete (OOD experiments) Negative: Not described how hparams were chosen and how sensitive to changes. How were baselines tuned? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html General: Well written, mostly easy to follow (except some methods parts) Clear structure and ablation studies; supplementary material with additional value Introduction: Given that the retroregress problem is given as the main motivation for the method, it should be backed up with additional references to support the generalizability of the method. Is the retroregress commonly considered a problem? Methods: Overview: Although all parts are mentioned, the overall process is not fully clear: Is DET followed by E epochs of training or is the whole local training E epochs long? Fig. 2: Need to explain all symbols. In particular, d, F^A, F^P, M have not been introduced when the figure is first mentioned. The DET part is in my opinion not very helpful and the gray arrow confusing. PFA: Explanation of the way the parameters are transformed into the Fourier representation is unclear: Why does it make sense to reshape the parameter matrix the way done here? Why is it different than in ref [9]? In Eq (3), there is an iteration over K in the second term (while w_k is used beforehand). This can be very confusing, and it might help to use another counter instead of ‘k’ for the second term. DET: since steps R&amp;S are similar to model distillation, a reference would be adequate in my opinion. Equation 4: p(x) should rather be p(y x). Is the full dataset used for the KL-div. in each step, as indicated by eq.4? In the “sublimate” step, it would help if you state explicitly that d minimizes L_CE1 and p minimizes L_p. Experiments: Table 1: Another column with information about the data source would help. If I see it correctly, A-C are HAM10K and D is MSK. For HAM10K, indication of the institution/imaging device would be good. As another “client” is introduced in 3.4, this split should also be included here. Hyperparameters: how were they selected? How sensitive is the method to r’s and lambdas? How were the baseline hyperparameters (if any) tuned? How long does DET take (if it is done prior to E local epochs)? Imbalances: Since the clients (esp. B) show quite some heterogeneities with respect to the class statistics, a short discussion would be in order. Does especially AUC eliminate impacts of class imbalances and does it make sense to take the mean over different AUCs (with different class statistics) ? Table 2: The results for FML and “ours w/o PFA” appear to be very close (also in the Supplements). Thus, it would be interesting to investigate the effects/ benefits of DET vs FML in combination with PFA. It would be good to give variances as given in the suppl. if multiple runs are done. Table 2: For the AVG, the authors probably use the mean of the per-institution metrics and do not recompute the metrics over the whole dataset (i.e. the presented AVG is not weighted by the number of samples). It would be great if the authors could state that and explain their reasoning behind that. Ablation study: You mention that your method is identical with FedBN except PFA and DET. So do you also have personalized BN statistics? This should be stated in the method description. OOD generalization: Where is the analysis for stat. Significance? Maybe add an upper baseline trained on the unseen client. Which client model was used ? Typos: Conclusion last sentence: insert “a” before “real-world dermoscopic” and a out-of-distribution -&gt; an out-of-distribution Suppl: The performance of the methods seem to get worse with more frequent updates (Suppl. Fig 1). This appears to be a bit counter-intuitive as more information can be exchanged (and an update after each batch should equate to normal grad decent with larger batch size…) Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, a well written paper that shows a novel approach and also shows clear improvements to the compared approaches. Some inaccuracies and minor issues could be discussed and better addressed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel model aggregation technique based on transforming the model weights to the frequency domain, which could alleviate issues stemming from unique weights in individual model parameters because of data heterogeneity. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the “retrogress” problem in FL, which hinder local model training and good global model aggregation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although I agree with the authors that retrogress is a valid concern in FL, in practical terms, if appropriate data harmonization is done correctly and a model trained on publicly available data (for the problem at hand) is used for initialization, retrogress is significantly less pronounced. This fact is not mentioned anywhere in the paper. Furthermore, the authors seem to have missed some immediately related literature. here are a couple of examples that the authors should consider: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 Some grammar consideration: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some interesting points are raised but the authors have skipped literature, have had grammatical errors, and since in this domain authors should consider adding their associated source code. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? If the authors have not missed the associated literature, they were more cautious in grammar and in their claims, as well as have shared their code, I would have recommended a direct “accept”. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To combat retrogression, the phenomenon where federated models lose the ability to specialize to local datasets, the authors propose progressive Fourier aggregation (PFA) coupled with deputy-enhanced transfer (DET) to fuse multiple sites’ weights. This work assumes that low-frequency information in weights is safe to average, while high-frequency information is site-specific. Further, to discourage catastrophic forgetting, the DET component smoothly incorporates shared information. The authors compare to many competitive FL algorithms and also ablate their own method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper presents three main strengths: novelty in method (frequency-space aggregation), thorough comparison to other methods, and ablation studies with discussion on proposed novelties. Many references throughout to support the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A lack of multiple runs for confidence intervals or statistical significance testing would benefit the paper. Some visualization of correct/incorrect images would be nice too; however, space restrictions make this difficult. However, these weaknesses are minor and likely will be covered in the journal follow-up. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This work is fairly reproducible. The methods are clear and the datasets are public. There is some ambiguity on exact preprocessing and split of the data, but this is minor. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up which investigates qualitative results further, as well as a more developed theory explaining why aggregation in the Fourier domain works. Please state your overall opinion of the paper ground-breaking (10) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the novelty, explanation, and numerical results, performing operations on neural network weights in the frequency domain is ground-breaking. The current scheme progressively increases the bandwidth of the LPF during aggregation. I anticipate future works to improve on this method. Overall outstanding. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviews for this paper that proposes a novel aggregation method in Fourier-Transformed parameter space to address the retrogress problem in a FL setup is throughout positive. I would like to congratulate the authors for this outstanding paper. It addresses an important problem of medical FL with a novel approach that is evaluated convincingly. Some details are missing or unclear as highlighted by one of the reviewers, which should be added or clarified in the manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the Meta-Reviewer and Reviewers for their valuable comments. We appreciate it very much that the reviewers gave very positive feedback. R1 Q1: Is the retrogress commonly considered a problem? A: To the best of our knowledge, we first explicitly pointed out the abrupt performance drop caused by the server aggregation of existing FL methods, which is termed as retrogress, and proposed the PFA and DET to resolve it on the server and client side, respectively. Slightly similar to the retrogress problem, ref [20] considered the permutation matching problem of network parameters in FL, which may become one of the reasons for the retrogress. Q2: Is DET followed by E epochs of training or is the whole local training E epochs long? A: After each communication iteration, all FL methods conduct total E epochs local training, which is a fair comparison setting. Specifically, the baselines with a single model on each client [12, 7, 1, 22, 8] conduct E epochs training with cross entropy loss, while FML [16] and our method conduct E epochs training under mutual learning and DET, respectively. Q3: Does it make sense to reshape the parameter matrix? Why is it different than in ref [9]? A: (1) Reshaping the parameter tensor of conv layer is a widely-used trick for further analysis, which follows the operations in [9] and [#1]. (2) The tasks of these two works are different. Ref [9] focused on the inference efficiency of CNN, and further replaced the spatial convolution with DFT-based matrix multiplication. In this work, we analyze the parameters in frequency domain to improve the server aggregation. [#1] Convolutional neural networks with low-rank regularization, ICLR, 2016. Q4: Hyperparameters: how were they selected? A: The hyper-parameters were selected according to the performance on the validation set. Q5: Imbalances: Does it make sense to take the mean over different AUCs? A: The category imbalance is a challenge for dermoscopic diagnosis, and the averaged AUC is commonly utilized to evaluate the performance on skin lesion tasks [#2]. In addition, we calculated the F1 score for a more comprehensive evaluation. [#2] A Mutual Bootstrapping Model for Automated Skin Lesion Segmentation and Classification, TMI, 2020. Q6: Table 2, the authors probably use the mean of the per-institution metrics, rather than the average weighted by the number of samples. A: Yes, we adopted the macro average, rather than the micro average. The micro average gives each client the importance of sample size, which is likely to overlook some clients with fewer samples (e.g., client C). Therefore, the macro average is relatively more reasonable. Q7: Do you have personalized BN statistics? A: (1) The personalized model p on each client does not communicate with the server directly, which always holds its own BN statistics. (2) During the Recover step in DET, the deputy model d learns knowledge from the personalized model using client data. We empirically find that the deputy model using either the server BN statistics or personalized BN statistics does not affect the performance of the personalized model p. Therefore, the BN statistics are not the focus in our FL framework. R2 Q1: Although retrogress is a valid concern in FL, if appropriate data harmonization is done correctly, retrogress is significantly less pronounced. A: Data harmonization may require additional information, e.g., data distribution of clients, which would violate the privacy setting of FL. In this work, we formulate the real-world FL task from a rigorous perspective. The proposed framework improves the server aggregation and client training to handle the retrogress, providing a fair setting for comparison with existing FL methods. R3 Q1: Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up…works. A: We really appreciate the reviewer for recognizing the merits of this work, and are going to solve the limitations. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Chen, Meilu Zhu, Chen Yang, Yixuan Yuan Abstract Nowadays, deep learning methods with large-scale datasets can produce clinically useful models for computer-aided diagnosis. However, the privacy and ethical concerns are increasingly critical, which make it difficult to collect large quantities of data from multiple institutions. Federated Learning (FL) provides a promising decentralized solution to train model collaboratively by exchanging client models instead of private data. However, the server aggregation of existing FL methods is observed to degrade the model performance in real-world medical FL setting, which is termed as retrogress. To address this problem, we propose a personalized retrogress-resilient framework to produce a superior personalized model for each client. Specifically, we devise a Progressive Fourier Aggregation (PFA) at the server to achieve more stable and effective global knowledge gathering by integrating client models from low-frequency to high-frequency gradually. Moreover, with an introduced deputy model to receive the aggregated server model, we design a Deputy-Enhanced Transfer (DET) strategy at the client and conduct three steps of Recover-Exchange-Sublimate to ameliorate the personalized local model by transferring the global knowledge smoothly. Extensive experiments on real-world dermoscopic FL dataset prove that our personalized retrogress-resilient framework outperforms state-of-the-art FL methods, as well as the generalization on an out-of-distribution cohort. The code and dataset are available at https://github.com/CityU-AIM-Group/PRR-FL. Link to paper https://doi.org/10.1007/978-3-030-87199-4_33 Link to the code repository https://github.com/CityU-AIM-Group/PRR-FL Link to the dataset(s) https://github.com/CityU-AIM-Group/PRR-FL Reviews Review #1 Please describe the contribution of the paper The authors investigate the problem of federated learning on datasets with real-world distribution shifts (due to imaging devices etc.). They aim to improve upon other FL algorithms through model personalization, based on the observation that local model performance typically drops directly after each aggregation step (termed “retrogress” here). As the main contribution, a method is proposed that combines central model aggregation as a low pass parameter aggregation via the Fourier space of the parameters/ Conv kernels and model distillation techniques during local training. The method is evaluated in simulated FL on a multi-centric dermoscopic dataset and compares favorably to several baselines. OOD generalization on an unseen institution is also improved by the method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. As far as I know novel aggregation method in Fourier-transformed parameter space Well written and good to follow Comparison to several baselines performed Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some details of the method are not stated clearly (duration of DET? FedBN?) Hyperparameter tuning method not described The Out-of-distribution Generalization part (Sec 3.4.) is not well explained. I.e. which model/ client model was used and how the datasets differ. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Hyperparameters seem complete Public datasets used Description of the study cohort (class statistics) included, but not complete (OOD experiments) Negative: Not described how hparams were chosen and how sensitive to changes. How were baselines tuned? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html General: Well written, mostly easy to follow (except some methods parts) Clear structure and ablation studies; supplementary material with additional value Introduction: Given that the retroregress problem is given as the main motivation for the method, it should be backed up with additional references to support the generalizability of the method. Is the retroregress commonly considered a problem? Methods: Overview: Although all parts are mentioned, the overall process is not fully clear: Is DET followed by E epochs of training or is the whole local training E epochs long? Fig. 2: Need to explain all symbols. In particular, d, F^A, F^P, M have not been introduced when the figure is first mentioned. The DET part is in my opinion not very helpful and the gray arrow confusing. PFA: Explanation of the way the parameters are transformed into the Fourier representation is unclear: Why does it make sense to reshape the parameter matrix the way done here? Why is it different than in ref [9]? In Eq (3), there is an iteration over K in the second term (while w_k is used beforehand). This can be very confusing, and it might help to use another counter instead of ‘k’ for the second term. DET: since steps R&amp;S are similar to model distillation, a reference would be adequate in my opinion. Equation 4: p(x) should rather be p(y x). Is the full dataset used for the KL-div. in each step, as indicated by eq.4? In the “sublimate” step, it would help if you state explicitly that d minimizes L_CE1 and p minimizes L_p. Experiments: Table 1: Another column with information about the data source would help. If I see it correctly, A-C are HAM10K and D is MSK. For HAM10K, indication of the institution/imaging device would be good. As another “client” is introduced in 3.4, this split should also be included here. Hyperparameters: how were they selected? How sensitive is the method to r’s and lambdas? How were the baseline hyperparameters (if any) tuned? How long does DET take (if it is done prior to E local epochs)? Imbalances: Since the clients (esp. B) show quite some heterogeneities with respect to the class statistics, a short discussion would be in order. Does especially AUC eliminate impacts of class imbalances and does it make sense to take the mean over different AUCs (with different class statistics) ? Table 2: The results for FML and “ours w/o PFA” appear to be very close (also in the Supplements). Thus, it would be interesting to investigate the effects/ benefits of DET vs FML in combination with PFA. It would be good to give variances as given in the suppl. if multiple runs are done. Table 2: For the AVG, the authors probably use the mean of the per-institution metrics and do not recompute the metrics over the whole dataset (i.e. the presented AVG is not weighted by the number of samples). It would be great if the authors could state that and explain their reasoning behind that. Ablation study: You mention that your method is identical with FedBN except PFA and DET. So do you also have personalized BN statistics? This should be stated in the method description. OOD generalization: Where is the analysis for stat. Significance? Maybe add an upper baseline trained on the unseen client. Which client model was used ? Typos: Conclusion last sentence: insert “a” before “real-world dermoscopic” and a out-of-distribution -&gt; an out-of-distribution Suppl: The performance of the methods seem to get worse with more frequent updates (Suppl. Fig 1). This appears to be a bit counter-intuitive as more information can be exchanged (and an update after each batch should equate to normal grad decent with larger batch size…) Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, a well written paper that shows a novel approach and also shows clear improvements to the compared approaches. Some inaccuracies and minor issues could be discussed and better addressed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel model aggregation technique based on transforming the model weights to the frequency domain, which could alleviate issues stemming from unique weights in individual model parameters because of data heterogeneity. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the “retrogress” problem in FL, which hinder local model training and good global model aggregation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although I agree with the authors that retrogress is a valid concern in FL, in practical terms, if appropriate data harmonization is done correctly and a model trained on publicly available data (for the problem at hand) is used for initialization, retrogress is significantly less pronounced. This fact is not mentioned anywhere in the paper. Furthermore, the authors seem to have missed some immediately related literature. here are a couple of examples that the authors should consider: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 Some grammar consideration: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some interesting points are raised but the authors have skipped literature, have had grammatical errors, and since in this domain authors should consider adding their associated source code. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? If the authors have not missed the associated literature, they were more cautious in grammar and in their claims, as well as have shared their code, I would have recommended a direct “accept”. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To combat retrogression, the phenomenon where federated models lose the ability to specialize to local datasets, the authors propose progressive Fourier aggregation (PFA) coupled with deputy-enhanced transfer (DET) to fuse multiple sites’ weights. This work assumes that low-frequency information in weights is safe to average, while high-frequency information is site-specific. Further, to discourage catastrophic forgetting, the DET component smoothly incorporates shared information. The authors compare to many competitive FL algorithms and also ablate their own method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper presents three main strengths: novelty in method (frequency-space aggregation), thorough comparison to other methods, and ablation studies with discussion on proposed novelties. Many references throughout to support the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A lack of multiple runs for confidence intervals or statistical significance testing would benefit the paper. Some visualization of correct/incorrect images would be nice too; however, space restrictions make this difficult. However, these weaknesses are minor and likely will be covered in the journal follow-up. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This work is fairly reproducible. The methods are clear and the datasets are public. There is some ambiguity on exact preprocessing and split of the data, but this is minor. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up which investigates qualitative results further, as well as a more developed theory explaining why aggregation in the Fourier domain works. Please state your overall opinion of the paper ground-breaking (10) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the novelty, explanation, and numerical results, performing operations on neural network weights in the frequency domain is ground-breaking. The current scheme progressively increases the bandwidth of the LPF during aggregation. I anticipate future works to improve on this method. Overall outstanding. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviews for this paper that proposes a novel aggregation method in Fourier-Transformed parameter space to address the retrogress problem in a FL setup is throughout positive. I would like to congratulate the authors for this outstanding paper. It addresses an important problem of medical FL with a novel approach that is evaluated convincingly. Some details are missing or unclear as highlighted by one of the reviewers, which should be added or clarified in the manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the Meta-Reviewer and Reviewers for their valuable comments. We appreciate it very much that the reviewers gave very positive feedback. R1 Q1: Is the retrogress commonly considered a problem? A: To the best of our knowledge, we first explicitly pointed out the abrupt performance drop caused by the server aggregation of existing FL methods, which is termed as retrogress, and proposed the PFA and DET to resolve it on the server and client side, respectively. Slightly similar to the retrogress problem, ref [20] considered the permutation matching problem of network parameters in FL, which may become one of the reasons for the retrogress. Q2: Is DET followed by E epochs of training or is the whole local training E epochs long? A: After each communication iteration, all FL methods conduct total E epochs local training, which is a fair comparison setting. Specifically, the baselines with a single model on each client [12, 7, 1, 22, 8] conduct E epochs training with cross entropy loss, while FML [16] and our method conduct E epochs training under mutual learning and DET, respectively. Q3: Does it make sense to reshape the parameter matrix? Why is it different than in ref [9]? A: (1) Reshaping the parameter tensor of conv layer is a widely-used trick for further analysis, which follows the operations in [9] and [#1]. (2) The tasks of these two works are different. Ref [9] focused on the inference efficiency of CNN, and further replaced the spatial convolution with DFT-based matrix multiplication. In this work, we analyze the parameters in frequency domain to improve the server aggregation. [#1] Convolutional neural networks with low-rank regularization, ICLR, 2016. Q4: Hyperparameters: how were they selected? A: The hyper-parameters were selected according to the performance on the validation set. Q5: Imbalances: Does it make sense to take the mean over different AUCs? A: The category imbalance is a challenge for dermoscopic diagnosis, and the averaged AUC is commonly utilized to evaluate the performance on skin lesion tasks [#2]. In addition, we calculated the F1 score for a more comprehensive evaluation. [#2] A Mutual Bootstrapping Model for Automated Skin Lesion Segmentation and Classification, TMI, 2020. Q6: Table 2, the authors probably use the mean of the per-institution metrics, rather than the average weighted by the number of samples. A: Yes, we adopted the macro average, rather than the micro average. The micro average gives each client the importance of sample size, which is likely to overlook some clients with fewer samples (e.g., client C). Therefore, the macro average is relatively more reasonable. Q7: Do you have personalized BN statistics? A: (1) The personalized model p on each client does not communicate with the server directly, which always holds its own BN statistics. (2) During the Recover step in DET, the deputy model d learns knowledge from the personalized model using client data. We empirically find that the deputy model using either the server BN statistics or personalized BN statistics does not affect the performance of the personalized model p. Therefore, the BN statistics are not the focus in our FL framework. R2 Q1: Although retrogress is a valid concern in FL, if appropriate data harmonization is done correctly, retrogress is significantly less pronounced. A: Data harmonization may require additional information, e.g., data distribution of clients, which would violate the privacy setting of FL. In this work, we formulate the real-world FL task from a rigorous perspective. The proposed framework improves the server aggregation and client training to handle the retrogress, providing a fair setting for comparison with existing FL methods. R3 Q1: Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up…works. A: We really appreciate the reviewer for recognizing the merits of this work, and are going to solve the limitations. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0332/12/31/Paper1293" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0332/12/31/Paper1293" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0332-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Personalized Retrogress-Resilient Framework for Real-World Medical Federated Learning" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0332/12/31/Paper1293"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0332/12/31/Paper1293","headline":"Personalized Retrogress-Resilient Framework for Real-World Medical Federated Learning","dateModified":"0333-01-02T00:00:00-05:17","datePublished":"0332-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Zhen Chen, Meilu Zhu, Chen Yang, Yixuan Yuan Abstract Nowadays, deep learning methods with large-scale datasets can produce clinically useful models for computer-aided diagnosis. However, the privacy and ethical concerns are increasingly critical, which make it difficult to collect large quantities of data from multiple institutions. Federated Learning (FL) provides a promising decentralized solution to train model collaboratively by exchanging client models instead of private data. However, the server aggregation of existing FL methods is observed to degrade the model performance in real-world medical FL setting, which is termed as retrogress. To address this problem, we propose a personalized retrogress-resilient framework to produce a superior personalized model for each client. Specifically, we devise a Progressive Fourier Aggregation (PFA) at the server to achieve more stable and effective global knowledge gathering by integrating client models from low-frequency to high-frequency gradually. Moreover, with an introduced deputy model to receive the aggregated server model, we design a Deputy-Enhanced Transfer (DET) strategy at the client and conduct three steps of Recover-Exchange-Sublimate to ameliorate the personalized local model by transferring the global knowledge smoothly. Extensive experiments on real-world dermoscopic FL dataset prove that our personalized retrogress-resilient framework outperforms state-of-the-art FL methods, as well as the generalization on an out-of-distribution cohort. The code and dataset are available at https://github.com/CityU-AIM-Group/PRR-FL. Link to paper https://doi.org/10.1007/978-3-030-87199-4_33 Link to the code repository https://github.com/CityU-AIM-Group/PRR-FL Link to the dataset(s) https://github.com/CityU-AIM-Group/PRR-FL Reviews Review #1 Please describe the contribution of the paper The authors investigate the problem of federated learning on datasets with real-world distribution shifts (due to imaging devices etc.). They aim to improve upon other FL algorithms through model personalization, based on the observation that local model performance typically drops directly after each aggregation step (termed “retrogress” here). As the main contribution, a method is proposed that combines central model aggregation as a low pass parameter aggregation via the Fourier space of the parameters/ Conv kernels and model distillation techniques during local training. The method is evaluated in simulated FL on a multi-centric dermoscopic dataset and compares favorably to several baselines. OOD generalization on an unseen institution is also improved by the method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. As far as I know novel aggregation method in Fourier-transformed parameter space Well written and good to follow Comparison to several baselines performed Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Some details of the method are not stated clearly (duration of DET? FedBN?) Hyperparameter tuning method not described The Out-of-distribution Generalization part (Sec 3.4.) is not well explained. I.e. which model/ client model was used and how the datasets differ. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Hyperparameters seem complete Public datasets used Description of the study cohort (class statistics) included, but not complete (OOD experiments) Negative: Not described how hparams were chosen and how sensitive to changes. How were baselines tuned? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html General: Well written, mostly easy to follow (except some methods parts) Clear structure and ablation studies; supplementary material with additional value Introduction: Given that the retroregress problem is given as the main motivation for the method, it should be backed up with additional references to support the generalizability of the method. Is the retroregress commonly considered a problem? Methods: Overview: Although all parts are mentioned, the overall process is not fully clear: Is DET followed by E epochs of training or is the whole local training E epochs long? Fig. 2: Need to explain all symbols. In particular, d, F^A, F^P, M have not been introduced when the figure is first mentioned. The DET part is in my opinion not very helpful and the gray arrow confusing. PFA: Explanation of the way the parameters are transformed into the Fourier representation is unclear: Why does it make sense to reshape the parameter matrix the way done here? Why is it different than in ref [9]? In Eq (3), there is an iteration over K in the second term (while w_k is used beforehand). This can be very confusing, and it might help to use another counter instead of ‘k’ for the second term. DET: since steps R&amp;S are similar to model distillation, a reference would be adequate in my opinion. Equation 4: p(x) should rather be p(y x). Is the full dataset used for the KL-div. in each step, as indicated by eq.4? In the “sublimate” step, it would help if you state explicitly that d minimizes L_CE1 and p minimizes L_p. Experiments: Table 1: Another column with information about the data source would help. If I see it correctly, A-C are HAM10K and D is MSK. For HAM10K, indication of the institution/imaging device would be good. As another “client” is introduced in 3.4, this split should also be included here. Hyperparameters: how were they selected? How sensitive is the method to r’s and lambdas? How were the baseline hyperparameters (if any) tuned? How long does DET take (if it is done prior to E local epochs)? Imbalances: Since the clients (esp. B) show quite some heterogeneities with respect to the class statistics, a short discussion would be in order. Does especially AUC eliminate impacts of class imbalances and does it make sense to take the mean over different AUCs (with different class statistics) ? Table 2: The results for FML and “ours w/o PFA” appear to be very close (also in the Supplements). Thus, it would be interesting to investigate the effects/ benefits of DET vs FML in combination with PFA. It would be good to give variances as given in the suppl. if multiple runs are done. Table 2: For the AVG, the authors probably use the mean of the per-institution metrics and do not recompute the metrics over the whole dataset (i.e. the presented AVG is not weighted by the number of samples). It would be great if the authors could state that and explain their reasoning behind that. Ablation study: You mention that your method is identical with FedBN except PFA and DET. So do you also have personalized BN statistics? This should be stated in the method description. OOD generalization: Where is the analysis for stat. Significance? Maybe add an upper baseline trained on the unseen client. Which client model was used ? Typos: Conclusion last sentence: insert “a” before “real-world dermoscopic” and a out-of-distribution -&gt; an out-of-distribution Suppl: The performance of the methods seem to get worse with more frequent updates (Suppl. Fig 1). This appears to be a bit counter-intuitive as more information can be exchanged (and an update after each batch should equate to normal grad decent with larger batch size…) Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, a well written paper that shows a novel approach and also shows clear improvements to the compared approaches. Some inaccuracies and minor issues could be discussed and better addressed. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel model aggregation technique based on transforming the model weights to the frequency domain, which could alleviate issues stemming from unique weights in individual model parameters because of data heterogeneity. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the “retrogress” problem in FL, which hinder local model training and good global model aggregation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although I agree with the authors that retrogress is a valid concern in FL, in practical terms, if appropriate data harmonization is done correctly and a model trained on publicly available data (for the problem at hand) is used for initialization, retrogress is significantly less pronounced. This fact is not mentioned anywhere in the paper. Furthermore, the authors seem to have missed some immediately related literature. here are a couple of examples that the authors should consider: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 Some grammar consideration: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some interesting points are raised but the authors have skipped literature, have had grammatical errors, and since in this domain authors should consider adding their associated source code. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? If the authors have not missed the associated literature, they were more cautious in grammar and in their claims, as well as have shared their code, I would have recommended a direct “accept”. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper To combat retrogression, the phenomenon where federated models lose the ability to specialize to local datasets, the authors propose progressive Fourier aggregation (PFA) coupled with deputy-enhanced transfer (DET) to fuse multiple sites’ weights. This work assumes that low-frequency information in weights is safe to average, while high-frequency information is site-specific. Further, to discourage catastrophic forgetting, the DET component smoothly incorporates shared information. The authors compare to many competitive FL algorithms and also ablate their own method. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper presents three main strengths: novelty in method (frequency-space aggregation), thorough comparison to other methods, and ablation studies with discussion on proposed novelties. Many references throughout to support the proposed method. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. A lack of multiple runs for confidence intervals or statistical significance testing would benefit the paper. Some visualization of correct/incorrect images would be nice too; however, space restrictions make this difficult. However, these weaknesses are minor and likely will be covered in the journal follow-up. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This work is fairly reproducible. The methods are clear and the datasets are public. There is some ambiguity on exact preprocessing and split of the data, but this is minor. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up which investigates qualitative results further, as well as a more developed theory explaining why aggregation in the Fourier domain works. Please state your overall opinion of the paper ground-breaking (10) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the novelty, explanation, and numerical results, performing operations on neural network weights in the frequency domain is ground-breaking. The current scheme progressively increases the bandwidth of the LPF during aggregation. I anticipate future works to improve on this method. Overall outstanding. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 7 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviews for this paper that proposes a novel aggregation method in Fourier-Transformed parameter space to address the retrogress problem in a FL setup is throughout positive. I would like to congratulate the authors for this outstanding paper. It addresses an important problem of medical FL with a novel approach that is evaluated convincingly. Some details are missing or unclear as highlighted by one of the reviewers, which should be added or clarified in the manuscript. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback We thank the Meta-Reviewer and Reviewers for their valuable comments. We appreciate it very much that the reviewers gave very positive feedback. R1 Q1: Is the retrogress commonly considered a problem? A: To the best of our knowledge, we first explicitly pointed out the abrupt performance drop caused by the server aggregation of existing FL methods, which is termed as retrogress, and proposed the PFA and DET to resolve it on the server and client side, respectively. Slightly similar to the retrogress problem, ref [20] considered the permutation matching problem of network parameters in FL, which may become one of the reasons for the retrogress. Q2: Is DET followed by E epochs of training or is the whole local training E epochs long? A: After each communication iteration, all FL methods conduct total E epochs local training, which is a fair comparison setting. Specifically, the baselines with a single model on each client [12, 7, 1, 22, 8] conduct E epochs training with cross entropy loss, while FML [16] and our method conduct E epochs training under mutual learning and DET, respectively. Q3: Does it make sense to reshape the parameter matrix? Why is it different than in ref [9]? A: (1) Reshaping the parameter tensor of conv layer is a widely-used trick for further analysis, which follows the operations in [9] and [#1]. (2) The tasks of these two works are different. Ref [9] focused on the inference efficiency of CNN, and further replaced the spatial convolution with DFT-based matrix multiplication. In this work, we analyze the parameters in frequency domain to improve the server aggregation. [#1] Convolutional neural networks with low-rank regularization, ICLR, 2016. Q4: Hyperparameters: how were they selected? A: The hyper-parameters were selected according to the performance on the validation set. Q5: Imbalances: Does it make sense to take the mean over different AUCs? A: The category imbalance is a challenge for dermoscopic diagnosis, and the averaged AUC is commonly utilized to evaluate the performance on skin lesion tasks [#2]. In addition, we calculated the F1 score for a more comprehensive evaluation. [#2] A Mutual Bootstrapping Model for Automated Skin Lesion Segmentation and Classification, TMI, 2020. Q6: Table 2, the authors probably use the mean of the per-institution metrics, rather than the average weighted by the number of samples. A: Yes, we adopted the macro average, rather than the micro average. The micro average gives each client the importance of sample size, which is likely to overlook some clients with fewer samples (e.g., client C). Therefore, the macro average is relatively more reasonable. Q7: Do you have personalized BN statistics? A: (1) The personalized model p on each client does not communicate with the server directly, which always holds its own BN statistics. (2) During the Recover step in DET, the deputy model d learns knowledge from the personalized model using client data. We empirically find that the deputy model using either the server BN statistics or personalized BN statistics does not affect the performance of the personalized model p. Therefore, the BN statistics are not the focus in our FL framework. R2 Q1: Although retrogress is a valid concern in FL, if appropriate data harmonization is done correctly, retrogress is significantly less pronounced. A: Data harmonization may require additional information, e.g., data distribution of clients, which would violate the privacy setting of FL. In this work, we formulate the real-world FL task from a rigorous perspective. The proposed framework improves the server aggregation and client training to handle the retrogress, providing a fair setting for comparison with existing FL methods. R3 Q1: Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up…works. A: We really appreciate the reviewer for recognizing the merits of this work, and are going to solve the limitations. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Chen, Zhen,Zhu, Meilu,Yang, Chen,Yuan, Yixuan" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Personalized Retrogress-Resilient Framework for Real-World Medical Federated Learning</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Dermatology"
+        class="post-category">
+        Clinical applications - Dermatology
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Chen, Zhen"
+        class="post-tags">
+        Chen, Zhen
+      </a> |  
+      
+      <a href="kittywong/tags#Zhu, Meilu"
+        class="post-tags">
+        Zhu, Meilu
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Chen"
+        class="post-tags">
+        Yang, Chen
+      </a> |  
+      
+      <a href="kittywong/tags#Yuan, Yixuan"
+        class="post-tags">
+        Yuan, Yixuan
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Zhen Chen, Meilu Zhu, Chen Yang, Yixuan Yuan
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Nowadays, deep learning methods with large-scale datasets can produce clinically useful models for computer-aided diagnosis. However, the privacy and ethical concerns are increasingly critical, which make it difficult to collect large quantities of data from multiple institutions. Federated Learning (FL) provides a promising decentralized solution to train model collaboratively by exchanging client models instead of private data. However, the server aggregation of existing FL methods is observed to degrade the model performance in real-world medical FL setting, which is termed as retrogress. To address this problem, we propose a personalized retrogress-resilient framework to produce a superior personalized model for each client. Specifically, we devise a Progressive Fourier Aggregation (PFA) at the server to achieve more stable and effective global knowledge gathering by integrating client models from low-frequency to high-frequency gradually. Moreover, with an introduced deputy model to receive the aggregated server model, we design a Deputy-Enhanced Transfer (DET) strategy at the client and conduct three steps of Recover-Exchange-Sublimate to ameliorate the personalized local model by transferring the global knowledge smoothly. Extensive experiments on real-world dermoscopic FL dataset prove that our personalized retrogress-resilient framework outperforms state-of-the-art FL methods, as well as the generalization on an out-of-distribution cohort. The code and dataset are available at https://github.com/CityU-AIM-Group/PRR-FL. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_33">https://doi.org/10.1007/978-3-030-87199-4_33</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/CityU-AIM-Group/PRR-FL
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://github.com/CityU-AIM-Group/PRR-FL
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors investigate the problem of federated learning on datasets with real-world distribution shifts (due to imaging devices etc.). They aim to improve upon other FL algorithms through model personalization, based on the observation that local model performance typically drops directly after each aggregation step (termed “retrogress” here). As the main contribution, a method is proposed that combines central model aggregation as a low pass parameter aggregation via the Fourier space of the parameters/ Conv kernels and model distillation techniques during local training. The method is evaluated in simulated FL on a multi-centric dermoscopic dataset and compares favorably to several baselines. OOD generalization on an unseen institution is also improved by the method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>As far as I know novel aggregation method in Fourier-transformed parameter space</li>
+        <li>Well written and good to follow</li>
+        <li>Comparison to several baselines performed</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Some details of the method are not stated clearly (duration of DET? FedBN?)</li>
+        <li>Hyperparameter tuning method not described</li>
+        <li>The Out-of-distribution Generalization part (Sec 3.4.) is not well explained. I.e. which model/ client model was used and how the datasets differ.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Positive:</p>
+      <ul>
+        <li>Hyperparameters seem complete</li>
+        <li>Public datasets used</li>
+        <li>Description of the study cohort (class statistics) included, but not complete (OOD experiments)</li>
+      </ul>
+
+      <p>Negative:</p>
+      <ul>
+        <li>Not described how hparams were chosen and how sensitive to changes. How were baselines tuned?</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>General:</p>
+      <ul>
+        <li>Well written, mostly easy to follow (except some methods parts)</li>
+        <li>Clear structure and ablation studies; supplementary material with additional value</li>
+      </ul>
+
+      <p>Introduction:</p>
+      <ul>
+        <li>Given that the retroregress problem is given as the main motivation for the method, it should be backed up with additional references to support the generalizability of the method. Is the retroregress commonly considered a problem?</li>
+      </ul>
+
+      <p>Methods:</p>
+      <ul>
+        <li>Overview:  Although all parts are mentioned, the overall process is not fully clear: Is DET followed by E epochs of training or is the whole local training E epochs long?</li>
+        <li>Fig. 2: Need to explain all symbols. In particular, d, F^A, F^P, M have not been introduced when the figure is first mentioned. The DET part is in my opinion not very helpful and the gray arrow confusing.</li>
+        <li>PFA: Explanation of the way the parameters are transformed into the Fourier representation is unclear: Why does it make sense to reshape the parameter matrix the way done here? Why is it different than in ref [9]?</li>
+        <li>In Eq (3), there is an iteration over K in the second term (while w_k is used beforehand). This can be very confusing, and it might help to use another counter instead of ‘k’ for the second term.</li>
+        <li>
+          <table>
+            <tbody>
+              <tr>
+                <td>DET: since steps R&amp;S are similar to model distillation, a reference would be adequate in my opinion. Equation 4: p(x) should rather be p(y</td>
+                <td>x).</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>Is the full dataset used for the KL-div. in each step, as indicated by eq.4? In the “sublimate” step, it would help if you state explicitly that d minimizes L_CE1 and p minimizes L_p.</li>
+      </ul>
+
+      <p>Experiments:</p>
+      <ul>
+        <li>Table 1: Another column with information about the data source would help. If I see it correctly, A-C are HAM10K and D is MSK. For HAM10K, indication of the institution/imaging device would be good. As another “client” is introduced in 3.4, this split should also be included here.</li>
+        <li>Hyperparameters: how were they selected? How sensitive is the method to r’s and lambdas? How were the baseline hyperparameters (if any) tuned?</li>
+        <li>How long does DET take (if it is done prior to E local epochs)?</li>
+        <li>Imbalances: Since the clients (esp. B) show quite some heterogeneities with respect to the class statistics, a short discussion would be in order. Does especially AUC eliminate impacts of class imbalances and does it make sense to take the mean over different AUCs (with different class statistics) ?</li>
+        <li>Table 2: The results for FML and “ours w/o PFA” appear to be very close (also in the Supplements). Thus, it would be interesting to investigate the effects/ benefits of DET vs FML in combination with PFA.</li>
+        <li>It would be good to give variances as given in the suppl. if multiple runs are done.</li>
+        <li>Table 2: For the AVG, the authors probably use the mean of the per-institution metrics and do not recompute the metrics over the whole dataset (i.e. the presented AVG is not weighted by the number of samples). It would be great if the authors could state that and explain their reasoning behind that.</li>
+        <li>Ablation study: You mention that your method is identical with FedBN except PFA and DET. So do you also have personalized BN statistics? This should be stated in the method description.</li>
+        <li>OOD generalization: Where is the analysis for stat. Significance? Maybe add an upper baseline trained on the unseen client. Which client model was used ?</li>
+      </ul>
+
+      <p>Typos:</p>
+      <ul>
+        <li>Conclusion last sentence: insert “a” before “real-world dermoscopic” and a out-of-distribution -&gt; an out-of-distribution</li>
+      </ul>
+
+      <p>Suppl:</p>
+      <ul>
+        <li>The performance of the methods seem to get worse with more frequent updates (Suppl. Fig 1). This appears to be a bit counter-intuitive as more information can be exchanged (and an update after each batch should equate to normal grad decent with larger batch size…)</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Overall, a well written paper that shows a novel approach and also shows clear improvements to the compared approaches. Some inaccuracies and minor issues could be discussed and better addressed.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel model aggregation technique based on transforming the model weights to the frequency domain, which could alleviate issues stemming from unique weights in individual model parameters because of data heterogeneity.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The method could adequately address the “retrogress” problem in FL, which hinder local model training and good global model aggregation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Although I agree with the authors that retrogress is a valid concern in FL, in practical terms, if appropriate data harmonization is done correctly and a model trained on publicly available data (for the problem at hand) is used for initialization, retrogress is significantly less pronounced. This fact is not mentioned anywhere in the paper.</p>
+
+      <p>Furthermore, the authors seem to have missed some immediately related literature. here are a couple of examples that the authors should consider:</p>
+      <ul>
+        <li>https://doi.org/10.1038/s41746-020-00323-1</li>
+        <li>https://doi.org/10.1038/s41598-020-69250-1</li>
+        <li>https://doi.org/10.1038/s41746-021-00431-6</li>
+      </ul>
+
+      <p>Some grammar consideration:</p>
+      <ul>
+        <li>Abstract
+          <ul>
+            <li>“Nowadays” &gt; “These days”</li>
+          </ul>
+        </li>
+        <li>Introduction
+          <ul>
+            <li>“intelligent healthcare system” &gt; “intelligent healthcare systems”</li>
+            <li>“parameters in element-wise” &gt; “parameters in an element-wise manner”</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method and datasets being used are described in detail, but without the source code reproducibility is a concern.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Some interesting points are raised but the authors have skipped literature, have had grammatical errors, and since in this domain authors should consider adding their associated source code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>If the authors have not missed the associated literature, they were more cautious in grammar and in their claims, as well as have shared their code, I would have recommended a direct “accept”.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>To combat retrogression, the phenomenon where federated models lose the ability to specialize to local datasets, the authors propose progressive Fourier aggregation (PFA) coupled with deputy-enhanced transfer (DET) to fuse multiple sites’ weights. This work assumes that low-frequency information in weights is safe to average, while high-frequency information is site-specific. Further, to discourage catastrophic forgetting, the DET component smoothly incorporates shared information. The authors compare to many competitive FL algorithms and also ablate their own method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This paper presents three main strengths: novelty in method (frequency-space aggregation), thorough comparison to other methods, and ablation studies with discussion on proposed novelties. Many references throughout to support the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>A lack of multiple runs for confidence intervals or statistical significance testing would benefit the paper. Some visualization of correct/incorrect images would be nice too; however, space restrictions make this difficult. However, these weaknesses are minor and likely will be covered in the journal follow-up.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>This work is fairly reproducible. The methods are clear and the datasets are public. There is some ambiguity on exact preprocessing and split of the data, but this is minor.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up which investigates qualitative results further, as well as a more developed theory explaining why aggregation in the Fourier domain works.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>ground-breaking (10)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Aside from the novelty, explanation, and numerical results, performing operations on neural network weights in the frequency domain is ground-breaking. The current scheme progressively increases the bandwidth of the LPF during aggregation. I anticipate future works to improve on this method. Overall outstanding.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The reviews for this paper that proposes a novel aggregation method in Fourier-Transformed parameter space to address the retrogress problem in a FL setup is throughout positive. I would like to congratulate the authors for this outstanding paper. It addresses an important problem of medical FL with a novel approach that is evaluated convincingly. Some details are missing or unclear as highlighted by one of the reviewers, which should be added or clarified in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the Meta-Reviewer and Reviewers for their valuable comments. We appreciate it very much that the reviewers gave very positive feedback.</p>
+
+  <p>R1
+Q1: Is the retrogress commonly considered a problem?
+A: To the best of our knowledge, we first explicitly pointed out the abrupt performance drop caused by the server aggregation of existing FL methods, which is termed as retrogress, and proposed the PFA and DET to resolve it on the server and client side, respectively. Slightly similar to the retrogress problem, ref [20] considered the permutation matching problem of network parameters in FL, which may become one of the reasons for the retrogress.</p>
+
+  <p>Q2: Is DET followed by E epochs of training or is the whole local training E epochs long?
+A: After each communication iteration, all FL methods conduct total E epochs local training, which is a fair comparison setting. Specifically, the baselines with a single model on each client [12, 7, 1, 22, 8] conduct E epochs training with cross entropy loss, while FML [16] and our method conduct E epochs training under mutual learning and DET, respectively.</p>
+
+  <p>Q3: Does it make sense to reshape the parameter matrix? Why is it different than in ref [9]?
+A: (1) Reshaping the parameter tensor of conv layer is a widely-used trick for further analysis, which follows the operations in [9] and [#1]. 
+(2) The tasks of these two works are different. Ref [9] focused on the inference efficiency of CNN, and further replaced the spatial convolution with DFT-based matrix multiplication. In this work, we analyze the parameters in frequency domain to improve the server aggregation. 
+[#1] Convolutional neural networks with low-rank regularization, ICLR, 2016.</p>
+
+  <p>Q4: Hyperparameters: how were they selected? 
+A: The hyper-parameters were selected according to the performance on the validation set.</p>
+
+  <p>Q5: Imbalances: Does it make sense to take the mean over different AUCs?
+A: The category imbalance is a challenge for dermoscopic diagnosis, and the averaged AUC is commonly utilized to evaluate the performance on skin lesion tasks [#2]. In addition, we calculated the F1 score for a more comprehensive evaluation.
+[#2] A Mutual Bootstrapping Model for Automated Skin Lesion Segmentation and Classification, TMI, 2020.</p>
+
+  <p>Q6: Table 2, the authors probably use the mean of the per-institution metrics, rather than the average weighted by the number of samples. 
+A: Yes, we adopted the macro average, rather than the micro average. The micro average gives each client the importance of sample size, which is likely to overlook some clients with fewer samples (e.g., client C). Therefore, the macro average is relatively more reasonable.</p>
+
+  <p>Q7: Do you have personalized BN statistics? 
+A: (1) The personalized model p on each client does not communicate with the server directly, which always holds its own BN statistics. (2) During the Recover step in DET, the deputy model d learns knowledge from the personalized model using client data. We empirically find that the deputy model using either the server BN statistics or personalized BN statistics does not affect the performance of the personalized model p. Therefore, the BN statistics are not the focus in our FL framework.</p>
+
+  <p>R2
+Q1: Although retrogress is a valid concern in FL, if appropriate data harmonization is done correctly, retrogress is significantly less pronounced. 
+A: Data harmonization may require additional information, e.g., data distribution of clients, which would violate the privacy setting of FL. In this work, we formulate the real-world FL task from a rigorous perspective. The proposed framework improves the server aggregation and client training to handle the retrogress, providing a fair setting for comparison with existing FL methods.</p>
+
+  <p>R3
+Q1: Overall excellent paper with a clever approach and great results. Looking forward to a more comprehensive follow-up…works.
+A: We really appreciate the reviewer for recognizing the merits of this work, and are going to solve the limitations.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0332-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0333-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Dermatology"
+        class="post-category">
+        Clinical applications - Dermatology
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Chen, Zhen"
+        class="post-category">
+        Chen, Zhen
+      </a> |  
+      
+      <a href="kittywong/tags#Zhu, Meilu"
+        class="post-category">
+        Zhu, Meilu
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Chen"
+        class="post-category">
+        Yang, Chen
+      </a> |  
+      
+      <a href="kittywong/tags#Yuan, Yixuan"
+        class="post-category">
+        Yuan, Yixuan
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0333/12/31/Paper1531">
+          Federated Whole Prostate Segmentation in MRI with Personalized Neural Architectures
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0331/12/31/Paper1236">
+          FedPerl: Semi-Supervised Peer Learning for Skin Lesion Classification
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

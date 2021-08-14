@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>From Brain to Body: Learning Low-Frequency Respiration and Cardiac Signals from fMRI Dynamics | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="From Brain to Body: Learning Low-Frequency Respiration and Cardiac Signals from fMRI Dynamics" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Roza G. Bayrak, Colin B. Hansen, Jorge A. Salas, Nafis Ahmed, Ilwoo Lyu, Yuankai Huo, Catie Chang Abstract Functional magnetic resonance imaging (fMRI) is a powerful technique for studying human brain activity and large-scale neural circuits. However, fMRI signals can be strongly modulated by slow changes in respiration volume (RV) and heart rate (HR). Monitoring cardiac and respiratory signals during fMRI enables modeling and/or reducing such effects; yet, physiological measurements are often unavailable in practice, and are missing from a large number of fMRI datasets. Very recent work has demonstrated the ability to reconstruct RV signals from resting-state fMRI data, but it is currently unclear whether such an approach generalizes to other physiological signals (such as HR) or across fMRI task conditions. Here, we propose a joint learning approach for inferring RV and HR signals directly from fMRI time-series dynamics. Our models are trained on resting-state fMRI data using the largest dataset employed for the problem, and tested both on resting-state fMRI and on separate fMRI paradigms that were acquired during three task conditions:emotion processing, social cognition, and working memory. We demonstrate that our deep LSTM model successfully captures both RV andHR patterns, outperforming existing approaches, and translates to scans of variable lengths and different experimental conditions. Source code is available at: https://github.com/neurdylab/deep-physio-recon. Link to paper https://doi.org/10.1007/978-3-030-87234-2_52 Link to the code repository https://github.com/neurdylab/deep-physio-recon Link to the dataset(s) https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release Reviews Review #1 Please describe the contribution of the paper The paper proposes a framework to learn heart rate and respiratory signal from fMRI data. Building on a previous framework the authors extend this research to jointly learn HR and RV signals (instead of just RV signal), use gray and white matter signals, and look at both task and resting state fmri data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper adds heart rate in addition to Respiration and uses a joint HR and RV approached to a similar published framework. It also looks at other atlases (including white matter). I think looking at white matter in addition to grey matter is an interesting addidtion. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There was a similar paper in miccai last year and now published in a journal, which hurts novelity. Model likely doesn’t do any better than the competing algorithms for HR. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data is open source but I’m not sure about the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There needs to be a formal comparison between the methods. Right now the paper only states that the proposed method gives the numerically best results. But Deep bi-lstm seems to give similar results as the competing methods for RV (especially compared to SepCONV). The improvement seem to be mainly in the HR prediction. As correlations are used to assess prediction Steiger’s Z-test could be used to compare them. The authors would need to get the correlation between the HR predictions from each algorithm. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the strengths of the paper outweight weaknesses What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors developed a bi-LSTM based model the jointly predicted the cardiac and respiratory components from rs-fMRI data. This method achieved better correlation than other existing models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novelty here is the usage of the fully connected layers for a joint estimation of the cardiac and respiratory signals and the usage of the task data for validation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. See detailed comments below. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No issue found Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, it’s unclear about the big picture. The “ground truth” used in this work are not the actual cardiac and respiratory signals, rather they are functions of them, specifically, the low frequency components of them. Part of the reason I think is because fMRI recordings have much lower sampling rate, hence theoretically even impossible to directly predict the higher frequency cardiac and respiratory signals. However, it has been shown that the inter-beat-interval of the cardiac signal and the magnitude of the respiratory signal only can explain a small portion of the variance in the “physiological component”/”global component” of fMRI data. Therefore, even under the condition that perfect correlation can be obtained using a deep learning model, is this type of prediction still meaningful? How would you use the model to better facilitate processing fMRI data or gain deeper insights about functional connectivity of the brain? Why did the authors use a band pass filter with a cut-off frequency at 0.15 Hz? There are debates about band pass filter in fMRI preprocessing, but it has been shown that there are extra information beyond the cut-off frequency. HCP data (1/0.72 / 2 = 0.69 Hz) does have the capability to see the signal in a slightly higher frequency range. In fact, the respiratory signal is around 0.3 Hz, which is inside the range. Why not try to model that directly? Is the ROI-based approach used mainly for computational tractability? The reviewer noticed that some key ROIs are missing from the 4 atlases, e.g. cerebellar gray matter, basal forebrain, regions within the brainstem and ventral diencephalon but not inside the ROIs defined in the Harvard arousal ascending network atlas. A related question: is that possible to perform a voxel-based analysis? Could the authors explain the negative correlation in Fig. 2? Fig. 3, it would be great if the authors can (at least try to) explain why brainstem and cerebellum has better predictability than other regions? Is this expected to have some similar spatial distribution or correlation to the vascular system in the brain? Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Minor modification of the previous method, same application, with unclear aim. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper does present a neural network (derived from LSTM) to extract the cardiac and respiratory at the same time from the BOLD signals of resting-state or task fMRI. The paper claims on the performance advantage of the newly purposed network w.r.t. existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength claimed the paper is apparently the neural network it is purposing and the relatively numerical performance improvement in identifying RV and HR. But in my opinion, the paper is more interesting on its broader coverage of both resting-state and task fMRI data into the same frame work, especially given how dramatically different of the data protocol in HCP data set. I am a little surprised it worked out nicely as well as some of the obsevations can be extended when they choose one parcellation versus another (and again, those parcellation does seem gigantically different in both the defination of regions as well as number of regions). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I think the numerical advantage of the method is questionable for two reasons: both RV and HR are time series with apparent frequency, I don’t think Pearson correlation is a good idea if at all. The author should use alternative metrics that can take the periodicity into consideration, e.g. coherence or perform the evluation in a frquency domain. Even using the Person correlation as is provided in the paper. The numerical improvement seems to trivial to be published and I highly doubted if the improvement is significant at all. The author should provide more insight for table 1. I have a concern the model is simply overfitting some artifical patterns of the HCP data, as both the training and testing sets are very limited to the single dataset. Understanbly HCP is more or less a golden standard data set but I would really hope the author to justify or at least compare his results using another data set, given the delicate tendancy that neural network can easily over-fit to some unkown features of the data. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claimed he will include detailed implementation and codes in the resource repo. I didn’t see any links in the paper but hope he will have those avaliable before or on the conference. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would strongly advise the author to revisit his evluations. As I pointed above, Pearson correlation is a horrible idea for the specific kind of time series we are estimating. Also replicating it in any non-HCP data will be a big plus for this research. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the paper is actually a bit weak in justifying its perfomrance superiourity numerically however shows several more interesting qualitlitive/physilogical findings, thus a borderline accept. I think the paper should be published in the conference and hear broader discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were generally positive about the methodology and overall goal of predicting HR and RV from fMRI data. However, they flagged a number of weaknesses, which the authors should address in their rebuttal. Specifically, the authors should justify the following aspects of the paper: (1) the use of processed HR and RV signals as the “ground truth”, rather than the original (2) from a signal processing perspective, how the coarsely sampled fMRI can be used to infer physiological signals at higher frequencies (3) the use of Pearson’s correlation as the loss function, particularly since it does not capture the periodicity of the physiological signals (4) the preprocessing steps for the HCP data, particularly the bandpass filter and missing ROIs; (5) why the cerebellum and brainstem have the greatest predictive value for HR and RV. Perhaps the model is overfitting to peculiarities of the HCP data? The cerebellum and brain stem are often cutoff in clinical fMRI acquisitions, so it is unclear how valuable the method would be in such cases. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. While I thank the authors for the clarifications, it seems like the utility of this method is fundamentally limited by how well the RV and HR signals capture the physiological noise of interest. I also found the response to the comment raised by Reviewer 2 (reconstructing high-frequency signals) to be weak, as this reconstruction seems like it would be important to the removal of physiological artifacts. Finally, I am perplexed by the results. It seems like removing the two highest-weighted areas (cerebellum and brain stem) does not change the overall performance. In this case, perhaps the network is overfitting or randomly selecting and zoning in on a single region for the estimation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have been convinced by the authors’ feedback regarding the 5 questions raised by primary meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The author gave reasonable answers to all the questions raised by all reviewers and meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for the insightful comments. We appreciate that all the reviewers were enthusiastic about the proposed method of estimating respiration volume and heart rate signals directly from fMRI data itself. The two major concerns were: Frequency range (Meta-reviews 1-4) Reviewers commented on the use of the processed and band-pass filtered RV and HR signals rather than the raw physiological waveforms, the suitability of Pearson correlation as a loss function, and whether the models would be able to infer higher frequency physiological signals. The motivation behind the use of processed, low-frequency components of the physiological waveforms is described in the Introduction of our manuscript. The major reasons we focus on RV and HR, rather than the higher-frequency periodic physiological signal, are: (1) RV and HR are in the precise frequency band (~0.01-0.15 Hz) occupied by the neuronally modulated hemodynamic responses used to study brain connectivity [1,3]; (2) these lower-frequency variations have been found to account for large amounts of temporal variance in fMRI signals [3,5], and (3) they are found to have a larger impact on functional connectivity measures compared to faster, cyclic effects that are synchronized with the breathing cycle and pulsation [6]. Consequently, the ground truth of our data (and the focus of our prediction) is intentionally constrained to the processed RV and HR signals, and filtered within the 0.01-0.15 Hz frequency range. We would also like to emphasize that because we are calculating the amplitude envelope of the periodic signals (for RV [2]) and fluctuations in the rate of the heartbeat intervals [4], the RV and HR signals themselves are not periodic [3]. Hence Pearson correlation remains a suitable loss function to evaluate similarity between target and predicted data. Contrary to reviewer #2’s comment, it is possible to reconstruct higher-frequency physiological components from fMRI, based on sub-second timing differences of slices acquired within each volume, or by using fast-sampled fMRI data [7-8]; however, this is not the focus of our study. Brainstem and Cerebellar ROIs (Meta-review 5) Reviewers asked why the brainstem and cerebellar regions have the greatest predictive value, and whether removing these would impact the model performance. Brainstem regions play an important role in the regulation of cardiac and respiratory function, and cerebellum is known to be involved in respiration [9]. In addition, as the brainstem and cerebellum are located near major arteries and fluid-filled spaces, their BOLD signals are strongly influenced by cardio-respiratory activity [10]. These factors might account for the high predictive value of brainstem and cerebellar regions in our models. We agree that it would be important to assess the performance of our technique without these regions, given that they are often absent from clinical fMRI acquisitions. Therefore, we have now run an analysis where we have excluded the 20 regions that overlap with brainstem and cerebellum. The resulting median r between observed and predicted signals were r~0.679 for RV and r~0.624 for HR (compared to r~0.684 and r~0.620, respectively, in the original analysis). This analysis suggests that the remaining 477 ROIs contained sufficient information, even in the absence of brainstem and cerebellar regions, to predict the physiological signals of interest. This additional analysis can be provided as supplementary material. References: [1] Tong et al., 2019, PMID: 31474815 [2] Kassinopoulos &amp; Mitsis, 2019, PMID: 31487547 [3] Birn et al., 2006, PMID: 16632379 [4] Shmueli et al., 2007, PMID: 17869543 [5] Salas et al., 2020, PMID: 33129927 [6] Xifra-Porxas et al., doi.org/10.1101/2020.02.04.934554 [7] Beall et al., 2007, PMID: 17689982 [8] Aslan et al., 2019, PMID: 31129302 [9] Xu et al., 2002, PMID:12879972 [10] Brooks et al., 2013, PMID:24109446 back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Roza G. Bayrak, Colin B. Hansen, Jorge A. Salas, Nafis Ahmed, Ilwoo Lyu, Yuankai Huo, Catie Chang Abstract Functional magnetic resonance imaging (fMRI) is a powerful technique for studying human brain activity and large-scale neural circuits. However, fMRI signals can be strongly modulated by slow changes in respiration volume (RV) and heart rate (HR). Monitoring cardiac and respiratory signals during fMRI enables modeling and/or reducing such effects; yet, physiological measurements are often unavailable in practice, and are missing from a large number of fMRI datasets. Very recent work has demonstrated the ability to reconstruct RV signals from resting-state fMRI data, but it is currently unclear whether such an approach generalizes to other physiological signals (such as HR) or across fMRI task conditions. Here, we propose a joint learning approach for inferring RV and HR signals directly from fMRI time-series dynamics. Our models are trained on resting-state fMRI data using the largest dataset employed for the problem, and tested both on resting-state fMRI and on separate fMRI paradigms that were acquired during three task conditions:emotion processing, social cognition, and working memory. We demonstrate that our deep LSTM model successfully captures both RV andHR patterns, outperforming existing approaches, and translates to scans of variable lengths and different experimental conditions. Source code is available at: https://github.com/neurdylab/deep-physio-recon. Link to paper https://doi.org/10.1007/978-3-030-87234-2_52 Link to the code repository https://github.com/neurdylab/deep-physio-recon Link to the dataset(s) https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release Reviews Review #1 Please describe the contribution of the paper The paper proposes a framework to learn heart rate and respiratory signal from fMRI data. Building on a previous framework the authors extend this research to jointly learn HR and RV signals (instead of just RV signal), use gray and white matter signals, and look at both task and resting state fmri data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper adds heart rate in addition to Respiration and uses a joint HR and RV approached to a similar published framework. It also looks at other atlases (including white matter). I think looking at white matter in addition to grey matter is an interesting addidtion. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There was a similar paper in miccai last year and now published in a journal, which hurts novelity. Model likely doesn’t do any better than the competing algorithms for HR. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data is open source but I’m not sure about the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There needs to be a formal comparison between the methods. Right now the paper only states that the proposed method gives the numerically best results. But Deep bi-lstm seems to give similar results as the competing methods for RV (especially compared to SepCONV). The improvement seem to be mainly in the HR prediction. As correlations are used to assess prediction Steiger’s Z-test could be used to compare them. The authors would need to get the correlation between the HR predictions from each algorithm. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the strengths of the paper outweight weaknesses What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors developed a bi-LSTM based model the jointly predicted the cardiac and respiratory components from rs-fMRI data. This method achieved better correlation than other existing models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novelty here is the usage of the fully connected layers for a joint estimation of the cardiac and respiratory signals and the usage of the task data for validation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. See detailed comments below. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No issue found Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, it’s unclear about the big picture. The “ground truth” used in this work are not the actual cardiac and respiratory signals, rather they are functions of them, specifically, the low frequency components of them. Part of the reason I think is because fMRI recordings have much lower sampling rate, hence theoretically even impossible to directly predict the higher frequency cardiac and respiratory signals. However, it has been shown that the inter-beat-interval of the cardiac signal and the magnitude of the respiratory signal only can explain a small portion of the variance in the “physiological component”/”global component” of fMRI data. Therefore, even under the condition that perfect correlation can be obtained using a deep learning model, is this type of prediction still meaningful? How would you use the model to better facilitate processing fMRI data or gain deeper insights about functional connectivity of the brain? Why did the authors use a band pass filter with a cut-off frequency at 0.15 Hz? There are debates about band pass filter in fMRI preprocessing, but it has been shown that there are extra information beyond the cut-off frequency. HCP data (1/0.72 / 2 = 0.69 Hz) does have the capability to see the signal in a slightly higher frequency range. In fact, the respiratory signal is around 0.3 Hz, which is inside the range. Why not try to model that directly? Is the ROI-based approach used mainly for computational tractability? The reviewer noticed that some key ROIs are missing from the 4 atlases, e.g. cerebellar gray matter, basal forebrain, regions within the brainstem and ventral diencephalon but not inside the ROIs defined in the Harvard arousal ascending network atlas. A related question: is that possible to perform a voxel-based analysis? Could the authors explain the negative correlation in Fig. 2? Fig. 3, it would be great if the authors can (at least try to) explain why brainstem and cerebellum has better predictability than other regions? Is this expected to have some similar spatial distribution or correlation to the vascular system in the brain? Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Minor modification of the previous method, same application, with unclear aim. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper does present a neural network (derived from LSTM) to extract the cardiac and respiratory at the same time from the BOLD signals of resting-state or task fMRI. The paper claims on the performance advantage of the newly purposed network w.r.t. existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength claimed the paper is apparently the neural network it is purposing and the relatively numerical performance improvement in identifying RV and HR. But in my opinion, the paper is more interesting on its broader coverage of both resting-state and task fMRI data into the same frame work, especially given how dramatically different of the data protocol in HCP data set. I am a little surprised it worked out nicely as well as some of the obsevations can be extended when they choose one parcellation versus another (and again, those parcellation does seem gigantically different in both the defination of regions as well as number of regions). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I think the numerical advantage of the method is questionable for two reasons: both RV and HR are time series with apparent frequency, I don’t think Pearson correlation is a good idea if at all. The author should use alternative metrics that can take the periodicity into consideration, e.g. coherence or perform the evluation in a frquency domain. Even using the Person correlation as is provided in the paper. The numerical improvement seems to trivial to be published and I highly doubted if the improvement is significant at all. The author should provide more insight for table 1. I have a concern the model is simply overfitting some artifical patterns of the HCP data, as both the training and testing sets are very limited to the single dataset. Understanbly HCP is more or less a golden standard data set but I would really hope the author to justify or at least compare his results using another data set, given the delicate tendancy that neural network can easily over-fit to some unkown features of the data. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claimed he will include detailed implementation and codes in the resource repo. I didn’t see any links in the paper but hope he will have those avaliable before or on the conference. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would strongly advise the author to revisit his evluations. As I pointed above, Pearson correlation is a horrible idea for the specific kind of time series we are estimating. Also replicating it in any non-HCP data will be a big plus for this research. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the paper is actually a bit weak in justifying its perfomrance superiourity numerically however shows several more interesting qualitlitive/physilogical findings, thus a borderline accept. I think the paper should be published in the conference and hear broader discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were generally positive about the methodology and overall goal of predicting HR and RV from fMRI data. However, they flagged a number of weaknesses, which the authors should address in their rebuttal. Specifically, the authors should justify the following aspects of the paper: (1) the use of processed HR and RV signals as the “ground truth”, rather than the original (2) from a signal processing perspective, how the coarsely sampled fMRI can be used to infer physiological signals at higher frequencies (3) the use of Pearson’s correlation as the loss function, particularly since it does not capture the periodicity of the physiological signals (4) the preprocessing steps for the HCP data, particularly the bandpass filter and missing ROIs; (5) why the cerebellum and brainstem have the greatest predictive value for HR and RV. Perhaps the model is overfitting to peculiarities of the HCP data? The cerebellum and brain stem are often cutoff in clinical fMRI acquisitions, so it is unclear how valuable the method would be in such cases. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. While I thank the authors for the clarifications, it seems like the utility of this method is fundamentally limited by how well the RV and HR signals capture the physiological noise of interest. I also found the response to the comment raised by Reviewer 2 (reconstructing high-frequency signals) to be weak, as this reconstruction seems like it would be important to the removal of physiological artifacts. Finally, I am perplexed by the results. It seems like removing the two highest-weighted areas (cerebellum and brain stem) does not change the overall performance. In this case, perhaps the network is overfitting or randomly selecting and zoning in on a single region for the estimation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have been convinced by the authors’ feedback regarding the 5 questions raised by primary meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The author gave reasonable answers to all the questions raised by all reviewers and meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for the insightful comments. We appreciate that all the reviewers were enthusiastic about the proposed method of estimating respiration volume and heart rate signals directly from fMRI data itself. The two major concerns were: Frequency range (Meta-reviews 1-4) Reviewers commented on the use of the processed and band-pass filtered RV and HR signals rather than the raw physiological waveforms, the suitability of Pearson correlation as a loss function, and whether the models would be able to infer higher frequency physiological signals. The motivation behind the use of processed, low-frequency components of the physiological waveforms is described in the Introduction of our manuscript. The major reasons we focus on RV and HR, rather than the higher-frequency periodic physiological signal, are: (1) RV and HR are in the precise frequency band (~0.01-0.15 Hz) occupied by the neuronally modulated hemodynamic responses used to study brain connectivity [1,3]; (2) these lower-frequency variations have been found to account for large amounts of temporal variance in fMRI signals [3,5], and (3) they are found to have a larger impact on functional connectivity measures compared to faster, cyclic effects that are synchronized with the breathing cycle and pulsation [6]. Consequently, the ground truth of our data (and the focus of our prediction) is intentionally constrained to the processed RV and HR signals, and filtered within the 0.01-0.15 Hz frequency range. We would also like to emphasize that because we are calculating the amplitude envelope of the periodic signals (for RV [2]) and fluctuations in the rate of the heartbeat intervals [4], the RV and HR signals themselves are not periodic [3]. Hence Pearson correlation remains a suitable loss function to evaluate similarity between target and predicted data. Contrary to reviewer #2’s comment, it is possible to reconstruct higher-frequency physiological components from fMRI, based on sub-second timing differences of slices acquired within each volume, or by using fast-sampled fMRI data [7-8]; however, this is not the focus of our study. Brainstem and Cerebellar ROIs (Meta-review 5) Reviewers asked why the brainstem and cerebellar regions have the greatest predictive value, and whether removing these would impact the model performance. Brainstem regions play an important role in the regulation of cardiac and respiratory function, and cerebellum is known to be involved in respiration [9]. In addition, as the brainstem and cerebellum are located near major arteries and fluid-filled spaces, their BOLD signals are strongly influenced by cardio-respiratory activity [10]. These factors might account for the high predictive value of brainstem and cerebellar regions in our models. We agree that it would be important to assess the performance of our technique without these regions, given that they are often absent from clinical fMRI acquisitions. Therefore, we have now run an analysis where we have excluded the 20 regions that overlap with brainstem and cerebellum. The resulting median r between observed and predicted signals were r~0.679 for RV and r~0.624 for HR (compared to r~0.684 and r~0.620, respectively, in the original analysis). This analysis suggests that the remaining 477 ROIs contained sufficient information, even in the absence of brainstem and cerebellar regions, to predict the physiological signals of interest. This additional analysis can be provided as supplementary material. References: [1] Tong et al., 2019, PMID: 31474815 [2] Kassinopoulos &amp; Mitsis, 2019, PMID: 31487547 [3] Birn et al., 2006, PMID: 16632379 [4] Shmueli et al., 2007, PMID: 17869543 [5] Salas et al., 2020, PMID: 33129927 [6] Xifra-Porxas et al., doi.org/10.1101/2020.02.04.934554 [7] Beall et al., 2007, PMID: 17689982 [8] Aslan et al., 2019, PMID: 31129302 [9] Xu et al., 2002, PMID:12879972 [10] Brooks et al., 2013, PMID:24109446 back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0751/12/31/Paper0393" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0751/12/31/Paper0393" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0751-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="From Brain to Body: Learning Low-Frequency Respiration and Cardiac Signals from fMRI Dynamics" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0751/12/31/Paper0393"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0751/12/31/Paper0393","headline":"From Brain to Body: Learning Low-Frequency Respiration and Cardiac Signals from fMRI Dynamics","dateModified":"0752-01-05T00:00:00-05:17","datePublished":"0751-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Roza G. Bayrak, Colin B. Hansen, Jorge A. Salas, Nafis Ahmed, Ilwoo Lyu, Yuankai Huo, Catie Chang Abstract Functional magnetic resonance imaging (fMRI) is a powerful technique for studying human brain activity and large-scale neural circuits. However, fMRI signals can be strongly modulated by slow changes in respiration volume (RV) and heart rate (HR). Monitoring cardiac and respiratory signals during fMRI enables modeling and/or reducing such effects; yet, physiological measurements are often unavailable in practice, and are missing from a large number of fMRI datasets. Very recent work has demonstrated the ability to reconstruct RV signals from resting-state fMRI data, but it is currently unclear whether such an approach generalizes to other physiological signals (such as HR) or across fMRI task conditions. Here, we propose a joint learning approach for inferring RV and HR signals directly from fMRI time-series dynamics. Our models are trained on resting-state fMRI data using the largest dataset employed for the problem, and tested both on resting-state fMRI and on separate fMRI paradigms that were acquired during three task conditions:emotion processing, social cognition, and working memory. We demonstrate that our deep LSTM model successfully captures both RV andHR patterns, outperforming existing approaches, and translates to scans of variable lengths and different experimental conditions. Source code is available at: https://github.com/neurdylab/deep-physio-recon. Link to paper https://doi.org/10.1007/978-3-030-87234-2_52 Link to the code repository https://github.com/neurdylab/deep-physio-recon Link to the dataset(s) https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release Reviews Review #1 Please describe the contribution of the paper The paper proposes a framework to learn heart rate and respiratory signal from fMRI data. Building on a previous framework the authors extend this research to jointly learn HR and RV signals (instead of just RV signal), use gray and white matter signals, and look at both task and resting state fmri data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper adds heart rate in addition to Respiration and uses a joint HR and RV approached to a similar published framework. It also looks at other atlases (including white matter). I think looking at white matter in addition to grey matter is an interesting addidtion. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There was a similar paper in miccai last year and now published in a journal, which hurts novelity. Model likely doesn’t do any better than the competing algorithms for HR. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data is open source but I’m not sure about the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html There needs to be a formal comparison between the methods. Right now the paper only states that the proposed method gives the numerically best results. But Deep bi-lstm seems to give similar results as the competing methods for RV (especially compared to SepCONV). The improvement seem to be mainly in the HR prediction. As correlations are used to assess prediction Steiger’s Z-test could be used to compare them. The authors would need to get the correlation between the HR predictions from each algorithm. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the strengths of the paper outweight weaknesses What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors developed a bi-LSTM based model the jointly predicted the cardiac and respiratory components from rs-fMRI data. This method achieved better correlation than other existing models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The novelty here is the usage of the fully connected layers for a joint estimation of the cardiac and respiratory signals and the usage of the task data for validation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. See detailed comments below. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance No issue found Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, it’s unclear about the big picture. The “ground truth” used in this work are not the actual cardiac and respiratory signals, rather they are functions of them, specifically, the low frequency components of them. Part of the reason I think is because fMRI recordings have much lower sampling rate, hence theoretically even impossible to directly predict the higher frequency cardiac and respiratory signals. However, it has been shown that the inter-beat-interval of the cardiac signal and the magnitude of the respiratory signal only can explain a small portion of the variance in the “physiological component”/”global component” of fMRI data. Therefore, even under the condition that perfect correlation can be obtained using a deep learning model, is this type of prediction still meaningful? How would you use the model to better facilitate processing fMRI data or gain deeper insights about functional connectivity of the brain? Why did the authors use a band pass filter with a cut-off frequency at 0.15 Hz? There are debates about band pass filter in fMRI preprocessing, but it has been shown that there are extra information beyond the cut-off frequency. HCP data (1/0.72 / 2 = 0.69 Hz) does have the capability to see the signal in a slightly higher frequency range. In fact, the respiratory signal is around 0.3 Hz, which is inside the range. Why not try to model that directly? Is the ROI-based approach used mainly for computational tractability? The reviewer noticed that some key ROIs are missing from the 4 atlases, e.g. cerebellar gray matter, basal forebrain, regions within the brainstem and ventral diencephalon but not inside the ROIs defined in the Harvard arousal ascending network atlas. A related question: is that possible to perform a voxel-based analysis? Could the authors explain the negative correlation in Fig. 2? Fig. 3, it would be great if the authors can (at least try to) explain why brainstem and cerebellum has better predictability than other regions? Is this expected to have some similar spatial distribution or correlation to the vascular system in the brain? Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Minor modification of the previous method, same application, with unclear aim. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 1 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper does present a neural network (derived from LSTM) to extract the cardiac and respiratory at the same time from the BOLD signals of resting-state or task fMRI. The paper claims on the performance advantage of the newly purposed network w.r.t. existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength claimed the paper is apparently the neural network it is purposing and the relatively numerical performance improvement in identifying RV and HR. But in my opinion, the paper is more interesting on its broader coverage of both resting-state and task fMRI data into the same frame work, especially given how dramatically different of the data protocol in HCP data set. I am a little surprised it worked out nicely as well as some of the obsevations can be extended when they choose one parcellation versus another (and again, those parcellation does seem gigantically different in both the defination of regions as well as number of regions). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I think the numerical advantage of the method is questionable for two reasons: both RV and HR are time series with apparent frequency, I don’t think Pearson correlation is a good idea if at all. The author should use alternative metrics that can take the periodicity into consideration, e.g. coherence or perform the evluation in a frquency domain. Even using the Person correlation as is provided in the paper. The numerical improvement seems to trivial to be published and I highly doubted if the improvement is significant at all. The author should provide more insight for table 1. I have a concern the model is simply overfitting some artifical patterns of the HCP data, as both the training and testing sets are very limited to the single dataset. Understanbly HCP is more or less a golden standard data set but I would really hope the author to justify or at least compare his results using another data set, given the delicate tendancy that neural network can easily over-fit to some unkown features of the data. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author claimed he will include detailed implementation and codes in the resource repo. I didn’t see any links in the paper but hope he will have those avaliable before or on the conference. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would strongly advise the author to revisit his evluations. As I pointed above, Pearson correlation is a horrible idea for the specific kind of time series we are estimating. Also replicating it in any non-HCP data will be a big plus for this research. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think the paper is actually a bit weak in justifying its perfomrance superiourity numerically however shows several more interesting qualitlitive/physilogical findings, thus a borderline accept. I think the paper should be published in the conference and hear broader discussion. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were generally positive about the methodology and overall goal of predicting HR and RV from fMRI data. However, they flagged a number of weaknesses, which the authors should address in their rebuttal. Specifically, the authors should justify the following aspects of the paper: (1) the use of processed HR and RV signals as the “ground truth”, rather than the original (2) from a signal processing perspective, how the coarsely sampled fMRI can be used to infer physiological signals at higher frequencies (3) the use of Pearson’s correlation as the loss function, particularly since it does not capture the periodicity of the physiological signals (4) the preprocessing steps for the HCP data, particularly the bandpass filter and missing ROIs; (5) why the cerebellum and brainstem have the greatest predictive value for HR and RV. Perhaps the model is overfitting to peculiarities of the HCP data? The cerebellum and brain stem are often cutoff in clinical fMRI acquisitions, so it is unclear how valuable the method would be in such cases. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. While I thank the authors for the clarifications, it seems like the utility of this method is fundamentally limited by how well the RV and HR signals capture the physiological noise of interest. I also found the response to the comment raised by Reviewer 2 (reconstructing high-frequency signals) to be weak, as this reconstruction seems like it would be important to the removal of physiological artifacts. Finally, I am perplexed by the results. It seems like removing the two highest-weighted areas (cerebellum and brain stem) does not change the overall performance. In this case, perhaps the network is overfitting or randomly selecting and zoning in on a single region for the estimation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have been convinced by the authors’ feedback regarding the 5 questions raised by primary meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The author gave reasonable answers to all the questions raised by all reviewers and meta-reviewer. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for the insightful comments. We appreciate that all the reviewers were enthusiastic about the proposed method of estimating respiration volume and heart rate signals directly from fMRI data itself. The two major concerns were: Frequency range (Meta-reviews 1-4) Reviewers commented on the use of the processed and band-pass filtered RV and HR signals rather than the raw physiological waveforms, the suitability of Pearson correlation as a loss function, and whether the models would be able to infer higher frequency physiological signals. The motivation behind the use of processed, low-frequency components of the physiological waveforms is described in the Introduction of our manuscript. The major reasons we focus on RV and HR, rather than the higher-frequency periodic physiological signal, are: (1) RV and HR are in the precise frequency band (~0.01-0.15 Hz) occupied by the neuronally modulated hemodynamic responses used to study brain connectivity [1,3]; (2) these lower-frequency variations have been found to account for large amounts of temporal variance in fMRI signals [3,5], and (3) they are found to have a larger impact on functional connectivity measures compared to faster, cyclic effects that are synchronized with the breathing cycle and pulsation [6]. Consequently, the ground truth of our data (and the focus of our prediction) is intentionally constrained to the processed RV and HR signals, and filtered within the 0.01-0.15 Hz frequency range. We would also like to emphasize that because we are calculating the amplitude envelope of the periodic signals (for RV [2]) and fluctuations in the rate of the heartbeat intervals [4], the RV and HR signals themselves are not periodic [3]. Hence Pearson correlation remains a suitable loss function to evaluate similarity between target and predicted data. Contrary to reviewer #2’s comment, it is possible to reconstruct higher-frequency physiological components from fMRI, based on sub-second timing differences of slices acquired within each volume, or by using fast-sampled fMRI data [7-8]; however, this is not the focus of our study. Brainstem and Cerebellar ROIs (Meta-review 5) Reviewers asked why the brainstem and cerebellar regions have the greatest predictive value, and whether removing these would impact the model performance. Brainstem regions play an important role in the regulation of cardiac and respiratory function, and cerebellum is known to be involved in respiration [9]. In addition, as the brainstem and cerebellum are located near major arteries and fluid-filled spaces, their BOLD signals are strongly influenced by cardio-respiratory activity [10]. These factors might account for the high predictive value of brainstem and cerebellar regions in our models. We agree that it would be important to assess the performance of our technique without these regions, given that they are often absent from clinical fMRI acquisitions. Therefore, we have now run an analysis where we have excluded the 20 regions that overlap with brainstem and cerebellum. The resulting median r between observed and predicted signals were r~0.679 for RV and r~0.624 for HR (compared to r~0.684 and r~0.620, respectively, in the original analysis). This analysis suggests that the remaining 477 ROIs contained sufficient information, even in the absence of brainstem and cerebellar regions, to predict the physiological signals of interest. This additional analysis can be provided as supplementary material. References: [1] Tong et al., 2019, PMID: 31474815 [2] Kassinopoulos &amp; Mitsis, 2019, PMID: 31487547 [3] Birn et al., 2006, PMID: 16632379 [4] Shmueli et al., 2007, PMID: 17869543 [5] Salas et al., 2020, PMID: 33129927 [6] Xifra-Porxas et al., doi.org/10.1101/2020.02.04.934554 [7] Beall et al., 2007, PMID: 17689982 [8] Aslan et al., 2019, PMID: 31129302 [9] Xu et al., 2002, PMID:12879972 [10] Brooks et al., 2013, PMID:24109446 back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Bayrak, Roza G.,Hansen, Colin B.,Salas, Jorge A.,Ahmed, Nafis,Lyu, Ilwoo,Huo, Yuankai,Chang, Catie" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>From Brain to Body: Learning Low-Frequency Respiration and Cardiac Signals from fMRI Dynamics</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Functional Brain Networks"
+        class="post-category">
+        Clinical applications - Neuroimaging - Functional Brain Networks
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Bayrak, Roza G."
+        class="post-tags">
+        Bayrak, Roza G.
+      </a> |  
+      
+      <a href="kittywong/tags#Hansen, Colin B."
+        class="post-tags">
+        Hansen, Colin B.
+      </a> |  
+      
+      <a href="kittywong/tags#Salas, Jorge A."
+        class="post-tags">
+        Salas, Jorge A.
+      </a> |  
+      
+      <a href="kittywong/tags#Ahmed, Nafis"
+        class="post-tags">
+        Ahmed, Nafis
+      </a> |  
+      
+      <a href="kittywong/tags#Lyu, Ilwoo"
+        class="post-tags">
+        Lyu, Ilwoo
+      </a> |  
+      
+      <a href="kittywong/tags#Huo, Yuankai"
+        class="post-tags">
+        Huo, Yuankai
+      </a> |  
+      
+      <a href="kittywong/tags#Chang, Catie"
+        class="post-tags">
+        Chang, Catie
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Roza G. Bayrak, Colin B. Hansen, Jorge A. Salas, Nafis Ahmed, Ilwoo Lyu, Yuankai Huo, Catie Chang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Functional magnetic resonance imaging (fMRI) is a powerful technique for studying human brain activity and large-scale neural circuits. However, fMRI signals can be strongly modulated by slow changes in respiration volume (RV) and heart rate (HR). Monitoring cardiac and respiratory signals during fMRI enables modeling and/or reducing such effects; yet, physiological measurements are often unavailable in practice, and are missing from a large number of fMRI datasets. Very recent work has demonstrated the ability to reconstruct RV signals from resting-state fMRI data, but it is currently unclear whether such an approach generalizes  to  other  physiological  signals  (such  as  HR)  or  across  fMRI  task conditions. Here, we propose a joint learning approach for inferring RV and HR signals directly from fMRI time-series dynamics. Our models are trained on resting-state fMRI data using the largest dataset employed for  the  problem,  and  tested  both  on  resting-state  fMRI  and  on  separate fMRI paradigms that were acquired during three task conditions:emotion processing, social cognition, and working memory. We demonstrate  that  our  deep  LSTM  model  successfully  captures  both  RV  andHR patterns, outperforming existing approaches, and translates to scans of variable lengths and different experimental conditions. Source code is available at: https://github.com/neurdylab/deep-physio-recon.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87234-2_52">https://doi.org/10.1007/978-3-030-87234-2_52</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/neurdylab/deep-physio-recon
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes a framework to learn heart rate and respiratory signal from fMRI data. Building on a previous framework the authors extend this research to jointly learn HR and RV signals (instead of just RV signal), use gray and white matter signals, and look at both task and resting state fmri data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This paper adds heart rate in addition to Respiration and uses a joint HR and RV approached to a similar published framework.</p>
+
+      <p>It also looks at other atlases (including white matter). I think looking at white matter in addition to grey matter is an interesting addidtion.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>There was a similar paper in miccai last year and now published in a journal, which hurts novelity.</p>
+
+      <p>Model likely doesn’t do any better than the competing algorithms for HR.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The data is open source but I’m not sure about the code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>There needs to be a formal comparison between the methods. Right now the paper only states that the proposed method gives the numerically best results. But Deep bi-lstm seems to give similar results as the competing methods for RV (especially compared to SepCONV). The improvement seem to be mainly in the HR prediction. As correlations are used to assess prediction  Steiger’s  Z-test could be used to compare them. The authors would need to get the correlation between the HR predictions from each algorithm.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I think the strengths of the paper outweight weaknesses</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors developed a bi-LSTM based model the jointly predicted the cardiac and respiratory components from rs-fMRI data. This method achieved better correlation than other existing models.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The novelty here is the usage of the fully connected layers for a joint estimation of the cardiac and respiratory signals and the usage of the task data for validation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>See detailed comments below.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>No issue found</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>First of all, it’s unclear about the big picture. The “ground truth” used in this work are not the actual cardiac and respiratory signals, rather they are functions of them, specifically, the low frequency components of them. Part of the reason I think is because fMRI recordings have much lower sampling rate, hence theoretically even impossible to directly predict the higher frequency cardiac and respiratory signals. However, it has been shown that the inter-beat-interval of the cardiac signal and the magnitude of the respiratory signal only can explain a small portion of the variance in the “physiological component”/”global component” of fMRI data. Therefore, even under the condition that perfect correlation can be obtained using a deep learning model, is this type of prediction still meaningful? How would you use the model to better facilitate processing fMRI data or gain deeper insights about functional connectivity of the brain?</p>
+        </li>
+        <li>
+          <p>Why did the authors use a band pass filter with a cut-off frequency at 0.15 Hz? There are debates about band pass filter in fMRI preprocessing, but it has been shown that there are extra information beyond the cut-off frequency. HCP data (1/0.72 / 2 = 0.69 Hz) does have the capability to see the signal in a slightly higher frequency range. In fact, the respiratory signal is around 0.3 Hz, which is inside the range. Why not try to model that directly?</p>
+        </li>
+        <li>
+          <p>Is the ROI-based approach used mainly for computational tractability? The reviewer noticed that some key ROIs are missing from the 4 atlases, e.g. cerebellar gray matter, basal forebrain, regions within the brainstem and ventral diencephalon but not inside the ROIs defined in the Harvard arousal ascending network atlas. A related question: is that possible to perform a voxel-based analysis?</p>
+        </li>
+        <li>
+          <p>Could the authors explain the negative correlation in Fig. 2?</p>
+        </li>
+        <li>
+          <p>Fig. 3, it would be great if the authors can (at least try to) explain why brainstem and cerebellum has better predictability than other regions? Is this expected to have some similar spatial distribution or correlation to the vascular system in the brain?</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>reject (3)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Minor modification of the previous method, same application, with unclear aim.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper does present a neural network (derived from LSTM) to extract the cardiac and respiratory at the same time from the BOLD signals of resting-state or task fMRI. The paper claims on the performance advantage of the newly purposed network w.r.t. existing methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength claimed the paper is apparently the neural network it is purposing and the relatively numerical performance improvement in identifying RV and HR. But in my opinion, the paper is more interesting on its broader coverage of both resting-state and task fMRI data into the same frame work, especially given how dramatically different of the data protocol in HCP data set. I am a little surprised it worked out nicely as well as some of the obsevations can be extended when they choose one parcellation versus another (and again, those parcellation does seem gigantically different in both the defination of regions as well as number of regions).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I think the numerical advantage of the method is questionable for two reasons:</p>
+      <ol>
+        <li>both RV and HR are time series with apparent frequency, I don’t think Pearson correlation is a good idea if at all. The author should use alternative metrics that can take the periodicity into consideration, e.g. coherence or perform the evluation in a frquency domain.</li>
+        <li>Even using the Person correlation as is provided in the paper. The numerical improvement seems to trivial to be published and I highly doubted if the improvement is significant at all. The author should provide more insight for table 1.</li>
+        <li>I have a concern the model is simply overfitting some artifical patterns of the HCP data, as both the training and testing sets are very limited to the single dataset. Understanbly HCP is more or less a golden standard data set but I would really hope the author to justify or at least compare his results using another data set, given the delicate tendancy that neural network can easily over-fit to some unkown features of the data.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The author claimed he will include detailed implementation and codes in the resource repo. I didn’t see any links in the paper but hope he will have those avaliable before or on the conference.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I would strongly advise the author to revisit his evluations. As I pointed above, Pearson correlation is a horrible idea for the specific kind of time series we are estimating. Also replicating it in any non-HCP data will be a big plus for this research.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I think the paper is actually a bit weak in justifying its perfomrance superiourity numerically however shows several more interesting qualitlitive/physilogical findings, thus a borderline accept. I think the paper should be published in the conference and hear broader discussion.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The reviewers were generally positive about the methodology and overall goal of predicting HR and RV from fMRI data. However, they flagged a number of weaknesses, which the authors should address in their rebuttal. Specifically, the authors should justify the following aspects of the paper:</p>
+
+      <p>(1) the use of processed HR and RV signals as the “ground truth”, rather than the original</p>
+
+      <p>(2) from a signal processing perspective, how the coarsely sampled fMRI can be used to infer physiological signals at higher frequencies</p>
+
+      <p>(3) the use of Pearson’s correlation as the loss function, particularly since it does not capture the periodicity of the physiological signals</p>
+
+      <p>(4) the preprocessing steps for the HCP data, particularly the bandpass filter and missing ROIs;</p>
+
+      <p>(5) why the cerebellum and brainstem have the greatest predictive value for HR and RV. Perhaps the model is overfitting to peculiarities of the HCP data? The cerebellum and brain stem are often cutoff in clinical fMRI acquisitions, so it is unclear how valuable the method would be in such cases.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>While I thank the authors for the clarifications, it seems like the utility of this method is fundamentally limited by how well the RV and HR signals capture the physiological noise of interest. I also found the response to the comment raised by Reviewer 2 (reconstructing high-frequency signals) to be weak, as this reconstruction seems like it would be important to the removal of physiological artifacts. Finally, I am perplexed by the results. It seems like removing the two highest-weighted areas (cerebellum and brain stem) does not change the overall performance. In this case, perhaps the network is overfitting or randomly selecting and zoning in on a single region for the estimation.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>12</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>I have been convinced by the authors’ feedback regarding the 5 questions raised by primary meta-reviewer.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The author gave reasonable answers to all the questions raised by all reviewers and meta-reviewer.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>14</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for the insightful comments. We appreciate that all the reviewers were enthusiastic about the proposed method of estimating respiration volume and heart rate signals directly from fMRI data itself. The two major concerns were:</p>
+
+  <ol>
+    <li>Frequency range (Meta-reviews 1-4)</li>
+  </ol>
+
+  <p>Reviewers commented on the use of the processed and band-pass filtered RV and HR signals rather than the raw physiological waveforms, the suitability of Pearson correlation as a loss function, and whether the models would be able to infer higher frequency physiological signals.</p>
+
+  <p>The motivation behind the use of processed, low-frequency components of the physiological waveforms is described in the Introduction of our manuscript. The major reasons we focus on RV and HR, rather than the higher-frequency periodic physiological signal, are: (1) RV and HR are in the precise frequency band (~0.01-0.15 Hz) occupied by the neuronally modulated hemodynamic responses used to study brain connectivity [1,3]; (2) these lower-frequency variations have been found to account for large amounts of temporal variance in fMRI signals [3,5], and (3) they are found to have a larger impact on functional connectivity measures compared to faster, cyclic effects that are synchronized with the breathing cycle and pulsation [6].</p>
+
+  <p>Consequently, the ground truth of our data (and the focus of our prediction) is intentionally constrained to the processed RV and HR signals, and filtered within the 0.01-0.15 Hz frequency range. We would also like to emphasize that because we are calculating the amplitude envelope of the periodic signals (for RV [2]) and fluctuations in the rate of the heartbeat intervals [4], the RV and HR signals themselves are not periodic [3]. Hence Pearson correlation remains a suitable loss function to evaluate similarity between target and predicted data.</p>
+
+  <p>Contrary to reviewer #2’s comment, it is possible to reconstruct higher-frequency physiological components from fMRI, based on sub-second timing differences of slices acquired within each volume, or by using fast-sampled fMRI data [7-8]; however, this is not the focus of our study.</p>
+
+  <ol>
+    <li>Brainstem and Cerebellar ROIs (Meta-review 5)</li>
+  </ol>
+
+  <p>Reviewers asked why the brainstem and cerebellar regions have the greatest predictive value, and whether removing these would impact the model performance.</p>
+
+  <p>Brainstem regions play an important role in the regulation of cardiac and respiratory function, and cerebellum is known to be involved in respiration [9]. In addition, as the brainstem and cerebellum are located near major arteries and fluid-filled spaces, their BOLD signals are strongly influenced by cardio-respiratory activity [10]. These factors might account for the high predictive value of brainstem and cerebellar regions in our models.</p>
+
+  <p>We agree that it would be important to assess the performance of our technique without these regions, given that they are often absent from clinical fMRI acquisitions. Therefore, we have now run an analysis where we have excluded the 20 regions that overlap with brainstem and cerebellum. The resulting median r between observed and predicted signals were r~0.679 for RV and r~0.624 for HR (compared to r~0.684 and r~0.620, respectively, in the original analysis). This analysis suggests that the remaining 477 ROIs contained sufficient information, even in the absence of brainstem and cerebellar regions, to predict the physiological signals of interest. This additional analysis can be provided as supplementary material.</p>
+
+  <p>References:</p>
+
+  <p>[1] Tong et al., 2019, PMID: 31474815
+[2] Kassinopoulos &amp; Mitsis, 2019, PMID: 31487547
+[3] Birn et al., 2006, PMID: 16632379
+[4] Shmueli et al., 2007, PMID: 17869543
+[5] Salas et al., 2020, PMID: 33129927
+[6] Xifra-Porxas et al., doi.org/10.1101/2020.02.04.934554
+[7] Beall et al., 2007, PMID: 17689982
+[8] Aslan et al., 2019, PMID: 31129302
+[9] Xu et al., 2002, PMID:12879972
+[10] Brooks et al., 2013, PMID:24109446</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0751-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0752-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Functional Brain Networks"
+        class="post-category">
+        Clinical applications - Neuroimaging - Functional Brain Networks
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Bayrak, Roza G."
+        class="post-category">
+        Bayrak, Roza G.
+      </a> |  
+      
+      <a href="kittywong/tags#Hansen, Colin B."
+        class="post-category">
+        Hansen, Colin B.
+      </a> |  
+      
+      <a href="kittywong/tags#Salas, Jorge A."
+        class="post-category">
+        Salas, Jorge A.
+      </a> |  
+      
+      <a href="kittywong/tags#Ahmed, Nafis"
+        class="post-category">
+        Ahmed, Nafis
+      </a> |  
+      
+      <a href="kittywong/tags#Lyu, Ilwoo"
+        class="post-category">
+        Lyu, Ilwoo
+      </a> |  
+      
+      <a href="kittywong/tags#Huo, Yuankai"
+        class="post-category">
+        Huo, Yuankai
+      </a> |  
+      
+      <a href="kittywong/tags#Chang, Catie"
+        class="post-category">
+        Chang, Catie
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0752/12/31/Paper0835">
+          Multi-Head GAGNN: A Multi-Head Guided Attention Graph Neural Network for Modeling Spatio-Temporal Patterns of Holistic Brain Functional Networks
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0750/12/31/Paper0224">
+          Detecting Brain State Changes by Geometric Deep Learning of Functional Dynamics on Riemannian Manifold
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Refined Local-imbalance-based Weight for Airway Segmentation in CT | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Refined Local-imbalance-based Weight for Airway Segmentation in CT" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Zheng, Yulei Qin, Yun Gu, Fangfang Xie, Jiayuan Sun, Jie Yang, Guang-Zhong Yang Abstract As 3D navigated bronchoscopy is increasingly used for the biopsy and treatment of peripherally located lung cancer lesions, accurate segmentation of distal small airways plays an important role in both pre- and intra-operative navigation. When adopting CNN-based methods in this task, the gradients to these peripheral branches may disappear before arriving at the bottom layers. Firstly, this is closely related to the ratio of the foreground gradient to the background gradient. Generally, small ratios can lead to the erosion of the surface while the consequence is more serious for the distal small airways. To accurately segment the branches of different sizes, we propose a local-imbalance-based weight that adjusts the gradient ratios according to the quantification of local class imbalance. In addition, if the features of some under-represented areas are not learned in the first few epochs, the gradients to these regions may be filtered out by the last activation layer in the following training. To resolve this problem, we propose in this paper a BP-based weight enhancement strategy that restarts the training with refined weight maps. The largest connected domain in our results achieves a tree length detected rate of 95% with a precision of 92% in the Binary Airway Segmentation Dataset. The code is publicly available at https://github.com/haozheng-sjtu/Local-imbalance-based-Weight. Link to paper https://doi.org/10.1007/978-3-030-87193-2_39 Link to the code repository https://github.com/haozheng-sjtu/Local-imbalance-based-Weight Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This work proposes a gradient reweighting scheme to alleviate vanishing gradients in airway segmentation tasks due to the variations between small and large airways. A scaling factor is introduced to the loss function based on the foreground rate which is claimed to mitigate the gradient erosion issues by balancing local regions. Experimental evaluation on the binary airway segmentation dataset and comparison with several baseline methods shows big improvements in extent of branch length detected. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation of focusing on small, peripheral airway branches in CT is an important one as they are the most challenging and in many instances also are the most interesting for disease prognosis. The proposed trick of rewighting gradients based on the local foreground rate is simple and can be easily integrated into other segmentation tasks with severe class imbalance. Experimental evaluation is extensively performed. The results also show large improvements compared to several recent baseline methods. Ablation study results in Table 1 provide insight into the usefulness of some of the components of the proposed model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the problem of gradient imbalance is discussed in the Introduction, it is difficult to see this being the sole reason for missing peripheral branches. Usually the signal to noise ratio for peripheral branches is lower as they approach the scale of the voxels. Particularly, the hypothesis that small gradient ratio (between foreground and background classes) results in breakages and missing branches is not motivated sufficiently. In Fig. 1, the gradient attention map visualization and the conclusions drawn are heuristically used to suggest that the gradient ratio needs to be adjusted. Bulk of the contribution in the methods is based on several hyperparameters (in Eq. 4,5,6,7,8,9) which are difficult to interpret. Further, the risk of overfitting these parameters to this specific dataset becomes larger as there are no clear discussions also on the sensitivity of the results to these parameters. Discussions elaborating the influence of these parameters can improve this work considerably. Strategies such as signed distance map based labels instead of binary labels have also been used to emphasize on smaller airways; does the proposed method of gradient reweighting have a similar effect? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Training code will be provided and a public dataset is used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See comments above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are good compared to the baselines but the hypothesis of the work pertaining gradient ratios is not well motivated. Further the proposed modifications in the rewighting scheme consists of many hyperparameters that are not clearly described making it hard to see the general usefulness of this local imbalance re-weighting strategy. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use adjust gradients of the neural network weights with respect to the loss to take into account the local class imbalance and hard to segment airway “skeleton points”. The approach is evaluated on what appears to be a closed dataset of 90 CT scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Airway segmentation in CT is a relevant and challenging problem. Impressive results compared to other recent work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I find the paper difficult to follow. The paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer reviewed. I therefore worry that the conclusions and reasoning is wrong. I think the paper could have been more acceptable to me if these aspects had been stated less as facts and more as interesting aspects to examine. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code does not seem to be available Single dataset used that appears to be closed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the useful properties of “the attention of the gradient flow” (Eq 1) that allows you to use it say something about limitations of given losses? The way I see it, the gradient at any one given stage tells you how a given weight should be changed to lower the loss. Assuming somehow you hit a minimum loss, then the gradient map of a region may very well be zero despite the region being important for achieving that minimum. It is also possible that some areas receive gradients at different stages in the training. Visualizing gradients at a given epoch is therefore not necessarily useful for understanding why a given segmentation method may fail. “First, it is necessary to adjust the gradients to different branches according to their sizes.”, I don’t believe there is not enough evidence to say this. Regarding the title, I don’t think it tells the reader a lot about the manuscript and it is unclear what “refined local-imbalance-based weight” refers to. On the class imbalance issue of small airway branches. I find the idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. There are many possible reasons why smaller branches are harder to segment. One of which is simply that they are harder to visually recognize and label. Single pixel errors are also much more noticable when they disconnect a branch from the rest of the tree as opposed to simply shifting a boundary of a larger branch a little bit. On the so-called gradient dilution problem, which was apparantly introduced by [16], and the basis for a lot of the reasoning made in this work. I think too much emphasis is made on conclusions from a paper which has not, as far as I can see, passed peer review and according to google scholar is uncited. I don’t necessarily disagree with the papers conclusions and statements, but maybe in referring to it, it would be good to treat with a bit more skepticism. “To reach to these peripheral targets, the navigation system needs a virtual lung model with a detailed bronchial tree structure, ideally extending to alveoli.” The word “needs” is strong here, maybe a reference to back it up? I find equation 2 unclear. Could you maybe describe in a bit more detail what the greater than equal indicates? The exact challenge provides an open dataset to evaluate airway segmentation algorithms. It is a bit disappointing that only what appears to be a closed dataset was used. How were the hyperparameters of the algorithm chosen and using what data? Abbreviations BP and LIB are undefined at first usage. How are the skeleton points (section 2.2) found? What is i in G^i in Fig.1? According to equation 1 it is the gradient attention of the mth convolutional layer. However, where G^15 is listed in the top, the architecture sketch below only has 14 convolutional blocks. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the results, I think the work is too weak on the experimental side and I am not convinced by the approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper addresses airway segmentation from CT images. One of the main problem is to capture distal airways as they taper along the generation number. The paper offers an analysis of why capturing distal airways is difficult using state of the art methods and propose solutions to the weaknesses. They introduce 2 types of weights, based on local imbalance of intraclass, adjusted based on the prevalence of airway voxels in a patch and another one based on the size of the airways. Those enhancement allows the team to improves upon SOTA methods and breaks the 90% precision / recall, length of airways Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper could be the thorough analysis of the problem and building tools to monitor what they identified as weaknesses. The metrics they use are simple and efficient. Checking the attention of the gradient flow allows them to identify at which point airways start to be missed by the network. The Foreground ratio is adjusted by achieving a weight map in the loss function. the conversion to weights is done by a power function, function of a neighborhood size. The interesting aspect is that one of the weight enhancement is based on the Back Propagation. The hard to segment regions have their weight adjusted based on the number of voxels that were previously detected. The final weight map is a combination of FR and Weight Enhancement (WE). Overall, It does require an iterative process to stop compare and adjust, but it’s very clever as they assess that within the first 5 epochs, results can be meaningful enough to change / adjust or keep it as is. This is patient work that required to good knowledge of the technical problem and offered a generic solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experimenting on the power function for FR could have been interesting, but overall strong paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Paper is very reproducible. Dataset is public and the main contribution is well documented and should be straightforward to implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very solid paper. The paper organization is sound. The motivation is clear. There’s an analysis and comparison to the SOTA. Results improve upon SOTA. Very interesting, incremental but improvement are significant. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a serious team, interested in solving a problem and they looked at what does not work and fixed it. Solution makes sense and is theoretically motivated, there is not tweak on data standardization etc. So it can be applicable to any similar application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a gradient reweighting scheme to tackle the imbalance issue in airway segmentation tasks. A scaling factor is introduced to the loss function based on the foreground rate. As reviewers pointed out, details/clarifications/discussions will be further helpful to support the hypothesis of the work pertaining gradient ratios, the root cause of thin airway difficulty, and hyperparameter settings. Please note, the aim of rebuttal is to clarify misunderstandings / rationale behind method and experiment settings. Promise of extra experiments will not be considered. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of the proposed trick on the candidate dataset is recognized. The major weakness is a thorough discussion of the inherent reason of missing branches, and the basic motivation. Most critics are on a “conceptual” level, and authors gives sufficient information in the rebuttal addressing the questions. Thus, I would suggest acceptance after rebuttal. Beyond the comments, I would also recommend authors to do some comparison with recent works on distance map (as mentioned by one reviewer), e.g. clDice, maybe even combine the ideas since the two do not have conflict, and can potentially complement each other. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work delivers a very careful study of airway segmentation based on CNNs. I agree with R3 that it shows very good results in this clinically challenging problem. While the methodological contribution seems small, segmenting small airway branches with CNNs (but also with traditional methods) is very difficult. The rebuttal clarifies concerns of R1 and R2 regarding hyperparameter settings and causes for failure with thin structures in a sufficient manner, and addresses some misunderstandings. In my opinion, the outcome of this work should be presented to the community, after careful consideration of the reviewer comments to improve the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper mainly aims to segment small airways from CT images. The authors’ feedback answered some questions raised by the first two reviewers. There was some rebuttal about the reference [16]. The problem of mitigating the class imbalance problem and some techniques in this submission are very similar to [16]. A clear explanation on the differences will be necessary. The AC had one additional comment. Detecting small objects is also a hard problem in the object detection community in computer vision. Quite some efforts were spent on improving the performance of small object detection. Some insights on the small object detection and the problem in this paper will be welcomed. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for their comments. In this rebuttal, we will mainly focus on the concerns raised by reviewers 1 and 2. Reviewer #1: 1) The root cause of thin airway difficulty Distal airways are very difficult to annotate even by experienced observers, not only because of the low signal-to-noise ratio in these regions but also due to resolution (both in-plane and through-plane) limit for resolving the underlying bifurcating structures. Although we have carefully annotated these regions, the deep CNNs may fail to segment some distal small branches even in the training set, which is an inherent problem due to the stack of convolutional layers. In this paper, we have tackled this problem and provided an effective solution that is clinically valuable. 2) Hyperparameter settings Because of page limit, the corresponding experiments and figures were not included in the manuscript but were included in the supplementary materials. These parameters lead to a trade-off between branch detected rate and precision. Since the initial weight map is gradually refined by the proposed enhancement strategy, we can start from a combination that results in high precision and then iteratively improve the length detected, enabling the parameters to be used across different airway datasets. 3) Signed distance map (SDM) The SDM can be seen as a special case of voxel-wise re-weighting, which can be used to alleviate the impact of intra-class imbalance between large and small airways. Furthermore, the proposed weight enhancement strategy also can be used to refine the values initialized by SDM. Reviewer #2: 1) The useful properties of gradient attention map The reviewer may not fully understand our problem and missed some important details and the key contribution of the paper. It was found that some annotated peripheral bronchi were not detected through the training process as the gradients to these branches were nearly zero at the bottom layers after the first few epochs. Since these predictions are wrong, existing segmentation losses generate gradients for these positions. However, these gradients can be filtered out by the final sigmoid or softmax layer if the network is confident about the incorrect predictions. Besides, during the first few epochs, the gradients to these regions may be affected by the gradient erosion problem as proposed in ref [16]. In this paper, we have enhanced the learning of these branches by iteratively refining the weight map initialized based on local class imbalance. Experiment results demonstrate that our method improves the length and branch detected rates, which are widely used to evaluate the sensitivity in terms of small airways, instead of “simply shifting a boundary of a larger branch a little bit”. We only demonstrate the gradient attention map in the fifth epoch for two reasons. First, the proposed iterative refinement is based on the gradient flow in this epoch. Second, due to page limit, we only selected a representative example here. But this problem happens throughout the whole training process. We will add more examples in the revised paper and supplementary materials. 2) The idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. Segmenting small airway branches is an unsolved problem and it is also clinically important as recent attention is paid more towards small airways. Existing networks with a large number of parameters fail to detect some branches even in the fine labeled training set, which means there are deeper reasons at the algorithm level. 3) The main weakness claimed is that the paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer-reviewed. We disagree, ref [16] is published by TMI, which is a top journal in our community. 4) A closed dataset was used We disagree, the dataset used is the largest open dataset for airway segmentation currently. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Zheng, Yulei Qin, Yun Gu, Fangfang Xie, Jiayuan Sun, Jie Yang, Guang-Zhong Yang Abstract As 3D navigated bronchoscopy is increasingly used for the biopsy and treatment of peripherally located lung cancer lesions, accurate segmentation of distal small airways plays an important role in both pre- and intra-operative navigation. When adopting CNN-based methods in this task, the gradients to these peripheral branches may disappear before arriving at the bottom layers. Firstly, this is closely related to the ratio of the foreground gradient to the background gradient. Generally, small ratios can lead to the erosion of the surface while the consequence is more serious for the distal small airways. To accurately segment the branches of different sizes, we propose a local-imbalance-based weight that adjusts the gradient ratios according to the quantification of local class imbalance. In addition, if the features of some under-represented areas are not learned in the first few epochs, the gradients to these regions may be filtered out by the last activation layer in the following training. To resolve this problem, we propose in this paper a BP-based weight enhancement strategy that restarts the training with refined weight maps. The largest connected domain in our results achieves a tree length detected rate of 95% with a precision of 92% in the Binary Airway Segmentation Dataset. The code is publicly available at https://github.com/haozheng-sjtu/Local-imbalance-based-Weight. Link to paper https://doi.org/10.1007/978-3-030-87193-2_39 Link to the code repository https://github.com/haozheng-sjtu/Local-imbalance-based-Weight Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This work proposes a gradient reweighting scheme to alleviate vanishing gradients in airway segmentation tasks due to the variations between small and large airways. A scaling factor is introduced to the loss function based on the foreground rate which is claimed to mitigate the gradient erosion issues by balancing local regions. Experimental evaluation on the binary airway segmentation dataset and comparison with several baseline methods shows big improvements in extent of branch length detected. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation of focusing on small, peripheral airway branches in CT is an important one as they are the most challenging and in many instances also are the most interesting for disease prognosis. The proposed trick of rewighting gradients based on the local foreground rate is simple and can be easily integrated into other segmentation tasks with severe class imbalance. Experimental evaluation is extensively performed. The results also show large improvements compared to several recent baseline methods. Ablation study results in Table 1 provide insight into the usefulness of some of the components of the proposed model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the problem of gradient imbalance is discussed in the Introduction, it is difficult to see this being the sole reason for missing peripheral branches. Usually the signal to noise ratio for peripheral branches is lower as they approach the scale of the voxels. Particularly, the hypothesis that small gradient ratio (between foreground and background classes) results in breakages and missing branches is not motivated sufficiently. In Fig. 1, the gradient attention map visualization and the conclusions drawn are heuristically used to suggest that the gradient ratio needs to be adjusted. Bulk of the contribution in the methods is based on several hyperparameters (in Eq. 4,5,6,7,8,9) which are difficult to interpret. Further, the risk of overfitting these parameters to this specific dataset becomes larger as there are no clear discussions also on the sensitivity of the results to these parameters. Discussions elaborating the influence of these parameters can improve this work considerably. Strategies such as signed distance map based labels instead of binary labels have also been used to emphasize on smaller airways; does the proposed method of gradient reweighting have a similar effect? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Training code will be provided and a public dataset is used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See comments above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are good compared to the baselines but the hypothesis of the work pertaining gradient ratios is not well motivated. Further the proposed modifications in the rewighting scheme consists of many hyperparameters that are not clearly described making it hard to see the general usefulness of this local imbalance re-weighting strategy. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use adjust gradients of the neural network weights with respect to the loss to take into account the local class imbalance and hard to segment airway “skeleton points”. The approach is evaluated on what appears to be a closed dataset of 90 CT scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Airway segmentation in CT is a relevant and challenging problem. Impressive results compared to other recent work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I find the paper difficult to follow. The paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer reviewed. I therefore worry that the conclusions and reasoning is wrong. I think the paper could have been more acceptable to me if these aspects had been stated less as facts and more as interesting aspects to examine. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code does not seem to be available Single dataset used that appears to be closed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the useful properties of “the attention of the gradient flow” (Eq 1) that allows you to use it say something about limitations of given losses? The way I see it, the gradient at any one given stage tells you how a given weight should be changed to lower the loss. Assuming somehow you hit a minimum loss, then the gradient map of a region may very well be zero despite the region being important for achieving that minimum. It is also possible that some areas receive gradients at different stages in the training. Visualizing gradients at a given epoch is therefore not necessarily useful for understanding why a given segmentation method may fail. “First, it is necessary to adjust the gradients to different branches according to their sizes.”, I don’t believe there is not enough evidence to say this. Regarding the title, I don’t think it tells the reader a lot about the manuscript and it is unclear what “refined local-imbalance-based weight” refers to. On the class imbalance issue of small airway branches. I find the idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. There are many possible reasons why smaller branches are harder to segment. One of which is simply that they are harder to visually recognize and label. Single pixel errors are also much more noticable when they disconnect a branch from the rest of the tree as opposed to simply shifting a boundary of a larger branch a little bit. On the so-called gradient dilution problem, which was apparantly introduced by [16], and the basis for a lot of the reasoning made in this work. I think too much emphasis is made on conclusions from a paper which has not, as far as I can see, passed peer review and according to google scholar is uncited. I don’t necessarily disagree with the papers conclusions and statements, but maybe in referring to it, it would be good to treat with a bit more skepticism. “To reach to these peripheral targets, the navigation system needs a virtual lung model with a detailed bronchial tree structure, ideally extending to alveoli.” The word “needs” is strong here, maybe a reference to back it up? I find equation 2 unclear. Could you maybe describe in a bit more detail what the greater than equal indicates? The exact challenge provides an open dataset to evaluate airway segmentation algorithms. It is a bit disappointing that only what appears to be a closed dataset was used. How were the hyperparameters of the algorithm chosen and using what data? Abbreviations BP and LIB are undefined at first usage. How are the skeleton points (section 2.2) found? What is i in G^i in Fig.1? According to equation 1 it is the gradient attention of the mth convolutional layer. However, where G^15 is listed in the top, the architecture sketch below only has 14 convolutional blocks. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the results, I think the work is too weak on the experimental side and I am not convinced by the approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper addresses airway segmentation from CT images. One of the main problem is to capture distal airways as they taper along the generation number. The paper offers an analysis of why capturing distal airways is difficult using state of the art methods and propose solutions to the weaknesses. They introduce 2 types of weights, based on local imbalance of intraclass, adjusted based on the prevalence of airway voxels in a patch and another one based on the size of the airways. Those enhancement allows the team to improves upon SOTA methods and breaks the 90% precision / recall, length of airways Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper could be the thorough analysis of the problem and building tools to monitor what they identified as weaknesses. The metrics they use are simple and efficient. Checking the attention of the gradient flow allows them to identify at which point airways start to be missed by the network. The Foreground ratio is adjusted by achieving a weight map in the loss function. the conversion to weights is done by a power function, function of a neighborhood size. The interesting aspect is that one of the weight enhancement is based on the Back Propagation. The hard to segment regions have their weight adjusted based on the number of voxels that were previously detected. The final weight map is a combination of FR and Weight Enhancement (WE). Overall, It does require an iterative process to stop compare and adjust, but it’s very clever as they assess that within the first 5 epochs, results can be meaningful enough to change / adjust or keep it as is. This is patient work that required to good knowledge of the technical problem and offered a generic solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experimenting on the power function for FR could have been interesting, but overall strong paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Paper is very reproducible. Dataset is public and the main contribution is well documented and should be straightforward to implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very solid paper. The paper organization is sound. The motivation is clear. There’s an analysis and comparison to the SOTA. Results improve upon SOTA. Very interesting, incremental but improvement are significant. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a serious team, interested in solving a problem and they looked at what does not work and fixed it. Solution makes sense and is theoretically motivated, there is not tweak on data standardization etc. So it can be applicable to any similar application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a gradient reweighting scheme to tackle the imbalance issue in airway segmentation tasks. A scaling factor is introduced to the loss function based on the foreground rate. As reviewers pointed out, details/clarifications/discussions will be further helpful to support the hypothesis of the work pertaining gradient ratios, the root cause of thin airway difficulty, and hyperparameter settings. Please note, the aim of rebuttal is to clarify misunderstandings / rationale behind method and experiment settings. Promise of extra experiments will not be considered. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of the proposed trick on the candidate dataset is recognized. The major weakness is a thorough discussion of the inherent reason of missing branches, and the basic motivation. Most critics are on a “conceptual” level, and authors gives sufficient information in the rebuttal addressing the questions. Thus, I would suggest acceptance after rebuttal. Beyond the comments, I would also recommend authors to do some comparison with recent works on distance map (as mentioned by one reviewer), e.g. clDice, maybe even combine the ideas since the two do not have conflict, and can potentially complement each other. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work delivers a very careful study of airway segmentation based on CNNs. I agree with R3 that it shows very good results in this clinically challenging problem. While the methodological contribution seems small, segmenting small airway branches with CNNs (but also with traditional methods) is very difficult. The rebuttal clarifies concerns of R1 and R2 regarding hyperparameter settings and causes for failure with thin structures in a sufficient manner, and addresses some misunderstandings. In my opinion, the outcome of this work should be presented to the community, after careful consideration of the reviewer comments to improve the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper mainly aims to segment small airways from CT images. The authors’ feedback answered some questions raised by the first two reviewers. There was some rebuttal about the reference [16]. The problem of mitigating the class imbalance problem and some techniques in this submission are very similar to [16]. A clear explanation on the differences will be necessary. The AC had one additional comment. Detecting small objects is also a hard problem in the object detection community in computer vision. Quite some efforts were spent on improving the performance of small object detection. Some insights on the small object detection and the problem in this paper will be welcomed. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for their comments. In this rebuttal, we will mainly focus on the concerns raised by reviewers 1 and 2. Reviewer #1: 1) The root cause of thin airway difficulty Distal airways are very difficult to annotate even by experienced observers, not only because of the low signal-to-noise ratio in these regions but also due to resolution (both in-plane and through-plane) limit for resolving the underlying bifurcating structures. Although we have carefully annotated these regions, the deep CNNs may fail to segment some distal small branches even in the training set, which is an inherent problem due to the stack of convolutional layers. In this paper, we have tackled this problem and provided an effective solution that is clinically valuable. 2) Hyperparameter settings Because of page limit, the corresponding experiments and figures were not included in the manuscript but were included in the supplementary materials. These parameters lead to a trade-off between branch detected rate and precision. Since the initial weight map is gradually refined by the proposed enhancement strategy, we can start from a combination that results in high precision and then iteratively improve the length detected, enabling the parameters to be used across different airway datasets. 3) Signed distance map (SDM) The SDM can be seen as a special case of voxel-wise re-weighting, which can be used to alleviate the impact of intra-class imbalance between large and small airways. Furthermore, the proposed weight enhancement strategy also can be used to refine the values initialized by SDM. Reviewer #2: 1) The useful properties of gradient attention map The reviewer may not fully understand our problem and missed some important details and the key contribution of the paper. It was found that some annotated peripheral bronchi were not detected through the training process as the gradients to these branches were nearly zero at the bottom layers after the first few epochs. Since these predictions are wrong, existing segmentation losses generate gradients for these positions. However, these gradients can be filtered out by the final sigmoid or softmax layer if the network is confident about the incorrect predictions. Besides, during the first few epochs, the gradients to these regions may be affected by the gradient erosion problem as proposed in ref [16]. In this paper, we have enhanced the learning of these branches by iteratively refining the weight map initialized based on local class imbalance. Experiment results demonstrate that our method improves the length and branch detected rates, which are widely used to evaluate the sensitivity in terms of small airways, instead of “simply shifting a boundary of a larger branch a little bit”. We only demonstrate the gradient attention map in the fifth epoch for two reasons. First, the proposed iterative refinement is based on the gradient flow in this epoch. Second, due to page limit, we only selected a representative example here. But this problem happens throughout the whole training process. We will add more examples in the revised paper and supplementary materials. 2) The idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. Segmenting small airway branches is an unsolved problem and it is also clinically important as recent attention is paid more towards small airways. Existing networks with a large number of parameters fail to detect some branches even in the fine labeled training set, which means there are deeper reasons at the algorithm level. 3) The main weakness claimed is that the paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer-reviewed. We disagree, ref [16] is published by TMI, which is a top journal in our community. 4) A closed dataset was used We disagree, the dataset used is the largest open dataset for airway segmentation currently. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0138/12/31/Paper1200" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0138/12/31/Paper1200" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0138-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Refined Local-imbalance-based Weight for Airway Segmentation in CT" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0138/12/31/Paper1200"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0138/12/31/Paper1200","headline":"Refined Local-imbalance-based Weight for Airway Segmentation in CT","dateModified":"0138-12-31T00:00:00-05:17","datePublished":"0138-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Hao Zheng, Yulei Qin, Yun Gu, Fangfang Xie, Jiayuan Sun, Jie Yang, Guang-Zhong Yang Abstract As 3D navigated bronchoscopy is increasingly used for the biopsy and treatment of peripherally located lung cancer lesions, accurate segmentation of distal small airways plays an important role in both pre- and intra-operative navigation. When adopting CNN-based methods in this task, the gradients to these peripheral branches may disappear before arriving at the bottom layers. Firstly, this is closely related to the ratio of the foreground gradient to the background gradient. Generally, small ratios can lead to the erosion of the surface while the consequence is more serious for the distal small airways. To accurately segment the branches of different sizes, we propose a local-imbalance-based weight that adjusts the gradient ratios according to the quantification of local class imbalance. In addition, if the features of some under-represented areas are not learned in the first few epochs, the gradients to these regions may be filtered out by the last activation layer in the following training. To resolve this problem, we propose in this paper a BP-based weight enhancement strategy that restarts the training with refined weight maps. The largest connected domain in our results achieves a tree length detected rate of 95% with a precision of 92% in the Binary Airway Segmentation Dataset. The code is publicly available at https://github.com/haozheng-sjtu/Local-imbalance-based-Weight. Link to paper https://doi.org/10.1007/978-3-030-87193-2_39 Link to the code repository https://github.com/haozheng-sjtu/Local-imbalance-based-Weight Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This work proposes a gradient reweighting scheme to alleviate vanishing gradients in airway segmentation tasks due to the variations between small and large airways. A scaling factor is introduced to the loss function based on the foreground rate which is claimed to mitigate the gradient erosion issues by balancing local regions. Experimental evaluation on the binary airway segmentation dataset and comparison with several baseline methods shows big improvements in extent of branch length detected. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The motivation of focusing on small, peripheral airway branches in CT is an important one as they are the most challenging and in many instances also are the most interesting for disease prognosis. The proposed trick of rewighting gradients based on the local foreground rate is simple and can be easily integrated into other segmentation tasks with severe class imbalance. Experimental evaluation is extensively performed. The results also show large improvements compared to several recent baseline methods. Ablation study results in Table 1 provide insight into the usefulness of some of the components of the proposed model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. While the problem of gradient imbalance is discussed in the Introduction, it is difficult to see this being the sole reason for missing peripheral branches. Usually the signal to noise ratio for peripheral branches is lower as they approach the scale of the voxels. Particularly, the hypothesis that small gradient ratio (between foreground and background classes) results in breakages and missing branches is not motivated sufficiently. In Fig. 1, the gradient attention map visualization and the conclusions drawn are heuristically used to suggest that the gradient ratio needs to be adjusted. Bulk of the contribution in the methods is based on several hyperparameters (in Eq. 4,5,6,7,8,9) which are difficult to interpret. Further, the risk of overfitting these parameters to this specific dataset becomes larger as there are no clear discussions also on the sensitivity of the results to these parameters. Discussions elaborating the influence of these parameters can improve this work considerably. Strategies such as signed distance map based labels instead of binary labels have also been used to emphasize on smaller airways; does the proposed method of gradient reweighting have a similar effect? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Training code will be provided and a public dataset is used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html See comments above. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are good compared to the baselines but the hypothesis of the work pertaining gradient ratios is not well motivated. Further the proposed modifications in the rewighting scheme consists of many hyperparameters that are not clearly described making it hard to see the general usefulness of this local imbalance re-weighting strategy. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper proposes to use adjust gradients of the neural network weights with respect to the loss to take into account the local class imbalance and hard to segment airway “skeleton points”. The approach is evaluated on what appears to be a closed dataset of 90 CT scans. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Airway segmentation in CT is a relevant and challenging problem. Impressive results compared to other recent work. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I find the paper difficult to follow. The paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer reviewed. I therefore worry that the conclusions and reasoning is wrong. I think the paper could have been more acceptable to me if these aspects had been stated less as facts and more as interesting aspects to examine. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code does not seem to be available Single dataset used that appears to be closed Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html What is the useful properties of “the attention of the gradient flow” (Eq 1) that allows you to use it say something about limitations of given losses? The way I see it, the gradient at any one given stage tells you how a given weight should be changed to lower the loss. Assuming somehow you hit a minimum loss, then the gradient map of a region may very well be zero despite the region being important for achieving that minimum. It is also possible that some areas receive gradients at different stages in the training. Visualizing gradients at a given epoch is therefore not necessarily useful for understanding why a given segmentation method may fail. “First, it is necessary to adjust the gradients to different branches according to their sizes.”, I don’t believe there is not enough evidence to say this. Regarding the title, I don’t think it tells the reader a lot about the manuscript and it is unclear what “refined local-imbalance-based weight” refers to. On the class imbalance issue of small airway branches. I find the idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. There are many possible reasons why smaller branches are harder to segment. One of which is simply that they are harder to visually recognize and label. Single pixel errors are also much more noticable when they disconnect a branch from the rest of the tree as opposed to simply shifting a boundary of a larger branch a little bit. On the so-called gradient dilution problem, which was apparantly introduced by [16], and the basis for a lot of the reasoning made in this work. I think too much emphasis is made on conclusions from a paper which has not, as far as I can see, passed peer review and according to google scholar is uncited. I don’t necessarily disagree with the papers conclusions and statements, but maybe in referring to it, it would be good to treat with a bit more skepticism. “To reach to these peripheral targets, the navigation system needs a virtual lung model with a detailed bronchial tree structure, ideally extending to alveoli.” The word “needs” is strong here, maybe a reference to back it up? I find equation 2 unclear. Could you maybe describe in a bit more detail what the greater than equal indicates? The exact challenge provides an open dataset to evaluate airway segmentation algorithms. It is a bit disappointing that only what appears to be a closed dataset was used. How were the hyperparameters of the algorithm chosen and using what data? Abbreviations BP and LIB are undefined at first usage. How are the skeleton points (section 2.2) found? What is i in G^i in Fig.1? According to equation 1 it is the gradient attention of the mth convolutional layer. However, where G^15 is listed in the top, the architecture sketch below only has 14 convolutional blocks. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Aside from the results, I think the work is too weak on the experimental side and I am not convinced by the approach. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The paper addresses airway segmentation from CT images. One of the main problem is to capture distal airways as they taper along the generation number. The paper offers an analysis of why capturing distal airways is difficult using state of the art methods and propose solutions to the weaknesses. They introduce 2 types of weights, based on local imbalance of intraclass, adjusted based on the prevalence of airway voxels in a patch and another one based on the size of the airways. Those enhancement allows the team to improves upon SOTA methods and breaks the 90% precision / recall, length of airways Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper could be the thorough analysis of the problem and building tools to monitor what they identified as weaknesses. The metrics they use are simple and efficient. Checking the attention of the gradient flow allows them to identify at which point airways start to be missed by the network. The Foreground ratio is adjusted by achieving a weight map in the loss function. the conversion to weights is done by a power function, function of a neighborhood size. The interesting aspect is that one of the weight enhancement is based on the Back Propagation. The hard to segment regions have their weight adjusted based on the number of voxels that were previously detected. The final weight map is a combination of FR and Weight Enhancement (WE). Overall, It does require an iterative process to stop compare and adjust, but it’s very clever as they assess that within the first 5 epochs, results can be meaningful enough to change / adjust or keep it as is. This is patient work that required to good knowledge of the technical problem and offered a generic solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experimenting on the power function for FR could have been interesting, but overall strong paper. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Paper is very reproducible. Dataset is public and the main contribution is well documented and should be straightforward to implement. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This is a very solid paper. The paper organization is sound. The motivation is clear. There’s an analysis and comparison to the SOTA. Results improve upon SOTA. Very interesting, incremental but improvement are significant. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is a serious team, interested in solving a problem and they looked at what does not work and fixed it. Solution makes sense and is theoretically motivated, there is not tweak on data standardization etc. So it can be applicable to any similar application. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work proposes a gradient reweighting scheme to tackle the imbalance issue in airway segmentation tasks. A scaling factor is introduced to the loss function based on the foreground rate. As reviewers pointed out, details/clarifications/discussions will be further helpful to support the hypothesis of the work pertaining gradient ratios, the root cause of thin airway difficulty, and hyperparameter settings. Please note, the aim of rebuttal is to clarify misunderstandings / rationale behind method and experiment settings. Promise of extra experiments will not be considered. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The practical value of the proposed trick on the candidate dataset is recognized. The major weakness is a thorough discussion of the inherent reason of missing branches, and the basic motivation. Most critics are on a “conceptual” level, and authors gives sufficient information in the rebuttal addressing the questions. Thus, I would suggest acceptance after rebuttal. Beyond the comments, I would also recommend authors to do some comparison with recent works on distance map (as mentioned by one reviewer), e.g. clDice, maybe even combine the ideas since the two do not have conflict, and can potentially complement each other. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work delivers a very careful study of airway segmentation based on CNNs. I agree with R3 that it shows very good results in this clinically challenging problem. While the methodological contribution seems small, segmenting small airway branches with CNNs (but also with traditional methods) is very difficult. The rebuttal clarifies concerns of R1 and R2 regarding hyperparameter settings and causes for failure with thin structures in a sufficient manner, and addresses some misunderstandings. In my opinion, the outcome of this work should be presented to the community, after careful consideration of the reviewer comments to improve the manuscript. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper mainly aims to segment small airways from CT images. The authors’ feedback answered some questions raised by the first two reviewers. There was some rebuttal about the reference [16]. The problem of mitigating the class imbalance problem and some techniques in this submission are very similar to [16]. A clear explanation on the differences will be necessary. The AC had one additional comment. Detecting small objects is also a hard problem in the object detection community in computer vision. Quite some efforts were spent on improving the performance of small object detection. Some insights on the small object detection and the problem in this paper will be welcomed. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 14 Author Feedback We thank the reviewers for their comments. In this rebuttal, we will mainly focus on the concerns raised by reviewers 1 and 2. Reviewer #1: 1) The root cause of thin airway difficulty Distal airways are very difficult to annotate even by experienced observers, not only because of the low signal-to-noise ratio in these regions but also due to resolution (both in-plane and through-plane) limit for resolving the underlying bifurcating structures. Although we have carefully annotated these regions, the deep CNNs may fail to segment some distal small branches even in the training set, which is an inherent problem due to the stack of convolutional layers. In this paper, we have tackled this problem and provided an effective solution that is clinically valuable. 2) Hyperparameter settings Because of page limit, the corresponding experiments and figures were not included in the manuscript but were included in the supplementary materials. These parameters lead to a trade-off between branch detected rate and precision. Since the initial weight map is gradually refined by the proposed enhancement strategy, we can start from a combination that results in high precision and then iteratively improve the length detected, enabling the parameters to be used across different airway datasets. 3) Signed distance map (SDM) The SDM can be seen as a special case of voxel-wise re-weighting, which can be used to alleviate the impact of intra-class imbalance between large and small airways. Furthermore, the proposed weight enhancement strategy also can be used to refine the values initialized by SDM. Reviewer #2: 1) The useful properties of gradient attention map The reviewer may not fully understand our problem and missed some important details and the key contribution of the paper. It was found that some annotated peripheral bronchi were not detected through the training process as the gradients to these branches were nearly zero at the bottom layers after the first few epochs. Since these predictions are wrong, existing segmentation losses generate gradients for these positions. However, these gradients can be filtered out by the final sigmoid or softmax layer if the network is confident about the incorrect predictions. Besides, during the first few epochs, the gradients to these regions may be affected by the gradient erosion problem as proposed in ref [16]. In this paper, we have enhanced the learning of these branches by iteratively refining the weight map initialized based on local class imbalance. Experiment results demonstrate that our method improves the length and branch detected rates, which are widely used to evaluate the sensitivity in terms of small airways, instead of “simply shifting a boundary of a larger branch a little bit”. We only demonstrate the gradient attention map in the fifth epoch for two reasons. First, the proposed iterative refinement is based on the gradient flow in this epoch. Second, due to page limit, we only selected a representative example here. But this problem happens throughout the whole training process. We will add more examples in the revised paper and supplementary materials. 2) The idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. Segmenting small airway branches is an unsolved problem and it is also clinically important as recent attention is paid more towards small airways. Existing networks with a large number of parameters fail to detect some branches even in the fine labeled training set, which means there are deeper reasons at the algorithm level. 3) The main weakness claimed is that the paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer-reviewed. We disagree, ref [16] is published by TMI, which is a top journal in our community. 4) A closed dataset was used We disagree, the dataset used is the largest open dataset for airway segmentation currently. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Zheng, Hao,Qin, Yulei,Gu, Yun,Xie, Fangfang,Sun, Jiayuan,Yang, Jie,Yang, Guang-Zhong" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Refined Local-imbalance-based Weight for Airway Segmentation in CT</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Zheng, Hao"
+        class="post-tags">
+        Zheng, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Qin, Yulei"
+        class="post-tags">
+        Qin, Yulei
+      </a> |  
+      
+      <a href="kittywong/tags#Gu, Yun"
+        class="post-tags">
+        Gu, Yun
+      </a> |  
+      
+      <a href="kittywong/tags#Xie, Fangfang"
+        class="post-tags">
+        Xie, Fangfang
+      </a> |  
+      
+      <a href="kittywong/tags#Sun, Jiayuan"
+        class="post-tags">
+        Sun, Jiayuan
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Jie"
+        class="post-tags">
+        Yang, Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Guang-Zhong"
+        class="post-tags">
+        Yang, Guang-Zhong
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Hao Zheng, Yulei Qin, Yun Gu, Fangfang Xie, Jiayuan Sun, Jie Yang, Guang-Zhong Yang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>As 3D navigated bronchoscopy is increasingly used for the biopsy and treatment of peripherally located lung cancer lesions, accurate segmentation of distal small airways plays an important role in both pre- and intra-operative navigation. When adopting CNN-based methods in this task, the gradients to these peripheral branches may disappear before arriving at the bottom layers. Firstly, this is closely related to the ratio of the foreground gradient to the background gradient. Generally, small ratios can lead to the erosion of the surface while the consequence is more serious for the distal small airways. To accurately segment the branches of different sizes, we propose a local-imbalance-based weight that adjusts the gradient ratios according to the quantification of local class imbalance. In addition, if the features of some under-represented areas are not learned in the first few epochs, the gradients to these regions may be filtered out by the last activation layer in the following training. To resolve this problem, we propose in this paper a BP-based weight enhancement strategy that restarts the training with refined weight maps. The largest connected domain in our results achieves a tree length detected rate of 95% with a precision of 92% in the Binary Airway Segmentation Dataset. The code is publicly available at https://github.com/haozheng-sjtu/Local-imbalance-based-Weight.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_39">https://doi.org/10.1007/978-3-030-87193-2_39</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/haozheng-sjtu/Local-imbalance-based-Weight
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work proposes a gradient reweighting scheme to alleviate vanishing gradients in airway segmentation tasks due to the variations between small and large airways. A scaling factor is introduced to the loss function based on the foreground rate which is claimed to mitigate the gradient erosion issues by balancing local regions. Experimental evaluation on the binary airway segmentation dataset and comparison with several baseline methods shows big improvements in extent of branch length detected.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The motivation of focusing on small, peripheral airway branches in CT is an important one as they are the most challenging and in many instances also are the most interesting for disease prognosis.</p>
+        </li>
+        <li>
+          <p>The proposed trick of rewighting gradients based on the local foreground rate is simple and can be easily integrated into other segmentation tasks with severe class imbalance.</p>
+        </li>
+        <li>
+          <p>Experimental evaluation is extensively performed. The results also show large improvements compared to several recent baseline methods.</p>
+        </li>
+        <li>
+          <p>Ablation study results in Table 1 provide insight into the usefulness of some of the components of the proposed model.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>While the problem of gradient imbalance is discussed in the Introduction, it is difficult to see this being the sole reason for missing peripheral branches. Usually the signal to noise ratio for peripheral branches is lower as they approach the scale of the voxels. Particularly, the hypothesis that small gradient ratio (between foreground and background classes) results in breakages and missing branches is not motivated sufficiently.</p>
+        </li>
+        <li>
+          <p>In Fig. 1, the gradient attention map visualization and the conclusions drawn are heuristically used to suggest that the gradient ratio needs to be adjusted.</p>
+        </li>
+        <li>
+          <p>Bulk of the contribution in the methods is based on several hyperparameters (in Eq. 4,5,6,7,8,9) which are difficult to interpret. Further, the risk of overfitting these parameters to this specific dataset becomes larger as there are no clear discussions also on the sensitivity of the results to these parameters. Discussions elaborating the influence of these parameters can improve this work considerably.</p>
+        </li>
+        <li>
+          <p>Strategies such as signed distance map based labels instead of binary labels have also been used to emphasize on smaller airways; does the proposed method of gradient reweighting have a similar effect?</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Training code will be provided and a public dataset is used.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>See comments above.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The results are good compared to the baselines but the hypothesis of the work pertaining gradient ratios is not well motivated. Further the proposed modifications in the rewighting scheme consists of many hyperparameters that are not clearly described making it hard to see the general usefulness of this local imbalance re-weighting strategy.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes to use adjust gradients of the neural network weights with respect to the loss to take into account the local class imbalance and hard to segment airway “skeleton points”. The approach is evaluated on what appears to be a closed dataset of 90 CT scans.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Airway segmentation in CT is a relevant and challenging problem.</li>
+        <li>Impressive results compared to other recent work.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>I find the paper difficult to follow.</li>
+        <li>The paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer reviewed. I therefore worry that the conclusions and reasoning is wrong. I think the paper could have been more acceptable to me if these aspects had been stated less as facts and more as interesting aspects to examine.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>Code does not seem to be available</li>
+        <li>Single dataset used that appears to be closed</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>What is the useful properties of “the attention of the gradient flow” (Eq 1) that allows you to use it say something about limitations of given losses? The way I see it, the gradient at any one given stage tells you how a given weight should be changed to lower the loss. Assuming somehow you hit a minimum loss, then the gradient map of a region may very well be zero despite the region being important for achieving that minimum. It is also possible that some areas receive gradients at different stages in the training. Visualizing gradients at a given epoch is therefore not necessarily useful for understanding why a given segmentation method may fail.</p>
+
+      <ul>
+        <li>“First, it is necessary to adjust the gradients to different branches according to their sizes.”, I don’t believe there is not enough evidence to say this.</li>
+      </ul>
+
+      <p>Regarding the title, I don’t think it tells the reader a lot about the manuscript and it is unclear what “refined local-imbalance-based weight” refers to.</p>
+
+      <ul>
+        <li>
+          <p>On the class imbalance issue of small airway branches. I find the idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported. There are many possible reasons why smaller branches are harder to segment. One of which is simply that they are harder to visually recognize and label. Single pixel errors are also much more noticable when they disconnect a branch from the rest of the tree as opposed to simply shifting a boundary of a larger branch a little bit.</p>
+        </li>
+        <li>
+          <p>On the so-called gradient dilution problem, which was apparantly introduced by [16], and the basis for a lot of the reasoning made in this work. I think too much emphasis is made on conclusions from a paper which has not, as far as I can see, passed peer review and according to google scholar is uncited. I don’t necessarily disagree with the papers conclusions and statements, but maybe in referring to it, it would be good to treat with a bit more skepticism.</p>
+        </li>
+        <li>
+          <p>“To reach to these peripheral targets, the navigation system needs a virtual lung model with a detailed bronchial tree structure, ideally extending to alveoli.”
+The word “needs” is strong here, maybe a reference to back it up?</p>
+        </li>
+        <li>
+          <p>I find equation 2 unclear. Could you maybe describe in a bit more detail what the greater than equal indicates?</p>
+        </li>
+        <li>
+          <p>The exact challenge provides an open dataset to evaluate airway segmentation algorithms. It is a bit disappointing that only what appears to be a closed dataset was used.</p>
+        </li>
+        <li>
+          <p>How were the hyperparameters of the algorithm chosen and using what data?</p>
+        </li>
+        <li>
+          <p>Abbreviations BP and LIB are undefined at first usage.</p>
+        </li>
+        <li>
+          <p>How are the skeleton points (section 2.2) found?</p>
+        </li>
+        <li>
+          <p>What is i in G^i in Fig.1? According to equation 1 it is the gradient attention of the mth convolutional layer. However, where G^15 is listed in the top, the architecture sketch below only has 14 convolutional blocks.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Aside from the results, I think the work is too weak on the experimental side and I am not convinced by the approach.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper addresses airway segmentation from CT images. One of the main problem is to capture distal airways as they taper along the generation number. The paper offers an analysis of why capturing distal airways is difficult using state of the art methods and propose solutions to the weaknesses. They introduce 2 types of weights, based on local imbalance of intraclass, adjusted based on the prevalence of airway voxels in a patch and another one based on the size of the airways. Those enhancement allows the team to improves upon SOTA methods and breaks the 90% precision / recall, length of airways</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength of the paper could be the thorough analysis of the problem and building tools to monitor what they identified as weaknesses. The metrics they use are simple and efficient. Checking the attention of the gradient flow allows them to identify at which point airways start to be missed by the network.</p>
+
+      <p>The Foreground ratio is adjusted by achieving a weight map in the loss function. the conversion to weights is done by a power function, function of a neighborhood size. 
+The interesting aspect is that one of the weight enhancement is based on the Back Propagation. The hard to segment regions have their weight adjusted based on the number of voxels that were previously detected. The final weight map is a combination of FR and Weight Enhancement (WE). Overall, It does require an iterative process to stop compare and adjust, but it’s very clever as they assess that within the first 5 epochs, results can be meaningful enough to change / adjust or keep it as is.</p>
+
+      <p>This is patient work that required to good knowledge of the technical problem and offered a generic solution.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Experimenting on the power function  for FR could have been interesting, but overall strong paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Paper is very reproducible. Dataset is public and the main contribution is well documented and should be straightforward to implement.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This is a very solid paper. The paper organization is sound. The motivation is clear.  There’s an analysis and comparison to the SOTA. Results improve upon SOTA. 
+Very interesting, incremental but improvement are significant.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This is a serious team, interested in solving a problem and they looked at what does not work and fixed it. Solution makes sense and is theoretically motivated, there is not tweak on data standardization etc. So it can be applicable to any similar application.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work proposes a gradient reweighting scheme to tackle the imbalance issue in airway segmentation tasks. A scaling factor is introduced to the loss function based on the foreground rate. As reviewers pointed out, details/clarifications/discussions will be further helpful to support the hypothesis of the work pertaining gradient ratios, the root cause of thin airway difficulty, and hyperparameter settings. Please note, the aim of rebuttal is to clarify misunderstandings / rationale behind method and experiment settings. Promise of extra experiments will not be considered.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The practical value of the proposed trick on the candidate dataset is recognized. The major weakness is a thorough discussion of the inherent reason of missing branches, and the basic motivation. Most critics are on a “conceptual” level, and authors gives sufficient information in the rebuttal addressing the questions. Thus, I would suggest acceptance after rebuttal. Beyond the comments, I would also recommend authors to do some comparison with recent works on distance map (as mentioned by one reviewer), e.g. clDice, maybe even combine the ideas since the two do not have conflict, and can potentially complement each other.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work delivers a very careful study of airway segmentation based on CNNs. I agree with R3 that it shows very good results in this clinically challenging problem. While the methodological contribution seems small, segmenting small airway branches with CNNs (but also with traditional methods) is very difficult. The rebuttal clarifies concerns of R1 and R2 regarding hyperparameter settings and causes for failure with thin structures in a sufficient manner, and addresses some misunderstandings. In my opinion, the outcome of this work should be presented to the community, after careful consideration of the reviewer comments to improve the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper mainly aims to segment small airways from CT images. The authors’ feedback answered some questions raised by the first two reviewers. There was some rebuttal about the reference [16]. The problem of mitigating the class imbalance problem and some techniques in this submission are very similar to [16]. A clear explanation on the differences will be necessary. The AC had one additional comment. Detecting small objects is also a hard problem in the object detection community in computer vision. Quite some efforts were spent on improving the performance of small object detection. Some insights on the small object detection and the problem in this paper will be welcomed.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>14</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for their comments. In this rebuttal, we will mainly focus on the concerns raised by reviewers 1 and 2.
+Reviewer #1:
+1)	The root cause of thin airway difficulty
+Distal airways are very difficult to annotate even by experienced observers, not only because of the low signal-to-noise ratio in these regions but also due to resolution (both in-plane and through-plane) limit for resolving the underlying bifurcating structures. Although we have carefully annotated these regions, the deep CNNs may fail to segment some distal small branches even in the training set, which is an inherent problem due to the stack of convolutional layers. In this paper, we have tackled this problem and provided an effective solution that is clinically valuable.
+2)	Hyperparameter settings
+Because of page limit, the corresponding experiments and figures were not included in the manuscript but were included in the supplementary materials. These parameters lead to a trade-off between branch detected rate and precision. Since the initial weight map is gradually refined by the proposed enhancement strategy, we can start from a combination that results in high precision and then iteratively improve the length detected, enabling the parameters to be used across different airway datasets. 
+3)	Signed distance map (SDM)
+The SDM can be seen as a special case of voxel-wise re-weighting, which can be used to alleviate the impact of intra-class imbalance between large and small airways. Furthermore, the proposed weight enhancement strategy also can be used to refine the values initialized by SDM.
+Reviewer #2:
+1)	The useful properties of gradient attention map
+The reviewer may not fully understand our problem and missed some important details and the key contribution of the paper. It was found that some annotated peripheral bronchi were not detected through the training process as the gradients to these branches were nearly zero at the bottom layers after the first few epochs. Since these predictions are wrong, existing segmentation losses generate gradients for these positions. However, these gradients can be filtered out by the final sigmoid or softmax layer if the network is confident about the incorrect predictions. Besides, during the first few epochs, the gradients to these regions may be affected by the gradient erosion problem as proposed in ref [16]. In this paper, we have enhanced the learning of these branches by iteratively refining the weight map initialized based on local class imbalance. Experiment results demonstrate that our method improves the length and branch detected rates, which are widely used to evaluate the sensitivity in terms of small airways, instead of “simply shifting a boundary of a larger branch a little bit”.
+We only demonstrate the gradient attention map in the fifth epoch for two reasons. First, the proposed iterative refinement is based on the gradient flow in this epoch. Second, due to page limit, we only selected a representative example here. But this problem happens throughout the whole training process. We will add more examples in the revised paper and supplementary materials.
+2)	 The idea that the difficulty in segmenting small branches is due to local class imbalance too weakly supported.<br />
+Segmenting small airway branches is an unsolved problem and it is also clinically important as recent attention is paid more towards small airways. Existing networks with a large number of parameters fail to detect some branches even in the fine labeled training set, which means there are deeper reasons at the algorithm level. 
+3)	The main weakness claimed is that the paper relies on assumptions from very recent work which does not seem to have been broadly adopted by the community [16] and not peer-reviewed. 
+We disagree, ref [16] is published by TMI, which is a top journal in our community.
+4)	A closed dataset was used
+We disagree, the dataset used is the largest open dataset for airway segmentation currently.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0138-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0139-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Zheng, Hao"
+        class="post-category">
+        Zheng, Hao
+      </a> |  
+      
+      <a href="kittywong/tags#Qin, Yulei"
+        class="post-category">
+        Qin, Yulei
+      </a> |  
+      
+      <a href="kittywong/tags#Gu, Yun"
+        class="post-category">
+        Gu, Yun
+      </a> |  
+      
+      <a href="kittywong/tags#Xie, Fangfang"
+        class="post-category">
+        Xie, Fangfang
+      </a> |  
+      
+      <a href="kittywong/tags#Sun, Jiayuan"
+        class="post-category">
+        Sun, Jiayuan
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Jie"
+        class="post-category">
+        Yang, Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Yang, Guang-Zhong"
+        class="post-category">
+        Yang, Guang-Zhong
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0139/12/31/Paper1258">
+          Selective Learning from External Data for CT Image Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0137/12/31/Paper1178">
+          ReSGAN: Intracranial Hemorrhage Segmentation with Residuals of Synthetic Brain CT Scans
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

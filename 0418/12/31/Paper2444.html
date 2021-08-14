@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Equivariant Filters for Efficient Tracking in 3D Imaging | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Equivariant Filters for Efficient Tracking in 3D Imaging" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Daniel Moyer, Esra Abaci Turk, P. Ellen Grant, William M. Wells, Polina Golland Abstract We demonstrate an object tracking method for 3D images with fixed computational cost and state-of-the-art performance. Previous methods predicted transformation parameters from convolutional layers. We instead propose an architecture that neither flattens convolutional features nor uses fully connected layers, but instead relies on equivariant filters to preserve transformations between inputs and outputs (e.g., rotations/translations of inputs rotate/translate outputs). The transformation is then derived in closed form from the outputs of the filters. This method is useful for applications requiring low latency, such as real-time tracking. We demonstrate our model on synthetically augmented adult brain MRI, as well as fetal brain MRI, which is the intended use-case. Link to paper https://doi.org/10.1007/978-3-030-87202-1_19 Link to the code repository https://github.com/dcmoyer/rxfm-net Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a method to align 2 images (2D slices) in 3D space via proposed Equivariant Filters. As convolutions are naturally translation invariant (i.e. if the input features shift, the output activations would also shift accordingly). For rotation invariance, the authors follow the work of Weiler et al (cited in paper). I_moving translated by some parameter T should be identical to I_target, and thus T is estimated via Weighted Least Squares Alignment by optimising the equation min_T sum_k w_k   x_k^b - Tx_k^A   _2^2. For translation loss is naturally the L2. For rotation, the author use losses as defined in Salehi et al. and/or Zhou et al. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method proposes an interesting formulation/approach to perform registration of 2D slices in fetal brain MRI Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There are some crucial aspects specific to fetal imaging that are not detailed/addressed in the paper. This is quite important as it’s the paper’s primary application of focus. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist is mostly accurate and reflects to what is written in the paper, some elements are missing in the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html pg1 authors state “standard anatomic landmarks may not be identifiable from images” for fetal imaging, the same could be argued in this method also? As always in fetal imaging and slice registration, the problem with traditional methods is that it breaks down if translation is very large. Could the authors comment on the range of T,R? How are the translation pairs for Image_A and Image_B determined/selected for training? What does a typical input image to the network look like? pg6 fig2: I am struggling to understand this figure. From my understanding, in this experiment, the network is trained only on 2 volumes of the same subject but from 2 different poses(?) As the training pairs for Image_A and Image_B are not explained, how can the network accurately predict the pose of a slice in an orientation it has not seen before? The application of splitting the transformation loss into a loss for T and a loss for R no longer makes it true SE(3), as is the parameter that’s being estimated. This was addressed in “Computing CNN Loss and Gradients for Pose Estimation with Riemannian Geometry” B. Hou et al. in MICCAI 2018. Could the authors comment on how the network deal with the symmetric nature of the fetal brain i.e. a sagittal slice from the left hemisphere vs a sagittal slice from the right hemisphere? Minor NITs: pg3 para4: “images.After” no space after full stop pg5 para2: “wi,A and wi,A” i assume one should be wi,B? pg6 Table1: could the authors add units to table headers to avoid confusion? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There are crucial issues/points in the paper that are not addressed, which are crucial to the application of fetal imaging. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a method for the rigid alignment of 3D medical images. Compared to other approaches that use a combination of CNNs and linear layers, the authors use equivariant convolutions to generate key points and weights. Those key points and weights are then used within a weighted least square method to estimate the transformation parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The presented method uses equivariant convolutions to generate key points which are used to compute the transformation in a closed-form. This is an interesting novel idea compared to other encoder-based network architectures. The method is evaluated on two different datasets. The authors compared their method to other network architecture and the results show that their method performs better. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. … Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The evaluation of the method is performed on a public and a private data set. A detailed description of the experiments is given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and very detailed. However, I am not sure about the indices of Equation 4. If I understand it correctly then a x_k is generated for each filter k. The index k is used for the spatial image index (i, j, k) and for the filter index. Is this on purpose? I thought you create a spatial mean position (x, y, z) for each filter k? Did you test the effect of intensity changes of the fixed and the moving image to your method? Reference for the Adam optimizer is missing. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? see main strengths What is the ranking of this paper in your review stack? 1 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this work, the authors propose a rigid image registration method by leveraging equivariant convolutional filters. Convolutional filters are intrinsically translation invariant; the authors incorporate rotational invariance based on work by Weiler et al. (2018). The proposed method demonstrates exemplar performance on an adult brain and fetal MRI datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Excellent content organization The authors introduce the preliminaries to their method very well The intended use-case is clearly stated at the beginning and at least one experiment is performed relevant to this use-case Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weak analysis of presented statistical results Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors state that description of computing infrastructure has been reported, but this is not found in text Duration of training is not presented Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors are strongly encouraged to continue working toward a journal submission with the following enhancements: increased sample size demonstration of model’s performance on unseen image contrasts Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Excellent organization of content Strong study design What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #4 Please describe the contribution of the paper This paper proposes an object tracking method in MRI through equivariant convolutional layers. Instead of transformation parameter regression through dimensionality reduction, this method provides a solution through equivariant filters. The method has been evaluated on HCP data and fetal 3T data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. methodologically this is an interesting application of rotation equivariant convolutional filters [16] the paper reads very well. Language is almost a bit too aloof, a bit like the paper was targeted at NeurIPS suggesting an analytic solution from literature for this type of tracking problem is very interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. the authors discuss extensively partly unpublished and remotely related work in Section 1.1. Key literature in this domain has been ignored and archetypical pose regression methods are wrongly credited. The authors should consider to discuss the following works in this domain, given that there is enough space for references in the current format. early, peer-reviewed work on motion correction for fetal MRI: Rousseau F, Glenn OA, Iordanova B, Rodriguez-Carranza C, Vigneron DB, Barkovich JA, Studholme C. Registration-based approach for reconstruction of high-resolution in utero fetal MR brain images. Academic radiology. 2006 Sep 1;13(9):1072-81. Rousseau F, Oubel E, Pontabry J, Schweitzer M, Studholme C, Koob M, Dietemann JL. BTK: An open-source toolkit for fetal brain MR image processing. Computer methods and programs in biomedicine. 2013 Jan 1;109(1):65-73. Kuklisova-Murgasova M, Quaghebeur G, Rutherford MA, Hajnal JV, Schnabel JA. Reconstruction of fetal brain MRI with intensity matching and complete outlier removal. Medical image analysis. 2012 Dec 1;16(8):1550-64. earlier ‘archetypes’ for pose regression: Miao S, Wang ZJ, Liao R. A CNN regression approach for real-time 2D/3D registration. IEEE transactions on medical imaging. 2016 Jan 26;35(5):1352-63. Hou B, Khanal B, Alansary A, McDonagh S, Davidson A, Rutherford M, Hajnal JV, Rueckert D, Glocker B, Kainz B. 3-D reconstruction in canonical co-ordinate space from arbitrarily oriented 2-D images. IEEE transactions on medical imaging. 2018 Feb 19;37(8):1737-50. geodesic loss: Hou B, Miolane N, Khanal B, Lee MC, Alansary A, McDonagh S, Hajnal JV, Rueckert D, Glocker B, Kainz B. Computing CNN loss and gradients for pose estimation with Riemannian geometry. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2018 Sep 16 (pp. 756-764). Springer, Cham. this only works for 3D volumes but fetal MRI is usually stacks of 2D slices with motion offsets between slices. No experiments discussing this problem have been provided. How would this approach perform when 2D slices are required to be re-arranged in a canonical 3D space (bulk motion-corrupted stack of image slices reconstruction problem). Dice overlap of the brain mask is probably a bad metric to assess registration quality. Since the ground truth transformation is known, why not measuring in mm and degrees? the overfitted experiment with the single subject might well memorise transformations, I am not sure how conclusive this experiment is. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance HCP data is public; there are implementations of equivariant filters in the public domain; the experimental setup is relatively straight forward, so even without code, this work should be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html major comments see above. minor: ‘match across images.After’ -&gt; space ‘filters[17]’ -&gt; space Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the paper seems to lack more experimental validation and a deeper discussion of existing methods in literature, potentially also a better comparison with methods in literature especially regarding the loss formulation. I think this could be a really nice application of equivariant filters and an elegant tracking method (perhaps more for adult motion compensation because of the limitations regarding inter-slice motion in fetal imaging? ). interesting method - (literature + experimental weakness) = borderline What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This is a well written paper addressing an important problem with adequate methods and supporting experiments. The authors are encouraged to incorporate the comments from the reviewers to enhance clarity. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers, meta-reviewer, and area chairs for their thoughtful feedback. R1 and R8 may have misunderstood our intended use-case. In particular, R1 stated that our method aims to “align 2 images (2D slices) in 3D space”. Similarly, R8 suggests literature be cited on 2D/3D registration. As we explain in the paper, our method performs 3D-to-3D registration and operates fully in 3D. We will further clarify in the revised version. Although we believe that the 2D-to-3D citations suggested by R8 are not entirely in scope, we will add a short section citing the articles and further explaining the differences between the problems addressed in this paper and the suggested citations. Related, while R8 is correct in that HASTE inter-slice motion necessitates 2D-to-3D registration, our work addresses motion between EPI volumes that might be used as volumetric navigators, complementary to HASTE acquisitions. EPI volumes are acquired on a much faster time scale, and thus are subject to different fetal motion conditions. We do not consider the HASTE motion correction problem directly in this manuscript. R1 suggested it would be impossible to predict novel poses in the experiment reported in Fig. 2. We clarify that our method achieves generalization because only equivariant filters are learned; the rotation and translation params are analytically derived from the filter outputs during inference. Related, R8 suggested that the model might be memorizing poses in the same experiment. We emphasize that Fig. 2 reports results of estimating a novel pose that was not used as one of the two training examples. Thus memorizing training data would result in poor performance. In response to R1’s concern that mirror symmetries between hemispheres would present a challenge for the model, we clarify that since we are considering 3D volumes, no rigid transformation can produce such a reflection. R1 pointed out that by penalizing errors in rotation and translation parameters separately, our loss function is no longer based on the Riemannian SE(3) geodesic distance. We completely agree. The proposed network is agnostic to loss functions and indeed can be as easily trained with the SE(3) geodesic distance as a loss function. While our architecture has a module that learns SE(3)-equivariant features, in this initial investigation of the model we did not attempt to train it with SE(3) loss functions. R5 raised questions of the method’s sensitivity to intensity distribution changes between the two images. While our data include a small amount of local intensity changes (due to e.g., re-interpolations), we did not consider large field or intensity distribution changes in part because our fetal MRI use-case focuses of serial image collections with the same shim-coil settings and similar bias fields. We note that this network can be integrated with existing approaches that handle intensity distribution shits, for example, a VAE that removes such intensity changes. We thank R5 for catching a notation issue where we use k to index spatial positions and also filters. We will fix this in the revised version. We thank R8 for the helpful suggestion of adding degree and mm distance error metrics for our experiments. We will add these to the revised version’s supplementary materials due to space limitations. Finally, we will add the citation for Adam optimizer as requested by R5 and provide details of the computing infrastructure and training duration as requested by R7. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Daniel Moyer, Esra Abaci Turk, P. Ellen Grant, William M. Wells, Polina Golland Abstract We demonstrate an object tracking method for 3D images with fixed computational cost and state-of-the-art performance. Previous methods predicted transformation parameters from convolutional layers. We instead propose an architecture that neither flattens convolutional features nor uses fully connected layers, but instead relies on equivariant filters to preserve transformations between inputs and outputs (e.g., rotations/translations of inputs rotate/translate outputs). The transformation is then derived in closed form from the outputs of the filters. This method is useful for applications requiring low latency, such as real-time tracking. We demonstrate our model on synthetically augmented adult brain MRI, as well as fetal brain MRI, which is the intended use-case. Link to paper https://doi.org/10.1007/978-3-030-87202-1_19 Link to the code repository https://github.com/dcmoyer/rxfm-net Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a method to align 2 images (2D slices) in 3D space via proposed Equivariant Filters. As convolutions are naturally translation invariant (i.e. if the input features shift, the output activations would also shift accordingly). For rotation invariance, the authors follow the work of Weiler et al (cited in paper). I_moving translated by some parameter T should be identical to I_target, and thus T is estimated via Weighted Least Squares Alignment by optimising the equation min_T sum_k w_k   x_k^b - Tx_k^A   _2^2. For translation loss is naturally the L2. For rotation, the author use losses as defined in Salehi et al. and/or Zhou et al. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method proposes an interesting formulation/approach to perform registration of 2D slices in fetal brain MRI Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There are some crucial aspects specific to fetal imaging that are not detailed/addressed in the paper. This is quite important as it’s the paper’s primary application of focus. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist is mostly accurate and reflects to what is written in the paper, some elements are missing in the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html pg1 authors state “standard anatomic landmarks may not be identifiable from images” for fetal imaging, the same could be argued in this method also? As always in fetal imaging and slice registration, the problem with traditional methods is that it breaks down if translation is very large. Could the authors comment on the range of T,R? How are the translation pairs for Image_A and Image_B determined/selected for training? What does a typical input image to the network look like? pg6 fig2: I am struggling to understand this figure. From my understanding, in this experiment, the network is trained only on 2 volumes of the same subject but from 2 different poses(?) As the training pairs for Image_A and Image_B are not explained, how can the network accurately predict the pose of a slice in an orientation it has not seen before? The application of splitting the transformation loss into a loss for T and a loss for R no longer makes it true SE(3), as is the parameter that’s being estimated. This was addressed in “Computing CNN Loss and Gradients for Pose Estimation with Riemannian Geometry” B. Hou et al. in MICCAI 2018. Could the authors comment on how the network deal with the symmetric nature of the fetal brain i.e. a sagittal slice from the left hemisphere vs a sagittal slice from the right hemisphere? Minor NITs: pg3 para4: “images.After” no space after full stop pg5 para2: “wi,A and wi,A” i assume one should be wi,B? pg6 Table1: could the authors add units to table headers to avoid confusion? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There are crucial issues/points in the paper that are not addressed, which are crucial to the application of fetal imaging. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a method for the rigid alignment of 3D medical images. Compared to other approaches that use a combination of CNNs and linear layers, the authors use equivariant convolutions to generate key points and weights. Those key points and weights are then used within a weighted least square method to estimate the transformation parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The presented method uses equivariant convolutions to generate key points which are used to compute the transformation in a closed-form. This is an interesting novel idea compared to other encoder-based network architectures. The method is evaluated on two different datasets. The authors compared their method to other network architecture and the results show that their method performs better. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. … Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The evaluation of the method is performed on a public and a private data set. A detailed description of the experiments is given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and very detailed. However, I am not sure about the indices of Equation 4. If I understand it correctly then a x_k is generated for each filter k. The index k is used for the spatial image index (i, j, k) and for the filter index. Is this on purpose? I thought you create a spatial mean position (x, y, z) for each filter k? Did you test the effect of intensity changes of the fixed and the moving image to your method? Reference for the Adam optimizer is missing. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? see main strengths What is the ranking of this paper in your review stack? 1 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this work, the authors propose a rigid image registration method by leveraging equivariant convolutional filters. Convolutional filters are intrinsically translation invariant; the authors incorporate rotational invariance based on work by Weiler et al. (2018). The proposed method demonstrates exemplar performance on an adult brain and fetal MRI datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Excellent content organization The authors introduce the preliminaries to their method very well The intended use-case is clearly stated at the beginning and at least one experiment is performed relevant to this use-case Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weak analysis of presented statistical results Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors state that description of computing infrastructure has been reported, but this is not found in text Duration of training is not presented Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors are strongly encouraged to continue working toward a journal submission with the following enhancements: increased sample size demonstration of model’s performance on unseen image contrasts Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Excellent organization of content Strong study design What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #4 Please describe the contribution of the paper This paper proposes an object tracking method in MRI through equivariant convolutional layers. Instead of transformation parameter regression through dimensionality reduction, this method provides a solution through equivariant filters. The method has been evaluated on HCP data and fetal 3T data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. methodologically this is an interesting application of rotation equivariant convolutional filters [16] the paper reads very well. Language is almost a bit too aloof, a bit like the paper was targeted at NeurIPS suggesting an analytic solution from literature for this type of tracking problem is very interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. the authors discuss extensively partly unpublished and remotely related work in Section 1.1. Key literature in this domain has been ignored and archetypical pose regression methods are wrongly credited. The authors should consider to discuss the following works in this domain, given that there is enough space for references in the current format. early, peer-reviewed work on motion correction for fetal MRI: Rousseau F, Glenn OA, Iordanova B, Rodriguez-Carranza C, Vigneron DB, Barkovich JA, Studholme C. Registration-based approach for reconstruction of high-resolution in utero fetal MR brain images. Academic radiology. 2006 Sep 1;13(9):1072-81. Rousseau F, Oubel E, Pontabry J, Schweitzer M, Studholme C, Koob M, Dietemann JL. BTK: An open-source toolkit for fetal brain MR image processing. Computer methods and programs in biomedicine. 2013 Jan 1;109(1):65-73. Kuklisova-Murgasova M, Quaghebeur G, Rutherford MA, Hajnal JV, Schnabel JA. Reconstruction of fetal brain MRI with intensity matching and complete outlier removal. Medical image analysis. 2012 Dec 1;16(8):1550-64. earlier ‘archetypes’ for pose regression: Miao S, Wang ZJ, Liao R. A CNN regression approach for real-time 2D/3D registration. IEEE transactions on medical imaging. 2016 Jan 26;35(5):1352-63. Hou B, Khanal B, Alansary A, McDonagh S, Davidson A, Rutherford M, Hajnal JV, Rueckert D, Glocker B, Kainz B. 3-D reconstruction in canonical co-ordinate space from arbitrarily oriented 2-D images. IEEE transactions on medical imaging. 2018 Feb 19;37(8):1737-50. geodesic loss: Hou B, Miolane N, Khanal B, Lee MC, Alansary A, McDonagh S, Hajnal JV, Rueckert D, Glocker B, Kainz B. Computing CNN loss and gradients for pose estimation with Riemannian geometry. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2018 Sep 16 (pp. 756-764). Springer, Cham. this only works for 3D volumes but fetal MRI is usually stacks of 2D slices with motion offsets between slices. No experiments discussing this problem have been provided. How would this approach perform when 2D slices are required to be re-arranged in a canonical 3D space (bulk motion-corrupted stack of image slices reconstruction problem). Dice overlap of the brain mask is probably a bad metric to assess registration quality. Since the ground truth transformation is known, why not measuring in mm and degrees? the overfitted experiment with the single subject might well memorise transformations, I am not sure how conclusive this experiment is. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance HCP data is public; there are implementations of equivariant filters in the public domain; the experimental setup is relatively straight forward, so even without code, this work should be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html major comments see above. minor: ‘match across images.After’ -&gt; space ‘filters[17]’ -&gt; space Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the paper seems to lack more experimental validation and a deeper discussion of existing methods in literature, potentially also a better comparison with methods in literature especially regarding the loss formulation. I think this could be a really nice application of equivariant filters and an elegant tracking method (perhaps more for adult motion compensation because of the limitations regarding inter-slice motion in fetal imaging? ). interesting method - (literature + experimental weakness) = borderline What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This is a well written paper addressing an important problem with adequate methods and supporting experiments. The authors are encouraged to incorporate the comments from the reviewers to enhance clarity. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers, meta-reviewer, and area chairs for their thoughtful feedback. R1 and R8 may have misunderstood our intended use-case. In particular, R1 stated that our method aims to “align 2 images (2D slices) in 3D space”. Similarly, R8 suggests literature be cited on 2D/3D registration. As we explain in the paper, our method performs 3D-to-3D registration and operates fully in 3D. We will further clarify in the revised version. Although we believe that the 2D-to-3D citations suggested by R8 are not entirely in scope, we will add a short section citing the articles and further explaining the differences between the problems addressed in this paper and the suggested citations. Related, while R8 is correct in that HASTE inter-slice motion necessitates 2D-to-3D registration, our work addresses motion between EPI volumes that might be used as volumetric navigators, complementary to HASTE acquisitions. EPI volumes are acquired on a much faster time scale, and thus are subject to different fetal motion conditions. We do not consider the HASTE motion correction problem directly in this manuscript. R1 suggested it would be impossible to predict novel poses in the experiment reported in Fig. 2. We clarify that our method achieves generalization because only equivariant filters are learned; the rotation and translation params are analytically derived from the filter outputs during inference. Related, R8 suggested that the model might be memorizing poses in the same experiment. We emphasize that Fig. 2 reports results of estimating a novel pose that was not used as one of the two training examples. Thus memorizing training data would result in poor performance. In response to R1’s concern that mirror symmetries between hemispheres would present a challenge for the model, we clarify that since we are considering 3D volumes, no rigid transformation can produce such a reflection. R1 pointed out that by penalizing errors in rotation and translation parameters separately, our loss function is no longer based on the Riemannian SE(3) geodesic distance. We completely agree. The proposed network is agnostic to loss functions and indeed can be as easily trained with the SE(3) geodesic distance as a loss function. While our architecture has a module that learns SE(3)-equivariant features, in this initial investigation of the model we did not attempt to train it with SE(3) loss functions. R5 raised questions of the method’s sensitivity to intensity distribution changes between the two images. While our data include a small amount of local intensity changes (due to e.g., re-interpolations), we did not consider large field or intensity distribution changes in part because our fetal MRI use-case focuses of serial image collections with the same shim-coil settings and similar bias fields. We note that this network can be integrated with existing approaches that handle intensity distribution shits, for example, a VAE that removes such intensity changes. We thank R5 for catching a notation issue where we use k to index spatial positions and also filters. We will fix this in the revised version. We thank R8 for the helpful suggestion of adding degree and mm distance error metrics for our experiments. We will add these to the revised version’s supplementary materials due to space limitations. Finally, we will add the citation for Adam optimizer as requested by R5 and provide details of the computing infrastructure and training duration as requested by R7. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0418/12/31/Paper2444" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0418/12/31/Paper2444" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0418-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Equivariant Filters for Efficient Tracking in 3D Imaging" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0418/12/31/Paper2444"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0418/12/31/Paper2444","headline":"Equivariant Filters for Efficient Tracking in 3D Imaging","dateModified":"0419-01-02T00:00:00-05:17","datePublished":"0418-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Daniel Moyer, Esra Abaci Turk, P. Ellen Grant, William M. Wells, Polina Golland Abstract We demonstrate an object tracking method for 3D images with fixed computational cost and state-of-the-art performance. Previous methods predicted transformation parameters from convolutional layers. We instead propose an architecture that neither flattens convolutional features nor uses fully connected layers, but instead relies on equivariant filters to preserve transformations between inputs and outputs (e.g., rotations/translations of inputs rotate/translate outputs). The transformation is then derived in closed form from the outputs of the filters. This method is useful for applications requiring low latency, such as real-time tracking. We demonstrate our model on synthetically augmented adult brain MRI, as well as fetal brain MRI, which is the intended use-case. Link to paper https://doi.org/10.1007/978-3-030-87202-1_19 Link to the code repository https://github.com/dcmoyer/rxfm-net Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper proposes a method to align 2 images (2D slices) in 3D space via proposed Equivariant Filters. As convolutions are naturally translation invariant (i.e. if the input features shift, the output activations would also shift accordingly). For rotation invariance, the authors follow the work of Weiler et al (cited in paper). I_moving translated by some parameter T should be identical to I_target, and thus T is estimated via Weighted Least Squares Alignment by optimising the equation min_T sum_k w_k   x_k^b - Tx_k^A   _2^2. For translation loss is naturally the L2. For rotation, the author use losses as defined in Salehi et al. and/or Zhou et al. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method proposes an interesting formulation/approach to perform registration of 2D slices in fetal brain MRI Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There are some crucial aspects specific to fetal imaging that are not detailed/addressed in the paper. This is quite important as it’s the paper’s primary application of focus. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist is mostly accurate and reflects to what is written in the paper, some elements are missing in the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html pg1 authors state “standard anatomic landmarks may not be identifiable from images” for fetal imaging, the same could be argued in this method also? As always in fetal imaging and slice registration, the problem with traditional methods is that it breaks down if translation is very large. Could the authors comment on the range of T,R? How are the translation pairs for Image_A and Image_B determined/selected for training? What does a typical input image to the network look like? pg6 fig2: I am struggling to understand this figure. From my understanding, in this experiment, the network is trained only on 2 volumes of the same subject but from 2 different poses(?) As the training pairs for Image_A and Image_B are not explained, how can the network accurately predict the pose of a slice in an orientation it has not seen before? The application of splitting the transformation loss into a loss for T and a loss for R no longer makes it true SE(3), as is the parameter that’s being estimated. This was addressed in “Computing CNN Loss and Gradients for Pose Estimation with Riemannian Geometry” B. Hou et al. in MICCAI 2018. Could the authors comment on how the network deal with the symmetric nature of the fetal brain i.e. a sagittal slice from the left hemisphere vs a sagittal slice from the right hemisphere? Minor NITs: pg3 para4: “images.After” no space after full stop pg5 para2: “wi,A and wi,A” i assume one should be wi,B? pg6 Table1: could the authors add units to table headers to avoid confusion? Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There are crucial issues/points in the paper that are not addressed, which are crucial to the application of fetal imaging. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the authors present a method for the rigid alignment of 3D medical images. Compared to other approaches that use a combination of CNNs and linear layers, the authors use equivariant convolutions to generate key points and weights. Those key points and weights are then used within a weighted least square method to estimate the transformation parameters. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The presented method uses equivariant convolutions to generate key points which are used to compute the transformation in a closed-form. This is an interesting novel idea compared to other encoder-based network architectures. The method is evaluated on two different datasets. The authors compared their method to other network architecture and the results show that their method performs better. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. … Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The evaluation of the method is performed on a public and a private data set. A detailed description of the experiments is given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper is well written and very detailed. However, I am not sure about the indices of Equation 4. If I understand it correctly then a x_k is generated for each filter k. The index k is used for the spatial image index (i, j, k) and for the filter index. Is this on purpose? I thought you create a spatial mean position (x, y, z) for each filter k? Did you test the effect of intensity changes of the fixed and the moving image to your method? Reference for the Adam optimizer is missing. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? see main strengths What is the ranking of this paper in your review stack? 1 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this work, the authors propose a rigid image registration method by leveraging equivariant convolutional filters. Convolutional filters are intrinsically translation invariant; the authors incorporate rotational invariance based on work by Weiler et al. (2018). The proposed method demonstrates exemplar performance on an adult brain and fetal MRI datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Excellent content organization The authors introduce the preliminaries to their method very well The intended use-case is clearly stated at the beginning and at least one experiment is performed relevant to this use-case Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weak analysis of presented statistical results Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors state that description of computing infrastructure has been reported, but this is not found in text Duration of training is not presented Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Authors are strongly encouraged to continue working toward a journal submission with the following enhancements: increased sample size demonstration of model’s performance on unseen image contrasts Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Excellent organization of content Strong study design What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #4 Please describe the contribution of the paper This paper proposes an object tracking method in MRI through equivariant convolutional layers. Instead of transformation parameter regression through dimensionality reduction, this method provides a solution through equivariant filters. The method has been evaluated on HCP data and fetal 3T data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. methodologically this is an interesting application of rotation equivariant convolutional filters [16] the paper reads very well. Language is almost a bit too aloof, a bit like the paper was targeted at NeurIPS suggesting an analytic solution from literature for this type of tracking problem is very interesting Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. the authors discuss extensively partly unpublished and remotely related work in Section 1.1. Key literature in this domain has been ignored and archetypical pose regression methods are wrongly credited. The authors should consider to discuss the following works in this domain, given that there is enough space for references in the current format. early, peer-reviewed work on motion correction for fetal MRI: Rousseau F, Glenn OA, Iordanova B, Rodriguez-Carranza C, Vigneron DB, Barkovich JA, Studholme C. Registration-based approach for reconstruction of high-resolution in utero fetal MR brain images. Academic radiology. 2006 Sep 1;13(9):1072-81. Rousseau F, Oubel E, Pontabry J, Schweitzer M, Studholme C, Koob M, Dietemann JL. BTK: An open-source toolkit for fetal brain MR image processing. Computer methods and programs in biomedicine. 2013 Jan 1;109(1):65-73. Kuklisova-Murgasova M, Quaghebeur G, Rutherford MA, Hajnal JV, Schnabel JA. Reconstruction of fetal brain MRI with intensity matching and complete outlier removal. Medical image analysis. 2012 Dec 1;16(8):1550-64. earlier ‘archetypes’ for pose regression: Miao S, Wang ZJ, Liao R. A CNN regression approach for real-time 2D/3D registration. IEEE transactions on medical imaging. 2016 Jan 26;35(5):1352-63. Hou B, Khanal B, Alansary A, McDonagh S, Davidson A, Rutherford M, Hajnal JV, Rueckert D, Glocker B, Kainz B. 3-D reconstruction in canonical co-ordinate space from arbitrarily oriented 2-D images. IEEE transactions on medical imaging. 2018 Feb 19;37(8):1737-50. geodesic loss: Hou B, Miolane N, Khanal B, Lee MC, Alansary A, McDonagh S, Hajnal JV, Rueckert D, Glocker B, Kainz B. Computing CNN loss and gradients for pose estimation with Riemannian geometry. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2018 Sep 16 (pp. 756-764). Springer, Cham. this only works for 3D volumes but fetal MRI is usually stacks of 2D slices with motion offsets between slices. No experiments discussing this problem have been provided. How would this approach perform when 2D slices are required to be re-arranged in a canonical 3D space (bulk motion-corrupted stack of image slices reconstruction problem). Dice overlap of the brain mask is probably a bad metric to assess registration quality. Since the ground truth transformation is known, why not measuring in mm and degrees? the overfitted experiment with the single subject might well memorise transformations, I am not sure how conclusive this experiment is. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance HCP data is public; there are implementations of equivariant filters in the public domain; the experimental setup is relatively straight forward, so even without code, this work should be reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html major comments see above. minor: ‘match across images.After’ -&gt; space ‘filters[17]’ -&gt; space Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Overall, the paper seems to lack more experimental validation and a deeper discussion of existing methods in literature, potentially also a better comparison with methods in literature especially regarding the loss formulation. I think this could be a really nice application of equivariant filters and an elegant tracking method (perhaps more for adult motion compensation because of the limitations regarding inter-slice motion in fetal imaging? ). interesting method - (literature + experimental weakness) = borderline What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This is a well written paper addressing an important problem with adequate methods and supporting experiments. The authors are encouraged to incorporate the comments from the reviewers to enhance clarity. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We thank the reviewers, meta-reviewer, and area chairs for their thoughtful feedback. R1 and R8 may have misunderstood our intended use-case. In particular, R1 stated that our method aims to “align 2 images (2D slices) in 3D space”. Similarly, R8 suggests literature be cited on 2D/3D registration. As we explain in the paper, our method performs 3D-to-3D registration and operates fully in 3D. We will further clarify in the revised version. Although we believe that the 2D-to-3D citations suggested by R8 are not entirely in scope, we will add a short section citing the articles and further explaining the differences between the problems addressed in this paper and the suggested citations. Related, while R8 is correct in that HASTE inter-slice motion necessitates 2D-to-3D registration, our work addresses motion between EPI volumes that might be used as volumetric navigators, complementary to HASTE acquisitions. EPI volumes are acquired on a much faster time scale, and thus are subject to different fetal motion conditions. We do not consider the HASTE motion correction problem directly in this manuscript. R1 suggested it would be impossible to predict novel poses in the experiment reported in Fig. 2. We clarify that our method achieves generalization because only equivariant filters are learned; the rotation and translation params are analytically derived from the filter outputs during inference. Related, R8 suggested that the model might be memorizing poses in the same experiment. We emphasize that Fig. 2 reports results of estimating a novel pose that was not used as one of the two training examples. Thus memorizing training data would result in poor performance. In response to R1’s concern that mirror symmetries between hemispheres would present a challenge for the model, we clarify that since we are considering 3D volumes, no rigid transformation can produce such a reflection. R1 pointed out that by penalizing errors in rotation and translation parameters separately, our loss function is no longer based on the Riemannian SE(3) geodesic distance. We completely agree. The proposed network is agnostic to loss functions and indeed can be as easily trained with the SE(3) geodesic distance as a loss function. While our architecture has a module that learns SE(3)-equivariant features, in this initial investigation of the model we did not attempt to train it with SE(3) loss functions. R5 raised questions of the method’s sensitivity to intensity distribution changes between the two images. While our data include a small amount of local intensity changes (due to e.g., re-interpolations), we did not consider large field or intensity distribution changes in part because our fetal MRI use-case focuses of serial image collections with the same shim-coil settings and similar bias fields. We note that this network can be integrated with existing approaches that handle intensity distribution shits, for example, a VAE that removes such intensity changes. We thank R5 for catching a notation issue where we use k to index spatial positions and also filters. We will fix this in the revised version. We thank R8 for the helpful suggestion of adding degree and mm distance error metrics for our experiments. We will add these to the revised version’s supplementary materials due to space limitations. Finally, we will add the citation for Adam optimizer as requested by R5 and provide details of the computing infrastructure and training duration as requested by R7. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Moyer, Daniel,Abaci Turk, Esra,Grant, P. Ellen,Wells, William M.,Golland, Polina" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Equivariant Filters for Efficient Tracking in 3D Imaging</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Fetal Imaging"
+        class="post-category">
+        Clinical applications - Fetal Imaging
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Moyer, Daniel"
+        class="post-tags">
+        Moyer, Daniel
+      </a> |  
+      
+      <a href="kittywong/tags#Abaci Turk, Esra"
+        class="post-tags">
+        Abaci Turk, Esra
+      </a> |  
+      
+      <a href="kittywong/tags#Grant, P. Ellen"
+        class="post-tags">
+        Grant, P. Ellen
+      </a> |  
+      
+      <a href="kittywong/tags#Wells, William M."
+        class="post-tags">
+        Wells, William M.
+      </a> |  
+      
+      <a href="kittywong/tags#Golland, Polina"
+        class="post-tags">
+        Golland, Polina
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Daniel Moyer, Esra Abaci Turk, P. Ellen Grant, William M. Wells, Polina Golland
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>We demonstrate an object tracking method for 3D images with fixed computational cost and state-of-the-art performance. Previous methods predicted transformation parameters from convolutional layers. We instead propose an architecture that neither flattens convolutional features nor uses fully connected layers, but instead relies on equivariant filters to preserve transformations between inputs and outputs (e.g., rotations/translations of inputs rotate/translate outputs). The transformation is then derived in closed form from the outputs of the filters. This method is useful for applications requiring low latency, such as real-time tracking. We demonstrate our model on synthetically augmented adult brain MRI, as well as fetal brain MRI, which is the intended use-case.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87202-1_19">https://doi.org/10.1007/978-3-030-87202-1_19</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/dcmoyer/rxfm-net
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a method to align 2 images (2D slices) in 3D space via proposed Equivariant Filters. As convolutions are naturally translation invariant (i.e. if the input features shift, the output activations would also shift accordingly). For rotation invariance, the authors follow the work of Weiler et al (cited in paper).</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>I_moving translated by some parameter T should be identical to I_target, and thus T is estimated via Weighted Least Squares Alignment by optimising the equation min_T sum_k w_k</td>
+            <td> </td>
+            <td>x_k^b - Tx_k^A</td>
+            <td> </td>
+            <td>_2^2. For translation loss is naturally the L2. For rotation, the author use losses as defined in Salehi et al. and/or Zhou et al.</td>
+          </tr>
+        </tbody>
+      </table>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The method proposes an interesting formulation/approach to perform registration of 2D slices in fetal brain MRI</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>There are some crucial aspects specific to fetal imaging that are not detailed/addressed in the paper. This is quite important as it’s the paper’s primary application of focus.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility checklist is mostly accurate and reflects to what is written in the paper, some elements are missing in the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+
+      <blockquote>
+        <blockquote>
+          <p>pg1 authors state “standard anatomic landmarks may not be identifiable from images” for fetal imaging, the same could be argued in this method also?</p>
+        </blockquote>
+      </blockquote>
+
+      <blockquote>
+        <blockquote>
+          <p>As always in fetal imaging and slice registration, the problem with traditional methods is that it breaks down if translation is very large. Could the authors comment on the range of T,R? How are the translation pairs for Image_A and Image_B determined/selected for training? What does a typical input image to the network look like?</p>
+        </blockquote>
+      </blockquote>
+
+      <blockquote>
+        <blockquote>
+          <p>pg6 fig2: I am struggling to understand this figure. From my understanding, in this experiment, the network is trained only on 2 volumes of the same subject but from 2 different poses(?) As the training pairs for Image_A and Image_B are not explained, how can the network accurately predict the pose of a slice in an orientation it has not seen before?</p>
+        </blockquote>
+      </blockquote>
+
+      <blockquote>
+        <blockquote>
+          <p>The application of splitting the transformation loss into a loss for T and a loss for R no longer makes it true SE(3), as is the parameter that’s being estimated. This was addressed in “Computing CNN Loss and Gradients for Pose Estimation with Riemannian Geometry” B. Hou et al. in MICCAI 2018.</p>
+        </blockquote>
+      </blockquote>
+
+      <blockquote>
+        <blockquote>
+          <p>Could the authors comment on how the network deal with the symmetric nature of the fetal brain i.e. a sagittal slice from the left hemisphere vs a sagittal slice from the right hemisphere?</p>
+        </blockquote>
+      </blockquote>
+
+      <p>Minor NITs:</p>
+      <blockquote>
+        <blockquote>
+          <p>pg3 para4: “images.After” no space after full stop
+pg5 para2: “wi,A and wi,A” i assume one should be wi,B?
+pg6 Table1: could the authors add units to table headers to avoid confusion?</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>There are crucial issues/points in the paper that are not addressed, which are crucial to the application of fetal imaging.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the authors present a method for the rigid alignment of 3D medical images. Compared to other approaches that use a combination of CNNs and linear layers, the authors use equivariant convolutions to generate key points and weights. Those key points and weights are then used within a weighted least square method to estimate the transformation parameters.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The presented method uses equivariant convolutions to generate key points which are used to compute the transformation in a closed-form. This is an interesting novel idea compared to other encoder-based network architectures. The method is evaluated on two different datasets. The authors compared their method to other network architecture and the results show that their method performs better.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>…</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The evaluation of the method is performed on a public and a private data set. A detailed description of the experiments is given.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper is well written and very detailed. However, I am not sure about the indices of Equation 4. If I understand it correctly then a x_k is generated for each filter k. The index k is used for the spatial image index (i, j, k) and for the filter index. Is this on purpose?
+I thought you create a spatial mean position (x, y, z) for each filter k?</p>
+
+      <p>Did you test the effect of intensity changes of the fixed and the moving image to your method?</p>
+
+      <p>Reference for the Adam optimizer is missing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>see main strengths</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this work, the authors propose a rigid image registration method by leveraging equivariant convolutional filters. Convolutional filters are intrinsically translation invariant; the authors incorporate rotational invariance based on work by Weiler et al. (2018). The proposed method demonstrates exemplar performance on an adult brain and fetal MRI datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Excellent content organization</li>
+        <li>The authors introduce the preliminaries to their method very well</li>
+        <li>The intended use-case is clearly stated at the beginning and at least one experiment is performed relevant to this use-case</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Weak analysis of presented statistical results</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>Authors state that description of computing infrastructure has been reported, but this is not found in text</li>
+        <li>Duration of training is not presented</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Authors are strongly encouraged to continue working toward a journal submission with the following enhancements:</p>
+      <ul>
+        <li>increased sample size</li>
+        <li>demonstration of model’s performance on unseen image contrasts</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ul>
+        <li>Excellent organization of content</li>
+        <li>Strong study design</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-4">Review #4</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes an object tracking method in MRI through equivariant convolutional layers. Instead of transformation parameter regression through dimensionality reduction, this method provides a solution through equivariant filters. The method has been evaluated on HCP data and fetal 3T data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>methodologically this is an interesting application of rotation equivariant convolutional filters [16]</li>
+        <li>the paper reads very well. Language is almost a bit too aloof, a bit like the paper was targeted at NeurIPS</li>
+        <li>suggesting an analytic solution from literature for this type of tracking problem is very interesting</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>the authors discuss extensively partly unpublished and remotely related work in Section 1.1. Key literature in this domain has been ignored and archetypical pose regression methods are wrongly credited. The authors should consider to discuss the following works in this domain, given that there is enough space for references in the current format.</li>
+      </ul>
+
+      <p>early, peer-reviewed work on motion correction for fetal MRI:
+Rousseau F, Glenn OA, Iordanova B, Rodriguez-Carranza C, Vigneron DB, Barkovich JA, Studholme C. Registration-based approach for reconstruction of high-resolution in utero fetal MR brain images. Academic radiology. 2006 Sep 1;13(9):1072-81.
+Rousseau F, Oubel E, Pontabry J, Schweitzer M, Studholme C, Koob M, Dietemann JL. BTK: An open-source toolkit for fetal brain MR image processing. Computer methods and programs in biomedicine. 2013 Jan 1;109(1):65-73.
+Kuklisova-Murgasova M, Quaghebeur G, Rutherford MA, Hajnal JV, Schnabel JA. Reconstruction of fetal brain MRI with intensity matching and complete outlier removal. Medical image analysis. 2012 Dec 1;16(8):1550-64.</p>
+
+      <p>earlier ‘archetypes’ for pose regression:
+Miao S, Wang ZJ, Liao R. A CNN regression approach for real-time 2D/3D registration. IEEE transactions on medical imaging. 2016 Jan 26;35(5):1352-63.</p>
+
+      <p>Hou B, Khanal B, Alansary A, McDonagh S, Davidson A, Rutherford M, Hajnal JV, Rueckert D, Glocker B, Kainz B. 3-D reconstruction in canonical co-ordinate space from arbitrarily oriented 2-D images. IEEE transactions on medical imaging. 2018 Feb 19;37(8):1737-50.</p>
+
+      <p>geodesic loss:
+Hou B, Miolane N, Khanal B, Lee MC, Alansary A, McDonagh S, Hajnal JV, Rueckert D, Glocker B, Kainz B. Computing CNN loss and gradients for pose estimation with Riemannian geometry. InInternational Conference on Medical Image Computing and Computer-Assisted Intervention 2018 Sep 16 (pp. 756-764). Springer, Cham.</p>
+
+      <ul>
+        <li>
+          <p>this only works for 3D volumes but fetal MRI is usually stacks of 2D slices with motion offsets between slices. No experiments discussing this problem have been provided. How would this approach perform when 2D slices are required to be re-arranged in a canonical 3D space (bulk motion-corrupted stack of image slices reconstruction problem).</p>
+        </li>
+        <li>
+          <p>Dice overlap of the brain mask is probably a bad metric to assess registration quality. Since the ground truth transformation is known, why not measuring in mm and degrees?</p>
+        </li>
+        <li>
+          <p>the overfitted experiment with the single subject might well memorise transformations, I am not sure how conclusive this experiment is.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>HCP data is public; there are implementations of equivariant filters in the public domain; the experimental setup is relatively straight forward, so even without code, this work should be reproducible.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>major comments see above. 
+minor:</p>
+      <ul>
+        <li>‘match across images.After’ -&gt; space</li>
+        <li>‘filters[17]’ -&gt; space</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Overall, the paper seems to lack more experimental validation and a deeper discussion of existing methods in literature, potentially also a better comparison with methods in literature especially regarding the loss formulation.  I think this could be a really nice application of equivariant filters and an elegant tracking method (perhaps more for adult motion compensation because of the limitations regarding inter-slice motion in fetal imaging? ). interesting method - (literature + experimental weakness) = borderline</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This is a well written paper addressing an important problem with adequate methods and supporting experiments. The authors are encouraged to incorporate the comments from the reviewers to enhance clarity.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers, meta-reviewer, and area chairs for their thoughtful feedback.</p>
+
+  <p>R1 and R8 may have misunderstood our intended use-case. In particular, R1 stated that our method aims to “align 2 images (2D slices) in 3D space”. Similarly, R8 suggests literature be cited on 2D/3D registration. As we explain in the paper, our method performs 3D-to-3D registration and operates fully in 3D. We will further clarify in the revised version. Although we believe that the 2D-to-3D citations suggested by R8 are not entirely in scope, we will add a short section citing the articles and further explaining the differences between the problems addressed in this paper and the suggested citations. Related, while R8 is correct in that HASTE inter-slice motion necessitates 2D-to-3D registration, our work addresses motion between EPI volumes that might be used as volumetric navigators, complementary to HASTE acquisitions. EPI volumes are acquired on a much faster time scale, and thus are subject to different fetal motion conditions. We do not consider the HASTE motion correction problem directly in this manuscript.</p>
+
+  <p>R1 suggested it would be impossible to predict novel poses in the experiment reported in Fig. 2. We clarify that our method achieves generalization because only equivariant filters are learned; the rotation and translation params are analytically derived from the filter outputs during inference. Related, R8 suggested that the model might be memorizing poses in the same experiment. We emphasize that Fig. 2 reports results of estimating a novel pose that was not used as one of the two training examples. Thus memorizing training data would result in poor performance.</p>
+
+  <p>In response to R1’s concern that mirror symmetries between hemispheres would present a challenge for the model, we clarify that since we are considering 3D volumes, no rigid transformation can produce such a reflection.</p>
+
+  <p>R1 pointed out that by penalizing errors in rotation and translation parameters separately, our loss function is no longer based on the Riemannian SE(3) geodesic distance. We completely agree. The proposed network is agnostic to loss functions and indeed can be as easily trained with the SE(3) geodesic distance as a loss function. While our architecture has a module that learns SE(3)-equivariant features, in this initial investigation of the model we did not attempt to train it with SE(3) loss functions.</p>
+
+  <p>R5 raised questions of the method’s sensitivity to intensity distribution changes between the two images. While our data include a small amount of local intensity changes (due to e.g., re-interpolations), we did not consider large field or intensity distribution changes in part because our fetal MRI use-case focuses of serial image collections with the same shim-coil settings and similar bias fields. We note that this network can be integrated with existing approaches that handle intensity distribution shits, for example, a VAE that removes such intensity changes.</p>
+
+  <p>We thank R5 for catching a notation issue where we use k to index spatial positions and also filters. We will fix this in the revised version.</p>
+
+  <p>We thank R8 for the helpful suggestion of adding degree and mm distance error metrics for our experiments. We will add these to the revised version’s supplementary materials due to space limitations.</p>
+
+  <p>Finally, we will add the citation for Adam optimizer as requested by R5 and provide details of the computing infrastructure and training duration as requested by R7.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0418-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0419-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Registration"
+        class="post-category">
+        Image Registration
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Fetal Imaging"
+        class="post-category">
+        Clinical applications - Fetal Imaging
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Moyer, Daniel"
+        class="post-category">
+        Moyer, Daniel
+      </a> |  
+      
+      <a href="kittywong/tags#Abaci Turk, Esra"
+        class="post-category">
+        Abaci Turk, Esra
+      </a> |  
+      
+      <a href="kittywong/tags#Grant, P. Ellen"
+        class="post-category">
+        Grant, P. Ellen
+      </a> |  
+      
+      <a href="kittywong/tags#Wells, William M."
+        class="post-category">
+        Wells, William M.
+      </a> |  
+      
+      <a href="kittywong/tags#Golland, Polina"
+        class="post-category">
+        Golland, Polina
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0419/12/31/Paper2461">
+          Revisiting iterative highly efficient optimisation schemes in medical image registration
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0417/12/31/Paper2286">
+          4D-Foot: A fully automated pipeline of four-dimensional analysis of the foot bones using bi-plane X-ray video and CT
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

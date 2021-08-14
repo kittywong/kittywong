@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Continuous-Time Deep Glioma Growth Models | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Continuous-Time Deep Glioma Growth Models" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Jens Petersen, Fabian Isensee, Gregor Köhler, Paul F. Jäger, David Zimmerer, Ulf Neuberger, Wolfgang Wick, Jürgen Debus, Sabine Heiland, Martin Bendszus, Philipp Vollmuth, Klaus H. Maier-Hein Abstract The ability to estimate how a tumor might evolve in the future could have tremendous clinical benefits, from improved treatment decisions to better dose distribution in radiation therapy. Recent work has approached the glioma growth modeling problem via deep learning and variational inference, thus learning growth dynamics entirely from a real patient data distribution. So far, this approach was constrained to predefined image acquisition intervals and sequences of fixed length, which limits its applicability in more realistic scenarios. We overcome these limitations by extending Neural Processes, a class of conditional generative models for stochastic time series, with a hierarchical multi-scale representation encoding including a spatio-temporal attention mechanism. The result is a learned growth model that can be conditioned on an arbitrary number of observations, and that can produce a distribution of temporally consistent growth trajectories on a continuous time axis. On a dataset of 379 patients, the approach successfully captures both global and finer-grained variations in the images, exhibiting superior performance compared to other learned growth models. Link to paper https://doi.org/10.1007/978-3-030-87199-4_8 Link to the code repository https://github.com/MIC-DKFZ/deep-glioma-growth Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper extends the existing methods of segmenting longitudinal tumor parts by incorporating multi-resolution with a VAE generative model variant previously used as Conditional Neural Process. The results show its superior performance compared with the current state of the art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application is quite important and fundamentally challenging. Although it is perhaps suboptimal to predict tumor growth solely based on pixel information, this work certainly indicates its encouraging results. In addition, being able to incorporate additional time variable and stochasticity makes sense and is quite novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. One could argue that the proposed model is yet another variant of VAE-based RNNs that has a specially designed encoder with practical constraints. This makes the method seem less novel. On the application side, I would like to see it tested on a more available public benchmark to a more convincing argument, for instance, ISBI-MS Lesion 2015. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used is private. There’s a mentioning of code release. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to the above, there are some questions: The time step t seems to be used also as part of model inputs, this is not clearly explained, e.g., how are they encoded, and where in the encoder this enters the model? A private benchmark is not very convincing. The evaluation metric is not quite medically relevant and it is hard to translate that into any clinical practice. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea seems reasonable and the combination of things makes sense. The results on the private data seems OK. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The work proposes a learnable model relying on the neural process for capturing dynamics of glioma segmentation volume’s changes. The model is capable to make predictions at arbitrary time points while inputting an arbitrary number of prior observations. Both quantitatively and qualitatively, the authors demonstrate that the proposed method outperforms existing methods on the tumor modeling task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From an application point of view, the authors extend the prior work [15] by relaxing its limitations in that [15] requires a fixed number of context observations, a fixed time interval between consecutive observations, and the fact that predictions can only be made for one-time interval step. From a methodological point of view, to address the mentioned limitations of [15] the authors successfully integrate the neural processes technique. For the pathology modeling field, this is the first work of such type. The reported results are convincing, the paper is nicely written and well structured. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not that I spotted significant weaknesses, but some minor issues mentioned below in the “feedback to authors” section could be considered. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist seems to be fulfilled in the manuscript (assuming that the anonymized for review parts will be deanonymized after acceptance). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like the paper, so do not have much to complain about, except some minor issues: Authors say that their method is the first neural process to be applied to real data in the image domain. Is it really the case? For example, in [1] context/target functions are used under the neural process frame for neuroimaging data, instead of context/target points (i.e. pixels in an image). Could the author relate their study to this work, or perhaps soften the contribution emphasis in regard to this part. the authors mention that during training the context is absorbed into the target set, meaning they let the models reconstruct the inputs as well instead of only predicting a future segmentation. I assume during testing the context is also absorbed and just left ignored. Would it make sense to draw on the Fig.1 lines connecting the context with the predicted target to align the figure more with what the authors actually do? ultimately, translation of such an idea to clinical routines would require moving to a 3D space. Could the author mention the computing resources used here to see how far we are from exploiting the idea in the 3D scenario? losing factorization over pixels in the predictive likelihood lead to an extra step of searching for an optimal beta. Combining cross-entropy with DICE for predicting a segmentation makes sense, but from my experience just using cross-entropy for segmentation tasks can often be as good. Was the motivation of adding the DICE from the point of demonstrating a more general setting? Or was it empirically that better to add DICE as compared to only cross-entropy loss? a nice feature of stochastic processes is the inherent ability to yield estimation of uncertainty. It would be interesting to see prediction uncertainty maps around Fig. 2 (at least for the follow-up work). on social platforms, I sometimes see that members of miccai community complain about miccai submissions not citing previous relevant miccai works. To make such members happier, based on my quick search, [2,3] could be added to the reference list. [1] http://proceedings.mlr.press/v102/kia19a/kia19a.pdf [2] https://link.springer.com/chapter/10.1007/978-3-030-59713-9_53 [3] https://link.springer.com/chapter/10.1007/978-3-030-32245-8_87 Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I did not find major weakness points, instead in the manuscript I find points of strength, thus I decided to evaluate the paper overall positively. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors developed a neural process for forecasting glioma segmentations on MRI in a continuous manner (i.e. at arbitrary future timepoints), conditioned on any number of input timepoints. Incorporating multi-resolution spatio-temporal attention layers, this network outperforms a vanilla neural process (which operates at the pixel level) as well as a probabilistic U-Net. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is very clearly written and well structured, making a fairly complicated method easy to understand. The design of the network is novel. It uses spatio-temporal multi-head attention at multiple spatial resolutions where typical U-Net segmenters would place skip connections. It modifies the variational loss expression by reweighting the KL divergence in a way that allows them to incorporate the Dice loss into the likelihood. The validation is fairly strong, in particular Fig 3 showing that their model has some robustness even with more extreme glioma trajectories. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation study would make the paper stronger. The authors make a large number of design choices that are reasonable but whose contribution to the model’s performance is not characterized. These design choices include: spatio-temporal attention; would it work if temporal attention were used for all resolutions? using attention at all; how bad would it be if you just replaced them with skip connections (averaging each channel over all input timepoints)? using the sum of cross-entropy and Dice losses instead of cross-entropy alone ConcatCoords multi-head attention over single head average pooling instead of the more typical max pooling or strided conv Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code will be provided. Method is also described in enough detail to build a similar model from scratch. Private dataset used for training and evaluation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could be interesting to visualize attention maps and temporal attention. Does it mostly pay attention to the last timepoint since it’s probably the most relevant? Consider decomposing the reported test loss into cross-entropy and DICE so that it’s easier to interpret. Maybe comment briefly on why lower surprise is a good thing. So [5] and [15] learn worse priors? Can you think about ways to visualize the distribution of trajectories? Predicting the mean segmentation is a bit unsatisfying (even though the result is fine here). If the distribution is bimodal (i.e. there are two predominant growth trajectories), then the mean segmentation could instead capture a trajectory that has low probability. Maybe for future work, identify clusters and visualize the representative of each cluster. It seems a bit strange that a clinician would want to condition on volume increase at a future timepoint. Isn’t the volume increase actually an attribute that the clinician would more often be interested in forecasting? DICE seems like a bad metric once you get to cases where the ground truth DICE is less than ~0.5. Are these cases of extreme growth or where the glioma has shifted? Can you think of another metric to assess these cases (maybe predicted volume vs. ground truth volume)? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very clear and well written. A novel and sophisticated method for tackling a challenging task, and fairly compelling results. No glaring weaknesses. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers are happy about the paper without any major issues raised. The model is novel - a clever extension of a prior work. Evaluation is strong and supports the proposed model. I would suggest authors to consider comparisons with non-learning based growth models, since they are by construction continuous-time. In that regards, the title is rather misleading in my opinion. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Meta The comparison with traditional diffusion models is something we certainly considered, but ultimately decided against. There is no clear state of the art, so any one method included could only have served as an example, and wouldn’t have allowed us to make a statement with respect to the entire class of diffusion models. Adding multiple diffusion baselines was unfortunately not realistic within the space constraints. As a result, we felt that focusing only on deep learning approaches was a reasonable limitation of scope. In that context, the title isn’t misleading - ours is in fact the first continuous-time DEEP growth model R1 Thank you for the suggestion of the ISBI MS dataset, we will definitely try our model on it. Unfortunately, there is no publicly available dataset for longitudinal glioma, so we had to use a proprietary one. We hope that the data can be published in the future! Our model is fundamentally different from a RNN, as all context observations are encoded simultaneously instead of in a recurrent fashion. The time values are used as input to the attention mechanisms (see fig. 1), they go directly into the linear layers that produce Q and K (see eq. 2). Not having clinically-oriented metrics was a deliberate choice. Even though our method works well, it is just a proof-of-concept for continuous-time deep growth models. Translation into clinical application will require a lot more testing, so we must be careful not to suggest any clinical utility prematurely. R2 Thanks for pointing out the Kia &amp; Marquand paper, we weren’t aware of it. It looks like the authors do in fact model entire images, so we will rephrase our contribution accordingly and of course include the former as related work (the other 2 as well). During testing, the context is not absorbed into the target set, we will make sure to point this out more clearly in the final version. Our experiments for the paper were still done with 32bit precision, we now ran some initial experiments with 16bit in 3D and were able to fit a reasonable batch size on a single V100, so moving to 3D is definitely realistic. Our motivation for CE + Dice was that in our experience it usually works better than only CE, and that was the case here as well, although the difference wasn’t spectacularly big. Finally, thank you for the suggestion of looking at the uncertainty maps, that is something we will look into. R3 Thank you for your suggestion of the ablation study. We actually tried most of the things in that list, but didn’t run full ablations when we immediately saw significantly worse performance (e.g. summing along skips) The idea to visualize the attention maps is great, we haven’t done that yet! The idea to separate the test loss into its components is sensible, we will try to make that work in the main body or report the individual components as a supplement. Visualizing entire trajectories of images is something we haven’t found an adequate solution for yet. We looked at trajectories in volume space and so far it looks like the predicted trajectories are all unimodal (which is to be expected, in our opinion). The clinical motivation of conditioning on volumes as actually quite realistic. In RT planning, clinicians often have to decide whether to irradiate more tissue (increased likelihood of targeting all infiltrated tissue, but also greater chances of damaging healthy tissue) or less. This decision can be framed as “conditioning” on larger or smaller future tumor volumes. Dice is the default segmentation metric, and because we’re working in segmentation space it was the obvious choice for us. Predicted vs. GT volume is also interesting, but it lacks all spatial information, which is what we’re interested in as well. Small GT Dice usually just means extreme growth, we hardly ever see large shifts in center of mass. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Jens Petersen, Fabian Isensee, Gregor Köhler, Paul F. Jäger, David Zimmerer, Ulf Neuberger, Wolfgang Wick, Jürgen Debus, Sabine Heiland, Martin Bendszus, Philipp Vollmuth, Klaus H. Maier-Hein Abstract The ability to estimate how a tumor might evolve in the future could have tremendous clinical benefits, from improved treatment decisions to better dose distribution in radiation therapy. Recent work has approached the glioma growth modeling problem via deep learning and variational inference, thus learning growth dynamics entirely from a real patient data distribution. So far, this approach was constrained to predefined image acquisition intervals and sequences of fixed length, which limits its applicability in more realistic scenarios. We overcome these limitations by extending Neural Processes, a class of conditional generative models for stochastic time series, with a hierarchical multi-scale representation encoding including a spatio-temporal attention mechanism. The result is a learned growth model that can be conditioned on an arbitrary number of observations, and that can produce a distribution of temporally consistent growth trajectories on a continuous time axis. On a dataset of 379 patients, the approach successfully captures both global and finer-grained variations in the images, exhibiting superior performance compared to other learned growth models. Link to paper https://doi.org/10.1007/978-3-030-87199-4_8 Link to the code repository https://github.com/MIC-DKFZ/deep-glioma-growth Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper extends the existing methods of segmenting longitudinal tumor parts by incorporating multi-resolution with a VAE generative model variant previously used as Conditional Neural Process. The results show its superior performance compared with the current state of the art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application is quite important and fundamentally challenging. Although it is perhaps suboptimal to predict tumor growth solely based on pixel information, this work certainly indicates its encouraging results. In addition, being able to incorporate additional time variable and stochasticity makes sense and is quite novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. One could argue that the proposed model is yet another variant of VAE-based RNNs that has a specially designed encoder with practical constraints. This makes the method seem less novel. On the application side, I would like to see it tested on a more available public benchmark to a more convincing argument, for instance, ISBI-MS Lesion 2015. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used is private. There’s a mentioning of code release. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to the above, there are some questions: The time step t seems to be used also as part of model inputs, this is not clearly explained, e.g., how are they encoded, and where in the encoder this enters the model? A private benchmark is not very convincing. The evaluation metric is not quite medically relevant and it is hard to translate that into any clinical practice. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea seems reasonable and the combination of things makes sense. The results on the private data seems OK. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The work proposes a learnable model relying on the neural process for capturing dynamics of glioma segmentation volume’s changes. The model is capable to make predictions at arbitrary time points while inputting an arbitrary number of prior observations. Both quantitatively and qualitatively, the authors demonstrate that the proposed method outperforms existing methods on the tumor modeling task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From an application point of view, the authors extend the prior work [15] by relaxing its limitations in that [15] requires a fixed number of context observations, a fixed time interval between consecutive observations, and the fact that predictions can only be made for one-time interval step. From a methodological point of view, to address the mentioned limitations of [15] the authors successfully integrate the neural processes technique. For the pathology modeling field, this is the first work of such type. The reported results are convincing, the paper is nicely written and well structured. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not that I spotted significant weaknesses, but some minor issues mentioned below in the “feedback to authors” section could be considered. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist seems to be fulfilled in the manuscript (assuming that the anonymized for review parts will be deanonymized after acceptance). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like the paper, so do not have much to complain about, except some minor issues: Authors say that their method is the first neural process to be applied to real data in the image domain. Is it really the case? For example, in [1] context/target functions are used under the neural process frame for neuroimaging data, instead of context/target points (i.e. pixels in an image). Could the author relate their study to this work, or perhaps soften the contribution emphasis in regard to this part. the authors mention that during training the context is absorbed into the target set, meaning they let the models reconstruct the inputs as well instead of only predicting a future segmentation. I assume during testing the context is also absorbed and just left ignored. Would it make sense to draw on the Fig.1 lines connecting the context with the predicted target to align the figure more with what the authors actually do? ultimately, translation of such an idea to clinical routines would require moving to a 3D space. Could the author mention the computing resources used here to see how far we are from exploiting the idea in the 3D scenario? losing factorization over pixels in the predictive likelihood lead to an extra step of searching for an optimal beta. Combining cross-entropy with DICE for predicting a segmentation makes sense, but from my experience just using cross-entropy for segmentation tasks can often be as good. Was the motivation of adding the DICE from the point of demonstrating a more general setting? Or was it empirically that better to add DICE as compared to only cross-entropy loss? a nice feature of stochastic processes is the inherent ability to yield estimation of uncertainty. It would be interesting to see prediction uncertainty maps around Fig. 2 (at least for the follow-up work). on social platforms, I sometimes see that members of miccai community complain about miccai submissions not citing previous relevant miccai works. To make such members happier, based on my quick search, [2,3] could be added to the reference list. [1] http://proceedings.mlr.press/v102/kia19a/kia19a.pdf [2] https://link.springer.com/chapter/10.1007/978-3-030-59713-9_53 [3] https://link.springer.com/chapter/10.1007/978-3-030-32245-8_87 Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I did not find major weakness points, instead in the manuscript I find points of strength, thus I decided to evaluate the paper overall positively. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors developed a neural process for forecasting glioma segmentations on MRI in a continuous manner (i.e. at arbitrary future timepoints), conditioned on any number of input timepoints. Incorporating multi-resolution spatio-temporal attention layers, this network outperforms a vanilla neural process (which operates at the pixel level) as well as a probabilistic U-Net. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is very clearly written and well structured, making a fairly complicated method easy to understand. The design of the network is novel. It uses spatio-temporal multi-head attention at multiple spatial resolutions where typical U-Net segmenters would place skip connections. It modifies the variational loss expression by reweighting the KL divergence in a way that allows them to incorporate the Dice loss into the likelihood. The validation is fairly strong, in particular Fig 3 showing that their model has some robustness even with more extreme glioma trajectories. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation study would make the paper stronger. The authors make a large number of design choices that are reasonable but whose contribution to the model’s performance is not characterized. These design choices include: spatio-temporal attention; would it work if temporal attention were used for all resolutions? using attention at all; how bad would it be if you just replaced them with skip connections (averaging each channel over all input timepoints)? using the sum of cross-entropy and Dice losses instead of cross-entropy alone ConcatCoords multi-head attention over single head average pooling instead of the more typical max pooling or strided conv Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code will be provided. Method is also described in enough detail to build a similar model from scratch. Private dataset used for training and evaluation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could be interesting to visualize attention maps and temporal attention. Does it mostly pay attention to the last timepoint since it’s probably the most relevant? Consider decomposing the reported test loss into cross-entropy and DICE so that it’s easier to interpret. Maybe comment briefly on why lower surprise is a good thing. So [5] and [15] learn worse priors? Can you think about ways to visualize the distribution of trajectories? Predicting the mean segmentation is a bit unsatisfying (even though the result is fine here). If the distribution is bimodal (i.e. there are two predominant growth trajectories), then the mean segmentation could instead capture a trajectory that has low probability. Maybe for future work, identify clusters and visualize the representative of each cluster. It seems a bit strange that a clinician would want to condition on volume increase at a future timepoint. Isn’t the volume increase actually an attribute that the clinician would more often be interested in forecasting? DICE seems like a bad metric once you get to cases where the ground truth DICE is less than ~0.5. Are these cases of extreme growth or where the glioma has shifted? Can you think of another metric to assess these cases (maybe predicted volume vs. ground truth volume)? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very clear and well written. A novel and sophisticated method for tackling a challenging task, and fairly compelling results. No glaring weaknesses. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers are happy about the paper without any major issues raised. The model is novel - a clever extension of a prior work. Evaluation is strong and supports the proposed model. I would suggest authors to consider comparisons with non-learning based growth models, since they are by construction continuous-time. In that regards, the title is rather misleading in my opinion. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Meta The comparison with traditional diffusion models is something we certainly considered, but ultimately decided against. There is no clear state of the art, so any one method included could only have served as an example, and wouldn’t have allowed us to make a statement with respect to the entire class of diffusion models. Adding multiple diffusion baselines was unfortunately not realistic within the space constraints. As a result, we felt that focusing only on deep learning approaches was a reasonable limitation of scope. In that context, the title isn’t misleading - ours is in fact the first continuous-time DEEP growth model R1 Thank you for the suggestion of the ISBI MS dataset, we will definitely try our model on it. Unfortunately, there is no publicly available dataset for longitudinal glioma, so we had to use a proprietary one. We hope that the data can be published in the future! Our model is fundamentally different from a RNN, as all context observations are encoded simultaneously instead of in a recurrent fashion. The time values are used as input to the attention mechanisms (see fig. 1), they go directly into the linear layers that produce Q and K (see eq. 2). Not having clinically-oriented metrics was a deliberate choice. Even though our method works well, it is just a proof-of-concept for continuous-time deep growth models. Translation into clinical application will require a lot more testing, so we must be careful not to suggest any clinical utility prematurely. R2 Thanks for pointing out the Kia &amp; Marquand paper, we weren’t aware of it. It looks like the authors do in fact model entire images, so we will rephrase our contribution accordingly and of course include the former as related work (the other 2 as well). During testing, the context is not absorbed into the target set, we will make sure to point this out more clearly in the final version. Our experiments for the paper were still done with 32bit precision, we now ran some initial experiments with 16bit in 3D and were able to fit a reasonable batch size on a single V100, so moving to 3D is definitely realistic. Our motivation for CE + Dice was that in our experience it usually works better than only CE, and that was the case here as well, although the difference wasn’t spectacularly big. Finally, thank you for the suggestion of looking at the uncertainty maps, that is something we will look into. R3 Thank you for your suggestion of the ablation study. We actually tried most of the things in that list, but didn’t run full ablations when we immediately saw significantly worse performance (e.g. summing along skips) The idea to visualize the attention maps is great, we haven’t done that yet! The idea to separate the test loss into its components is sensible, we will try to make that work in the main body or report the individual components as a supplement. Visualizing entire trajectories of images is something we haven’t found an adequate solution for yet. We looked at trajectories in volume space and so far it looks like the predicted trajectories are all unimodal (which is to be expected, in our opinion). The clinical motivation of conditioning on volumes as actually quite realistic. In RT planning, clinicians often have to decide whether to irradiate more tissue (increased likelihood of targeting all infiltrated tissue, but also greater chances of damaging healthy tissue) or less. This decision can be framed as “conditioning” on larger or smaller future tumor volumes. Dice is the default segmentation metric, and because we’re working in segmentation space it was the obvious choice for us. Predicted vs. GT volume is also interesting, but it lacks all spatial information, which is what we’re interested in as well. Small GT Dice usually just means extreme growth, we hardly ever see large shifts in center of mass. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0307/12/31/Paper0366" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0307/12/31/Paper0366" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0307-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Continuous-Time Deep Glioma Growth Models" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0307/12/31/Paper0366"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0307/12/31/Paper0366","headline":"Continuous-Time Deep Glioma Growth Models","dateModified":"0308-01-02T00:00:00-05:17","datePublished":"0307-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Jens Petersen, Fabian Isensee, Gregor Köhler, Paul F. Jäger, David Zimmerer, Ulf Neuberger, Wolfgang Wick, Jürgen Debus, Sabine Heiland, Martin Bendszus, Philipp Vollmuth, Klaus H. Maier-Hein Abstract The ability to estimate how a tumor might evolve in the future could have tremendous clinical benefits, from improved treatment decisions to better dose distribution in radiation therapy. Recent work has approached the glioma growth modeling problem via deep learning and variational inference, thus learning growth dynamics entirely from a real patient data distribution. So far, this approach was constrained to predefined image acquisition intervals and sequences of fixed length, which limits its applicability in more realistic scenarios. We overcome these limitations by extending Neural Processes, a class of conditional generative models for stochastic time series, with a hierarchical multi-scale representation encoding including a spatio-temporal attention mechanism. The result is a learned growth model that can be conditioned on an arbitrary number of observations, and that can produce a distribution of temporally consistent growth trajectories on a continuous time axis. On a dataset of 379 patients, the approach successfully captures both global and finer-grained variations in the images, exhibiting superior performance compared to other learned growth models. Link to paper https://doi.org/10.1007/978-3-030-87199-4_8 Link to the code repository https://github.com/MIC-DKFZ/deep-glioma-growth Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper extends the existing methods of segmenting longitudinal tumor parts by incorporating multi-resolution with a VAE generative model variant previously used as Conditional Neural Process. The results show its superior performance compared with the current state of the art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application is quite important and fundamentally challenging. Although it is perhaps suboptimal to predict tumor growth solely based on pixel information, this work certainly indicates its encouraging results. In addition, being able to incorporate additional time variable and stochasticity makes sense and is quite novel. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. One could argue that the proposed model is yet another variant of VAE-based RNNs that has a specially designed encoder with practical constraints. This makes the method seem less novel. On the application side, I would like to see it tested on a more available public benchmark to a more convincing argument, for instance, ISBI-MS Lesion 2015. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The data used is private. There’s a mentioning of code release. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to the above, there are some questions: The time step t seems to be used also as part of model inputs, this is not clearly explained, e.g., how are they encoded, and where in the encoder this enters the model? A private benchmark is not very convincing. The evaluation metric is not quite medically relevant and it is hard to translate that into any clinical practice. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea seems reasonable and the combination of things makes sense. The results on the private data seems OK. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 2 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The work proposes a learnable model relying on the neural process for capturing dynamics of glioma segmentation volume’s changes. The model is capable to make predictions at arbitrary time points while inputting an arbitrary number of prior observations. Both quantitatively and qualitatively, the authors demonstrate that the proposed method outperforms existing methods on the tumor modeling task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From an application point of view, the authors extend the prior work [15] by relaxing its limitations in that [15] requires a fixed number of context observations, a fixed time interval between consecutive observations, and the fact that predictions can only be made for one-time interval step. From a methodological point of view, to address the mentioned limitations of [15] the authors successfully integrate the neural processes technique. For the pathology modeling field, this is the first work of such type. The reported results are convincing, the paper is nicely written and well structured. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not that I spotted significant weaknesses, but some minor issues mentioned below in the “feedback to authors” section could be considered. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist seems to be fulfilled in the manuscript (assuming that the anonymized for review parts will be deanonymized after acceptance). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I like the paper, so do not have much to complain about, except some minor issues: Authors say that their method is the first neural process to be applied to real data in the image domain. Is it really the case? For example, in [1] context/target functions are used under the neural process frame for neuroimaging data, instead of context/target points (i.e. pixels in an image). Could the author relate their study to this work, or perhaps soften the contribution emphasis in regard to this part. the authors mention that during training the context is absorbed into the target set, meaning they let the models reconstruct the inputs as well instead of only predicting a future segmentation. I assume during testing the context is also absorbed and just left ignored. Would it make sense to draw on the Fig.1 lines connecting the context with the predicted target to align the figure more with what the authors actually do? ultimately, translation of such an idea to clinical routines would require moving to a 3D space. Could the author mention the computing resources used here to see how far we are from exploiting the idea in the 3D scenario? losing factorization over pixels in the predictive likelihood lead to an extra step of searching for an optimal beta. Combining cross-entropy with DICE for predicting a segmentation makes sense, but from my experience just using cross-entropy for segmentation tasks can often be as good. Was the motivation of adding the DICE from the point of demonstrating a more general setting? Or was it empirically that better to add DICE as compared to only cross-entropy loss? a nice feature of stochastic processes is the inherent ability to yield estimation of uncertainty. It would be interesting to see prediction uncertainty maps around Fig. 2 (at least for the follow-up work). on social platforms, I sometimes see that members of miccai community complain about miccai submissions not citing previous relevant miccai works. To make such members happier, based on my quick search, [2,3] could be added to the reference list. [1] http://proceedings.mlr.press/v102/kia19a/kia19a.pdf [2] https://link.springer.com/chapter/10.1007/978-3-030-59713-9_53 [3] https://link.springer.com/chapter/10.1007/978-3-030-32245-8_87 Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I did not find major weakness points, instead in the manuscript I find points of strength, thus I decided to evaluate the paper overall positively. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors developed a neural process for forecasting glioma segmentations on MRI in a continuous manner (i.e. at arbitrary future timepoints), conditioned on any number of input timepoints. Incorporating multi-resolution spatio-temporal attention layers, this network outperforms a vanilla neural process (which operates at the pixel level) as well as a probabilistic U-Net. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is very clearly written and well structured, making a fairly complicated method easy to understand. The design of the network is novel. It uses spatio-temporal multi-head attention at multiple spatial resolutions where typical U-Net segmenters would place skip connections. It modifies the variational loss expression by reweighting the KL divergence in a way that allows them to incorporate the Dice loss into the likelihood. The validation is fairly strong, in particular Fig 3 showing that their model has some robustness even with more extreme glioma trajectories. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. An ablation study would make the paper stronger. The authors make a large number of design choices that are reasonable but whose contribution to the model’s performance is not characterized. These design choices include: spatio-temporal attention; would it work if temporal attention were used for all resolutions? using attention at all; how bad would it be if you just replaced them with skip connections (averaging each channel over all input timepoints)? using the sum of cross-entropy and Dice losses instead of cross-entropy alone ConcatCoords multi-head attention over single head average pooling instead of the more typical max pooling or strided conv Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code will be provided. Method is also described in enough detail to build a similar model from scratch. Private dataset used for training and evaluation. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could be interesting to visualize attention maps and temporal attention. Does it mostly pay attention to the last timepoint since it’s probably the most relevant? Consider decomposing the reported test loss into cross-entropy and DICE so that it’s easier to interpret. Maybe comment briefly on why lower surprise is a good thing. So [5] and [15] learn worse priors? Can you think about ways to visualize the distribution of trajectories? Predicting the mean segmentation is a bit unsatisfying (even though the result is fine here). If the distribution is bimodal (i.e. there are two predominant growth trajectories), then the mean segmentation could instead capture a trajectory that has low probability. Maybe for future work, identify clusters and visualize the representative of each cluster. It seems a bit strange that a clinician would want to condition on volume increase at a future timepoint. Isn’t the volume increase actually an attribute that the clinician would more often be interested in forecasting? DICE seems like a bad metric once you get to cases where the ground truth DICE is less than ~0.5. Are these cases of extreme growth or where the glioma has shifted? Can you think of another metric to assess these cases (maybe predicted volume vs. ground truth volume)? Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Very clear and well written. A novel and sophisticated method for tackling a challenging task, and fairly compelling results. No glaring weaknesses. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. All reviewers are happy about the paper without any major issues raised. The model is novel - a clever extension of a prior work. Evaluation is strong and supports the proposed model. I would suggest authors to consider comparisons with non-learning based growth models, since they are by construction continuous-time. In that regards, the title is rather misleading in my opinion. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Author Feedback Meta The comparison with traditional diffusion models is something we certainly considered, but ultimately decided against. There is no clear state of the art, so any one method included could only have served as an example, and wouldn’t have allowed us to make a statement with respect to the entire class of diffusion models. Adding multiple diffusion baselines was unfortunately not realistic within the space constraints. As a result, we felt that focusing only on deep learning approaches was a reasonable limitation of scope. In that context, the title isn’t misleading - ours is in fact the first continuous-time DEEP growth model R1 Thank you for the suggestion of the ISBI MS dataset, we will definitely try our model on it. Unfortunately, there is no publicly available dataset for longitudinal glioma, so we had to use a proprietary one. We hope that the data can be published in the future! Our model is fundamentally different from a RNN, as all context observations are encoded simultaneously instead of in a recurrent fashion. The time values are used as input to the attention mechanisms (see fig. 1), they go directly into the linear layers that produce Q and K (see eq. 2). Not having clinically-oriented metrics was a deliberate choice. Even though our method works well, it is just a proof-of-concept for continuous-time deep growth models. Translation into clinical application will require a lot more testing, so we must be careful not to suggest any clinical utility prematurely. R2 Thanks for pointing out the Kia &amp; Marquand paper, we weren’t aware of it. It looks like the authors do in fact model entire images, so we will rephrase our contribution accordingly and of course include the former as related work (the other 2 as well). During testing, the context is not absorbed into the target set, we will make sure to point this out more clearly in the final version. Our experiments for the paper were still done with 32bit precision, we now ran some initial experiments with 16bit in 3D and were able to fit a reasonable batch size on a single V100, so moving to 3D is definitely realistic. Our motivation for CE + Dice was that in our experience it usually works better than only CE, and that was the case here as well, although the difference wasn’t spectacularly big. Finally, thank you for the suggestion of looking at the uncertainty maps, that is something we will look into. R3 Thank you for your suggestion of the ablation study. We actually tried most of the things in that list, but didn’t run full ablations when we immediately saw significantly worse performance (e.g. summing along skips) The idea to visualize the attention maps is great, we haven’t done that yet! The idea to separate the test loss into its components is sensible, we will try to make that work in the main body or report the individual components as a supplement. Visualizing entire trajectories of images is something we haven’t found an adequate solution for yet. We looked at trajectories in volume space and so far it looks like the predicted trajectories are all unimodal (which is to be expected, in our opinion). The clinical motivation of conditioning on volumes as actually quite realistic. In RT planning, clinicians often have to decide whether to irradiate more tissue (increased likelihood of targeting all infiltrated tissue, but also greater chances of damaging healthy tissue) or less. This decision can be framed as “conditioning” on larger or smaller future tumor volumes. Dice is the default segmentation metric, and because we’re working in segmentation space it was the obvious choice for us. Predicted vs. GT volume is also interesting, but it lacks all spatial information, which is what we’re interested in as well. Small GT Dice usually just means extreme growth, we hardly ever see large shifts in center of mass. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Petersen, Jens,Isensee, Fabian,Köhler, Gregor,Jäger, Paul F.,Zimmerer, David,Neuberger, Ulf,Wick, Wolfgang,Debus, Jürgen,Heiland, Sabine,Bendszus, Martin,Vollmuth, Philipp,Maier-Hein, Klaus H." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Continuous-Time Deep Glioma Growth Models</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Petersen, Jens"
+        class="post-tags">
+        Petersen, Jens
+      </a> |  
+      
+      <a href="kittywong/tags#Isensee, Fabian"
+        class="post-tags">
+        Isensee, Fabian
+      </a> |  
+      
+      <a href="kittywong/tags#Köhler, Gregor"
+        class="post-tags">
+        Köhler, Gregor
+      </a> |  
+      
+      <a href="kittywong/tags#Jäger, Paul F."
+        class="post-tags">
+        Jäger, Paul F.
+      </a> |  
+      
+      <a href="kittywong/tags#Zimmerer, David"
+        class="post-tags">
+        Zimmerer, David
+      </a> |  
+      
+      <a href="kittywong/tags#Neuberger, Ulf"
+        class="post-tags">
+        Neuberger, Ulf
+      </a> |  
+      
+      <a href="kittywong/tags#Wick, Wolfgang"
+        class="post-tags">
+        Wick, Wolfgang
+      </a> |  
+      
+      <a href="kittywong/tags#Debus, Jürgen"
+        class="post-tags">
+        Debus, Jürgen
+      </a> |  
+      
+      <a href="kittywong/tags#Heiland, Sabine"
+        class="post-tags">
+        Heiland, Sabine
+      </a> |  
+      
+      <a href="kittywong/tags#Bendszus, Martin"
+        class="post-tags">
+        Bendszus, Martin
+      </a> |  
+      
+      <a href="kittywong/tags#Vollmuth, Philipp"
+        class="post-tags">
+        Vollmuth, Philipp
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Klaus H."
+        class="post-tags">
+        Maier-Hein, Klaus H.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Jens Petersen, Fabian Isensee, Gregor Köhler, Paul F. Jäger, David Zimmerer, Ulf Neuberger, Wolfgang Wick, Jürgen Debus, Sabine Heiland, Martin Bendszus, Philipp Vollmuth, Klaus H. Maier-Hein
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The ability to estimate how a tumor might evolve in the future could have tremendous clinical benefits, from improved treatment decisions to better dose distribution in radiation therapy.
+Recent work has approached the glioma growth modeling problem via deep learning and variational inference, thus learning growth
+dynamics entirely from a real patient data distribution. So far, this approach was constrained to predefined image acquisition intervals and sequences of fixed length, which limits its applicability in more realistic scenarios.
+We overcome these limitations by extending Neural Processes, a class of conditional generative models for stochastic time series, with a hierarchical multi-scale representation encoding including a spatio-temporal attention mechanism. The result is a learned growth model that can be conditioned on an arbitrary number of observations, and that can produce a distribution of temporally consistent growth trajectories on a continuous time axis. On a dataset of 379 patients, the approach successfully captures both global and finer-grained variations in the images, exhibiting superior performance compared to other learned growth models. 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_8">https://doi.org/10.1007/978-3-030-87199-4_8</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/MIC-DKFZ/deep-glioma-growth
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper extends the existing methods of segmenting longitudinal tumor parts by incorporating multi-resolution with a VAE generative model variant previously used as Conditional Neural Process. The results show its superior performance compared with the current state of the art.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The application is quite important and fundamentally challenging. Although it is perhaps suboptimal to predict tumor growth solely based on pixel information, this work certainly indicates its encouraging results.  In addition, being able to incorporate additional time variable and stochasticity makes sense and is quite novel.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>One could argue that the proposed model is yet another variant of VAE-based RNNs that has a specially designed encoder with practical constraints. This makes the method seem less novel.</p>
+
+      <p>On the application side, I would like to see it tested on a more available public benchmark to a more convincing argument, for instance, ISBI-MS Lesion 2015.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The data used is private. There’s a mentioning of code release.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>In addition to the above, there are some questions:</p>
+      <ol>
+        <li>The time step t seems to be used also as part of model inputs, this is not clearly explained, e.g., how are they encoded, and where in the encoder this enters the model?</li>
+        <li>A private benchmark is not very convincing.</li>
+        <li>The evaluation metric is not quite medically relevant and it is hard to translate that into any clinical practice.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The overall idea seems reasonable and the combination of things makes sense. The results on the private data seems OK.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The work proposes a learnable model relying on the neural process for capturing dynamics of glioma segmentation volume’s changes. The model is capable to make predictions at arbitrary time points while inputting an arbitrary number of prior observations.
+Both quantitatively and qualitatively, the authors demonstrate that the proposed method outperforms existing methods on the tumor modeling task.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>From an application point of view, the authors extend the prior work [15] by relaxing its limitations in that [15] requires a fixed number of context observations, a fixed time interval between consecutive observations, and the fact that predictions can only be made for one-time interval step.</p>
+
+      <p>From a methodological point of view, to address the mentioned limitations of [15] the authors successfully integrate the neural processes technique. For the pathology modeling field, this is the first work of such type.</p>
+
+      <p>The reported results are convincing, the paper is nicely written and well structured.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>It is not that I spotted significant weaknesses, but some minor issues mentioned below in the “feedback to authors” section could be considered.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility checklist seems to be fulfilled in the manuscript (assuming that the anonymized for review parts will be deanonymized after acceptance).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I like the paper, so do not have much to complain about, except some minor issues:</p>
+
+      <ul>
+        <li>
+          <p>Authors say that their method is the first neural process to be applied to real data in the image domain. Is it really the case? For example, in [1] context/target functions are used under the neural process frame for neuroimaging data, instead of context/target points (i.e. pixels in an image). Could the author relate their study to this work, or perhaps soften the contribution emphasis in regard to this part.</p>
+        </li>
+        <li>
+          <p>the authors mention that during training the context is absorbed into the target set, meaning they let the models reconstruct the inputs as well instead of only predicting a future segmentation. I assume during testing the context is also absorbed and just left ignored. Would it make sense to draw on the Fig.1 lines connecting the context with the predicted target to align the figure more with what the authors actually do?</p>
+        </li>
+        <li>
+          <p>ultimately, translation of such an idea to clinical routines would require moving to a 3D space. Could the author mention the computing resources used here to see how far we are from exploiting the idea in the 3D scenario?</p>
+        </li>
+        <li>
+          <p>losing factorization over pixels in the predictive likelihood lead to an extra step of searching for an optimal beta. Combining cross-entropy with DICE for predicting a segmentation makes sense, but from my experience just using cross-entropy for segmentation tasks can often be as good. Was the motivation of adding the DICE from the point of demonstrating a more general setting? Or was it empirically that better to add DICE as compared to only cross-entropy loss?</p>
+        </li>
+        <li>
+          <p>a nice feature of stochastic processes is the inherent ability to yield estimation of uncertainty. It would be interesting to see prediction uncertainty maps around Fig. 2 (at least for the follow-up work).</p>
+        </li>
+        <li>
+          <p>on social platforms, I sometimes see that members of miccai community complain about miccai submissions not citing previous relevant miccai works. To make such members happier, based on my quick search, [2,3] could be added to the reference list.</p>
+        </li>
+      </ul>
+
+      <p>[1] http://proceedings.mlr.press/v102/kia19a/kia19a.pdf
+[2] https://link.springer.com/chapter/10.1007/978-3-030-59713-9_53
+[3] https://link.springer.com/chapter/10.1007/978-3-030-32245-8_87</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I did not find major weakness points, instead in the manuscript I find points of strength, thus I decided to evaluate the paper overall positively.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors developed a neural process for forecasting glioma segmentations on MRI in a continuous manner (i.e. at arbitrary future timepoints), conditioned on any number of input timepoints. Incorporating multi-resolution spatio-temporal attention layers, this network outperforms a vanilla neural process (which operates at the pixel level) as well as a probabilistic U-Net.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper is very clearly written and well structured, making a fairly complicated method easy to understand.
+The design of the network is novel. It uses spatio-temporal multi-head attention at multiple spatial resolutions where typical U-Net segmenters would place skip connections. It modifies the variational loss expression by reweighting the KL divergence in a way that allows them to incorporate the Dice loss into the likelihood.
+The validation is fairly strong, in particular Fig 3 showing that their model has some robustness even with more extreme glioma trajectories.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>An ablation study would make the paper stronger. The authors make a large number of design choices that are reasonable but whose contribution to the model’s performance is not characterized. These design choices include:</p>
+      <ul>
+        <li>spatio-temporal attention; would it work if temporal attention were used for all resolutions?</li>
+        <li>using attention at all; how bad would it be if you just replaced them with skip connections (averaging each channel over all input timepoints)?</li>
+        <li>using the sum of cross-entropy and Dice losses instead of cross-entropy alone</li>
+        <li>ConcatCoords</li>
+        <li>multi-head attention over single head</li>
+        <li>average pooling instead of the more typical max pooling or strided conv</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Code will be provided. Method is also described in enough detail to build a similar model from scratch. Private dataset used for training and evaluation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Could be interesting to visualize attention maps and temporal attention. Does it mostly pay attention to the last timepoint since it’s probably the most relevant?</p>
+
+      <p>Consider decomposing the reported test loss into cross-entropy and DICE so that it’s easier to interpret.
+Maybe comment briefly on why lower surprise is a good thing. So [5] and [15] learn worse priors?</p>
+
+      <p>Can you think about ways to visualize the distribution of trajectories? Predicting the mean segmentation is a bit unsatisfying (even though the result is fine here). If the distribution is bimodal (i.e. there are two predominant growth trajectories), then the mean segmentation could instead capture a trajectory that has low probability. Maybe for future work, identify clusters and visualize the representative of each cluster.</p>
+
+      <p>It seems a bit strange that a clinician would want to condition on volume increase at a future timepoint. Isn’t the volume increase actually an attribute that the clinician would more often be interested in forecasting?</p>
+
+      <p>DICE seems like a bad metric once you get to cases where the ground truth DICE is less than ~0.5. Are these cases of extreme growth or where the glioma has shifted? Can you think of another metric to assess these cases (maybe predicted volume vs. ground truth volume)?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Very clear and well written. A novel and sophisticated method for tackling a challenging task, and fairly compelling results. No glaring weaknesses.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>All reviewers are happy about the paper without any major issues raised. 
+The model is novel - a clever extension of a prior work. 
+Evaluation is strong and supports the proposed model. 
+I would suggest authors to consider comparisons with non-learning based growth models, since they are by construction continuous-time. In that regards, the title is rather misleading in my opinion.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Meta</p>
+
+  <p>The comparison with traditional diffusion models is something we certainly considered, but ultimately decided against. There is no clear state of the art, so any one method included could only have served as an example, and wouldn’t have allowed us to make a statement with respect to the entire class of diffusion models. Adding multiple diffusion baselines was unfortunately not realistic within the space constraints. As a result, we felt that focusing only on deep learning approaches was a reasonable limitation of scope. In that context, the title isn’t misleading - ours is in fact the first continuous-time DEEP growth model</p>
+
+  <p>R1</p>
+
+  <p>Thank you for the suggestion of the ISBI MS dataset, we will definitely try our model on it. Unfortunately, there is no publicly available dataset for longitudinal glioma, so we had to use a proprietary one. We hope that the data can be published in the future!</p>
+
+  <p>Our model is fundamentally different from a RNN, as all context observations are encoded simultaneously instead of in a recurrent fashion.</p>
+
+  <p>The time values are used as input to the attention mechanisms (see fig. 1), they go directly into the linear layers that produce Q and K (see eq. 2).</p>
+
+  <p>Not having clinically-oriented metrics was a deliberate choice. Even though our method works well, it is just a proof-of-concept for continuous-time deep growth models. Translation into clinical application will require a lot more testing, so we must be careful not to suggest any clinical utility prematurely.</p>
+
+  <p>R2</p>
+
+  <p>Thanks for pointing out the Kia &amp; Marquand paper, we weren’t aware of it. It looks like the authors do in fact model entire images, so we will rephrase our contribution accordingly and of course include the former as related work (the other 2 as well).</p>
+
+  <p>During testing, the context is not absorbed into the target set, we will make sure to point this out more clearly in the final version.</p>
+
+  <p>Our experiments for the paper were still done with 32bit precision, we now ran some initial experiments with 16bit in 3D and were able to fit a reasonable batch size on a single V100, so moving to 3D is definitely realistic.</p>
+
+  <p>Our motivation for CE + Dice was that in our experience it usually works better than only CE, and that was the case here as well, although the difference wasn’t spectacularly big.</p>
+
+  <p>Finally, thank you for the suggestion of looking at the uncertainty maps, that is something we will look into.</p>
+
+  <p>R3</p>
+
+  <p>Thank you for your suggestion of the ablation study. We actually tried most of the things in that list, but didn’t run full ablations when we immediately saw significantly worse performance (e.g. summing along skips)</p>
+
+  <p>The idea to visualize the attention maps is great, we haven’t done that yet!</p>
+
+  <p>The idea to separate the test loss into its components is sensible, we will try to make that work in the main body or report the individual components as a supplement.</p>
+
+  <p>Visualizing entire trajectories of images is something we haven’t found an adequate solution for yet. We looked at trajectories in volume space and so far it looks like the predicted trajectories are all unimodal (which is to be expected, in our opinion).</p>
+
+  <p>The clinical motivation of conditioning on volumes as actually quite realistic. In RT planning, clinicians often have to decide whether to irradiate more tissue (increased likelihood of targeting all infiltrated tissue, but also greater chances of damaging healthy tissue) or less. This decision can be framed as “conditioning” on larger or smaller future tumor volumes.</p>
+
+  <p>Dice is the default segmentation metric, and because we’re working in segmentation space it was the obvious choice for us. Predicted vs. GT volume is also interesting, but it lacks all spatial information, which is what we’re interested in as well. Small GT Dice usually just means extreme growth, we hardly ever see large shifts in center of mass.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0307-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0308-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Oncology"
+        class="post-category">
+        Clinical applications - Oncology
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Uncertainty"
+        class="post-category">
+        Machine Learning - Uncertainty
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Petersen, Jens"
+        class="post-category">
+        Petersen, Jens
+      </a> |  
+      
+      <a href="kittywong/tags#Isensee, Fabian"
+        class="post-category">
+        Isensee, Fabian
+      </a> |  
+      
+      <a href="kittywong/tags#Köhler, Gregor"
+        class="post-category">
+        Köhler, Gregor
+      </a> |  
+      
+      <a href="kittywong/tags#Jäger, Paul F."
+        class="post-category">
+        Jäger, Paul F.
+      </a> |  
+      
+      <a href="kittywong/tags#Zimmerer, David"
+        class="post-category">
+        Zimmerer, David
+      </a> |  
+      
+      <a href="kittywong/tags#Neuberger, Ulf"
+        class="post-category">
+        Neuberger, Ulf
+      </a> |  
+      
+      <a href="kittywong/tags#Wick, Wolfgang"
+        class="post-category">
+        Wick, Wolfgang
+      </a> |  
+      
+      <a href="kittywong/tags#Debus, Jürgen"
+        class="post-category">
+        Debus, Jürgen
+      </a> |  
+      
+      <a href="kittywong/tags#Heiland, Sabine"
+        class="post-category">
+        Heiland, Sabine
+      </a> |  
+      
+      <a href="kittywong/tags#Bendszus, Martin"
+        class="post-category">
+        Bendszus, Martin
+      </a> |  
+      
+      <a href="kittywong/tags#Vollmuth, Philipp"
+        class="post-category">
+        Vollmuth, Philipp
+      </a> |  
+      
+      <a href="kittywong/tags#Maier-Hein, Klaus H."
+        class="post-category">
+        Maier-Hein, Klaus H.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0308/12/31/Paper0853">
+          Spine-Transformers: Vertebra Detection and Localization in Arbitrary Field-of-View Spine CT with Transformers
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0306/12/31/Paper0338">
+          AlignTransformer: Hierarchical Alignment of Visual Regions and Disease Tags for Medical Report Generation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

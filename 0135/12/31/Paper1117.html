@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A Spatial Guided Self-supervised Clustering Network for Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="A Spatial Guided Self-supervised Clustering Network for Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Euijoon Ahn, Dagan Feng, Jinman Kim Abstract The segmentation of medical images is a fundamental step in automated clinical decision support systems. Existing medical image segmentation methods based on supervised deep learning, however, remain problematic because of their reliance on large amounts of labelled training data. Although medical imaging data repositories continue to expand, there has not been a commensurate increase in the amount of annotated data. Hence, we propose a new spatial guided self-supervised clustering network (SGSCN) for medical image segmentation, where we introduce multiple loss functions designed to aid in grouping image pixels that are spatially connected and have similar feature representations. It iteratively learns feature representations and clustering assignment of each pixel in an end-to-end fashion from a single image. We also propose a context-based consistency loss that better delineates the shape and boundaries of image regions. It enforces all the pixels belonging to a cluster to be spatially close to the cluster centre. We evaluated our method on 2 public medical image datasets and compared it to existing conventional and self-supervised clustering methods. Experimental results show that our method was most accurate for medical image segmentation. Link to paper https://doi.org/10.1007/978-3-030-87193-2_36 Link to the code repository https://github.com/osmond332/Spatial_Guided_Self_Supervised_Clustering Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A self supervised method which splits the input image set into channels with 0 mean and unit variance. Then they take a max signal from amongst those channel. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This method is a novel way to incorporate classical clustering techniques to neural networks. They formulate losses to ensure proper split of clusters. Firstly they have a cross entropy loss to ensure the final output is in line with the number of clusters. The second is the Sparse loss which essentially ensures the conservation of pixels whose intensity to neighborhood pixels should be minimal and helps in forming segmentation masks. The third loss consistency loss essentially binds the pixels to cluster centers and penalizes otherwise. Helps remove random noises in segmentation map among many other benifits. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The idea is well demonstrated. However like the authors mentioned there might be issues segmenting liver lesions compared to skin lesions where the contrast is high and there is a lot of uniformity. However that being said this method is really a good step towards more future methods dedicated to solving the current limitations. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is reproducible and all datasets used are public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This method is highly interesting and would be nice to see comparison with W-Net, which tries to split an image into N-cuts via a neural network. They essentially do a channel wise split and also take an argmax with the loss function being soft-ncut loss. Xia, Xide, and Brian Kulis. “W-net: A deep model for fully unsupervised image segmentation.” arXiv preprint arXiv:1711.08506 (2017). Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? It outperforms previously used method. The theory is strong and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a self-supervised medical image segmentation network by relaying on clustering approach. It is characterized by automatic learning of the cluster size, unlike state of the art methods who manually define it. It is augmented with multiple losses to improve the feature representation of each pixel. It design a differentiable Context-Based Consistency loss that enforce all the pixels belonging to a certain cluster to be spatially close to the cluster center. The advantages of the Context-Based Consistency loss is that it aid the segmentation of images with fuzzy boundaries. The authors validated their approach on a 2 public datasets: one regarding skin lesion (PH2 dataset) and the other regarding liver tumor (SYSU-US dataset). The authors compared their work to K-Means as a baseline and to DeepCluster and IIC methods as self-supervised clustering methods. The results show a performance gain of around 3.3% Dice Similarity Coefficient (DSC). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of the paper to learn automatically the cluster size is indeed interesting. In general, most related work set this value manually. The authors showed in their experimental results and discussion the advantages of spatial loss which is based on typical L1 norm and context-based consistency loss which they derived to improve the margin of the results by around 3% of DSC. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim regarding the most interesting point of the paper in my opinion , that is “Iteratively learn the optimal cluster size”, is not well elaborated in the paper and especially in Equation (1). We have no idea how the selection is done, where is the learnable parameter regarding the cluster size! Moreover the authors mention that in Section 2.6 “We set an arbitrary maximum number of possible clusters i”, therefore, this number is set automatically and not learned. Details about this claim is absent and absolutely is needed to provide clarity. 2.The novelty of the sparse spatial loss is limited. All sparse losses are based on L1 norm, nothing new. 3.The novelty regarding context-based consistency loss i fine, thought its contribution regarding the total performance gain is limited. How to guarantee the convergence of the Cross Entropy in equation 1 knowing that both Sn and Cn are derived from the network itself. This information is missing and in my opinion it is very critical for reproducibility. Without Equation 1, the other losses will not function well. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In Section 3.2 The authors provided some details about the neural network architecture, and with the help of Equations 1, 2 and 3, the architecture could be reproduced. However there are very important details that are missing: Regarding the Segmentation Map Sn produced by CNN function F, based on Section 2.2 and 3.2, we understand that the total number of maps is 100 which is similar to the number of the filters, assuming that this number is equivalent to the total number of clusters. Then, when the authors mention that the final segmentation map Cn is obtained by taking argmax function over Sn, this will provide the cluster labels and then Cross Entropy between Sn and Cn can be applied. This information are not enough to understand the undergoing operation. If Cn is derived from Sn, then Cn and Sn are directly providing similar information and therefore, taking cross entropy will always be low score… Without understanding this operation, the whole loss is not reproducible. In Every equation, please briefly define the functionality of each notion. Regarding the database description in section 2.1, the authors must provide a clear setting about the experimental protocol. For instance, on PH2 data, we do not know how may training. validation and test data are selected and how. What is the total number of images, their dimensionality, number of channels, etc… Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are encouraged to provide details about how their work differ from DeepCluster and IIC. Secetion 2.6 Details are missing regarding how to iteratively minimize the total number of possible clusters, which is set manually to i=100 and not learned as claimed. In Experimental setup and results, it is not clear the optimal number of cluster k for DeepCluster and for IIC. Why the baseline K-mean is set with k=3 and 4 and not 100 same as the author approach? Does DeepCluster and IIC also find a way to optimally select the best number of clusters? It is important to clearly report the performance gain contributed by each loss. Comparison with more recent state of the art is needed such as [1] and [2]. Minor Issues: Page 2, please define that US refer to Ultrasound Page 3, Section 2.2 the headline mention “SSCNM” —&gt; The authors mean “SGSCN”?? as SSCNM does not appear anywhere in the article. Fig.1 Caption , please elaborate, provide a brief description. Also, the authors method do not perform any downsampling operation, therefore, in Fig1. the boxes should reflect that! [1] Wang, D., Pang, N., Wang, Y. and Zhao, H., 2021. Unlabeled skin lesion classification by self-supervised topology clustering network. Biomedical Signal Processing and Control, 66, p.102428 [2] Blendowski, Maximilian, Hannes Nickisch, and Mattias P. Heinrich. “How to learn from unlabeled volume data: Self-supervised 3d context feature learning.” International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Cham, 2019. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper did not succeed in delivering a clear and a direct information about how the method perform guided self-supervised clustering. The authors claims are not well elaborated in term of mathematical formulation and description. The discussion and the comparison of the method with recent state of the arts is somewhat limited. The method novelty is limited. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. They validate their method on public datasets and obtain promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. use of public datasets that are known to be difficult validation is well performed and discussed the method of clustering is interesting the paper is well described Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. comparison with k-means is a good idea but choices of “k” seems not justified (and compared to the number of clusters of the proposed method) std are always interesting in such problems Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reproducible thanks to the details of the paper and the public databases. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would have appreciated to see a comparison with UNet (even if it is not exactly the same kind of network), and with state-of-the art methods for each case (to be able to better understand where does this method take place in the huge family of segmentation techniques) minor comment : title of 2.2 is SSCNM or SGSCN? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think this paper is promising, it just needs a little work on the result part to help the reader to better understand the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. Comparison with other similar techniques ( as pointed by reviewer 2) is crucial . What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed majority of the comments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This article presents a self-supervised method for tumor segmentation. The loss function for clustering is classic. However, the method proposes to incorporate classical clustering techniques into neural networks and to automatically find the number of clusters. Therefore, the method can be considered new. My question is: in a cluster, there may be multiple regions in which tumor-free regions may be present, how to select the tumor region in this case? What if there are several tumor regions? Despite these questions, I think that the work is worth showing at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the process of how the proposed approach iteratively learns the optimal cluster size in this rebuttal letter. In addition, they also provided theoretical and experimental comparison with the two studies mentioned by R2. In the AC’s opinion, this work is interesting and novel and the experimental results are now sufficient for publication of MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback The reviewers 1 (R1) and 3 (R3) provided very positive comments, recognizing our contributions with minor suggestions for further improvements. The reviewer 2 (R2), however, asked for clarity on the description of our proposed approach and evaluation, which we address in the following responses. 1.R2 asked for clarity on how the proposed approach iteratively learns the optimal cluster size. To be clear, cluster label (Cn) and segmentation map (Sn) do not provide similar information since both Cn and Sn are updated every iteration. Similar image pixels would be assigned to same clusters during the course of training, making the unique number of cluster smaller than the initially defined maximum cluster size. Similarly, Sn is updated based on the newly created cluster labels. This process is repeated until the clustering and the loss become stable, which essentially allows finding optimal cluster size. The detailed descriptions of our training process were outlined in Section 2.2 and 2.6 of the paper. We will release our source code to enable the reproducibility of our approach upon acceptance of the paper. 2.R1&amp;R3 were laudatory in regards to our comparative evaluation but R2 suggested further comparison with the following papers: Wang et al. “Unlabeled skin…classification…clustering network”, BSPC, 2021 and Blendowski et al. “How to learn…Self-supervised 3d…learning”, MICCAI, 2019. The self-supervised learning method by Blendowski et al. (2019) was designed to generate supervisory signals by predicting the spatial transformation of 3D CT scan images. Our approach is different to this since we construct a supervisory signal by using image clustering. The self-supervised network by Wang et al. (2021) used image clustering but was designed to learn image features for skin lesion classification. Our aim was different to this method since we leveraged the spatial relationships of image pixels/regions and derived a framework for medical image segmentation. Nonetheless, we experimentally evaluated the method by Wang et al. (2021). We repurposed the classification method for segmentation by adapting the ‘Transformation-Invariant Loss’ described in the paper. It resulted in 75.5% for Dice, 40.8% for Hammoude and 38.2% for XOR for skin lesion segmentation and 48.2%, 80.2% and 66.1% for liver tumour segmentation. Our approach had better accuracies compared to the Wang’s method in both skin lesion segmentation (83.4%, 32.7%, 28.2%) and liver tumour segmentation (63.2%, 46.2%, 52.3%). 3.R2’s comments on ‘the novelty of sparse loss…limited’ and ‘the novelty…context-based…loss is fine, though its…performance gain is limited. We like to reiterate that our key novelty is the use of three complementary losses in combination for self-supervised clustering. These extensions have improved the segmentation performances (see Fig. 3, p7) and we suggest it is an important addition to the research in this area. Both R1 and R3 recognised the novelty of our approach commenting that R1 with ‘the theory is strong and sound’ and R3 with ‘interesting’ and ‘promising’. 4.R2&amp;R3 asked for clarity on the selection of key parameters of baseline methods. We used an empirical process to discover appropriate number of clusters (3 to 8) for K-means, DeepCluster and IIC. For K-means, k=3 had the highest accuracy for skin lesion segmentation and k=6 for liver tumour segmentation. We set k=3 for DeepCluster and IIC in our all experiments. 5.Other minor comments While we agree with the R1&amp;R3 that further comparisons with W-Net and U-net would make the paper more comprehensive, we will conduct these extended experiments as part of our future work. For ‘training set’, no separate training image sets are required with our approach as we learn the feature representations and clustering assignment of each pixel from a single image (p1). back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Euijoon Ahn, Dagan Feng, Jinman Kim Abstract The segmentation of medical images is a fundamental step in automated clinical decision support systems. Existing medical image segmentation methods based on supervised deep learning, however, remain problematic because of their reliance on large amounts of labelled training data. Although medical imaging data repositories continue to expand, there has not been a commensurate increase in the amount of annotated data. Hence, we propose a new spatial guided self-supervised clustering network (SGSCN) for medical image segmentation, where we introduce multiple loss functions designed to aid in grouping image pixels that are spatially connected and have similar feature representations. It iteratively learns feature representations and clustering assignment of each pixel in an end-to-end fashion from a single image. We also propose a context-based consistency loss that better delineates the shape and boundaries of image regions. It enforces all the pixels belonging to a cluster to be spatially close to the cluster centre. We evaluated our method on 2 public medical image datasets and compared it to existing conventional and self-supervised clustering methods. Experimental results show that our method was most accurate for medical image segmentation. Link to paper https://doi.org/10.1007/978-3-030-87193-2_36 Link to the code repository https://github.com/osmond332/Spatial_Guided_Self_Supervised_Clustering Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A self supervised method which splits the input image set into channels with 0 mean and unit variance. Then they take a max signal from amongst those channel. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This method is a novel way to incorporate classical clustering techniques to neural networks. They formulate losses to ensure proper split of clusters. Firstly they have a cross entropy loss to ensure the final output is in line with the number of clusters. The second is the Sparse loss which essentially ensures the conservation of pixels whose intensity to neighborhood pixels should be minimal and helps in forming segmentation masks. The third loss consistency loss essentially binds the pixels to cluster centers and penalizes otherwise. Helps remove random noises in segmentation map among many other benifits. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The idea is well demonstrated. However like the authors mentioned there might be issues segmenting liver lesions compared to skin lesions where the contrast is high and there is a lot of uniformity. However that being said this method is really a good step towards more future methods dedicated to solving the current limitations. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is reproducible and all datasets used are public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This method is highly interesting and would be nice to see comparison with W-Net, which tries to split an image into N-cuts via a neural network. They essentially do a channel wise split and also take an argmax with the loss function being soft-ncut loss. Xia, Xide, and Brian Kulis. “W-net: A deep model for fully unsupervised image segmentation.” arXiv preprint arXiv:1711.08506 (2017). Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? It outperforms previously used method. The theory is strong and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a self-supervised medical image segmentation network by relaying on clustering approach. It is characterized by automatic learning of the cluster size, unlike state of the art methods who manually define it. It is augmented with multiple losses to improve the feature representation of each pixel. It design a differentiable Context-Based Consistency loss that enforce all the pixels belonging to a certain cluster to be spatially close to the cluster center. The advantages of the Context-Based Consistency loss is that it aid the segmentation of images with fuzzy boundaries. The authors validated their approach on a 2 public datasets: one regarding skin lesion (PH2 dataset) and the other regarding liver tumor (SYSU-US dataset). The authors compared their work to K-Means as a baseline and to DeepCluster and IIC methods as self-supervised clustering methods. The results show a performance gain of around 3.3% Dice Similarity Coefficient (DSC). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of the paper to learn automatically the cluster size is indeed interesting. In general, most related work set this value manually. The authors showed in their experimental results and discussion the advantages of spatial loss which is based on typical L1 norm and context-based consistency loss which they derived to improve the margin of the results by around 3% of DSC. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim regarding the most interesting point of the paper in my opinion , that is “Iteratively learn the optimal cluster size”, is not well elaborated in the paper and especially in Equation (1). We have no idea how the selection is done, where is the learnable parameter regarding the cluster size! Moreover the authors mention that in Section 2.6 “We set an arbitrary maximum number of possible clusters i”, therefore, this number is set automatically and not learned. Details about this claim is absent and absolutely is needed to provide clarity. 2.The novelty of the sparse spatial loss is limited. All sparse losses are based on L1 norm, nothing new. 3.The novelty regarding context-based consistency loss i fine, thought its contribution regarding the total performance gain is limited. How to guarantee the convergence of the Cross Entropy in equation 1 knowing that both Sn and Cn are derived from the network itself. This information is missing and in my opinion it is very critical for reproducibility. Without Equation 1, the other losses will not function well. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In Section 3.2 The authors provided some details about the neural network architecture, and with the help of Equations 1, 2 and 3, the architecture could be reproduced. However there are very important details that are missing: Regarding the Segmentation Map Sn produced by CNN function F, based on Section 2.2 and 3.2, we understand that the total number of maps is 100 which is similar to the number of the filters, assuming that this number is equivalent to the total number of clusters. Then, when the authors mention that the final segmentation map Cn is obtained by taking argmax function over Sn, this will provide the cluster labels and then Cross Entropy between Sn and Cn can be applied. This information are not enough to understand the undergoing operation. If Cn is derived from Sn, then Cn and Sn are directly providing similar information and therefore, taking cross entropy will always be low score… Without understanding this operation, the whole loss is not reproducible. In Every equation, please briefly define the functionality of each notion. Regarding the database description in section 2.1, the authors must provide a clear setting about the experimental protocol. For instance, on PH2 data, we do not know how may training. validation and test data are selected and how. What is the total number of images, their dimensionality, number of channels, etc… Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are encouraged to provide details about how their work differ from DeepCluster and IIC. Secetion 2.6 Details are missing regarding how to iteratively minimize the total number of possible clusters, which is set manually to i=100 and not learned as claimed. In Experimental setup and results, it is not clear the optimal number of cluster k for DeepCluster and for IIC. Why the baseline K-mean is set with k=3 and 4 and not 100 same as the author approach? Does DeepCluster and IIC also find a way to optimally select the best number of clusters? It is important to clearly report the performance gain contributed by each loss. Comparison with more recent state of the art is needed such as [1] and [2]. Minor Issues: Page 2, please define that US refer to Ultrasound Page 3, Section 2.2 the headline mention “SSCNM” —&gt; The authors mean “SGSCN”?? as SSCNM does not appear anywhere in the article. Fig.1 Caption , please elaborate, provide a brief description. Also, the authors method do not perform any downsampling operation, therefore, in Fig1. the boxes should reflect that! [1] Wang, D., Pang, N., Wang, Y. and Zhao, H., 2021. Unlabeled skin lesion classification by self-supervised topology clustering network. Biomedical Signal Processing and Control, 66, p.102428 [2] Blendowski, Maximilian, Hannes Nickisch, and Mattias P. Heinrich. “How to learn from unlabeled volume data: Self-supervised 3d context feature learning.” International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Cham, 2019. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper did not succeed in delivering a clear and a direct information about how the method perform guided self-supervised clustering. The authors claims are not well elaborated in term of mathematical formulation and description. The discussion and the comparison of the method with recent state of the arts is somewhat limited. The method novelty is limited. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. They validate their method on public datasets and obtain promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. use of public datasets that are known to be difficult validation is well performed and discussed the method of clustering is interesting the paper is well described Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. comparison with k-means is a good idea but choices of “k” seems not justified (and compared to the number of clusters of the proposed method) std are always interesting in such problems Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reproducible thanks to the details of the paper and the public databases. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would have appreciated to see a comparison with UNet (even if it is not exactly the same kind of network), and with state-of-the art methods for each case (to be able to better understand where does this method take place in the huge family of segmentation techniques) minor comment : title of 2.2 is SSCNM or SGSCN? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think this paper is promising, it just needs a little work on the result part to help the reader to better understand the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. Comparison with other similar techniques ( as pointed by reviewer 2) is crucial . What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed majority of the comments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This article presents a self-supervised method for tumor segmentation. The loss function for clustering is classic. However, the method proposes to incorporate classical clustering techniques into neural networks and to automatically find the number of clusters. Therefore, the method can be considered new. My question is: in a cluster, there may be multiple regions in which tumor-free regions may be present, how to select the tumor region in this case? What if there are several tumor regions? Despite these questions, I think that the work is worth showing at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the process of how the proposed approach iteratively learns the optimal cluster size in this rebuttal letter. In addition, they also provided theoretical and experimental comparison with the two studies mentioned by R2. In the AC’s opinion, this work is interesting and novel and the experimental results are now sufficient for publication of MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback The reviewers 1 (R1) and 3 (R3) provided very positive comments, recognizing our contributions with minor suggestions for further improvements. The reviewer 2 (R2), however, asked for clarity on the description of our proposed approach and evaluation, which we address in the following responses. 1.R2 asked for clarity on how the proposed approach iteratively learns the optimal cluster size. To be clear, cluster label (Cn) and segmentation map (Sn) do not provide similar information since both Cn and Sn are updated every iteration. Similar image pixels would be assigned to same clusters during the course of training, making the unique number of cluster smaller than the initially defined maximum cluster size. Similarly, Sn is updated based on the newly created cluster labels. This process is repeated until the clustering and the loss become stable, which essentially allows finding optimal cluster size. The detailed descriptions of our training process were outlined in Section 2.2 and 2.6 of the paper. We will release our source code to enable the reproducibility of our approach upon acceptance of the paper. 2.R1&amp;R3 were laudatory in regards to our comparative evaluation but R2 suggested further comparison with the following papers: Wang et al. “Unlabeled skin…classification…clustering network”, BSPC, 2021 and Blendowski et al. “How to learn…Self-supervised 3d…learning”, MICCAI, 2019. The self-supervised learning method by Blendowski et al. (2019) was designed to generate supervisory signals by predicting the spatial transformation of 3D CT scan images. Our approach is different to this since we construct a supervisory signal by using image clustering. The self-supervised network by Wang et al. (2021) used image clustering but was designed to learn image features for skin lesion classification. Our aim was different to this method since we leveraged the spatial relationships of image pixels/regions and derived a framework for medical image segmentation. Nonetheless, we experimentally evaluated the method by Wang et al. (2021). We repurposed the classification method for segmentation by adapting the ‘Transformation-Invariant Loss’ described in the paper. It resulted in 75.5% for Dice, 40.8% for Hammoude and 38.2% for XOR for skin lesion segmentation and 48.2%, 80.2% and 66.1% for liver tumour segmentation. Our approach had better accuracies compared to the Wang’s method in both skin lesion segmentation (83.4%, 32.7%, 28.2%) and liver tumour segmentation (63.2%, 46.2%, 52.3%). 3.R2’s comments on ‘the novelty of sparse loss…limited’ and ‘the novelty…context-based…loss is fine, though its…performance gain is limited. We like to reiterate that our key novelty is the use of three complementary losses in combination for self-supervised clustering. These extensions have improved the segmentation performances (see Fig. 3, p7) and we suggest it is an important addition to the research in this area. Both R1 and R3 recognised the novelty of our approach commenting that R1 with ‘the theory is strong and sound’ and R3 with ‘interesting’ and ‘promising’. 4.R2&amp;R3 asked for clarity on the selection of key parameters of baseline methods. We used an empirical process to discover appropriate number of clusters (3 to 8) for K-means, DeepCluster and IIC. For K-means, k=3 had the highest accuracy for skin lesion segmentation and k=6 for liver tumour segmentation. We set k=3 for DeepCluster and IIC in our all experiments. 5.Other minor comments While we agree with the R1&amp;R3 that further comparisons with W-Net and U-net would make the paper more comprehensive, we will conduct these extended experiments as part of our future work. For ‘training set’, no separate training image sets are required with our approach as we learn the feature representations and clustering assignment of each pixel from a single image (p1). back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0135/12/31/Paper1117" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0135/12/31/Paper1117" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0135-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Spatial Guided Self-supervised Clustering Network for Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0135/12/31/Paper1117"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0135/12/31/Paper1117","headline":"A Spatial Guided Self-supervised Clustering Network for Medical Image Segmentation","dateModified":"0135-12-31T00:00:00-05:17","datePublished":"0135-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Euijoon Ahn, Dagan Feng, Jinman Kim Abstract The segmentation of medical images is a fundamental step in automated clinical decision support systems. Existing medical image segmentation methods based on supervised deep learning, however, remain problematic because of their reliance on large amounts of labelled training data. Although medical imaging data repositories continue to expand, there has not been a commensurate increase in the amount of annotated data. Hence, we propose a new spatial guided self-supervised clustering network (SGSCN) for medical image segmentation, where we introduce multiple loss functions designed to aid in grouping image pixels that are spatially connected and have similar feature representations. It iteratively learns feature representations and clustering assignment of each pixel in an end-to-end fashion from a single image. We also propose a context-based consistency loss that better delineates the shape and boundaries of image regions. It enforces all the pixels belonging to a cluster to be spatially close to the cluster centre. We evaluated our method on 2 public medical image datasets and compared it to existing conventional and self-supervised clustering methods. Experimental results show that our method was most accurate for medical image segmentation. Link to paper https://doi.org/10.1007/978-3-030-87193-2_36 Link to the code repository https://github.com/osmond332/Spatial_Guided_Self_Supervised_Clustering Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A self supervised method which splits the input image set into channels with 0 mean and unit variance. Then they take a max signal from amongst those channel. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This method is a novel way to incorporate classical clustering techniques to neural networks. They formulate losses to ensure proper split of clusters. Firstly they have a cross entropy loss to ensure the final output is in line with the number of clusters. The second is the Sparse loss which essentially ensures the conservation of pixels whose intensity to neighborhood pixels should be minimal and helps in forming segmentation masks. The third loss consistency loss essentially binds the pixels to cluster centers and penalizes otherwise. Helps remove random noises in segmentation map among many other benifits. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The idea is well demonstrated. However like the authors mentioned there might be issues segmenting liver lesions compared to skin lesions where the contrast is high and there is a lot of uniformity. However that being said this method is really a good step towards more future methods dedicated to solving the current limitations. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is reproducible and all datasets used are public. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This method is highly interesting and would be nice to see comparison with W-Net, which tries to split an image into N-cuts via a neural network. They essentially do a channel wise split and also take an argmax with the loss function being soft-ncut loss. Xia, Xide, and Brian Kulis. “W-net: A deep model for fully unsupervised image segmentation.” arXiv preprint arXiv:1711.08506 (2017). Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? It outperforms previously used method. The theory is strong and sound. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a self-supervised medical image segmentation network by relaying on clustering approach. It is characterized by automatic learning of the cluster size, unlike state of the art methods who manually define it. It is augmented with multiple losses to improve the feature representation of each pixel. It design a differentiable Context-Based Consistency loss that enforce all the pixels belonging to a certain cluster to be spatially close to the cluster center. The advantages of the Context-Based Consistency loss is that it aid the segmentation of images with fuzzy boundaries. The authors validated their approach on a 2 public datasets: one regarding skin lesion (PH2 dataset) and the other regarding liver tumor (SYSU-US dataset). The authors compared their work to K-Means as a baseline and to DeepCluster and IIC methods as self-supervised clustering methods. The results show a performance gain of around 3.3% Dice Similarity Coefficient (DSC). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of the paper to learn automatically the cluster size is indeed interesting. In general, most related work set this value manually. The authors showed in their experimental results and discussion the advantages of spatial loss which is based on typical L1 norm and context-based consistency loss which they derived to improve the margin of the results by around 3% of DSC. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors claim regarding the most interesting point of the paper in my opinion , that is “Iteratively learn the optimal cluster size”, is not well elaborated in the paper and especially in Equation (1). We have no idea how the selection is done, where is the learnable parameter regarding the cluster size! Moreover the authors mention that in Section 2.6 “We set an arbitrary maximum number of possible clusters i”, therefore, this number is set automatically and not learned. Details about this claim is absent and absolutely is needed to provide clarity. 2.The novelty of the sparse spatial loss is limited. All sparse losses are based on L1 norm, nothing new. 3.The novelty regarding context-based consistency loss i fine, thought its contribution regarding the total performance gain is limited. How to guarantee the convergence of the Cross Entropy in equation 1 knowing that both Sn and Cn are derived from the network itself. This information is missing and in my opinion it is very critical for reproducibility. Without Equation 1, the other losses will not function well. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In Section 3.2 The authors provided some details about the neural network architecture, and with the help of Equations 1, 2 and 3, the architecture could be reproduced. However there are very important details that are missing: Regarding the Segmentation Map Sn produced by CNN function F, based on Section 2.2 and 3.2, we understand that the total number of maps is 100 which is similar to the number of the filters, assuming that this number is equivalent to the total number of clusters. Then, when the authors mention that the final segmentation map Cn is obtained by taking argmax function over Sn, this will provide the cluster labels and then Cross Entropy between Sn and Cn can be applied. This information are not enough to understand the undergoing operation. If Cn is derived from Sn, then Cn and Sn are directly providing similar information and therefore, taking cross entropy will always be low score… Without understanding this operation, the whole loss is not reproducible. In Every equation, please briefly define the functionality of each notion. Regarding the database description in section 2.1, the authors must provide a clear setting about the experimental protocol. For instance, on PH2 data, we do not know how may training. validation and test data are selected and how. What is the total number of images, their dimensionality, number of channels, etc… Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are encouraged to provide details about how their work differ from DeepCluster and IIC. Secetion 2.6 Details are missing regarding how to iteratively minimize the total number of possible clusters, which is set manually to i=100 and not learned as claimed. In Experimental setup and results, it is not clear the optimal number of cluster k for DeepCluster and for IIC. Why the baseline K-mean is set with k=3 and 4 and not 100 same as the author approach? Does DeepCluster and IIC also find a way to optimally select the best number of clusters? It is important to clearly report the performance gain contributed by each loss. Comparison with more recent state of the art is needed such as [1] and [2]. Minor Issues: Page 2, please define that US refer to Ultrasound Page 3, Section 2.2 the headline mention “SSCNM” —&gt; The authors mean “SGSCN”?? as SSCNM does not appear anywhere in the article. Fig.1 Caption , please elaborate, provide a brief description. Also, the authors method do not perform any downsampling operation, therefore, in Fig1. the boxes should reflect that! [1] Wang, D., Pang, N., Wang, Y. and Zhao, H., 2021. Unlabeled skin lesion classification by self-supervised topology clustering network. Biomedical Signal Processing and Control, 66, p.102428 [2] Blendowski, Maximilian, Hannes Nickisch, and Mattias P. Heinrich. “How to learn from unlabeled volume data: Self-supervised 3d context feature learning.” International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Cham, 2019. Please state your overall opinion of the paper reject (3) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper did not succeed in delivering a clear and a direct information about how the method perform guided self-supervised clustering. The authors claims are not well elaborated in term of mathematical formulation and description. The discussion and the comparison of the method with recent state of the arts is somewhat limited. The method novelty is limited. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. They validate their method on public datasets and obtain promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. use of public datasets that are known to be difficult validation is well performed and discussed the method of clustering is interesting the paper is well described Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. comparison with k-means is a good idea but choices of “k” seems not justified (and compared to the number of clusters of the proposed method) std are always interesting in such problems Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is reproducible thanks to the details of the paper and the public databases. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html I would have appreciated to see a comparison with UNet (even if it is not exactly the same kind of network), and with state-of-the art methods for each case (to be able to better understand where does this method take place in the huge family of segmentation techniques) minor comment : title of 2.2 is SSCNM or SGSCN? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think this paper is promising, it just needs a little work on the result part to help the reader to better understand the results. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. Comparison with other similar techniques ( as pointed by reviewer 2) is crucial . What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed majority of the comments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This article presents a self-supervised method for tumor segmentation. The loss function for clustering is classic. However, the method proposes to incorporate classical clustering techniques into neural networks and to automatically find the number of clusters. Therefore, the method can be considered new. My question is: in a cluster, there may be multiple regions in which tumor-free regions may be present, how to select the tumor region in this case? What if there are several tumor regions? Despite these questions, I think that the work is worth showing at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have explained the process of how the proposed approach iteratively learns the optimal cluster size in this rebuttal letter. In addition, they also provided theoretical and experimental comparison with the two studies mentioned by R2. In the AC’s opinion, this work is interesting and novel and the experimental results are now sufficient for publication of MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback The reviewers 1 (R1) and 3 (R3) provided very positive comments, recognizing our contributions with minor suggestions for further improvements. The reviewer 2 (R2), however, asked for clarity on the description of our proposed approach and evaluation, which we address in the following responses. 1.R2 asked for clarity on how the proposed approach iteratively learns the optimal cluster size. To be clear, cluster label (Cn) and segmentation map (Sn) do not provide similar information since both Cn and Sn are updated every iteration. Similar image pixels would be assigned to same clusters during the course of training, making the unique number of cluster smaller than the initially defined maximum cluster size. Similarly, Sn is updated based on the newly created cluster labels. This process is repeated until the clustering and the loss become stable, which essentially allows finding optimal cluster size. The detailed descriptions of our training process were outlined in Section 2.2 and 2.6 of the paper. We will release our source code to enable the reproducibility of our approach upon acceptance of the paper. 2.R1&amp;R3 were laudatory in regards to our comparative evaluation but R2 suggested further comparison with the following papers: Wang et al. “Unlabeled skin…classification…clustering network”, BSPC, 2021 and Blendowski et al. “How to learn…Self-supervised 3d…learning”, MICCAI, 2019. The self-supervised learning method by Blendowski et al. (2019) was designed to generate supervisory signals by predicting the spatial transformation of 3D CT scan images. Our approach is different to this since we construct a supervisory signal by using image clustering. The self-supervised network by Wang et al. (2021) used image clustering but was designed to learn image features for skin lesion classification. Our aim was different to this method since we leveraged the spatial relationships of image pixels/regions and derived a framework for medical image segmentation. Nonetheless, we experimentally evaluated the method by Wang et al. (2021). We repurposed the classification method for segmentation by adapting the ‘Transformation-Invariant Loss’ described in the paper. It resulted in 75.5% for Dice, 40.8% for Hammoude and 38.2% for XOR for skin lesion segmentation and 48.2%, 80.2% and 66.1% for liver tumour segmentation. Our approach had better accuracies compared to the Wang’s method in both skin lesion segmentation (83.4%, 32.7%, 28.2%) and liver tumour segmentation (63.2%, 46.2%, 52.3%). 3.R2’s comments on ‘the novelty of sparse loss…limited’ and ‘the novelty…context-based…loss is fine, though its…performance gain is limited. We like to reiterate that our key novelty is the use of three complementary losses in combination for self-supervised clustering. These extensions have improved the segmentation performances (see Fig. 3, p7) and we suggest it is an important addition to the research in this area. Both R1 and R3 recognised the novelty of our approach commenting that R1 with ‘the theory is strong and sound’ and R3 with ‘interesting’ and ‘promising’. 4.R2&amp;R3 asked for clarity on the selection of key parameters of baseline methods. We used an empirical process to discover appropriate number of clusters (3 to 8) for K-means, DeepCluster and IIC. For K-means, k=3 had the highest accuracy for skin lesion segmentation and k=6 for liver tumour segmentation. We set k=3 for DeepCluster and IIC in our all experiments. 5.Other minor comments While we agree with the R1&amp;R3 that further comparisons with W-Net and U-net would make the paper more comprehensive, we will conduct these extended experiments as part of our future work. For ‘training set’, no separate training image sets are required with our approach as we learn the feature representations and clustering assignment of each pixel from a single image (p1). back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Ahn, Euijoon,Feng, Dagan,Kim, Jinman" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>A Spatial Guided Self-supervised Clustering Network for Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Ahn, Euijoon"
+        class="post-tags">
+        Ahn, Euijoon
+      </a> |  
+      
+      <a href="kittywong/tags#Feng, Dagan"
+        class="post-tags">
+        Feng, Dagan
+      </a> |  
+      
+      <a href="kittywong/tags#Kim, Jinman"
+        class="post-tags">
+        Kim, Jinman
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Euijoon Ahn, Dagan Feng, Jinman Kim
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>The segmentation of medical images is a fundamental step in automated clinical decision support systems. Existing medical image segmentation methods based on supervised deep learning, however, remain problematic because of their reliance on large amounts of labelled training data. Although medical imaging data repositories continue to expand, there has not been a commensurate increase in the amount of annotated data. Hence, we propose a new spatial guided self-supervised clustering network (SGSCN) for medical image segmentation, where we introduce multiple loss functions designed to aid in grouping image pixels that are spatially connected and have similar feature representations. It iteratively learns feature representations and clustering assignment of each pixel in an end-to-end fashion from a single image. We also propose a context-based consistency loss that better delineates the shape and boundaries of image regions. It enforces all the pixels belonging to a cluster to be spatially close to the cluster centre. We evaluated our method on 2 public medical image datasets and compared it to existing conventional and self-supervised clustering methods. Experimental results show that our method was most accurate for medical image segmentation.    <br />
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_36">https://doi.org/10.1007/978-3-030-87193-2_36</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/osmond332/Spatial_Guided_Self_Supervised_Clustering
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>A self supervised method which splits the input image set into channels with 0 mean and unit variance. Then they take a max  signal from amongst those channel.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This method is a novel way to incorporate classical clustering techniques to neural networks.</p>
+
+      <p>They formulate losses to ensure proper split of clusters. 
+Firstly they have a cross entropy loss to ensure the final output is in line with the number of clusters.</p>
+
+      <p>The second is the Sparse loss which essentially ensures the conservation of pixels whose intensity to neighborhood pixels should be minimal and helps in forming segmentation masks.</p>
+
+      <p>The third loss consistency loss essentially binds the pixels to cluster centers and penalizes otherwise. Helps remove random noises in segmentation map among many other benifits.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The idea is well demonstrated. However like the authors mentioned there might be issues segmenting liver lesions compared to skin lesions where the contrast is high and there is a lot of uniformity. 
+However that being said this method is really a good step towards more future methods dedicated to solving the current limitations.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It is reproducible and all datasets used are public.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This method is highly interesting and would be nice to see comparison with W-Net, which tries to split an image into N-cuts via a neural network. They essentially do a channel wise split and also take an argmax with the loss function being soft-ncut loss.</p>
+
+      <p>Xia, Xide, and Brian Kulis. “W-net: A deep model for fully unsupervised image segmentation.” arXiv preprint arXiv:1711.08506 (2017).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>It outperforms previously used method.</p>
+
+      <p>The theory is strong and sound.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a self-supervised medical image segmentation network by relaying on clustering approach. It is characterized by automatic learning of the cluster size, unlike state of the art methods who manually define it. It is augmented with multiple losses to improve the feature representation of each pixel. It design a differentiable Context-Based Consistency loss that enforce all the pixels belonging to a certain cluster to be spatially close to the cluster center. The advantages of  the Context-Based Consistency loss is that it aid the segmentation of images with fuzzy boundaries. The authors validated their approach on a 2 public datasets: one regarding skin lesion (PH2 dataset) and the other regarding liver tumor (SYSU-US dataset). The authors compared their work to K-Means as a baseline and to DeepCluster and IIC methods as self-supervised clustering methods. The results show a performance gain of around 3.3% Dice Similarity Coefficient (DSC).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The idea of the paper to learn automatically the cluster size is indeed interesting. In general, most related work set this value manually.</li>
+        <li>The authors showed in their experimental results and discussion the advantages of  spatial loss which is based on typical L1 norm and context-based consistency loss which they derived to improve the margin of the results by around 3% of DSC.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The authors claim regarding the most interesting point of the paper in my opinion , that is “Iteratively learn the optimal cluster size”, is not well elaborated in the paper and especially in Equation (1). We have no idea how the selection is done, where is the learnable parameter regarding the cluster size! Moreover the authors mention that in Section 2.6 “We set an arbitrary maximum number of possible clusters i”, therefore, this number is set automatically and not learned. Details about this claim is absent and absolutely is needed to provide clarity.</li>
+      </ol>
+
+      <p>2.The novelty of the sparse spatial loss is limited. All sparse losses are based on L1 norm, nothing new.</p>
+
+      <p>3.The novelty regarding context-based consistency loss i fine, thought its contribution regarding the total performance gain is limited.</p>
+
+      <ol>
+        <li>How to guarantee the convergence of the Cross Entropy in equation 1 knowing that both Sn and Cn are derived from the network itself. This information is missing and in my opinion it is very critical for reproducibility. Without Equation 1, the other losses will not function well.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>In Section 3.2 The authors provided some details about the neural network architecture, and with the help of Equations 1, 2 and 3, the architecture could be reproduced. However there are very important details that are missing:</p>
+
+      <ol>
+        <li>
+          <p>Regarding the Segmentation Map Sn produced by CNN function F, based on Section 2.2 and 3.2, we understand that the total number of maps is 100 which is similar to the number of the filters, assuming that this number is equivalent to the total number of clusters. Then, when the authors mention that the final segmentation map Cn is obtained by taking argmax function over Sn, this will provide the cluster labels and then Cross Entropy between Sn and Cn can be applied. This information are not enough to understand the undergoing operation. If Cn is derived from Sn, then Cn and Sn are directly providing similar information and therefore, taking cross entropy will always be low score… Without understanding this operation, the whole loss is not reproducible.</p>
+        </li>
+        <li>
+          <p>In Every equation, please briefly define the functionality of each notion.</p>
+        </li>
+        <li>
+          <p>Regarding the database description in section 2.1, the authors must provide a clear setting about the experimental protocol. For instance, on PH2 data, we do not know how may training. validation and test data are selected and how. What is the total number of images, their dimensionality, number of channels, etc…</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>The authors are encouraged to provide details about how their work differ from DeepCluster and IIC.</li>
+        <li>Secetion 2.6 Details are missing regarding how to iteratively minimize the total number of possible clusters, which is set manually to i=100 and not learned as claimed.</li>
+        <li>In Experimental setup and results, it is not clear the optimal number of cluster k for DeepCluster and for IIC. Why the baseline K-mean is set with k=3 and 4 and not 100 same as the author approach? Does DeepCluster and IIC also find a way to optimally select the best number of clusters?</li>
+        <li>It is important to clearly report the performance gain contributed by each loss.</li>
+        <li>Comparison with more recent state of the art is needed such as [1] and [2].</li>
+      </ol>
+
+      <p>Minor Issues:</p>
+      <ol>
+        <li>Page 2, please define that US refer to Ultrasound</li>
+        <li>Page 3, Section 2.2 the headline mention “SSCNM” —&gt; The authors mean “SGSCN”?? as SSCNM does not appear anywhere in the article.</li>
+        <li>Fig.1 Caption , please elaborate, provide a brief description. Also, the authors method do not perform any downsampling operation, therefore, in Fig1. the boxes should reflect that!</li>
+      </ol>
+
+      <p>[1] Wang, D., Pang, N., Wang, Y. and Zhao, H., 2021. Unlabeled skin lesion classification by self-supervised topology clustering network. Biomedical Signal Processing and Control, 66, p.102428
+[2] Blendowski, Maximilian, Hannes Nickisch, and Mattias P. Heinrich. “How to learn from unlabeled volume data: Self-supervised 3d context feature learning.” International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Cham, 2019.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>reject (3)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper did not succeed in delivering a clear and a direct information about how the method perform guided self-supervised clustering. The authors claims are not well elaborated in term of mathematical formulation and description. The discussion and the comparison of the method with recent state of the arts is somewhat limited. The method novelty is limited.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. They validate their method on public datasets and obtain promising results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>use of public datasets that are known to be difficult</li>
+        <li>validation is well performed and discussed</li>
+        <li>the method of clustering is interesting</li>
+        <li>the paper is well described</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>comparison with k-means is a good idea but choices of “k” seems not justified (and compared to the number of clusters of the proposed method)</li>
+        <li>std are always interesting in such problems</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method is reproducible thanks to the details of the paper and the public databases.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>I would have appreciated to see a comparison with UNet (even if it is not exactly the same kind of network), and with state-of-the art methods for each case (to be able to better understand where does this method take place in the huge family of segmentation techniques)</p>
+
+      <p>minor comment : title of 2.2 is SSCNM or SGSCN?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I think this paper is promising, it just needs a little work on the result part to help the reader to better understand the results.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>In this paper, the authors present a method to segment medical images using a clustering network. They pay attention to the problems of unclear objects boundaries. Comparison with other similar techniques ( as pointed by reviewer 2) is crucial .</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have addressed majority of the comments.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This article presents a self-supervised method for tumor segmentation. The loss function for clustering is classic. However, the method proposes to incorporate classical clustering techniques into neural networks and to automatically find the number of clusters. Therefore, the method can be considered new. My question is: in a cluster, there may be multiple regions in which tumor-free regions may be present, how to select the tumor region in this case? What if there are several tumor regions?
+Despite these questions, I think that the work is worth showing at MICCAI.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have explained the process of how the proposed approach iteratively learns the optimal cluster size in this rebuttal letter. In addition, they also provided theoretical and experimental comparison with the two studies mentioned by R2. In the AC’s opinion, this work is interesting and novel and the experimental results are now sufficient for publication of MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>The reviewers 1 (R1) and 3 (R3) provided very positive comments, recognizing our contributions with minor suggestions for further improvements. The reviewer 2 (R2), however, asked for clarity on the description of our proposed approach and evaluation, which we address in the following responses.</p>
+
+  <p>1.R2 asked for clarity on how the proposed approach iteratively learns the optimal cluster size.
+To be clear, cluster label (Cn) and segmentation map (Sn) do not provide similar information since both Cn and Sn are updated every iteration. Similar image pixels would be assigned to same clusters during the course of training, making the unique number of cluster smaller than the initially defined maximum cluster size. Similarly, Sn is updated based on the newly created cluster labels. This process is repeated until the clustering and the loss become stable, which essentially allows finding optimal cluster size. The detailed descriptions of our training process were outlined in Section 2.2 and 2.6 of the paper. We will release our source code to enable the reproducibility of our approach upon acceptance of the paper.</p>
+
+  <p>2.R1&amp;R3 were laudatory in regards to our comparative evaluation but R2 suggested further comparison with the following papers: Wang et al. “Unlabeled skin…classification…clustering network”, BSPC, 2021 and Blendowski et al. “How to learn…Self-supervised 3d…learning”, MICCAI, 2019.
+The self-supervised learning method by Blendowski et al. (2019) was designed to generate supervisory signals by predicting the spatial transformation of 3D CT scan images. Our approach is different to this since we construct a supervisory signal by using image clustering. The self-supervised network by Wang et al. (2021) used image clustering but was designed to learn image features for skin lesion classification. Our aim was different to this method since we leveraged the spatial relationships of image pixels/regions and derived a framework for medical image segmentation. Nonetheless, we experimentally evaluated the method by Wang et al. (2021). We repurposed the classification method for segmentation by adapting the ‘Transformation-Invariant Loss’ described in the paper. It resulted in 75.5% for Dice, 40.8% for Hammoude and 38.2% for XOR for skin lesion segmentation and 48.2%, 80.2% and 66.1% for liver tumour segmentation. Our approach had better accuracies compared to the Wang’s method in both skin lesion segmentation (83.4%, 32.7%, 28.2%) and liver tumour segmentation (63.2%, 46.2%, 52.3%).</p>
+
+  <p>3.R2’s comments on ‘the novelty of sparse loss…limited’ and ‘the novelty…context-based…loss is fine, though its…performance gain is limited.
+We like to reiterate that our key novelty is the use of three complementary losses in combination for self-supervised clustering. These extensions have improved the segmentation performances (see Fig. 3, p7) and we suggest it is an important addition to the research in this area. Both R1 and R3 recognised the novelty of our approach commenting that R1 with ‘the theory is strong and sound’ and R3 with ‘interesting’ and ‘promising’.</p>
+
+  <p>4.R2&amp;R3 asked for clarity on the selection of key parameters of baseline methods.
+We used an empirical process to discover appropriate number of clusters (3 to 8) for K-means, DeepCluster and IIC. For K-means, k=3 had the highest accuracy for skin lesion segmentation and k=6 for liver tumour segmentation. We set k=3 for DeepCluster and IIC in our all experiments.</p>
+
+  <p>5.Other minor comments
+While we agree with the R1&amp;R3 that further comparisons with W-Net and U-net would make the paper more comprehensive, we will conduct these extended experiments as part of our future work. For ‘training set’, no separate training image sets are required with our approach as we learn the feature representations and clustering assignment of each pixel from a single image (p1).</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0135-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0136-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - other"
+        class="post-category">
+        Modalities - other
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - Ultrasound"
+        class="post-category">
+        Modalities - Ultrasound
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Ahn, Euijoon"
+        class="post-category">
+        Ahn, Euijoon
+      </a> |  
+      
+      <a href="kittywong/tags#Feng, Dagan"
+        class="post-category">
+        Feng, Dagan
+      </a> |  
+      
+      <a href="kittywong/tags#Kim, Jinman"
+        class="post-category">
+        Kim, Jinman
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0136/12/31/Paper1125">
+          Comprehensive Importance-based Selective Regularization for Continual Segmentation Across Multiple Sites
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0134/12/31/Paper1098">
+          Joint Segmentation and Quantification of Main Coronary Vessels Using Dual-branch Multi-scale Attention Network
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

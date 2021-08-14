@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Quality-Aware Memory Network for Interactive Volumetric Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Quality-Aware Memory Network for Interactive Volumetric Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Tianfei Zhou, Liulei Li, Gustav Bredell, Jianwu Li, Ender Konukoglu Abstract Despite recent progress of automatic medical image segmentation techniques, fully automatic results usually fail to meet the clinical use and typically require further refinement. In this work, we propose a \textit{quality-aware memory network} for interactive segmentation of 3D medical images. Provided by user guidance on an arbitrary slice, an interaction network is firstly employed to obtain an initial 2D segmentation. The quality-aware memory network subsequently propagates the initial segmentation estimation bidirectionally over the entire volume. Subsequent refinement based on additional user guidance on other slices can be incorporated in the same manner. To further facilitate interactive segmentation, a quality assessment module is introduced to suggest the next slice to segment based on the current segmentation quality of each slice. The proposed network has two appealing characteristics: 1) The memory-augmented network offers the ability to quickly encode past segmentation information, which will be retrieved for the segmentation of other slices; 2) The quality assessment module enables the model to directly estimate the qualities of segmentation predictions, which allows an active learning paradigm where users preferentially label the lowest-quality slice for multi-round refinement. The proposed network leads to a robust interactive segmentation engine, which can generalize well to various types of user annotations (\eg, scribbles, boxes). Experimental results on various medical datasets demonstrate the superiority of our approach in comparison with existing techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_52 Link to the code repository https://github.com/0liliulei/Mem3D Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an interactive segmentation framework based on a pre-trained neural network that has a “memory augmentation” component that encodes a number of segmented patches as key-value pairs which are fetched based on their similarity to the slice being segmented. The network firsts segments the slice with user interaction and then propagates the segmentation onto adjacent slices and so-forth using the memory network until the volumetric image is segmented, using a quality estimate to identify the slice with the lowest quality propagation which is marked as the best locus for additional user interaction. (The benefit of this method is that it avoids run-time training while still allowing for adaption via storing more slices in memory.) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper is in showing the effect of the effect of the quality assessment metric for slice selection. The two alternative methods, random and oracle, do pose meaningful upper and lower bounds on the expected performance. The other main strength of the paper is the attention towards ensuring that the underlying learning mechanism can be used in near real-time, i.e. the structure of the memory mechanism is designed for interactivity and having the network adapt to the user without expensive weight re-training in run-time. The application of the method on two vastly different anatomies illustrates this as well, although this could always be improved by looking at different imaging modalities as well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors really need to check their references. On the second page, the authors cite [10,18,20,24] as handling only 2D medical images which is untrue for [18] as it uses 3D volumes via 33x33x3vox patches. (The remainder do use 2D slices.) Table 1 should include some variability measurements and not just the average performance. Given how close the numbers generally are, it is unclear if the proposed method is offering a consistently improved segmentation or not. It is unclear if a single f_IN is trained with respect to the interaction mechanisms. Does each one use a different f_IN? A shared f_IN? This could go a long way towards explaining the results in Table 1. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper appears to be relatively reproducible in that the logic of the paper is easy to follow. There are a few aspects that could be improved, such as an exact description of the networks used, or code to that effect. The datasets are also publicly available, although not their scribble annotations. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is slightly unclear in Figure 3 exactly how the user annotations vary with the number of rounds. (Also, there is a typo in the Figure 3 legend.) One assumes different slices are used for the different time-points and that each slice is interacted with at most once, but this should be explicit and the ordering mechanism stated. The authors should also consider what would happen if the same slice is re-annotated (for correction purposes) and how that factors into their framework, especially given that the better performing interaction mechanisms are both designed more to give a notion of bounds and have less corrective capabilities. The paper would benefit from some statistical testing in order to show if the results can be readily explained by random perturbations. Assuming each method uses the same training-testing split, Wilcoxon signed-rank tests would likely by the appropriate choice. On a cosmetic note, the citations should be arranged in numerical order to make it easier for the reader. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting framework and particular attention has been given to investigating different annotation types, which is appreciated for a work on interactive segmentation. The paper also presents a memory mechanism that one can easily envisage as improving interactive segmentation without requiring interactive network training. Ultimately, this paper appears to balance technical novelty with a clear underlying technical need, motivated by a reasonably foreseeable clinical need. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors propose an interactive method for 3D image segmentations based on memory and quality assessment. The method is fast and works on several public databases. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. strong validation the method proposed is fast even if in 3D description of experiment are clear Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I would have appreciate to see the std in the quantitative results the conclusion is maybe light the results of the challenges (Kits for example) are not really explained (“competitor” is the winner? what about the new submissions?) no comparison with ResNet-50 alone (backbone of the proposed method) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The database are public so the access to the data is not a problem. The author will share the codes. The details in the article seem sufficient to be able to reproduce the results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to see the confidence the network has with the memory component and without. A statistical study of the results is hence recommended. A mention to today’s challenge results would also be appreciated. I would have appreciated a comparison with ResNet-50 without the memory module to really understand its role. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Even if the method is not fully automatic, results are interesting. The memory component is a real advantage when segmenting a 3D volume slice by slice. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a new interactive segmentation method which acts on volumetric medical images. Compared to the baseline approach based on nn-UNet, the proposed method consists of a memory-augmented network and a quality assessment module, which allows users to label lower-quality slices for refinement. The proposed method yields superior results compared with existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper presents a novel approach for interactive volumetric segmentation which enables quality assessment for multi-round refinement in the human-in-the-loop segmentation process. The approach can well accommodates different weak labels, e.g., scribbles, points, etc. The approach yields superior results than existing methods, including competition winner nn-UNet. Detailed ablation study on the quality assessment module is also provided to show its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Comparison with weakly-supervised methods (e.g., [a, b]) may also need to be provided. Missing references: the ROI-based multi-round refinement is very similar to a coarse-to-fine based volumetric segmentation approach [c]. Should be included in the discussion. [a] Rajchl, Martin, et al. “Deepcut: Object segmentation from bounding box annotations using convolutional neural networks.” IEEE transactions on medical imaging 36.2 (2016): 674-683. [b] Kervadec, Hoel, et al. “Constrained-CNN losses for weakly supervised segmentation.” Medical image analysis 54 (2019): 88-99. [c] Zhou, Yuyin, et al. “A fixed-point model for pancreas segmentation in abdominal CT scans.” MICCAI 2017. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promise to release the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html please see above. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper presents an interactive volumetric segmentation tool which can well accommodate different weak labels, and also enables quality assessment for multi-round refinement. The authors perform evaluation on CT segmentation datasets and compare with a few strong competitors to demonstrate the clinical feasibility. The output might be a general tool to reduce clinicians’ workload. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a general framework for volumetric segmentation which can account for different types of weak labels. The method has thoroughly validated and the paper is clearly written. The reviewers recommend to include standard deviations in the reported results and to expand the revised related works with some relevant literature which is currently missing. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers and AC for their time and constructive comments on our manuscript. Below we provide clarifications on the major comments, which will be integrated in the final version. Reviewers #2 &amp; #3 Q: Provide the std in Table 1. A: We summarize the standard deviations of different algorithms (Interactive 3D nnU-Net/DeepIGeoS/Ours) in the table below. As shown, our method has the smallest deviations. For reference, the best solution in the MSD leaderboard has the deviations 18.9 for lung cancer and 35.1 for colon cancer. Interaction Type—–Lung Cancer—–Colon Cancer—–Kidney Organ—Kidney Tumor Scribbles————16.8/13.5/9.2—–34.7/19.5/11.7—-4.0/3.4/1.9——15.9/14.3/7.5 Bounding Boxes—-16.3/13.3/9.1—–33.2/19.2/11.4—-3.8/2.8/2.1——15.8/13.0/7.5 Extreme Points—–15.5/12.6/8.8—–31.0/19.1/11.2—-3.1/2.4/1.7 ——14.4/11.4/7.4 Reviewers #2 &amp; #3 &amp; #4 Q: Incorrect citations and missed reference. A: Thank you for pointing this out. We will correct the citation errors, expand the reference section to include the missed articles and rearrange the references in numerical order. Reviewer #2 Q1: Is the interaction network f_In shared across different interaction types or not? A1: In the article, we leverage a different interaction network f_In for each type of interaction to achieve better performance. Following your suggestion, we designed a shared f_In by combining all training samples of different interaction types for training. We found that the performance degrades slightly with the shared f_In, however it would then support diverse interaction mechanisms. Below we summarize the DSC scores and the difference to the reported results in Tab. 1. Interaction Type—Lung Cancer—Colon Cancer—Kidney Organ—Kidney Tumor Scribbles———-80.5 (-0.4)—–79.3 (-0.4) ——-96.6(-0.3)——-87.6 (-0.6) Bounding Boxes–81.2 (-0.3)—–78.8 (-0.5)——–96.8(-0.2)——-87.9 (-0.5) Extreme Points—81.4 (-0.6) —–79.8 (-0.6)——-96.5(-0.5)——-88.0 (-1.1) Q2: How do the user annotations vary with the number of rounds? A2: At each round, we determine the slice to be annotated based on the quality scores predicted by the quality assessment network, i.e., the slice with the lowest quality score will be chosen. In the current version, each slice will be chosen at most once. We agree with the reviewer that it is valuable to factor the correction procedure into the framework and will consider this in the future work. Thanks. Reviewer #3 Q1: More ablative experiments on the memory component. A1: To study the memory module, we conduct extra experiments to evaluate the model performance with different memory sizes (i.e., 0, 1, 5, 10, 15, 20). Here, 0 corresponds to the baseline model with ResNet-50 only, while 20 is the default size used in the paper. In the following table, we report the DSC scores on the three challenging test sets across all interactions (scribbles/bounding boxes/extreme points). We observe that without the memory module, the performance encounters a severe degradation for all interactions, especially on Lung Cancer and Colon Cancer. In addition, the performance improves with larger memory sizes, and the gain becomes marginal around the values of 15 and 20. Memory Size—Lung Cancer—–Colon Cancer —–Kidney Tumor 0—————-58.2/59.3/58.9—54.7/54.7/54.8—–79.7/79.7/79.8 1—————-76.2/75.6/77.0—67.3/67.1/68.0—–83.7/83.7/84.2 5—————-79.6/79.8/80.9—72.9/73.1/73.9—–86.1/85.8/86.9 10————–80.9/81.4/81.8—-75.2/75.3/75.8—–87.2/87.3/87.9 15————–81.0/81.5/82.1—-78.7/79.2/80.4—–88.3/88.3/89.0 20————–80.9/81.5/82.0—-79.7/79.3/80.4—–88.2/88.4/89.1 Q2: Other minor issues (e.g., expand the conclusion section and include more challenge results) A2: Thank you for the comments. We will definitely revise them in the final version. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Tianfei Zhou, Liulei Li, Gustav Bredell, Jianwu Li, Ender Konukoglu Abstract Despite recent progress of automatic medical image segmentation techniques, fully automatic results usually fail to meet the clinical use and typically require further refinement. In this work, we propose a \textit{quality-aware memory network} for interactive segmentation of 3D medical images. Provided by user guidance on an arbitrary slice, an interaction network is firstly employed to obtain an initial 2D segmentation. The quality-aware memory network subsequently propagates the initial segmentation estimation bidirectionally over the entire volume. Subsequent refinement based on additional user guidance on other slices can be incorporated in the same manner. To further facilitate interactive segmentation, a quality assessment module is introduced to suggest the next slice to segment based on the current segmentation quality of each slice. The proposed network has two appealing characteristics: 1) The memory-augmented network offers the ability to quickly encode past segmentation information, which will be retrieved for the segmentation of other slices; 2) The quality assessment module enables the model to directly estimate the qualities of segmentation predictions, which allows an active learning paradigm where users preferentially label the lowest-quality slice for multi-round refinement. The proposed network leads to a robust interactive segmentation engine, which can generalize well to various types of user annotations (\eg, scribbles, boxes). Experimental results on various medical datasets demonstrate the superiority of our approach in comparison with existing techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_52 Link to the code repository https://github.com/0liliulei/Mem3D Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an interactive segmentation framework based on a pre-trained neural network that has a “memory augmentation” component that encodes a number of segmented patches as key-value pairs which are fetched based on their similarity to the slice being segmented. The network firsts segments the slice with user interaction and then propagates the segmentation onto adjacent slices and so-forth using the memory network until the volumetric image is segmented, using a quality estimate to identify the slice with the lowest quality propagation which is marked as the best locus for additional user interaction. (The benefit of this method is that it avoids run-time training while still allowing for adaption via storing more slices in memory.) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper is in showing the effect of the effect of the quality assessment metric for slice selection. The two alternative methods, random and oracle, do pose meaningful upper and lower bounds on the expected performance. The other main strength of the paper is the attention towards ensuring that the underlying learning mechanism can be used in near real-time, i.e. the structure of the memory mechanism is designed for interactivity and having the network adapt to the user without expensive weight re-training in run-time. The application of the method on two vastly different anatomies illustrates this as well, although this could always be improved by looking at different imaging modalities as well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors really need to check their references. On the second page, the authors cite [10,18,20,24] as handling only 2D medical images which is untrue for [18] as it uses 3D volumes via 33x33x3vox patches. (The remainder do use 2D slices.) Table 1 should include some variability measurements and not just the average performance. Given how close the numbers generally are, it is unclear if the proposed method is offering a consistently improved segmentation or not. It is unclear if a single f_IN is trained with respect to the interaction mechanisms. Does each one use a different f_IN? A shared f_IN? This could go a long way towards explaining the results in Table 1. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper appears to be relatively reproducible in that the logic of the paper is easy to follow. There are a few aspects that could be improved, such as an exact description of the networks used, or code to that effect. The datasets are also publicly available, although not their scribble annotations. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is slightly unclear in Figure 3 exactly how the user annotations vary with the number of rounds. (Also, there is a typo in the Figure 3 legend.) One assumes different slices are used for the different time-points and that each slice is interacted with at most once, but this should be explicit and the ordering mechanism stated. The authors should also consider what would happen if the same slice is re-annotated (for correction purposes) and how that factors into their framework, especially given that the better performing interaction mechanisms are both designed more to give a notion of bounds and have less corrective capabilities. The paper would benefit from some statistical testing in order to show if the results can be readily explained by random perturbations. Assuming each method uses the same training-testing split, Wilcoxon signed-rank tests would likely by the appropriate choice. On a cosmetic note, the citations should be arranged in numerical order to make it easier for the reader. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting framework and particular attention has been given to investigating different annotation types, which is appreciated for a work on interactive segmentation. The paper also presents a memory mechanism that one can easily envisage as improving interactive segmentation without requiring interactive network training. Ultimately, this paper appears to balance technical novelty with a clear underlying technical need, motivated by a reasonably foreseeable clinical need. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors propose an interactive method for 3D image segmentations based on memory and quality assessment. The method is fast and works on several public databases. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. strong validation the method proposed is fast even if in 3D description of experiment are clear Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I would have appreciate to see the std in the quantitative results the conclusion is maybe light the results of the challenges (Kits for example) are not really explained (“competitor” is the winner? what about the new submissions?) no comparison with ResNet-50 alone (backbone of the proposed method) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The database are public so the access to the data is not a problem. The author will share the codes. The details in the article seem sufficient to be able to reproduce the results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to see the confidence the network has with the memory component and without. A statistical study of the results is hence recommended. A mention to today’s challenge results would also be appreciated. I would have appreciated a comparison with ResNet-50 without the memory module to really understand its role. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Even if the method is not fully automatic, results are interesting. The memory component is a real advantage when segmenting a 3D volume slice by slice. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a new interactive segmentation method which acts on volumetric medical images. Compared to the baseline approach based on nn-UNet, the proposed method consists of a memory-augmented network and a quality assessment module, which allows users to label lower-quality slices for refinement. The proposed method yields superior results compared with existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper presents a novel approach for interactive volumetric segmentation which enables quality assessment for multi-round refinement in the human-in-the-loop segmentation process. The approach can well accommodates different weak labels, e.g., scribbles, points, etc. The approach yields superior results than existing methods, including competition winner nn-UNet. Detailed ablation study on the quality assessment module is also provided to show its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Comparison with weakly-supervised methods (e.g., [a, b]) may also need to be provided. Missing references: the ROI-based multi-round refinement is very similar to a coarse-to-fine based volumetric segmentation approach [c]. Should be included in the discussion. [a] Rajchl, Martin, et al. “Deepcut: Object segmentation from bounding box annotations using convolutional neural networks.” IEEE transactions on medical imaging 36.2 (2016): 674-683. [b] Kervadec, Hoel, et al. “Constrained-CNN losses for weakly supervised segmentation.” Medical image analysis 54 (2019): 88-99. [c] Zhou, Yuyin, et al. “A fixed-point model for pancreas segmentation in abdominal CT scans.” MICCAI 2017. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promise to release the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html please see above. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper presents an interactive volumetric segmentation tool which can well accommodate different weak labels, and also enables quality assessment for multi-round refinement. The authors perform evaluation on CT segmentation datasets and compare with a few strong competitors to demonstrate the clinical feasibility. The output might be a general tool to reduce clinicians’ workload. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a general framework for volumetric segmentation which can account for different types of weak labels. The method has thoroughly validated and the paper is clearly written. The reviewers recommend to include standard deviations in the reported results and to expand the revised related works with some relevant literature which is currently missing. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers and AC for their time and constructive comments on our manuscript. Below we provide clarifications on the major comments, which will be integrated in the final version. Reviewers #2 &amp; #3 Q: Provide the std in Table 1. A: We summarize the standard deviations of different algorithms (Interactive 3D nnU-Net/DeepIGeoS/Ours) in the table below. As shown, our method has the smallest deviations. For reference, the best solution in the MSD leaderboard has the deviations 18.9 for lung cancer and 35.1 for colon cancer. Interaction Type—–Lung Cancer—–Colon Cancer—–Kidney Organ—Kidney Tumor Scribbles————16.8/13.5/9.2—–34.7/19.5/11.7—-4.0/3.4/1.9——15.9/14.3/7.5 Bounding Boxes—-16.3/13.3/9.1—–33.2/19.2/11.4—-3.8/2.8/2.1——15.8/13.0/7.5 Extreme Points—–15.5/12.6/8.8—–31.0/19.1/11.2—-3.1/2.4/1.7 ——14.4/11.4/7.4 Reviewers #2 &amp; #3 &amp; #4 Q: Incorrect citations and missed reference. A: Thank you for pointing this out. We will correct the citation errors, expand the reference section to include the missed articles and rearrange the references in numerical order. Reviewer #2 Q1: Is the interaction network f_In shared across different interaction types or not? A1: In the article, we leverage a different interaction network f_In for each type of interaction to achieve better performance. Following your suggestion, we designed a shared f_In by combining all training samples of different interaction types for training. We found that the performance degrades slightly with the shared f_In, however it would then support diverse interaction mechanisms. Below we summarize the DSC scores and the difference to the reported results in Tab. 1. Interaction Type—Lung Cancer—Colon Cancer—Kidney Organ—Kidney Tumor Scribbles———-80.5 (-0.4)—–79.3 (-0.4) ——-96.6(-0.3)——-87.6 (-0.6) Bounding Boxes–81.2 (-0.3)—–78.8 (-0.5)——–96.8(-0.2)——-87.9 (-0.5) Extreme Points—81.4 (-0.6) —–79.8 (-0.6)——-96.5(-0.5)——-88.0 (-1.1) Q2: How do the user annotations vary with the number of rounds? A2: At each round, we determine the slice to be annotated based on the quality scores predicted by the quality assessment network, i.e., the slice with the lowest quality score will be chosen. In the current version, each slice will be chosen at most once. We agree with the reviewer that it is valuable to factor the correction procedure into the framework and will consider this in the future work. Thanks. Reviewer #3 Q1: More ablative experiments on the memory component. A1: To study the memory module, we conduct extra experiments to evaluate the model performance with different memory sizes (i.e., 0, 1, 5, 10, 15, 20). Here, 0 corresponds to the baseline model with ResNet-50 only, while 20 is the default size used in the paper. In the following table, we report the DSC scores on the three challenging test sets across all interactions (scribbles/bounding boxes/extreme points). We observe that without the memory module, the performance encounters a severe degradation for all interactions, especially on Lung Cancer and Colon Cancer. In addition, the performance improves with larger memory sizes, and the gain becomes marginal around the values of 15 and 20. Memory Size—Lung Cancer—–Colon Cancer —–Kidney Tumor 0—————-58.2/59.3/58.9—54.7/54.7/54.8—–79.7/79.7/79.8 1—————-76.2/75.6/77.0—67.3/67.1/68.0—–83.7/83.7/84.2 5—————-79.6/79.8/80.9—72.9/73.1/73.9—–86.1/85.8/86.9 10————–80.9/81.4/81.8—-75.2/75.3/75.8—–87.2/87.3/87.9 15————–81.0/81.5/82.1—-78.7/79.2/80.4—–88.3/88.3/89.0 20————–80.9/81.5/82.0—-79.7/79.3/80.4—–88.2/88.4/89.1 Q2: Other minor issues (e.g., expand the conclusion section and include more challenge results) A2: Thank you for the comments. We will definitely revise them in the final version. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0251/12/31/Paper0663" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0251/12/31/Paper0663" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0251-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Quality-Aware Memory Network for Interactive Volumetric Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0251/12/31/Paper0663"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0251/12/31/Paper0663","headline":"Quality-Aware Memory Network for Interactive Volumetric Image Segmentation","dateModified":"0252-01-01T00:00:00-05:17","datePublished":"0251-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Tianfei Zhou, Liulei Li, Gustav Bredell, Jianwu Li, Ender Konukoglu Abstract Despite recent progress of automatic medical image segmentation techniques, fully automatic results usually fail to meet the clinical use and typically require further refinement. In this work, we propose a \\textit{quality-aware memory network} for interactive segmentation of 3D medical images. Provided by user guidance on an arbitrary slice, an interaction network is firstly employed to obtain an initial 2D segmentation. The quality-aware memory network subsequently propagates the initial segmentation estimation bidirectionally over the entire volume. Subsequent refinement based on additional user guidance on other slices can be incorporated in the same manner. To further facilitate interactive segmentation, a quality assessment module is introduced to suggest the next slice to segment based on the current segmentation quality of each slice. The proposed network has two appealing characteristics: 1) The memory-augmented network offers the ability to quickly encode past segmentation information, which will be retrieved for the segmentation of other slices; 2) The quality assessment module enables the model to directly estimate the qualities of segmentation predictions, which allows an active learning paradigm where users preferentially label the lowest-quality slice for multi-round refinement. The proposed network leads to a robust interactive segmentation engine, which can generalize well to various types of user annotations (\\eg, scribbles, boxes). Experimental results on various medical datasets demonstrate the superiority of our approach in comparison with existing techniques. Link to paper https://doi.org/10.1007/978-3-030-87196-3_52 Link to the code repository https://github.com/0liliulei/Mem3D Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents an interactive segmentation framework based on a pre-trained neural network that has a “memory augmentation” component that encodes a number of segmented patches as key-value pairs which are fetched based on their similarity to the slice being segmented. The network firsts segments the slice with user interaction and then propagates the segmentation onto adjacent slices and so-forth using the memory network until the volumetric image is segmented, using a quality estimate to identify the slice with the lowest quality propagation which is marked as the best locus for additional user interaction. (The benefit of this method is that it avoids run-time training while still allowing for adaption via storing more slices in memory.) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of the paper is in showing the effect of the effect of the quality assessment metric for slice selection. The two alternative methods, random and oracle, do pose meaningful upper and lower bounds on the expected performance. The other main strength of the paper is the attention towards ensuring that the underlying learning mechanism can be used in near real-time, i.e. the structure of the memory mechanism is designed for interactivity and having the network adapt to the user without expensive weight re-training in run-time. The application of the method on two vastly different anatomies illustrates this as well, although this could always be improved by looking at different imaging modalities as well. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors really need to check their references. On the second page, the authors cite [10,18,20,24] as handling only 2D medical images which is untrue for [18] as it uses 3D volumes via 33x33x3vox patches. (The remainder do use 2D slices.) Table 1 should include some variability measurements and not just the average performance. Given how close the numbers generally are, it is unclear if the proposed method is offering a consistently improved segmentation or not. It is unclear if a single f_IN is trained with respect to the interaction mechanisms. Does each one use a different f_IN? A shared f_IN? This could go a long way towards explaining the results in Table 1. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper appears to be relatively reproducible in that the logic of the paper is easy to follow. There are a few aspects that could be improved, such as an exact description of the networks used, or code to that effect. The datasets are also publicly available, although not their scribble annotations. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It is slightly unclear in Figure 3 exactly how the user annotations vary with the number of rounds. (Also, there is a typo in the Figure 3 legend.) One assumes different slices are used for the different time-points and that each slice is interacted with at most once, but this should be explicit and the ordering mechanism stated. The authors should also consider what would happen if the same slice is re-annotated (for correction purposes) and how that factors into their framework, especially given that the better performing interaction mechanisms are both designed more to give a notion of bounds and have less corrective capabilities. The paper would benefit from some statistical testing in order to show if the results can be readily explained by random perturbations. Assuming each method uses the same training-testing split, Wilcoxon signed-rank tests would likely by the appropriate choice. On a cosmetic note, the citations should be arranged in numerical order to make it easier for the reader. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The paper presents an interesting framework and particular attention has been given to investigating different annotation types, which is appreciated for a work on interactive segmentation. The paper also presents a memory mechanism that one can easily envisage as improving interactive segmentation without requiring interactive network training. Ultimately, this paper appears to balance technical novelty with a clear underlying technical need, motivated by a reasonably foreseeable clinical need. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper The authors propose an interactive method for 3D image segmentations based on memory and quality assessment. The method is fast and works on several public databases. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. strong validation the method proposed is fast even if in 3D description of experiment are clear Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I would have appreciate to see the std in the quantitative results the conclusion is maybe light the results of the challenges (Kits for example) are not really explained (“competitor” is the winner? what about the new submissions?) no comparison with ResNet-50 alone (backbone of the proposed method) Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The database are public so the access to the data is not a problem. The author will share the codes. The details in the article seem sufficient to be able to reproduce the results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be interesting to see the confidence the network has with the memory component and without. A statistical study of the results is hence recommended. A mention to today’s challenge results would also be appreciated. I would have appreciated a comparison with ResNet-50 without the memory module to really understand its role. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Even if the method is not fully automatic, results are interesting. The memory component is a real advantage when segmenting a 3D volume slice by slice. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This paper presents a new interactive segmentation method which acts on volumetric medical images. Compared to the baseline approach based on nn-UNet, the proposed method consists of a memory-augmented network and a quality assessment module, which allows users to label lower-quality slices for refinement. The proposed method yields superior results compared with existing methods. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper presents a novel approach for interactive volumetric segmentation which enables quality assessment for multi-round refinement in the human-in-the-loop segmentation process. The approach can well accommodates different weak labels, e.g., scribbles, points, etc. The approach yields superior results than existing methods, including competition winner nn-UNet. Detailed ablation study on the quality assessment module is also provided to show its effectiveness. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Comparison with weakly-supervised methods (e.g., [a, b]) may also need to be provided. Missing references: the ROI-based multi-round refinement is very similar to a coarse-to-fine based volumetric segmentation approach [c]. Should be included in the discussion. [a] Rajchl, Martin, et al. “Deepcut: Object segmentation from bounding box annotations using convolutional neural networks.” IEEE transactions on medical imaging 36.2 (2016): 674-683. [b] Kervadec, Hoel, et al. “Constrained-CNN losses for weakly supervised segmentation.” Medical image analysis 54 (2019): 88-99. [c] Zhou, Yuyin, et al. “A fixed-point model for pancreas segmentation in abdominal CT scans.” MICCAI 2017. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The authors promise to release the code. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html please see above. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This paper presents an interactive volumetric segmentation tool which can well accommodate different weak labels, and also enables quality assessment for multi-round refinement. The authors perform evaluation on CT segmentation datasets and compare with a few strong competitors to demonstrate the clinical feasibility. The output might be a general tool to reduce clinicians’ workload. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a general framework for volumetric segmentation which can account for different types of weak labels. The method has thoroughly validated and the paper is clearly written. The reviewers recommend to include standard deviations in the reported results and to expand the revised related works with some relevant literature which is currently missing. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback We sincerely thank all the reviewers and AC for their time and constructive comments on our manuscript. Below we provide clarifications on the major comments, which will be integrated in the final version. Reviewers #2 &amp; #3 Q: Provide the std in Table 1. A: We summarize the standard deviations of different algorithms (Interactive 3D nnU-Net/DeepIGeoS/Ours) in the table below. As shown, our method has the smallest deviations. For reference, the best solution in the MSD leaderboard has the deviations 18.9 for lung cancer and 35.1 for colon cancer. Interaction Type—–Lung Cancer—–Colon Cancer—–Kidney Organ—Kidney Tumor Scribbles————16.8/13.5/9.2—–34.7/19.5/11.7—-4.0/3.4/1.9——15.9/14.3/7.5 Bounding Boxes—-16.3/13.3/9.1—–33.2/19.2/11.4—-3.8/2.8/2.1——15.8/13.0/7.5 Extreme Points—–15.5/12.6/8.8—–31.0/19.1/11.2—-3.1/2.4/1.7 ——14.4/11.4/7.4 Reviewers #2 &amp; #3 &amp; #4 Q: Incorrect citations and missed reference. A: Thank you for pointing this out. We will correct the citation errors, expand the reference section to include the missed articles and rearrange the references in numerical order. Reviewer #2 Q1: Is the interaction network f_In shared across different interaction types or not? A1: In the article, we leverage a different interaction network f_In for each type of interaction to achieve better performance. Following your suggestion, we designed a shared f_In by combining all training samples of different interaction types for training. We found that the performance degrades slightly with the shared f_In, however it would then support diverse interaction mechanisms. Below we summarize the DSC scores and the difference to the reported results in Tab. 1. Interaction Type—Lung Cancer—Colon Cancer—Kidney Organ—Kidney Tumor Scribbles———-80.5 (-0.4)—–79.3 (-0.4) ——-96.6(-0.3)——-87.6 (-0.6) Bounding Boxes–81.2 (-0.3)—–78.8 (-0.5)——–96.8(-0.2)——-87.9 (-0.5) Extreme Points—81.4 (-0.6) —–79.8 (-0.6)——-96.5(-0.5)——-88.0 (-1.1) Q2: How do the user annotations vary with the number of rounds? A2: At each round, we determine the slice to be annotated based on the quality scores predicted by the quality assessment network, i.e., the slice with the lowest quality score will be chosen. In the current version, each slice will be chosen at most once. We agree with the reviewer that it is valuable to factor the correction procedure into the framework and will consider this in the future work. Thanks. Reviewer #3 Q1: More ablative experiments on the memory component. A1: To study the memory module, we conduct extra experiments to evaluate the model performance with different memory sizes (i.e., 0, 1, 5, 10, 15, 20). Here, 0 corresponds to the baseline model with ResNet-50 only, while 20 is the default size used in the paper. In the following table, we report the DSC scores on the three challenging test sets across all interactions (scribbles/bounding boxes/extreme points). We observe that without the memory module, the performance encounters a severe degradation for all interactions, especially on Lung Cancer and Colon Cancer. In addition, the performance improves with larger memory sizes, and the gain becomes marginal around the values of 15 and 20. Memory Size—Lung Cancer—–Colon Cancer —–Kidney Tumor 0—————-58.2/59.3/58.9—54.7/54.7/54.8—–79.7/79.7/79.8 1—————-76.2/75.6/77.0—67.3/67.1/68.0—–83.7/83.7/84.2 5—————-79.6/79.8/80.9—72.9/73.1/73.9—–86.1/85.8/86.9 10————–80.9/81.4/81.8—-75.2/75.3/75.8—–87.2/87.3/87.9 15————–81.0/81.5/82.1—-78.7/79.2/80.4—–88.3/88.3/89.0 20————–80.9/81.5/82.0—-79.7/79.3/80.4—–88.2/88.4/89.1 Q2: Other minor issues (e.g., expand the conclusion section and include more challenge results) A2: Thank you for the comments. We will definitely revise them in the final version. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Zhou, Tianfei,Li, Liulei,Bredell, Gustav,Li, Jianwu,Konukoglu, Ender" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Quality-Aware Memory Network for Interactive Volumetric Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Zhou, Tianfei"
+        class="post-tags">
+        Zhou, Tianfei
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Liulei"
+        class="post-tags">
+        Li, Liulei
+      </a> |  
+      
+      <a href="kittywong/tags#Bredell, Gustav"
+        class="post-tags">
+        Bredell, Gustav
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Jianwu"
+        class="post-tags">
+        Li, Jianwu
+      </a> |  
+      
+      <a href="kittywong/tags#Konukoglu, Ender"
+        class="post-tags">
+        Konukoglu, Ender
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Tianfei Zhou, Liulei Li, Gustav Bredell, Jianwu Li, Ender Konukoglu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Despite recent progress of automatic medical image segmentation techniques, fully automatic results usually fail to meet the clinical use and typically require further refinement. In this work, we propose a \textit{quality-aware memory network} for interactive segmentation of 3D medical images. Provided by user guidance on an arbitrary slice, an interaction network is firstly employed to obtain an initial 2D segmentation. The quality-aware memory network subsequently propagates the initial segmentation estimation bidirectionally over the entire volume. Subsequent refinement based on additional user guidance on other slices can be incorporated in the same manner. To further facilitate interactive segmentation, a quality assessment module is introduced to suggest the next slice to segment based on the current segmentation quality of each slice. The proposed network has two appealing characteristics: 1) The memory-augmented network offers the ability to quickly encode past segmentation information, which will be retrieved for the segmentation of other slices; 2) The quality assessment module enables the model to directly estimate the qualities of segmentation predictions, which allows an active learning paradigm where users preferentially label the lowest-quality slice for multi-round refinement. The proposed network leads to a robust interactive segmentation engine, which can generalize well to various types of user annotations (\eg, scribbles, boxes). Experimental results on various medical datasets demonstrate the superiority of our approach in comparison with existing techniques.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87196-3_52">https://doi.org/10.1007/978-3-030-87196-3_52</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/0liliulei/Mem3D
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents an interactive segmentation framework based on a pre-trained neural network that has a “memory augmentation” component that encodes a number of segmented patches as key-value pairs which are fetched based on their similarity to the slice being segmented. The network firsts segments the slice with user interaction and then propagates the segmentation onto adjacent slices and so-forth using the memory network until the volumetric image is segmented, using a quality estimate to identify the slice with the lowest quality propagation which is marked as the best locus for additional user interaction. (The benefit of this method is that it avoids run-time training while still allowing for adaption via storing more slices in memory.)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength of the paper is in showing the effect of the effect of the quality assessment metric for slice selection. The two alternative methods, random and oracle, do pose meaningful upper and lower bounds on the expected performance.</p>
+
+      <p>The other main strength of the paper is the attention towards ensuring that the underlying learning mechanism can be used in near real-time, i.e. the structure of the memory mechanism is designed for interactivity and having the network adapt to the user without expensive weight  re-training in run-time. The application of the method on two vastly different anatomies illustrates this as well, although this could always be improved by looking at different imaging modalities as well.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The authors really need to check their references. On the second page, the authors cite [10,18,20,24] as handling only 2D medical images which is untrue for [18] as it uses 3D volumes via 33x33x3vox patches. (The remainder do use 2D slices.)</p>
+
+      <p>Table 1 should include some variability measurements and not just the average performance. Given how close the numbers generally are, it is unclear if the proposed method is offering a consistently improved segmentation or not.</p>
+
+      <p>It is unclear if a single f_IN is trained with respect to the interaction mechanisms. Does each one use a different f_IN? A shared f_IN? This could go a long way towards explaining the results in Table 1.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper appears to be relatively reproducible in that the logic of the paper is easy to follow. There are a few aspects that could be improved, such as an exact description of the networks used, or code to that effect. The datasets are also publicly available, although not their scribble annotations.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>It is slightly unclear in Figure 3 exactly how the user annotations vary with the number of rounds. (Also, there is a typo in the Figure 3 legend.) One assumes different slices are used for the different time-points and that each slice is interacted with at most once, but this should be explicit and the ordering mechanism stated. The authors should also consider what would happen if the same slice is re-annotated (for correction purposes) and how that factors into their framework, especially given that the better performing interaction mechanisms are both designed more to give a notion of bounds and have less corrective capabilities.</p>
+
+      <p>The paper would benefit from some statistical testing in order to show if the results can be readily explained by random perturbations. Assuming each method uses the same training-testing split, Wilcoxon signed-rank tests would likely by the appropriate choice.</p>
+
+      <p>On a cosmetic note, the citations should be arranged in numerical order to make it easier for the reader.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The paper presents an interesting framework and particular attention has been given to investigating different annotation types, which is appreciated for a work on interactive segmentation. The paper also presents a memory mechanism that one can easily envisage as improving interactive segmentation without requiring interactive network training. Ultimately, this paper appears to balance technical novelty with a clear underlying technical need, motivated by a reasonably foreseeable clinical need.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose an interactive method for 3D image segmentations based on memory and quality assessment. The method is fast and works on several public databases.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>strong validation</li>
+        <li>the method proposed is fast even if in 3D</li>
+        <li>description of experiment are clear</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>I would have appreciate to see the std in the quantitative results</li>
+        <li>the conclusion is maybe light</li>
+        <li>the results of the challenges (Kits for example) are not really explained (“competitor” is the winner? what about the new submissions?)</li>
+        <li>no comparison with ResNet-50 alone (backbone of the proposed method)</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The database are public so the access to the data is not a problem. The author will share the codes. The details in the article seem sufficient to be able to reproduce the results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>It would be interesting to see the confidence the network has with the memory component and without. 
+A statistical study of the results is hence recommended.
+A mention to today’s challenge results would also be appreciated.
+I would have appreciated a comparison with ResNet-50 without the memory module to really understand its role.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Even if the method is not fully automatic, results are interesting. The memory component is a real advantage when segmenting a 3D volume slice by slice.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a new interactive segmentation method which acts on volumetric medical images. Compared to the baseline approach based on nn-UNet, the proposed method consists of a memory-augmented network  and a quality assessment module, which allows users to label lower-quality slices for refinement. The proposed method yields superior results compared with existing methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The paper presents a novel approach for interactive volumetric segmentation which enables quality assessment for multi-round refinement in the human-in-the-loop segmentation process.</p>
+        </li>
+        <li>
+          <p>The approach can well accommodates different weak labels, e.g., scribbles, points, etc.</p>
+        </li>
+        <li>
+          <p>The approach yields superior results than existing methods, including competition winner nn-UNet. Detailed ablation study on the quality assessment module is also provided to show its effectiveness.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Comparison with weakly-supervised methods (e.g., [a, b]) may also need to be provided.</p>
+        </li>
+        <li>
+          <p>Missing references: the ROI-based multi-round refinement is very similar to a coarse-to-fine based volumetric segmentation approach [c]. Should be included in the discussion.</p>
+        </li>
+      </ul>
+
+      <p>[a] Rajchl, Martin, et al. “Deepcut: Object segmentation from bounding box annotations using convolutional neural networks.” IEEE transactions on medical imaging 36.2 (2016): 674-683.
+[b] Kervadec, Hoel, et al. “Constrained-CNN losses for weakly supervised segmentation.” Medical image analysis 54 (2019): 88-99.
+[c] Zhou, Yuyin, et al. “A fixed-point model for pancreas segmentation in abdominal CT scans.” MICCAI 2017.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The authors promise to release the code.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>please see above.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This paper presents an interactive volumetric segmentation tool which can well accommodate different weak labels, and also enables quality assessment for multi-round refinement. The authors perform evaluation on CT segmentation datasets and compare with a few strong competitors to demonstrate the clinical feasibility. The output might be a general tool to reduce clinicians’ workload.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work presents a general framework for volumetric segmentation which can account for different types of weak labels. The method has thoroughly validated and the paper is clearly written.</p>
+
+      <p>The reviewers recommend to include standard deviations in the reported results and to expand the revised related works with some relevant literature which is currently missing.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+
+  <p>We sincerely thank all the reviewers and AC for their time and constructive comments on our manuscript. Below we provide clarifications on the major comments, which will be integrated in the final version.</p>
+
+  <p>Reviewers #2 &amp; #3
+Q: Provide the std in Table 1.
+A: We summarize the standard deviations of different algorithms (Interactive 3D nnU-Net/DeepIGeoS/Ours) in the table below. As shown, our method has the smallest deviations. For reference, the best solution in the MSD leaderboard has the deviations 18.9 for lung cancer and 35.1 for colon cancer.
+Interaction Type—–Lung Cancer—–Colon Cancer—–Kidney Organ—Kidney Tumor
+Scribbles————16.8/13.5/9.2—–34.7/19.5/11.7—-4.0/3.4/1.9——15.9/14.3/7.5
+Bounding Boxes—-16.3/13.3/9.1—–33.2/19.2/11.4—-3.8/2.8/2.1——15.8/13.0/7.5
+Extreme Points—–15.5/12.6/8.8—–31.0/19.1/11.2—-3.1/2.4/1.7 ——14.4/11.4/7.4</p>
+
+  <p>Reviewers #2 &amp; #3 &amp; #4
+Q: Incorrect citations and missed reference.
+A: Thank you for pointing this out. We will correct the citation errors, expand the reference section to include the missed articles and rearrange the references in numerical order.</p>
+
+  <p>Reviewer #2
+Q1: Is the interaction network f_In shared across different interaction types or not?
+A1: In the article, we leverage a different interaction network f_In for each type of interaction to achieve better performance. Following your suggestion, we designed a shared f_In by combining all training samples of different interaction types for training. We found that the performance degrades slightly with the shared f_In, however it would then support diverse interaction mechanisms. Below we summarize the DSC scores and the difference to the reported results in Tab. 1.
+Interaction Type—Lung Cancer—Colon Cancer—Kidney Organ—Kidney Tumor
+Scribbles———-80.5 (-0.4)—–79.3 (-0.4) ——-96.6(-0.3)——-87.6 (-0.6)
+Bounding Boxes–81.2 (-0.3)—–78.8 (-0.5)——–96.8(-0.2)——-87.9 (-0.5)
+Extreme Points—81.4 (-0.6) —–79.8 (-0.6)——-96.5(-0.5)——-88.0 (-1.1)</p>
+
+  <p>Q2: How do the user annotations vary with the number of rounds?
+A2: At each round, we determine the slice to be annotated based on the quality scores predicted by the quality assessment network, i.e., the slice with the lowest quality score will be chosen. In the current version, each slice will be chosen at most once. We agree with the reviewer that it is valuable to factor the correction procedure into the framework and will consider this in the future work. Thanks.</p>
+
+  <p>Reviewer #3
+Q1: More ablative experiments on the memory component.
+A1: To study the memory module, we conduct extra experiments to evaluate the model performance with different memory sizes (i.e., 0, 1, 5, 10, 15, 20). Here, <code class="language-plaintext highlighter-rouge">0</code> corresponds to the baseline model with ResNet-50 only, while <code class="language-plaintext highlighter-rouge">20</code> is the default size used in the paper.  In the following table, we report the DSC scores on the three challenging test sets across all interactions (scribbles/bounding boxes/extreme points). We observe that without the memory module, the performance encounters a severe degradation for all interactions, especially on Lung Cancer and Colon Cancer. In addition, the performance improves with larger memory sizes, and the gain becomes marginal around the values of <code class="language-plaintext highlighter-rouge">15</code> and <code class="language-plaintext highlighter-rouge">20</code>.
+Memory Size—Lung Cancer—–Colon Cancer —–Kidney Tumor
+0—————-58.2/59.3/58.9—54.7/54.7/54.8—–79.7/79.7/79.8                  <br />
+1—————-76.2/75.6/77.0—67.3/67.1/68.0—–83.7/83.7/84.2
+5—————-79.6/79.8/80.9—72.9/73.1/73.9—–86.1/85.8/86.9
+10————–80.9/81.4/81.8—-75.2/75.3/75.8—–87.2/87.3/87.9
+15————–81.0/81.5/82.1—-78.7/79.2/80.4—–88.3/88.3/89.0
+20————–80.9/81.5/82.0—-79.7/79.3/80.4—–88.2/88.4/89.1</p>
+
+  <p>Q2: Other minor issues (e.g., expand the conclusion section and include more challenge results)
+A2: Thank you for the comments. We will definitely revise them in the final version.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0251-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0252-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Zhou, Tianfei"
+        class="post-category">
+        Zhou, Tianfei
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Liulei"
+        class="post-category">
+        Li, Liulei
+      </a> |  
+      
+      <a href="kittywong/tags#Bredell, Gustav"
+        class="post-category">
+        Bredell, Gustav
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Jianwu"
+        class="post-category">
+        Li, Jianwu
+      </a> |  
+      
+      <a href="kittywong/tags#Konukoglu, Ender"
+        class="post-category">
+        Konukoglu, Ender
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0252/12/31/Paper0820">
+          Improving Pneumonia Localization via Cross-Attention on Medical Images and Reports
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0250/12/31/Paper0498">
+          Adapting Off-the-Shelf Source Segmenter for Target Medical Image Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

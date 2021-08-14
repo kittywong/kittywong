@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Lung Cancer Risk Estimation with Incomplete Data: A Joint Missing Imputation Perspective | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Lung Cancer Risk Estimation with Incomplete Data: A Joint Missing Imputation Perspective" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Riqiang Gao, Yucheng Tang, Kaiwen Xu, Ho Hin Lee, Steve Deppen, Kim Sandler, Pierre Massion, Thomas A. Lasko, Yuankai Huo, Bennett A. Landman Abstract Data from multi-modality provide complementary information in clinical prediction, but missing data in clinical cohorts limits the number of subjects in multi-modal learning context. Multi-modal missing imputation is challenging with existing methods when 1) the missing data span across heterogeneous modalities (e.g., image vs. non-image); or 2) one modality is largely missing. In this paper, we address imputation of missing data by modeling the joint distribution of multi-modal data. Motivated by partial bidirectional generative adversarial net (PBiGAN), we propose a new Conditional PBiGAN (C-PBiGAN) method that imputes one modality combining the conditional knowledge from another modality. Specifically, C-PBiGAN introduces a conditional latent space in a missing imputation framework that jointly encodes the available multi-modal data, along with a class regularization loss on imputed data to recover discriminative information. To our knowledge, it is the first generative adversarial model that addresses multi-modal missing imputation by modeling the joint distribution of image and non-image data. We validate our model with both the national lung screening trial (NLST) dataset and an external clinical validation cohort. The proposed C-PBiGAN achieves significant improvements in lung cancer risk estimation compared with representative imputation methods (e.g., AUC values increase in both NLST (+2.9%) and in-house dataset (+4.3%) compared with PBiGAN, p&lt;0.05). Link to paper https://doi.org/10.1007/978-3-030-87240-3_62 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors presented a novel method that allows performing the joint imputation of multi-modal missing data, such as missing images, demographic, and/or clinical information. Moreover, they show how the combined use of images and clinical information allows them to obtain better lung cancer risk prediction in comparison with the predictions obtained using only the risk factors. The scenario posed by the authors, dealing with datasets with multi-modal missing data, is challenging and close to real-life clinical data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Possibility to deal with multi-modal missing data: the method proposed by the authors allows to estimate the risk of lung cancer in datasets with missing images and missing clinical information, a setting close to real-life clinical practice. Image information importance: they show how the use of images in the classification allows obtaining better risk predictions than just by using clinical risk factors. Including factors derived from the radiological report. Novel approach: To my knowledge, this is the first generative adversarial model that addresses multi-modal imputation of imaging and non-imaging data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Factors/non-image data imputation: from the results In Table 1, it seems to me that the author’s method is significantly superior in the image imputation, but not in the factors imputation. For example, when the image imputation is done by copying the previous image (LOCF) the obtained results are similar with all the other factors imputation methods; mean imputation (83.76) vs their method (84). Hence, to better evaluate this, I would appreciate the report of the standard deviations in their results. Limited evaluation of the image imputation: In the case of the image imputation, the authors compared their method with a different instantiation of their own method and with the original method that inspired their work. Beyond that, they only compared the results with the ones obtained by copying the previous image, i.e : last observation carried forward (LOCF). I would like to see a comparison with at least another method, either GAN or not, but that is specifically designed for conditional image imputation since it seems to me that there is no real comparison. For example, the work presented in ‘’Ivanov, O., et al.: Variational autoencoder with arbitrary conditioning. 7th, ICLR 2019 pp. 1–25 (2019)’’ Use of the radiological factors: It seems to me that this is not clarified in the text. First, they claim to use 14 risk factors, which include among them factors coming from the radiological report: nodule size, spiculation, upper lobe of nodule. Are these factors available when the authors impute missing images at different missing rates? (Figure 4). More generally, is there any constraint while testing the method that ensures that these factors are not included when the images are missing?. It seems to me that imputing the missing image with information coming from the radiological report would be a non-realistic clinical scenario, which is for me one of the strengths of the paper. Comparison with the original method: ‘’A more obvious superiority can be found when only using the imputed modality for prediciton (e.g., C-PBiGAN: 0.830 vs. PBiGAN: 0.652 when risk factors have missing rate of 80%).’’ How is the image imputed using the original method (PBiGAN)? I understand it is just a sample of the GAN model, i.e: it has no patient-specific information, am I wrong?. If that is the case, it makes even more necessary the comparison with other methods specifically focused on conditional image imputation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made publicly available. The model was trained with data from the national lung screening trial (NLST) dataset, which is accessible upon request. External validation was carried out in an in-house dataset, with results similar to the ones obtained in the NLST. Hence, it seems that the results could be reproduced with the publicly available code and access to the NLST dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: I would really invest some time in the comparison of the image imputation. The authors probably know other conditional imaging approaches that could be compared with, GAN and not GAN, such as https://github.com/tigvarts/vaeac . There is no direct assessment of the imputation quality. Neither with the factors nor with the images. The assessment of your method is based on the cancer risk prediction, but if you propose an imputation framework I would expect to see some accuracy/error metrics on the images/factors imputed. ‘’The C-PBiGAN combination (bold in Table 1) significantly improves all imputation combinations without C-PBiGAN across the image and non-image modalities (p &lt; 0.05)’’. From this, I understand that using any other imputation method, such as mean imputation, for the factors and then C-PBiGAN is comparable to the joint approach. In fact, from Table 1, mean (85.72) vs C-PBiGAN (86.20). I think this point makes even more necessary the report of the standard deviation, and the comparison with other conditional image imputation approaches, since it seems to me that the joint imputation is not the main driving factor here. Minor comments: In Section 3 in the Datasets subsection the missing rate in the NLST dataset is 60%, while in the results reported in Table 1 and the subsection Results and Discussion is 50%. Table 1 is hard to read, the caption is not clear, and I think it would be better to show the standard deviation of the results. That will make it more clear is the results are significant or not. I would appreciate a small description of the in-house dataset, does it have longitudinal information?. I assume not since there is no actual T1 image in Fig. 5. But it is not stated. More methods for the factor imputation (1-2 classic approaches), there a few such as KNN or iterative imputation available in this package: https://github.com/iskandr/fancyimpute Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Mainly the lack of comparison of their imputation framework with comparable approaches. Moreover, there are some issues like the lack of clarity in the use of the radiological factors or the report of the results in Table 1 that hinder the paper’s message. I think the idea is good, and the contribution can be interesting if these points are tackled and their method is better than comparable approaches in the image imputation. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work present a novel method that improves over an existing GAN-based framework for missing data imputation. This paper extends the original method with parts that can support multi-modal data (i.e. imaging and non-imaging). I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. Datasets are large. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A major strength of this work is that missing data imputation is combined over multiple modalities. Very clear and descriptive figures. Method is innovative Results show a clear and convincing improvement based on AUC over several baseline methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results are compared based on AUC, which is informative. However, I miss an evaluation of the reconstruction error of missing data (of both imaging and non-imaging data), for example MSE. “Our model can impute visually realistic data and recover discriminative information, even when data are completely missing” -&gt; sounds a bit scary. What is meant by data are completely missing, and does it even make sense in such case to construct it? It is unclear where this is substantiated in the experiments and results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code is made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: Data from multi-modality -&gt; Data from multiple modalities Page 5 : “The first two, the middle nine, and the last three factors come from EMR, SDM visit, and radiology report (Fig. 1), respectively.” This sentence is a complete puzzle, please formulate differently. Page 5: “in our cohort is hard than” -&gt; is harder than Page 5: “Due to issues as Fig. 1”-&gt; as illustrated in Fig. 1 Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? A major strength of this work is that missing data imputation is combined over multiple modalities. Methodology is innovative. I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. However, results are only limited to an evaluation of classification error and miss an evaluation of intermediate steps to get more insight, e.g. reconstruction error. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The main topic of the paper is the question of how to deal with missing data when training a medical classification system. The author focus on the sub-question of how to do this in a mixed modality setting, e.g. with numerical and image input. They propose an extension to an existing approach called P-BiGAN. With their approach C-PBiGAN it is now possible to impute data from two different modalities in contrast to the original approach that required data from a single modality. The author evaluates their approach using two lung datasets, a public and open dataset as well as an in-house dataset. Using this data, they show that their approach is superior to the tested alternatives. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From my point of view, the paper has several strengths: The formulated challenge is indeed not too well-explored so far (to my knowledge). The paper offers here a clear and intuitive approach to handle this challenge. Although not state explicitly, the proposed solution should also be usable with other approaches as well. The authors used more than one datasets and used one only for testing. This, and given the fact that the preprocessing is described in detail, gives confidence in the results and findings. The clear focus on a single contribution: Many MICCAI-papers add multiple changes in a single publication, making it difficult to understand the individual contributions and transfer the finding to other solutions. I appreciate that the authors identified a single situation and created a rather general solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From my point of view, the main weaknesses of the paper are: The limited and short evaluation: The evaluation in its current format is complete. However, and I think that is mainly due to the format, it is quite limited. For example, the authors focus on a single metric (AUC) The novelty: While the paper is solid and of some novelty, it is more an incremental work than a novel approach. Complex and dense writing: The paper is well-structured, but it requires intense and concentrated reading. Micro-restructuring and more efficient usage of math could help. Again, that is a point that is most likely also due to the format and not a “really bad” example. A limited discussion: I would have wished for a longer discussion. The authors spend a significant part of the paper describing the approach and the technique, however only a very limited amount on the actual experiments and the results. While not being unusual for MICCAI-paper, I think that the authors could add more information to the discussion. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper offers all information that is necessary to reproduce the results. The authors promised to publish the code, but a section to the code is currently missing. Since an open dataset had been used, the findings should be reproducible once the code is available. The limitations of the algorithm are rarely discussed, this could be more. Reading the paper I only know when the algorithm performs well, not knowing when not to use it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some of these points are obviously out of scope for the revision of the MICCAI paper, however, I still added them as they might benefit the authors if they want to make a journal publication: Major points: Please extend the discussion. For example, on page 7 the authors mention that the proposed technique could lead to better results with imputed data than using real data. That is strange to me, why is the imputed data better? Is this a statistical “lucky finding”? Here more details would have been very valuable. Related to my previous point: Please discuss the short-coming of the proposed method. Has there been a situation in which you wouldn’t use this technique? When would you not use it? What are technical limitations? The used datasets are quite unbalanced. How did this influence the findings? The evaluation is quite limited as it is. a. Providing only a single metric usually fails to give the whole image. Please consider other metrics as well. Also, if AUC is used, it is strange to not include any ROC curve. b. Regarding the statistical tests: How many were performed and were they corrected? c. Regarding the statistical tests: Is a t-test suitable in the given situation, had this been tested? d. How were the t-tests applied? It is unclear to me what was the input/output e. Please add also some details about the uncertainty of the results. Statistical tests are nice, but they do not allow for evaluating the stability of the results. Use for example bootstrapping. Minor Points: Table 1: It took me quite some time to understand table 1. I would suggest adding a header for rows stating that this is for image-missing and a header for columns stating that this is for factor-missing I suggest using TP0 and TP1 instead of T0 and T1 when referring to the different time points. While not necessarily a problem here, T1 is often used for a specific MR contrast, and reading TP1 is just a little bit easier. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The large datasets used for evaluation, the clear focus on a single technique are the main strengths of the paper, making it a rock-solid contribution to the current knowledge. For an excellent paper, I would have wished for a more detailed discussion and a more surprising finding/approach. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses a very common problem in developing ML/DL-driven CAD models in healthcare and that is dealing with missing data. Furthermore, the paper considers an interesting use case in which the missing data is multi-modal. Overall, the proposed approach seems novel and the manuscript is well written. I believe this is an interesting and very relevant work to be presented and discussed at MICCAI 2021. Nevertheless, considering reviewers’ comments and suggestion, I encourage the authors address the major concerns pointed out by all reviewers as well as the following for the final version: 1) Extend the discussion section to include interesting observations, major strengths as well as the limitations. 2) Missing a patch of the image does not seem to be a very realistic scenario in a clinical setting. Is there a justification for such simulation? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Thank you for reviewing this paper. We are grateful for the feedbacks of meta reviewer and all reviewers. As the suggestion from meta review, we will extend the discussion with interesting observations, major strengths as well as the limitations by maximizing the use of page space. Also, we plan to extend this work to a journal version, which also suggested by Reviewer 3. The extension would highly benefit from the reviews. Meta review concerned “missing a patch of image may not very realistic in clinical settings”. Actually, we do target the missing WHOLE image problem. As stated in Para. 3 of Section 3, we assume the background of ROI would not substantially change, so we borrow the image background from the available image in longitudinal context, and let the model focus on ROI. This strategy is an extension as used in [23, 24]. We will further clarify that we are not targeting an unrealistic clinical setting. The main concern from Review 1 is the lack of comparison with comparable approaches. Actually, we have included two other methods for image imputation and three other methods for factor imputation. Considering another setting of our model for image imputation (C-PBiGAN#) and prediction with only one modality, we have 24 combinations in total for comparison to deal with missing data. Of course, we agree more comparisons strength the validation of models, it is interesting to explore more in the journal extension. Reviewer 1 suggested adapting another image method to our problem context (but not fully matched our problem). Actually, one of our contributions is highlighting the conditional space in the imputation context, and our model should not limit to baselines. What we do is choosing a recent imputation method (PBiGAN) published in a high-impact conference (ICML2020) as baseline model to verify our idea. As the observation from Reviewer 1, when we compare two settings of imputing missing data in both modalities, if we impute the image data with the same method (e.g., our method C-PBiGAN), and respectively impute the clinical factors with our method and mean imputation, the difference of multi-modal prediction may be not very large (though our method still achieves higher AUC). We interpret this situation as the overall multi-modal prediction is dominated by the image data. Since the image data operation is exactly the same in these compared two settings, it is reasonable that there is no large gap in overall multi-modal prediction. However, if we compare the factor-only prediction with our method and mean imputation, our method clearly outperforms mean imputation (83.04% vs. 79.73%), indicating our introduced conditional space does contribute. We believe this is a good point to include in the discussion. In this paper, we mainly quantitatively evaluate models with the most clinical-interest way (diagnosis performance), and we qualitatively show reconstructed images. It is interesting to evaluate more datasets (e.g., computer vision tasks) with more metrics in extension version, given our model has no specific restriction on data type. Also, we appreciate Review 3 give an amount of useful suggestions to open directions of a journal extension. We clarify a few misunderstandings/confusions from reviews below: Reviewer 1 thought we may mistakenly state the image missing rate in NLST. Actually, 60% in Section 3 Datasets is about our in-house dataset. We will clarify this. As Reviewer 2 pointed in “main weakness”, the sentence of “when data are completely missing” is not exactly appropriate. It should be “the target data in target modality are completely missing”, as we target at reconstructing target data point with the help of conditioned modality. We appreciate all the helps from all the reviewers. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Riqiang Gao, Yucheng Tang, Kaiwen Xu, Ho Hin Lee, Steve Deppen, Kim Sandler, Pierre Massion, Thomas A. Lasko, Yuankai Huo, Bennett A. Landman Abstract Data from multi-modality provide complementary information in clinical prediction, but missing data in clinical cohorts limits the number of subjects in multi-modal learning context. Multi-modal missing imputation is challenging with existing methods when 1) the missing data span across heterogeneous modalities (e.g., image vs. non-image); or 2) one modality is largely missing. In this paper, we address imputation of missing data by modeling the joint distribution of multi-modal data. Motivated by partial bidirectional generative adversarial net (PBiGAN), we propose a new Conditional PBiGAN (C-PBiGAN) method that imputes one modality combining the conditional knowledge from another modality. Specifically, C-PBiGAN introduces a conditional latent space in a missing imputation framework that jointly encodes the available multi-modal data, along with a class regularization loss on imputed data to recover discriminative information. To our knowledge, it is the first generative adversarial model that addresses multi-modal missing imputation by modeling the joint distribution of image and non-image data. We validate our model with both the national lung screening trial (NLST) dataset and an external clinical validation cohort. The proposed C-PBiGAN achieves significant improvements in lung cancer risk estimation compared with representative imputation methods (e.g., AUC values increase in both NLST (+2.9%) and in-house dataset (+4.3%) compared with PBiGAN, p&lt;0.05). Link to paper https://doi.org/10.1007/978-3-030-87240-3_62 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors presented a novel method that allows performing the joint imputation of multi-modal missing data, such as missing images, demographic, and/or clinical information. Moreover, they show how the combined use of images and clinical information allows them to obtain better lung cancer risk prediction in comparison with the predictions obtained using only the risk factors. The scenario posed by the authors, dealing with datasets with multi-modal missing data, is challenging and close to real-life clinical data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Possibility to deal with multi-modal missing data: the method proposed by the authors allows to estimate the risk of lung cancer in datasets with missing images and missing clinical information, a setting close to real-life clinical practice. Image information importance: they show how the use of images in the classification allows obtaining better risk predictions than just by using clinical risk factors. Including factors derived from the radiological report. Novel approach: To my knowledge, this is the first generative adversarial model that addresses multi-modal imputation of imaging and non-imaging data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Factors/non-image data imputation: from the results In Table 1, it seems to me that the author’s method is significantly superior in the image imputation, but not in the factors imputation. For example, when the image imputation is done by copying the previous image (LOCF) the obtained results are similar with all the other factors imputation methods; mean imputation (83.76) vs their method (84). Hence, to better evaluate this, I would appreciate the report of the standard deviations in their results. Limited evaluation of the image imputation: In the case of the image imputation, the authors compared their method with a different instantiation of their own method and with the original method that inspired their work. Beyond that, they only compared the results with the ones obtained by copying the previous image, i.e : last observation carried forward (LOCF). I would like to see a comparison with at least another method, either GAN or not, but that is specifically designed for conditional image imputation since it seems to me that there is no real comparison. For example, the work presented in ‘’Ivanov, O., et al.: Variational autoencoder with arbitrary conditioning. 7th, ICLR 2019 pp. 1–25 (2019)’’ Use of the radiological factors: It seems to me that this is not clarified in the text. First, they claim to use 14 risk factors, which include among them factors coming from the radiological report: nodule size, spiculation, upper lobe of nodule. Are these factors available when the authors impute missing images at different missing rates? (Figure 4). More generally, is there any constraint while testing the method that ensures that these factors are not included when the images are missing?. It seems to me that imputing the missing image with information coming from the radiological report would be a non-realistic clinical scenario, which is for me one of the strengths of the paper. Comparison with the original method: ‘’A more obvious superiority can be found when only using the imputed modality for prediciton (e.g., C-PBiGAN: 0.830 vs. PBiGAN: 0.652 when risk factors have missing rate of 80%).’’ How is the image imputed using the original method (PBiGAN)? I understand it is just a sample of the GAN model, i.e: it has no patient-specific information, am I wrong?. If that is the case, it makes even more necessary the comparison with other methods specifically focused on conditional image imputation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made publicly available. The model was trained with data from the national lung screening trial (NLST) dataset, which is accessible upon request. External validation was carried out in an in-house dataset, with results similar to the ones obtained in the NLST. Hence, it seems that the results could be reproduced with the publicly available code and access to the NLST dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: I would really invest some time in the comparison of the image imputation. The authors probably know other conditional imaging approaches that could be compared with, GAN and not GAN, such as https://github.com/tigvarts/vaeac . There is no direct assessment of the imputation quality. Neither with the factors nor with the images. The assessment of your method is based on the cancer risk prediction, but if you propose an imputation framework I would expect to see some accuracy/error metrics on the images/factors imputed. ‘’The C-PBiGAN combination (bold in Table 1) significantly improves all imputation combinations without C-PBiGAN across the image and non-image modalities (p &lt; 0.05)’’. From this, I understand that using any other imputation method, such as mean imputation, for the factors and then C-PBiGAN is comparable to the joint approach. In fact, from Table 1, mean (85.72) vs C-PBiGAN (86.20). I think this point makes even more necessary the report of the standard deviation, and the comparison with other conditional image imputation approaches, since it seems to me that the joint imputation is not the main driving factor here. Minor comments: In Section 3 in the Datasets subsection the missing rate in the NLST dataset is 60%, while in the results reported in Table 1 and the subsection Results and Discussion is 50%. Table 1 is hard to read, the caption is not clear, and I think it would be better to show the standard deviation of the results. That will make it more clear is the results are significant or not. I would appreciate a small description of the in-house dataset, does it have longitudinal information?. I assume not since there is no actual T1 image in Fig. 5. But it is not stated. More methods for the factor imputation (1-2 classic approaches), there a few such as KNN or iterative imputation available in this package: https://github.com/iskandr/fancyimpute Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Mainly the lack of comparison of their imputation framework with comparable approaches. Moreover, there are some issues like the lack of clarity in the use of the radiological factors or the report of the results in Table 1 that hinder the paper’s message. I think the idea is good, and the contribution can be interesting if these points are tackled and their method is better than comparable approaches in the image imputation. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work present a novel method that improves over an existing GAN-based framework for missing data imputation. This paper extends the original method with parts that can support multi-modal data (i.e. imaging and non-imaging). I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. Datasets are large. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A major strength of this work is that missing data imputation is combined over multiple modalities. Very clear and descriptive figures. Method is innovative Results show a clear and convincing improvement based on AUC over several baseline methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results are compared based on AUC, which is informative. However, I miss an evaluation of the reconstruction error of missing data (of both imaging and non-imaging data), for example MSE. “Our model can impute visually realistic data and recover discriminative information, even when data are completely missing” -&gt; sounds a bit scary. What is meant by data are completely missing, and does it even make sense in such case to construct it? It is unclear where this is substantiated in the experiments and results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code is made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: Data from multi-modality -&gt; Data from multiple modalities Page 5 : “The first two, the middle nine, and the last three factors come from EMR, SDM visit, and radiology report (Fig. 1), respectively.” This sentence is a complete puzzle, please formulate differently. Page 5: “in our cohort is hard than” -&gt; is harder than Page 5: “Due to issues as Fig. 1”-&gt; as illustrated in Fig. 1 Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? A major strength of this work is that missing data imputation is combined over multiple modalities. Methodology is innovative. I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. However, results are only limited to an evaluation of classification error and miss an evaluation of intermediate steps to get more insight, e.g. reconstruction error. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The main topic of the paper is the question of how to deal with missing data when training a medical classification system. The author focus on the sub-question of how to do this in a mixed modality setting, e.g. with numerical and image input. They propose an extension to an existing approach called P-BiGAN. With their approach C-PBiGAN it is now possible to impute data from two different modalities in contrast to the original approach that required data from a single modality. The author evaluates their approach using two lung datasets, a public and open dataset as well as an in-house dataset. Using this data, they show that their approach is superior to the tested alternatives. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From my point of view, the paper has several strengths: The formulated challenge is indeed not too well-explored so far (to my knowledge). The paper offers here a clear and intuitive approach to handle this challenge. Although not state explicitly, the proposed solution should also be usable with other approaches as well. The authors used more than one datasets and used one only for testing. This, and given the fact that the preprocessing is described in detail, gives confidence in the results and findings. The clear focus on a single contribution: Many MICCAI-papers add multiple changes in a single publication, making it difficult to understand the individual contributions and transfer the finding to other solutions. I appreciate that the authors identified a single situation and created a rather general solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From my point of view, the main weaknesses of the paper are: The limited and short evaluation: The evaluation in its current format is complete. However, and I think that is mainly due to the format, it is quite limited. For example, the authors focus on a single metric (AUC) The novelty: While the paper is solid and of some novelty, it is more an incremental work than a novel approach. Complex and dense writing: The paper is well-structured, but it requires intense and concentrated reading. Micro-restructuring and more efficient usage of math could help. Again, that is a point that is most likely also due to the format and not a “really bad” example. A limited discussion: I would have wished for a longer discussion. The authors spend a significant part of the paper describing the approach and the technique, however only a very limited amount on the actual experiments and the results. While not being unusual for MICCAI-paper, I think that the authors could add more information to the discussion. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper offers all information that is necessary to reproduce the results. The authors promised to publish the code, but a section to the code is currently missing. Since an open dataset had been used, the findings should be reproducible once the code is available. The limitations of the algorithm are rarely discussed, this could be more. Reading the paper I only know when the algorithm performs well, not knowing when not to use it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some of these points are obviously out of scope for the revision of the MICCAI paper, however, I still added them as they might benefit the authors if they want to make a journal publication: Major points: Please extend the discussion. For example, on page 7 the authors mention that the proposed technique could lead to better results with imputed data than using real data. That is strange to me, why is the imputed data better? Is this a statistical “lucky finding”? Here more details would have been very valuable. Related to my previous point: Please discuss the short-coming of the proposed method. Has there been a situation in which you wouldn’t use this technique? When would you not use it? What are technical limitations? The used datasets are quite unbalanced. How did this influence the findings? The evaluation is quite limited as it is. a. Providing only a single metric usually fails to give the whole image. Please consider other metrics as well. Also, if AUC is used, it is strange to not include any ROC curve. b. Regarding the statistical tests: How many were performed and were they corrected? c. Regarding the statistical tests: Is a t-test suitable in the given situation, had this been tested? d. How were the t-tests applied? It is unclear to me what was the input/output e. Please add also some details about the uncertainty of the results. Statistical tests are nice, but they do not allow for evaluating the stability of the results. Use for example bootstrapping. Minor Points: Table 1: It took me quite some time to understand table 1. I would suggest adding a header for rows stating that this is for image-missing and a header for columns stating that this is for factor-missing I suggest using TP0 and TP1 instead of T0 and T1 when referring to the different time points. While not necessarily a problem here, T1 is often used for a specific MR contrast, and reading TP1 is just a little bit easier. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The large datasets used for evaluation, the clear focus on a single technique are the main strengths of the paper, making it a rock-solid contribution to the current knowledge. For an excellent paper, I would have wished for a more detailed discussion and a more surprising finding/approach. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses a very common problem in developing ML/DL-driven CAD models in healthcare and that is dealing with missing data. Furthermore, the paper considers an interesting use case in which the missing data is multi-modal. Overall, the proposed approach seems novel and the manuscript is well written. I believe this is an interesting and very relevant work to be presented and discussed at MICCAI 2021. Nevertheless, considering reviewers’ comments and suggestion, I encourage the authors address the major concerns pointed out by all reviewers as well as the following for the final version: 1) Extend the discussion section to include interesting observations, major strengths as well as the limitations. 2) Missing a patch of the image does not seem to be a very realistic scenario in a clinical setting. Is there a justification for such simulation? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Thank you for reviewing this paper. We are grateful for the feedbacks of meta reviewer and all reviewers. As the suggestion from meta review, we will extend the discussion with interesting observations, major strengths as well as the limitations by maximizing the use of page space. Also, we plan to extend this work to a journal version, which also suggested by Reviewer 3. The extension would highly benefit from the reviews. Meta review concerned “missing a patch of image may not very realistic in clinical settings”. Actually, we do target the missing WHOLE image problem. As stated in Para. 3 of Section 3, we assume the background of ROI would not substantially change, so we borrow the image background from the available image in longitudinal context, and let the model focus on ROI. This strategy is an extension as used in [23, 24]. We will further clarify that we are not targeting an unrealistic clinical setting. The main concern from Review 1 is the lack of comparison with comparable approaches. Actually, we have included two other methods for image imputation and three other methods for factor imputation. Considering another setting of our model for image imputation (C-PBiGAN#) and prediction with only one modality, we have 24 combinations in total for comparison to deal with missing data. Of course, we agree more comparisons strength the validation of models, it is interesting to explore more in the journal extension. Reviewer 1 suggested adapting another image method to our problem context (but not fully matched our problem). Actually, one of our contributions is highlighting the conditional space in the imputation context, and our model should not limit to baselines. What we do is choosing a recent imputation method (PBiGAN) published in a high-impact conference (ICML2020) as baseline model to verify our idea. As the observation from Reviewer 1, when we compare two settings of imputing missing data in both modalities, if we impute the image data with the same method (e.g., our method C-PBiGAN), and respectively impute the clinical factors with our method and mean imputation, the difference of multi-modal prediction may be not very large (though our method still achieves higher AUC). We interpret this situation as the overall multi-modal prediction is dominated by the image data. Since the image data operation is exactly the same in these compared two settings, it is reasonable that there is no large gap in overall multi-modal prediction. However, if we compare the factor-only prediction with our method and mean imputation, our method clearly outperforms mean imputation (83.04% vs. 79.73%), indicating our introduced conditional space does contribute. We believe this is a good point to include in the discussion. In this paper, we mainly quantitatively evaluate models with the most clinical-interest way (diagnosis performance), and we qualitatively show reconstructed images. It is interesting to evaluate more datasets (e.g., computer vision tasks) with more metrics in extension version, given our model has no specific restriction on data type. Also, we appreciate Review 3 give an amount of useful suggestions to open directions of a journal extension. We clarify a few misunderstandings/confusions from reviews below: Reviewer 1 thought we may mistakenly state the image missing rate in NLST. Actually, 60% in Section 3 Datasets is about our in-house dataset. We will clarify this. As Reviewer 2 pointed in “main weakness”, the sentence of “when data are completely missing” is not exactly appropriate. It should be “the target data in target modality are completely missing”, as we target at reconstructing target data point with the help of conditioned modality. We appreciate all the helps from all the reviewers. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0561/12/31/Paper0117" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0561/12/31/Paper0117" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0561-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Lung Cancer Risk Estimation with Incomplete Data: A Joint Missing Imputation Perspective" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0561/12/31/Paper0117"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0561/12/31/Paper0117","headline":"Lung Cancer Risk Estimation with Incomplete Data: A Joint Missing Imputation Perspective","dateModified":"0562-01-03T00:00:00-05:17","datePublished":"0561-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Riqiang Gao, Yucheng Tang, Kaiwen Xu, Ho Hin Lee, Steve Deppen, Kim Sandler, Pierre Massion, Thomas A. Lasko, Yuankai Huo, Bennett A. Landman Abstract Data from multi-modality provide complementary information in clinical prediction, but missing data in clinical cohorts limits the number of subjects in multi-modal learning context. Multi-modal missing imputation is challenging with existing methods when 1) the missing data span across heterogeneous modalities (e.g., image vs. non-image); or 2) one modality is largely missing. In this paper, we address imputation of missing data by modeling the joint distribution of multi-modal data. Motivated by partial bidirectional generative adversarial net (PBiGAN), we propose a new Conditional PBiGAN (C-PBiGAN) method that imputes one modality combining the conditional knowledge from another modality. Specifically, C-PBiGAN introduces a conditional latent space in a missing imputation framework that jointly encodes the available multi-modal data, along with a class regularization loss on imputed data to recover discriminative information. To our knowledge, it is the first generative adversarial model that addresses multi-modal missing imputation by modeling the joint distribution of image and non-image data. We validate our model with both the national lung screening trial (NLST) dataset and an external clinical validation cohort. The proposed C-PBiGAN achieves significant improvements in lung cancer risk estimation compared with representative imputation methods (e.g., AUC values increase in both NLST (+2.9%) and in-house dataset (+4.3%) compared with PBiGAN, p&lt;0.05). Link to paper https://doi.org/10.1007/978-3-030-87240-3_62 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors presented a novel method that allows performing the joint imputation of multi-modal missing data, such as missing images, demographic, and/or clinical information. Moreover, they show how the combined use of images and clinical information allows them to obtain better lung cancer risk prediction in comparison with the predictions obtained using only the risk factors. The scenario posed by the authors, dealing with datasets with multi-modal missing data, is challenging and close to real-life clinical data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Possibility to deal with multi-modal missing data: the method proposed by the authors allows to estimate the risk of lung cancer in datasets with missing images and missing clinical information, a setting close to real-life clinical practice. Image information importance: they show how the use of images in the classification allows obtaining better risk predictions than just by using clinical risk factors. Including factors derived from the radiological report. Novel approach: To my knowledge, this is the first generative adversarial model that addresses multi-modal imputation of imaging and non-imaging data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Factors/non-image data imputation: from the results In Table 1, it seems to me that the author’s method is significantly superior in the image imputation, but not in the factors imputation. For example, when the image imputation is done by copying the previous image (LOCF) the obtained results are similar with all the other factors imputation methods; mean imputation (83.76) vs their method (84). Hence, to better evaluate this, I would appreciate the report of the standard deviations in their results. Limited evaluation of the image imputation: In the case of the image imputation, the authors compared their method with a different instantiation of their own method and with the original method that inspired their work. Beyond that, they only compared the results with the ones obtained by copying the previous image, i.e : last observation carried forward (LOCF). I would like to see a comparison with at least another method, either GAN or not, but that is specifically designed for conditional image imputation since it seems to me that there is no real comparison. For example, the work presented in ‘’Ivanov, O., et al.: Variational autoencoder with arbitrary conditioning. 7th, ICLR 2019 pp. 1–25 (2019)’’ Use of the radiological factors: It seems to me that this is not clarified in the text. First, they claim to use 14 risk factors, which include among them factors coming from the radiological report: nodule size, spiculation, upper lobe of nodule. Are these factors available when the authors impute missing images at different missing rates? (Figure 4). More generally, is there any constraint while testing the method that ensures that these factors are not included when the images are missing?. It seems to me that imputing the missing image with information coming from the radiological report would be a non-realistic clinical scenario, which is for me one of the strengths of the paper. Comparison with the original method: ‘’A more obvious superiority can be found when only using the imputed modality for prediciton (e.g., C-PBiGAN: 0.830 vs. PBiGAN: 0.652 when risk factors have missing rate of 80%).’’ How is the image imputed using the original method (PBiGAN)? I understand it is just a sample of the GAN model, i.e: it has no patient-specific information, am I wrong?. If that is the case, it makes even more necessary the comparison with other methods specifically focused on conditional image imputation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The code will be made publicly available. The model was trained with data from the national lung screening trial (NLST) dataset, which is accessible upon request. External validation was carried out in an in-house dataset, with results similar to the ones obtained in the NLST. Hence, it seems that the results could be reproduced with the publicly available code and access to the NLST dataset. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Major comments: I would really invest some time in the comparison of the image imputation. The authors probably know other conditional imaging approaches that could be compared with, GAN and not GAN, such as https://github.com/tigvarts/vaeac . There is no direct assessment of the imputation quality. Neither with the factors nor with the images. The assessment of your method is based on the cancer risk prediction, but if you propose an imputation framework I would expect to see some accuracy/error metrics on the images/factors imputed. ‘’The C-PBiGAN combination (bold in Table 1) significantly improves all imputation combinations without C-PBiGAN across the image and non-image modalities (p &lt; 0.05)’’. From this, I understand that using any other imputation method, such as mean imputation, for the factors and then C-PBiGAN is comparable to the joint approach. In fact, from Table 1, mean (85.72) vs C-PBiGAN (86.20). I think this point makes even more necessary the report of the standard deviation, and the comparison with other conditional image imputation approaches, since it seems to me that the joint imputation is not the main driving factor here. Minor comments: In Section 3 in the Datasets subsection the missing rate in the NLST dataset is 60%, while in the results reported in Table 1 and the subsection Results and Discussion is 50%. Table 1 is hard to read, the caption is not clear, and I think it would be better to show the standard deviation of the results. That will make it more clear is the results are significant or not. I would appreciate a small description of the in-house dataset, does it have longitudinal information?. I assume not since there is no actual T1 image in Fig. 5. But it is not stated. More methods for the factor imputation (1-2 classic approaches), there a few such as KNN or iterative imputation available in this package: https://github.com/iskandr/fancyimpute Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Mainly the lack of comparison of their imputation framework with comparable approaches. Moreover, there are some issues like the lack of clarity in the use of the radiological factors or the report of the results in Table 1 that hinder the paper’s message. I think the idea is good, and the contribution can be interesting if these points are tackled and their method is better than comparable approaches in the image imputation. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work present a novel method that improves over an existing GAN-based framework for missing data imputation. This paper extends the original method with parts that can support multi-modal data (i.e. imaging and non-imaging). I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. Datasets are large. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A major strength of this work is that missing data imputation is combined over multiple modalities. Very clear and descriptive figures. Method is innovative Results show a clear and convincing improvement based on AUC over several baseline methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results are compared based on AUC, which is informative. However, I miss an evaluation of the reconstruction error of missing data (of both imaging and non-imaging data), for example MSE. “Our model can impute visually realistic data and recover discriminative information, even when data are completely missing” -&gt; sounds a bit scary. What is meant by data are completely missing, and does it even make sense in such case to construct it? It is unclear where this is substantiated in the experiments and results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Code is made available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: Data from multi-modality -&gt; Data from multiple modalities Page 5 : “The first two, the middle nine, and the last three factors come from EMR, SDM visit, and radiology report (Fig. 1), respectively.” This sentence is a complete puzzle, please formulate differently. Page 5: “in our cohort is hard than” -&gt; is harder than Page 5: “Due to issues as Fig. 1”-&gt; as illustrated in Fig. 1 Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? A major strength of this work is that missing data imputation is combined over multiple modalities. Methodology is innovative. I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. However, results are only limited to an evaluation of classification error and miss an evaluation of intermediate steps to get more insight, e.g. reconstruction error. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The main topic of the paper is the question of how to deal with missing data when training a medical classification system. The author focus on the sub-question of how to do this in a mixed modality setting, e.g. with numerical and image input. They propose an extension to an existing approach called P-BiGAN. With their approach C-PBiGAN it is now possible to impute data from two different modalities in contrast to the original approach that required data from a single modality. The author evaluates their approach using two lung datasets, a public and open dataset as well as an in-house dataset. Using this data, they show that their approach is superior to the tested alternatives. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. From my point of view, the paper has several strengths: The formulated challenge is indeed not too well-explored so far (to my knowledge). The paper offers here a clear and intuitive approach to handle this challenge. Although not state explicitly, the proposed solution should also be usable with other approaches as well. The authors used more than one datasets and used one only for testing. This, and given the fact that the preprocessing is described in detail, gives confidence in the results and findings. The clear focus on a single contribution: Many MICCAI-papers add multiple changes in a single publication, making it difficult to understand the individual contributions and transfer the finding to other solutions. I appreciate that the authors identified a single situation and created a rather general solution. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. From my point of view, the main weaknesses of the paper are: The limited and short evaluation: The evaluation in its current format is complete. However, and I think that is mainly due to the format, it is quite limited. For example, the authors focus on a single metric (AUC) The novelty: While the paper is solid and of some novelty, it is more an incremental work than a novel approach. Complex and dense writing: The paper is well-structured, but it requires intense and concentrated reading. Micro-restructuring and more efficient usage of math could help. Again, that is a point that is most likely also due to the format and not a “really bad” example. A limited discussion: I would have wished for a longer discussion. The authors spend a significant part of the paper describing the approach and the technique, however only a very limited amount on the actual experiments and the results. While not being unusual for MICCAI-paper, I think that the authors could add more information to the discussion. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper offers all information that is necessary to reproduce the results. The authors promised to publish the code, but a section to the code is currently missing. Since an open dataset had been used, the findings should be reproducible once the code is available. The limitations of the algorithm are rarely discussed, this could be more. Reading the paper I only know when the algorithm performs well, not knowing when not to use it. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Some of these points are obviously out of scope for the revision of the MICCAI paper, however, I still added them as they might benefit the authors if they want to make a journal publication: Major points: Please extend the discussion. For example, on page 7 the authors mention that the proposed technique could lead to better results with imputed data than using real data. That is strange to me, why is the imputed data better? Is this a statistical “lucky finding”? Here more details would have been very valuable. Related to my previous point: Please discuss the short-coming of the proposed method. Has there been a situation in which you wouldn’t use this technique? When would you not use it? What are technical limitations? The used datasets are quite unbalanced. How did this influence the findings? The evaluation is quite limited as it is. a. Providing only a single metric usually fails to give the whole image. Please consider other metrics as well. Also, if AUC is used, it is strange to not include any ROC curve. b. Regarding the statistical tests: How many were performed and were they corrected? c. Regarding the statistical tests: Is a t-test suitable in the given situation, had this been tested? d. How were the t-tests applied? It is unclear to me what was the input/output e. Please add also some details about the uncertainty of the results. Statistical tests are nice, but they do not allow for evaluating the stability of the results. Use for example bootstrapping. Minor Points: Table 1: It took me quite some time to understand table 1. I would suggest adding a header for rows stating that this is for image-missing and a header for columns stating that this is for factor-missing I suggest using TP0 and TP1 instead of T0 and T1 when referring to the different time points. While not necessarily a problem here, T1 is often used for a specific MR contrast, and reading TP1 is just a little bit easier. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The large datasets used for evaluation, the clear focus on a single technique are the main strengths of the paper, making it a rock-solid contribution to the current knowledge. For an excellent paper, I would have wished for a more detailed discussion and a more surprising finding/approach. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper addresses a very common problem in developing ML/DL-driven CAD models in healthcare and that is dealing with missing data. Furthermore, the paper considers an interesting use case in which the missing data is multi-modal. Overall, the proposed approach seems novel and the manuscript is well written. I believe this is an interesting and very relevant work to be presented and discussed at MICCAI 2021. Nevertheless, considering reviewers’ comments and suggestion, I encourage the authors address the major concerns pointed out by all reviewers as well as the following for the final version: 1) Extend the discussion section to include interesting observations, major strengths as well as the limitations. 2) Missing a patch of the image does not seem to be a very realistic scenario in a clinical setting. Is there a justification for such simulation? What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Thank you for reviewing this paper. We are grateful for the feedbacks of meta reviewer and all reviewers. As the suggestion from meta review, we will extend the discussion with interesting observations, major strengths as well as the limitations by maximizing the use of page space. Also, we plan to extend this work to a journal version, which also suggested by Reviewer 3. The extension would highly benefit from the reviews. Meta review concerned “missing a patch of image may not very realistic in clinical settings”. Actually, we do target the missing WHOLE image problem. As stated in Para. 3 of Section 3, we assume the background of ROI would not substantially change, so we borrow the image background from the available image in longitudinal context, and let the model focus on ROI. This strategy is an extension as used in [23, 24]. We will further clarify that we are not targeting an unrealistic clinical setting. The main concern from Review 1 is the lack of comparison with comparable approaches. Actually, we have included two other methods for image imputation and three other methods for factor imputation. Considering another setting of our model for image imputation (C-PBiGAN#) and prediction with only one modality, we have 24 combinations in total for comparison to deal with missing data. Of course, we agree more comparisons strength the validation of models, it is interesting to explore more in the journal extension. Reviewer 1 suggested adapting another image method to our problem context (but not fully matched our problem). Actually, one of our contributions is highlighting the conditional space in the imputation context, and our model should not limit to baselines. What we do is choosing a recent imputation method (PBiGAN) published in a high-impact conference (ICML2020) as baseline model to verify our idea. As the observation from Reviewer 1, when we compare two settings of imputing missing data in both modalities, if we impute the image data with the same method (e.g., our method C-PBiGAN), and respectively impute the clinical factors with our method and mean imputation, the difference of multi-modal prediction may be not very large (though our method still achieves higher AUC). We interpret this situation as the overall multi-modal prediction is dominated by the image data. Since the image data operation is exactly the same in these compared two settings, it is reasonable that there is no large gap in overall multi-modal prediction. However, if we compare the factor-only prediction with our method and mean imputation, our method clearly outperforms mean imputation (83.04% vs. 79.73%), indicating our introduced conditional space does contribute. We believe this is a good point to include in the discussion. In this paper, we mainly quantitatively evaluate models with the most clinical-interest way (diagnosis performance), and we qualitatively show reconstructed images. It is interesting to evaluate more datasets (e.g., computer vision tasks) with more metrics in extension version, given our model has no specific restriction on data type. Also, we appreciate Review 3 give an amount of useful suggestions to open directions of a journal extension. We clarify a few misunderstandings/confusions from reviews below: Reviewer 1 thought we may mistakenly state the image missing rate in NLST. Actually, 60% in Section 3 Datasets is about our in-house dataset. We will clarify this. As Reviewer 2 pointed in “main weakness”, the sentence of “when data are completely missing” is not exactly appropriate. It should be “the target data in target modality are completely missing”, as we target at reconstructing target data point with the help of conditioned modality. We appreciate all the helps from all the reviewers. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Gao, Riqiang,Tang, Yucheng,Xu, Kaiwen,Lee, Ho Hin,Deppen, Steve,Sandler, Kim,Massion, Pierre,Lasko, Thomas A.,Huo, Yuankai,Landman, Bennett A." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Lung Cancer Risk Estimation with Incomplete Data: A Joint Missing Imputation Perspective</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Integration of Imaging with Non-Imaging Biomarkers"
+        class="post-category">
+        Integration of Imaging with Non-Imaging Biomarkers
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Gao, Riqiang"
+        class="post-tags">
+        Gao, Riqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Tang, Yucheng"
+        class="post-tags">
+        Tang, Yucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Kaiwen"
+        class="post-tags">
+        Xu, Kaiwen
+      </a> |  
+      
+      <a href="kittywong/tags#Lee, Ho Hin"
+        class="post-tags">
+        Lee, Ho Hin
+      </a> |  
+      
+      <a href="kittywong/tags#Deppen, Steve"
+        class="post-tags">
+        Deppen, Steve
+      </a> |  
+      
+      <a href="kittywong/tags#Sandler, Kim"
+        class="post-tags">
+        Sandler, Kim
+      </a> |  
+      
+      <a href="kittywong/tags#Massion, Pierre"
+        class="post-tags">
+        Massion, Pierre
+      </a> |  
+      
+      <a href="kittywong/tags#Lasko, Thomas A."
+        class="post-tags">
+        Lasko, Thomas A.
+      </a> |  
+      
+      <a href="kittywong/tags#Huo, Yuankai"
+        class="post-tags">
+        Huo, Yuankai
+      </a> |  
+      
+      <a href="kittywong/tags#Landman, Bennett A."
+        class="post-tags">
+        Landman, Bennett A.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Riqiang Gao, Yucheng Tang, Kaiwen Xu, Ho Hin Lee, Steve Deppen, Kim Sandler, Pierre Massion, Thomas A. Lasko, Yuankai Huo, Bennett A. Landman
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Data from multi-modality provide complementary information in clinical prediction, but missing data in clinical cohorts limits the number of subjects in multi-modal learning context. Multi-modal missing imputation is challenging with existing methods when 1) the missing data span across heterogeneous modalities (e.g., image vs. non-image); or 2) one modality is largely missing. In this paper, we address imputation of missing data by modeling the joint distribution of multi-modal data. Motivated by partial bidirectional generative adversarial net (PBiGAN), we propose a new Conditional PBiGAN (C-PBiGAN) method that imputes one modality combining the conditional knowledge from another modality. Specifically, C-PBiGAN introduces a conditional latent space in a missing imputation framework that jointly encodes the available multi-modal data, along with a class regularization loss on imputed data to recover discriminative information. To our knowledge, it is the first generative adversarial model that addresses multi-modal missing imputation by modeling the joint distribution of image and non-image data. We validate our model with both the national lung screening trial (NLST) dataset and an external clinical validation cohort. The proposed C-PBiGAN achieves significant improvements in lung cancer risk estimation compared with representative imputation methods (e.g., AUC values increase in both NLST (+2.9%) and in-house dataset (+4.3%) compared with PBiGAN, p&lt;0.05). 
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87240-3_62">https://doi.org/10.1007/978-3-030-87240-3_62</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors presented a novel method that allows performing the joint imputation of multi-modal missing data, such as missing images, demographic, and/or clinical information. Moreover, they show how the combined use of images and clinical information allows them to obtain better lung cancer risk prediction in comparison with the predictions obtained using only the risk factors.  The scenario posed by the authors, dealing with datasets with multi-modal missing data, is challenging and close to real-life clinical data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Possibility to deal with multi-modal missing data: the method proposed by the authors allows to estimate the risk of lung cancer in datasets with missing images and missing clinical information, a setting close to real-life clinical practice.</p>
+        </li>
+        <li>
+          <p>Image information importance: they show how the use of images in the classification allows obtaining better risk predictions than just by using clinical risk factors. Including factors derived from the radiological report.</p>
+        </li>
+        <li>
+          <p>Novel approach: To my knowledge, this is the first generative adversarial model that addresses multi-modal imputation of imaging and non-imaging data.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Factors/non-image data imputation: from the results In Table 1, it seems to me that the author’s method is significantly superior in the image imputation, but not in the factors imputation. For example,  when the image imputation is done by copying the previous image (LOCF) the obtained results are similar with all the other factors imputation methods; mean imputation (83.76) vs their method (84). Hence, to better evaluate this, I would appreciate the report of the standard deviations in their results.</p>
+        </li>
+        <li>
+          <p>Limited evaluation of the image imputation:  In the case of the image imputation, the authors compared their method with a different instantiation of their own method and with the original method that inspired their work. Beyond that, they only compared the results with the ones obtained by copying the previous image, i.e : last observation carried forward (LOCF). I would like to see a comparison with at least another method, either GAN or not, but that is specifically designed for conditional image imputation since it seems to me that there is no real comparison. For example,  the work presented in ‘’Ivanov, O., et al.: Variational autoencoder with arbitrary conditioning. 7th, ICLR 2019 pp. 1–25 (2019)’’</p>
+        </li>
+        <li>
+          <p>Use of the radiological factors: It seems to me that this is not clarified in the text. First, they claim to use 14 risk factors, which include among them factors coming from the radiological report: nodule size, spiculation, upper lobe of nodule. Are these factors available when the authors impute missing images at different missing rates? (Figure 4). More generally, is there any constraint while testing the method that ensures that these factors are not included when the images are missing?. It seems to me that imputing the missing image with information coming from the radiological report would be a non-realistic clinical scenario, which is for me one of the strengths of the paper.</p>
+        </li>
+        <li>
+          <p>Comparison with the original method: ‘’A more obvious superiority can be found when only using the imputed modality for prediciton (e.g., C-PBiGAN: 0.830 vs. PBiGAN: 0.652 when risk factors have missing rate of 80%).’’ How is the image imputed using the original method (PBiGAN)? I understand it is just a sample of the GAN model, i.e: it has no patient-specific information, am I wrong?. If that is the case, it makes even more necessary the comparison with other methods specifically focused on conditional image imputation.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The code will be made publicly available. The model was trained with data from the national lung screening trial (NLST) dataset, which is accessible upon request. External validation was carried out in an in-house dataset, with results similar to the ones obtained in the NLST. Hence, it seems that the results could be reproduced with the publicly available code and access to the NLST dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Major comments:</p>
+
+      <ul>
+        <li>
+          <p>I would really invest some time in the comparison of the image imputation. The authors probably know other conditional imaging approaches that could be compared with, GAN and not GAN, such as
+https://github.com/tigvarts/vaeac .</p>
+        </li>
+        <li>
+          <p>There is no direct assessment of the imputation quality. Neither with the factors nor with the images. The assessment of your method is based on the cancer risk prediction, but if you propose an imputation framework I would expect to see some accuracy/error metrics on the images/factors imputed.</p>
+        </li>
+        <li>
+          <p>‘’The C-PBiGAN combination (bold in Table 1) significantly improves all imputation combinations without C-PBiGAN across the image and non-image modalities (p &lt; 0.05)’’. From this, I understand that using any other imputation method, such as mean imputation, for the factors and then C-PBiGAN is comparable to the joint approach. In fact, from Table 1, mean (85.72) vs C-PBiGAN (86.20). I think this point makes even more necessary the report of the standard deviation, and the comparison with other conditional image imputation approaches, since it seems to me that the joint imputation is not the main driving factor here.</p>
+        </li>
+      </ul>
+
+      <p>Minor comments:</p>
+
+      <ul>
+        <li>
+          <p>In Section 3 in the Datasets subsection the missing rate in the NLST dataset is 60%, while in the results reported in Table 1 and the subsection Results and Discussion is 50%.</p>
+        </li>
+        <li>
+          <p>Table 1 is hard to read, the caption is not clear, and I think it would be better to show the standard deviation of the results. That will make it more clear is the results are significant or not.</p>
+        </li>
+        <li>
+          <p>I would appreciate a small description of the in-house dataset, does it have longitudinal information?. I assume not since there is no actual T1 image in Fig. 5. But it is not stated.</p>
+        </li>
+        <li>
+          <p>More methods for the factor imputation (1-2 classic approaches), there a few such as KNN or iterative imputation available in this package:  https://github.com/iskandr/fancyimpute</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Mainly the lack of comparison of their imputation framework with comparable approaches. Moreover, there are some issues like the lack of clarity in the use of the radiological factors or the report of the results in Table 1 that hinder the paper’s message. I think the idea is good, and the contribution can be interesting if these points are tackled and their method is better than comparable approaches in the image imputation.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work present a novel method that improves over an existing GAN-based framework for missing data imputation. This paper extends the original method with parts that can support multi-modal data (i.e. imaging and non-imaging). I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. Datasets are large.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>A major strength of this work is that missing data imputation is combined over multiple modalities.</li>
+        <li>Very clear and descriptive figures.</li>
+        <li>Method is innovative</li>
+        <li>Results show a clear and convincing improvement based on AUC over several baseline methods.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Results are compared based on AUC, which is informative. However, I miss an evaluation of the reconstruction error of missing data (of both imaging and non-imaging data), for example MSE.</li>
+        <li>“Our model can impute visually realistic data and recover discriminative information, even when data are completely missing” -&gt; sounds a bit scary. What is meant by data are completely missing, and does it even make sense in such case to construct it? It is unclear where this is substantiated in the experiments and results.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Code is made available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Abstract: Data from multi-modality -&gt; Data from multiple modalities</li>
+        <li>Page 5 : “The first two, the middle nine, and the last three factors come from EMR, SDM visit, and radiology report (Fig. 1), respectively.” This sentence is a complete puzzle, please formulate differently.</li>
+        <li>Page 5: “in our cohort is hard than” -&gt; is harder than</li>
+        <li>Page 5: “Due to issues as Fig. 1”-&gt; as illustrated in Fig. 1</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>A major strength of this work is that missing data imputation is combined over multiple modalities. Methodology is innovative. I appreciate the combination of a real clinical problem and shown awareness of the clinical setting with technological innovation. Results are good and mostly convincing. However, results are only limited to an evaluation of classification error and miss an evaluation of intermediate steps to get more insight, e.g. reconstruction error.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The main topic of the paper is the question of how to deal with missing data when training a medical classification system. The author focus on the sub-question of how to do this in a mixed modality setting, e.g. with numerical and image input. They propose an extension to an existing approach called P-BiGAN. With their approach C-PBiGAN it is now possible to impute data from two different modalities in contrast to the original approach that required data from a single modality. 
+The author evaluates their approach using two lung datasets, a public and open dataset as well as an in-house dataset. Using this data, they show that their approach is superior to the tested alternatives.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>From my point of view, the paper has several strengths:</p>
+      <ol>
+        <li>The formulated challenge is indeed not too well-explored so far (to my knowledge). The paper offers here a clear and intuitive approach to handle this challenge. Although not state explicitly, the proposed solution should also be usable with other approaches as well.</li>
+        <li>The authors used more than one datasets and used one only for testing. This, and given the fact that the preprocessing is described in detail, gives confidence in the results and findings.</li>
+        <li>The clear focus on a single contribution: Many MICCAI-papers add multiple changes in a single publication, making it difficult to understand the individual contributions and transfer the finding to other solutions. I appreciate that the authors identified a single situation and created a rather general solution.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>From my point of view, the main weaknesses of the paper are:</p>
+      <ol>
+        <li>The limited and short evaluation: The evaluation in its current format is complete. However, and I think that is mainly due to the format, it is quite limited. For example, the authors focus on a single metric (AUC)</li>
+        <li>The novelty: While the paper is solid and of some novelty, it is more an incremental work than a novel approach.</li>
+        <li>Complex and dense writing: The paper is well-structured, but it requires intense and concentrated reading. Micro-restructuring and more efficient usage of math could help. Again, that is a point that is most likely also due to the format and not a “really bad” example.</li>
+        <li>A limited discussion: I would have wished for a longer discussion. The authors spend a significant part of the paper describing the approach and the technique, however only a very limited amount on the actual experiments and the results. While not being unusual for MICCAI-paper, I think that the authors could add more information to the discussion.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper offers all information that is necessary to reproduce the results. The authors promised to publish the code, but a section to the code is currently missing. Since an open dataset had been used, the findings should be reproducible once the code is available. 
+The limitations of the algorithm are rarely discussed, this could be more. Reading the paper I only know when the algorithm performs well, not knowing when not to use it.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Some of these points are obviously out of scope for the revision of the MICCAI paper, however, I still added them as they might benefit the authors if they want to make a journal publication: 
+Major points:</p>
+      <ol>
+        <li>Please extend the discussion. For example, on page 7 the authors mention that the proposed technique could lead to better results with imputed data than using real data. That is strange to me, why is the imputed data better? Is this a statistical “lucky finding”? Here more details would have been very valuable.</li>
+        <li>Related to my previous point: Please discuss the short-coming of the proposed method. Has there been a situation in which you wouldn’t use this technique? When would you not use it? What are technical limitations?</li>
+        <li>The used datasets are quite unbalanced. How did this influence the findings?</li>
+        <li>The evaluation is quite limited as it is. 
+a.	Providing only a single metric usually fails to give the whole image. Please consider other metrics as well. Also, if AUC is used, it is strange to not include any ROC curve. 
+b.	Regarding the statistical tests: How many were performed and were they corrected?
+c.	Regarding the statistical tests: Is a t-test suitable in the given situation, had this been tested?
+d.	How were the t-tests applied? It is unclear to me what was the input/output
+e.	Please add also some details about the uncertainty of the results. Statistical tests are nice, but they do not allow for evaluating the stability of the results. Use for example bootstrapping. 
+Minor Points:</li>
+        <li>Table 1: It took me quite some time to understand table 1. I would suggest adding a header for rows stating that this is for image-missing and a header for columns stating that this is for factor-missing</li>
+        <li>I suggest using TP0 and TP1 instead of T0 and T1 when referring to the different time points. While not necessarily a problem here, T1 is often used for a specific MR contrast, and reading TP1 is just a little bit easier.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The large datasets used for evaluation, the clear focus on a single technique are the main strengths of the paper, making it a rock-solid contribution to the current knowledge. For an excellent paper, I would have wished for a more detailed discussion and a more surprising finding/approach.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper addresses a very common problem in developing ML/DL-driven CAD models in healthcare and that is dealing with missing data. Furthermore, the paper considers an interesting use case in which the missing data is multi-modal. Overall, the proposed approach seems novel and the manuscript is well written. I believe this is an interesting and very relevant work to be presented and discussed at MICCAI 2021. Nevertheless, considering reviewers’ comments and suggestion, I encourage the authors address the major concerns pointed out by all reviewers as well as the following for the final version:
+1) Extend the discussion section to include interesting observations, major strengths as well as the limitations.
+2) Missing a patch of the image does not seem to be a very realistic scenario in a clinical setting. Is there a justification for such simulation?</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Thank you for reviewing this paper. We are grateful for the feedbacks of meta reviewer and all reviewers.</p>
+
+  <p>As the suggestion from meta review, we will extend the discussion with interesting observations, major strengths as well as the limitations by maximizing the use of page space. Also, we plan to extend this work to a journal version, which also suggested by Reviewer 3. The extension would highly benefit from the reviews.</p>
+
+  <p>Meta review concerned “missing a patch of image may not very realistic in clinical settings”. Actually, we do target the missing WHOLE image problem. As stated in Para. 3 of Section 3, we assume the background of ROI would not substantially change, so we borrow the image background from the available image in longitudinal context, and let the model focus on ROI. This strategy is an extension as used in [23, 24]. We will further clarify that we are not targeting an unrealistic clinical setting.</p>
+
+  <p>The main concern from Review 1 is the lack of comparison with comparable approaches. Actually, we have included two other methods for image imputation and three other methods for factor imputation. Considering another setting of our model for image imputation (C-PBiGAN#) and prediction with only one modality, we have 24 combinations in total for comparison to deal with missing data.</p>
+
+  <p>Of course, we agree more comparisons strength the validation of models, it is interesting to explore more in the journal extension. Reviewer 1 suggested adapting another image method to our problem context (but not fully matched our problem). Actually, one of our contributions is highlighting the conditional space in the imputation context, and our model should not limit to baselines. What we do is choosing a recent imputation method (PBiGAN) published in a high-impact conference (ICML2020) as baseline model to verify our idea.</p>
+
+  <p>As the observation from Reviewer 1, when we compare two settings of imputing missing data in both modalities, if we impute the image data with the same method (e.g., our method C-PBiGAN), and respectively impute the clinical factors with our method and mean imputation, the difference of multi-modal prediction may be not very large (though our method still achieves higher AUC). We interpret this situation as the overall multi-modal prediction is dominated by the image data. Since the image data operation is exactly the same in these compared two settings, it is reasonable that there is no large gap in overall multi-modal prediction. However, if we compare the factor-only prediction with our method and mean imputation, our method clearly outperforms mean imputation (83.04% vs. 79.73%), indicating our introduced conditional space does contribute. We believe this is a good point to include in the discussion.</p>
+
+  <p>In this paper, we mainly quantitatively evaluate models with the most clinical-interest way (diagnosis performance), and we qualitatively show reconstructed images. It is interesting to evaluate more datasets (e.g., computer vision tasks) with more metrics in extension version, given our model has no specific restriction on data type. Also, we appreciate Review 3 give an amount of useful suggestions to open directions of a journal extension.</p>
+
+  <p>We clarify a few misunderstandings/confusions from reviews below:</p>
+
+  <ol>
+    <li>
+      <p>Reviewer 1 thought we may mistakenly state the image missing rate in NLST. Actually, 60% in Section 3 Datasets is about our in-house dataset. We will clarify this.</p>
+    </li>
+    <li>
+      <p>As Reviewer 2 pointed in “main weakness”, the sentence of “when data are completely missing” is not exactly appropriate. It should be “the target data in target modality are completely missing”, as we target at reconstructing target data point with the help of conditioned modality.</p>
+    </li>
+  </ol>
+
+  <p>We appreciate all the helps from all the reviewers.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0561-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0562-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Integration of Imaging with Non-Imaging Biomarkers"
+        class="post-category">
+        Integration of Imaging with Non-Imaging Biomarkers
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Lung"
+        class="post-category">
+        Clinical applications - Lung
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Outcome/disease prediction"
+        class="post-category">
+        Outcome/disease prediction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Gao, Riqiang"
+        class="post-category">
+        Gao, Riqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Tang, Yucheng"
+        class="post-category">
+        Tang, Yucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Kaiwen"
+        class="post-category">
+        Xu, Kaiwen
+      </a> |  
+      
+      <a href="kittywong/tags#Lee, Ho Hin"
+        class="post-category">
+        Lee, Ho Hin
+      </a> |  
+      
+      <a href="kittywong/tags#Deppen, Steve"
+        class="post-category">
+        Deppen, Steve
+      </a> |  
+      
+      <a href="kittywong/tags#Sandler, Kim"
+        class="post-category">
+        Sandler, Kim
+      </a> |  
+      
+      <a href="kittywong/tags#Massion, Pierre"
+        class="post-category">
+        Massion, Pierre
+      </a> |  
+      
+      <a href="kittywong/tags#Lasko, Thomas A."
+        class="post-category">
+        Lasko, Thomas A.
+      </a> |  
+      
+      <a href="kittywong/tags#Huo, Yuankai"
+        class="post-category">
+        Huo, Yuankai
+      </a> |  
+      
+      <a href="kittywong/tags#Landman, Bennett A."
+        class="post-category">
+        Landman, Bennett A.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0562/12/31/Paper0153">
+          Co-Graph Attention Reasoning based Imaging and Clinical Features Integration for Lymph Node Metastasis Prediction
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0560/12/31/Paper2491">
+          Radiomics-informed Deep Curriculum Learning for Breast Cancer Diagnosis
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

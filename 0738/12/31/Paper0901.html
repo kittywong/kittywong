@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>ACN: Adversarial Co-training Network for Brain Tumor Segmentation with Missing Modalities | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="ACN: Adversarial Co-training Network for Brain Tumor Segmentation with Missing Modalities" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yixin Wang, Yang Zhang, Yang Liu, Zihao Lin, Jiang Tian, Cheng Zhong, Zhongchao Shi, Jianping Fan, Zhiqiang He Abstract Accurate segmentation of brain tumors from magnetic resonance imaging (MRI) is clinically relevant in diagnoses, prognoses and surgery treatment, which requires multiple modalities to provide complementary morphological and physiopathologic information. However, missing modality commonly occurs due to image corruption, artifacts, different acquisition protocols or allergies to certain contrast agents in clinical practice. Though existing efforts demonstrate the possibility of a unified model for all missing situations, most of them perform poorly when more than one modality is missing. In this paper, we propose a novel Adversarial Co-training Network (ACN) to solve this issue, in which a series of independent yet related models are trained dedicated to each missing situation with significantly better results. Specifically, ACN adopts a novel co-training network, which enables a coupled learning process for both full modality and missing modality to supplement each other’s domain and feature representations, and more importantly, to recover the `missing’ information of absent modalities. Then, two unsupervised modules, i.e., entropy and knowledge adversarial learning modules are proposed to minimize the domain gap while enhancing prediction reliability and encouraging the alignment of latent representations, respectively. We also adapt modality-mutual information knowledge transfer learning to ACN to retain the rich mutual information among modalities. Extensive experiments on BraTS2018 dataset show that our proposed method significantly outperforms all state-of-the-art methods under any missing situation. Link to paper https://doi.org/10.1007/978-3-030-87234-2_39 Link to the code repository https://github.com/Wangyixinxin/ACN Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/registration.html Reviews Review #1 Please describe the contribution of the paper The paper presents a segmentation method for multi-modal images with missing modalities, using co-training and adversarial learning objectives to make it less sensitive to missing modalities. The authors demonstrate their method on the BRATS 2018 tumor segmentation dataset, showing improved performance in comparison with other methods. In particular, they claim their method is better able to deal with more than one missing modality. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The co-training approach is interesting, as are the adversarial and modality-mutual information components. The results suggest that the proposed method is better able to handle scenarios with more than one missing modality. For these cases, they show a clear improvement over the other methods in the comparison. The experiments are fairly complete, including an ablation study to evaluate the various components of this complex model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear to me how the method works at test time. For training, the model produces at least two segmentations per subject (one from the multimodal and one from the unimodal path). Which segmentation is used to make the final predictions? The model consists of two learning paths, multimodal and unimodal, but it is not clear to me how this works. Is the unimodal path trained for one specific modality, is there one unimodal path for each modality, or is a single unimodal path trained for all modalities at the same time? A limitation of the approach is that it requires a complete training set (I think). Other methods in the comparison (such as HeMiS) can be trained with incomplete datasets. This limitation is not discussed. The dataset is randomly split into a training and validation set (Section 3.1), but there is no mention of a test set. How does this work? Some of the state-of-the-art methods (e.g., HeMis) use modality dropout during training. It is not clear whether the authors used a similar approach here. This can have a strong influence on the performance. There is no discussion of the complexity of the models. For example, the proposed ACN method uses a multimodal and a unimodal branch. Does this mean that it has twice as many parameters as the HeMiS and HVED models? The text claims that there are “significant” differences between the performance of the methods. How was this determined? There is no mention of a statistical test and we are only shown mean performances. There are quite a few textual problems (spelling, grammar, missing words) in the paper, which sometimes make the arguments hard to follow. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The description of the model and evaluation is somewhat limited. The hyperparameters and training procedure are explained well, but it it not entirely clear how the method works in practice. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The entropy adversarial learning module and the knowledge adversarial learning module both work on the intermediate representation of the segmentation U-Net. Does this mean they serve a similar purpose, and are potentially redundant? Section 2.2: “These pixel-level vectors can be seen as the disentanglement of the Shannon Entropy, which reveals the prediction confidence.” What does this mean? Section 2.3: “KnA serves as a soft-alignment to encourage unimodal path to learn abundant and ‘missing’ knowledge from full modality.” This sentence has some grammatical problems (the unimodal path, full modality). I don’t know what “abundant” means in this context and how “missing” knowledge could be learnt. Section 2.4: How is the variational distribution q(m u) approximated? Where do the mu and sigma come from? Section 3.1: The initial learning rate is adjusted using a “ploy policy”. I have not heard this term before, and it appears in only one or two papers in a Google search. Is this a misspelling? Comments about the text: There are quite a few missing words, most often articles. It would be good to carefully check the paper for these cases. For example: Section 2.2: “The prediction of multimodal path” Section 2.3: “may easily disturb the underlying learning of unimodal path” (I’m also not sure what this “disturbance” is.”) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the general approach is interesting, the presentation of the method is not entirely clear. I am not completely sure how it works. The evaluation shows promising results, but it is not clear whether the compared baselines have a similar complexity and how they were trained. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work aims at performing brain tumor segmentation with missing modalities at inference time. A different network is trained for each possible subset of imaging modalities as input. To encourage the subset-specific networks to learn a rich feature representation of the incomplete input data, the authors additionally use a teacher network using the complete set of modalities as input. Specifically, the outputs and feature representations of the subset-specific and teacher models are aligned using adversarial learning. The approach significantly outperforms state-of-the-art techniques on the training fold from the BRATS 2018 challenge. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work addresses a relevant clinical problem: medical image segmentation with missing imaging modalities at inference time The paper is well motivated and well written The proposed method improves an existing teacher-student approach (KD-Net) by using recent approaches proposed in the non-medical CS community: adversarial learning, Variational Mutual Information Distillation Intensive evaluation over all subsets of modalities with convincing results compared to state-of-the-art approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The notations are sometimes unclear. The technical novelty of the approach is limited. The approach combines various existing CS work together and the main contribution is to apply them to a different problem: handling missing modalities at inference stage. Since a model is used for each possible set of modalities as input, the approach is cumbersome and computationally expensive There are missing implementation details and no discussion on the choice of the hyperparameters The authors do not discuss important drawbacks of the proposed method enough. For example, the technique requires to have access to all the imaging modalities for each training case. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist has not been filled correctly: No discussion on the hyper-parameters The description of results doesn’t include the central variation (e.g. error bars). There isn’t any statistical test of reported differences in performance between methods. Some criteria are applicable even though the authors claimed the opposite (e.g., analysis of situations in which the method failed, memory footprint, average runtime) The authors claim that they will release their code in the reproducibility checklist. Given that 1/ the authors assume that all reproducibility criteria have been met when they have not; 2/ there isn’t any mention in the manuscript that the code will be released, I have serious doubts that the authors will release their code and pre-trained models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Notations: 1/ The qualification of the two paths is confusing (“unimodal” and “multimodal”). Indeed, the input of the unimodal path is multimodal (with missing modalities). Moreover, other techniques such as HeMIS or U-HVED encode each modality independently before aggregating each embedding. Consequently, the “unimodal” term is confusing. I would suggest naming the two paths “student” and “teacher” where the “teacher” corresponds to the model trained with the complete set of modalities and the “student” model is trained with missing modalities. 2/ Iq is used multiple times in the manuscript but referred to different objects (2.1: softened logits; 2.4 variational distributions) Implementation details: 1/ Which U-Net did you use? 2/ What are the architecture of the discriminative networks? How did you train them? 3/ How did you choose the hyperparameters? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the technical novelty of the work is limited, the approach tackles an important clinical problem and obtains state-of-the-art performance. Moreover, the paper is easy to read. Experiments are extensive. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper propose a novel Adversarial Co-training Network (ACN) to delineate the brain tumor based on multi-modality MRI. It is designed to treat the missing modality problem. It adopts a novel co-training network to enable a coupled learning process for both full modality and missing modality with the purpose of supplementing each other’s domain and feature representations, and recovering the ‘missing’ information due to lack of modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Topic is important and hot. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the idea looks good, the result seems not that impressive from Table1. Actually, there is a distance from the results of the proposed method on full modality to the winner of the BRATS18. How do you comment? Also in Table1, the Dice of ET depends on T1ce most, and that of WT depends on Flair. The missing of the two modalities decrease the model performance significantly. How does the result support the sentence “recover the ‘missing’ information of absent modalities”? The manuscript should be double checked to avoid any typos. i.e. reference 9-11 lose necessary information. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It could be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper employ one of the most famous public dataset so that to be easy to compare. In this case, it would be better to have several sentences to comment the comparison with competing methods, not only with miss-modality method, but also with the full modality method. Because you train your model in full modality, it would be more convincing. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Topic is interesing and method is applicable. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall an interesting paper, which however, in agreement with the reviewers, I find that few critical points that the authors need to address in a rebuttal: One of drawbacks is that the technique requires to have access to all the imaging modalities for each training case. This limitation is not discussed. The presentation of the method is not entirely clear. There are missing implementation details and no discussion on the choice of the hyper parameters. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall it’s an interesting article. The responses in the rebuttal allowed the critical points to be clarified. My proposition is “accept”. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed a co-training based brain tumor segmentation model that could handle missing modalities during the inference time. The proposed method addresses a challenging and interesting research problem, has acceptable technical contributions, and shows promising performance on a well-known public dataset. The major concerns from Reviewer#1 about the modalities of training and the inference workflows have been addressed in the rebuttal, which are reasonably good. The answer to Reviewer#3’s question about the comparison of full modalities is OK, but incorporating such results could help to better understand the performance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors engineered a framework by combining a few existing works for tumor segmentation using multimodal neuroimages with potentially missing modalities at inference time. Although in the rebuttal the authors have addressed the major concerns raised by the reviewers, they did not articulate the innovative aspects of their methodology. In agreement with R2, the paper still lacks innovation. Since the paper ranked 5th in my pool of 17 rebuttal papers and the results look promising, I recommend an accept based on the understanding that the authors will fulfil their commitments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We thank the valuable suggestions from ACs and reviewers. As we address the highly-demanded problem of missing modalities in clinical settings, all the reviewers agree that this method is interesting and helpful, which also brings great performance improvements. On the modalities of training and inference workflow R1 may misunderstand the workflow of our method. It is noted that existed SOTA methods HeMIS, HVED, KD-Net also need co-registered four modalities during training. We propose a totally different co-training strategy to replace dropout or knowledge distillation adopted by them and yield significant improvements. During training, full modalities can be easily obtained from many existing public datasets (BraTS). During inference, however, it is able to make accurate predictions with only the available modality(s). Since our ‘One stop shop’ method needs to train ‘dedicated’ models for each missing situation, it may bring training cost, but it brings large improvement during inference without extra cost, which is of great value to clinical application. In detail, the co-training process receives both the full and missing modalities extracted from the same training instances. The unimodal path is trained for each specific missing modality. The predictions of two paths are separately used to compute L_{multi} and L_{uni}. During inference process, we just need to choose corresponding models of the unimodal path to generate final predictions under different missing conditions. On the implementation details and choice of the hyperparameters As for the U-Net, we use the same backbone and settings as the winner of BraTS18 [15], except their VAE part. The discriminative networks are two full-convolutional networks which have five conv blocks with kernel size 4. We train the discriminator to discriminate the given entropy maps and bottleneck features coming from the multimodal and unimodal path. At the same time, we train the segmentation network (Generator) to fool the discriminator. As for the hyperparameters, we keep our 5 hyperparameters the same for all experiments for lower bias and fair re-implementation. They are chosen according to the performance under the circumstance that only T1ce modality is available since it’s the major modality for tumor diagnosis. $\omega(t)$ is a Gaussian weighting function and we set the weight to 0.1 and scaling constant to 5 following previous works. $\lambda_0$ should be small in case the entropy drops quickly and the model is biased to some classes. We use Grid-Search to find better values of the three trade-off parameters $\lambda_0, \lambda_1, \lambda_2$. To R1 on some detailed concerns. R1 may misunderstand that KnA and EnA do not both work on the intermediate representations. EnA utilizes the entropy map in the output level (See Sec 2.2 line 9) so they are not redundant. Second, the “abundant” means latent features from the full modality and the “missing” knowledge can be learnt through the feature distribution alignment, which is realized by our designed adversarial network (See Sec 2.3 KnA). Third, Eq(7) has shown how q(m|u) is approximated in our case. $\mu$ comes from the output of a single unit from the neural network(Unimodal path) and the $\sigma^{2}$ is a softplus function, i.e., $log(1 + exp(\alpha_{c})) + \epsilon$, following [3]. “disturbance” means blindly and wrongly alignment between the two paths. Moreover, sorry about the typo “ploy” which should be “poly”. To R3 on the comparison results. Our method aims to tackle missing modalities. The SOTA BraTS methods for full modalities cannot handle missing modalities, so we did not add them. Moreover, it is unrealistic for the missing situations to reach the same performance as full modalities. Our method recovers the missing knowledge as much as possible. Also thanks R3 for pointing out the reference typos. All other minor comments will be carefully considered and addressed. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yixin Wang, Yang Zhang, Yang Liu, Zihao Lin, Jiang Tian, Cheng Zhong, Zhongchao Shi, Jianping Fan, Zhiqiang He Abstract Accurate segmentation of brain tumors from magnetic resonance imaging (MRI) is clinically relevant in diagnoses, prognoses and surgery treatment, which requires multiple modalities to provide complementary morphological and physiopathologic information. However, missing modality commonly occurs due to image corruption, artifacts, different acquisition protocols or allergies to certain contrast agents in clinical practice. Though existing efforts demonstrate the possibility of a unified model for all missing situations, most of them perform poorly when more than one modality is missing. In this paper, we propose a novel Adversarial Co-training Network (ACN) to solve this issue, in which a series of independent yet related models are trained dedicated to each missing situation with significantly better results. Specifically, ACN adopts a novel co-training network, which enables a coupled learning process for both full modality and missing modality to supplement each other’s domain and feature representations, and more importantly, to recover the `missing’ information of absent modalities. Then, two unsupervised modules, i.e., entropy and knowledge adversarial learning modules are proposed to minimize the domain gap while enhancing prediction reliability and encouraging the alignment of latent representations, respectively. We also adapt modality-mutual information knowledge transfer learning to ACN to retain the rich mutual information among modalities. Extensive experiments on BraTS2018 dataset show that our proposed method significantly outperforms all state-of-the-art methods under any missing situation. Link to paper https://doi.org/10.1007/978-3-030-87234-2_39 Link to the code repository https://github.com/Wangyixinxin/ACN Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/registration.html Reviews Review #1 Please describe the contribution of the paper The paper presents a segmentation method for multi-modal images with missing modalities, using co-training and adversarial learning objectives to make it less sensitive to missing modalities. The authors demonstrate their method on the BRATS 2018 tumor segmentation dataset, showing improved performance in comparison with other methods. In particular, they claim their method is better able to deal with more than one missing modality. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The co-training approach is interesting, as are the adversarial and modality-mutual information components. The results suggest that the proposed method is better able to handle scenarios with more than one missing modality. For these cases, they show a clear improvement over the other methods in the comparison. The experiments are fairly complete, including an ablation study to evaluate the various components of this complex model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear to me how the method works at test time. For training, the model produces at least two segmentations per subject (one from the multimodal and one from the unimodal path). Which segmentation is used to make the final predictions? The model consists of two learning paths, multimodal and unimodal, but it is not clear to me how this works. Is the unimodal path trained for one specific modality, is there one unimodal path for each modality, or is a single unimodal path trained for all modalities at the same time? A limitation of the approach is that it requires a complete training set (I think). Other methods in the comparison (such as HeMiS) can be trained with incomplete datasets. This limitation is not discussed. The dataset is randomly split into a training and validation set (Section 3.1), but there is no mention of a test set. How does this work? Some of the state-of-the-art methods (e.g., HeMis) use modality dropout during training. It is not clear whether the authors used a similar approach here. This can have a strong influence on the performance. There is no discussion of the complexity of the models. For example, the proposed ACN method uses a multimodal and a unimodal branch. Does this mean that it has twice as many parameters as the HeMiS and HVED models? The text claims that there are “significant” differences between the performance of the methods. How was this determined? There is no mention of a statistical test and we are only shown mean performances. There are quite a few textual problems (spelling, grammar, missing words) in the paper, which sometimes make the arguments hard to follow. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The description of the model and evaluation is somewhat limited. The hyperparameters and training procedure are explained well, but it it not entirely clear how the method works in practice. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The entropy adversarial learning module and the knowledge adversarial learning module both work on the intermediate representation of the segmentation U-Net. Does this mean they serve a similar purpose, and are potentially redundant? Section 2.2: “These pixel-level vectors can be seen as the disentanglement of the Shannon Entropy, which reveals the prediction confidence.” What does this mean? Section 2.3: “KnA serves as a soft-alignment to encourage unimodal path to learn abundant and ‘missing’ knowledge from full modality.” This sentence has some grammatical problems (the unimodal path, full modality). I don’t know what “abundant” means in this context and how “missing” knowledge could be learnt. Section 2.4: How is the variational distribution q(m u) approximated? Where do the mu and sigma come from? Section 3.1: The initial learning rate is adjusted using a “ploy policy”. I have not heard this term before, and it appears in only one or two papers in a Google search. Is this a misspelling? Comments about the text: There are quite a few missing words, most often articles. It would be good to carefully check the paper for these cases. For example: Section 2.2: “The prediction of multimodal path” Section 2.3: “may easily disturb the underlying learning of unimodal path” (I’m also not sure what this “disturbance” is.”) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the general approach is interesting, the presentation of the method is not entirely clear. I am not completely sure how it works. The evaluation shows promising results, but it is not clear whether the compared baselines have a similar complexity and how they were trained. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work aims at performing brain tumor segmentation with missing modalities at inference time. A different network is trained for each possible subset of imaging modalities as input. To encourage the subset-specific networks to learn a rich feature representation of the incomplete input data, the authors additionally use a teacher network using the complete set of modalities as input. Specifically, the outputs and feature representations of the subset-specific and teacher models are aligned using adversarial learning. The approach significantly outperforms state-of-the-art techniques on the training fold from the BRATS 2018 challenge. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work addresses a relevant clinical problem: medical image segmentation with missing imaging modalities at inference time The paper is well motivated and well written The proposed method improves an existing teacher-student approach (KD-Net) by using recent approaches proposed in the non-medical CS community: adversarial learning, Variational Mutual Information Distillation Intensive evaluation over all subsets of modalities with convincing results compared to state-of-the-art approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The notations are sometimes unclear. The technical novelty of the approach is limited. The approach combines various existing CS work together and the main contribution is to apply them to a different problem: handling missing modalities at inference stage. Since a model is used for each possible set of modalities as input, the approach is cumbersome and computationally expensive There are missing implementation details and no discussion on the choice of the hyperparameters The authors do not discuss important drawbacks of the proposed method enough. For example, the technique requires to have access to all the imaging modalities for each training case. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist has not been filled correctly: No discussion on the hyper-parameters The description of results doesn’t include the central variation (e.g. error bars). There isn’t any statistical test of reported differences in performance between methods. Some criteria are applicable even though the authors claimed the opposite (e.g., analysis of situations in which the method failed, memory footprint, average runtime) The authors claim that they will release their code in the reproducibility checklist. Given that 1/ the authors assume that all reproducibility criteria have been met when they have not; 2/ there isn’t any mention in the manuscript that the code will be released, I have serious doubts that the authors will release their code and pre-trained models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Notations: 1/ The qualification of the two paths is confusing (“unimodal” and “multimodal”). Indeed, the input of the unimodal path is multimodal (with missing modalities). Moreover, other techniques such as HeMIS or U-HVED encode each modality independently before aggregating each embedding. Consequently, the “unimodal” term is confusing. I would suggest naming the two paths “student” and “teacher” where the “teacher” corresponds to the model trained with the complete set of modalities and the “student” model is trained with missing modalities. 2/ Iq is used multiple times in the manuscript but referred to different objects (2.1: softened logits; 2.4 variational distributions) Implementation details: 1/ Which U-Net did you use? 2/ What are the architecture of the discriminative networks? How did you train them? 3/ How did you choose the hyperparameters? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the technical novelty of the work is limited, the approach tackles an important clinical problem and obtains state-of-the-art performance. Moreover, the paper is easy to read. Experiments are extensive. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper propose a novel Adversarial Co-training Network (ACN) to delineate the brain tumor based on multi-modality MRI. It is designed to treat the missing modality problem. It adopts a novel co-training network to enable a coupled learning process for both full modality and missing modality with the purpose of supplementing each other’s domain and feature representations, and recovering the ‘missing’ information due to lack of modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Topic is important and hot. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the idea looks good, the result seems not that impressive from Table1. Actually, there is a distance from the results of the proposed method on full modality to the winner of the BRATS18. How do you comment? Also in Table1, the Dice of ET depends on T1ce most, and that of WT depends on Flair. The missing of the two modalities decrease the model performance significantly. How does the result support the sentence “recover the ‘missing’ information of absent modalities”? The manuscript should be double checked to avoid any typos. i.e. reference 9-11 lose necessary information. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It could be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper employ one of the most famous public dataset so that to be easy to compare. In this case, it would be better to have several sentences to comment the comparison with competing methods, not only with miss-modality method, but also with the full modality method. Because you train your model in full modality, it would be more convincing. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Topic is interesing and method is applicable. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall an interesting paper, which however, in agreement with the reviewers, I find that few critical points that the authors need to address in a rebuttal: One of drawbacks is that the technique requires to have access to all the imaging modalities for each training case. This limitation is not discussed. The presentation of the method is not entirely clear. There are missing implementation details and no discussion on the choice of the hyper parameters. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall it’s an interesting article. The responses in the rebuttal allowed the critical points to be clarified. My proposition is “accept”. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed a co-training based brain tumor segmentation model that could handle missing modalities during the inference time. The proposed method addresses a challenging and interesting research problem, has acceptable technical contributions, and shows promising performance on a well-known public dataset. The major concerns from Reviewer#1 about the modalities of training and the inference workflows have been addressed in the rebuttal, which are reasonably good. The answer to Reviewer#3’s question about the comparison of full modalities is OK, but incorporating such results could help to better understand the performance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors engineered a framework by combining a few existing works for tumor segmentation using multimodal neuroimages with potentially missing modalities at inference time. Although in the rebuttal the authors have addressed the major concerns raised by the reviewers, they did not articulate the innovative aspects of their methodology. In agreement with R2, the paper still lacks innovation. Since the paper ranked 5th in my pool of 17 rebuttal papers and the results look promising, I recommend an accept based on the understanding that the authors will fulfil their commitments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We thank the valuable suggestions from ACs and reviewers. As we address the highly-demanded problem of missing modalities in clinical settings, all the reviewers agree that this method is interesting and helpful, which also brings great performance improvements. On the modalities of training and inference workflow R1 may misunderstand the workflow of our method. It is noted that existed SOTA methods HeMIS, HVED, KD-Net also need co-registered four modalities during training. We propose a totally different co-training strategy to replace dropout or knowledge distillation adopted by them and yield significant improvements. During training, full modalities can be easily obtained from many existing public datasets (BraTS). During inference, however, it is able to make accurate predictions with only the available modality(s). Since our ‘One stop shop’ method needs to train ‘dedicated’ models for each missing situation, it may bring training cost, but it brings large improvement during inference without extra cost, which is of great value to clinical application. In detail, the co-training process receives both the full and missing modalities extracted from the same training instances. The unimodal path is trained for each specific missing modality. The predictions of two paths are separately used to compute L_{multi} and L_{uni}. During inference process, we just need to choose corresponding models of the unimodal path to generate final predictions under different missing conditions. On the implementation details and choice of the hyperparameters As for the U-Net, we use the same backbone and settings as the winner of BraTS18 [15], except their VAE part. The discriminative networks are two full-convolutional networks which have five conv blocks with kernel size 4. We train the discriminator to discriminate the given entropy maps and bottleneck features coming from the multimodal and unimodal path. At the same time, we train the segmentation network (Generator) to fool the discriminator. As for the hyperparameters, we keep our 5 hyperparameters the same for all experiments for lower bias and fair re-implementation. They are chosen according to the performance under the circumstance that only T1ce modality is available since it’s the major modality for tumor diagnosis. $\omega(t)$ is a Gaussian weighting function and we set the weight to 0.1 and scaling constant to 5 following previous works. $\lambda_0$ should be small in case the entropy drops quickly and the model is biased to some classes. We use Grid-Search to find better values of the three trade-off parameters $\lambda_0, \lambda_1, \lambda_2$. To R1 on some detailed concerns. R1 may misunderstand that KnA and EnA do not both work on the intermediate representations. EnA utilizes the entropy map in the output level (See Sec 2.2 line 9) so they are not redundant. Second, the “abundant” means latent features from the full modality and the “missing” knowledge can be learnt through the feature distribution alignment, which is realized by our designed adversarial network (See Sec 2.3 KnA). Third, Eq(7) has shown how q(m|u) is approximated in our case. $\mu$ comes from the output of a single unit from the neural network(Unimodal path) and the $\sigma^{2}$ is a softplus function, i.e., $log(1 + exp(\alpha_{c})) + \epsilon$, following [3]. “disturbance” means blindly and wrongly alignment between the two paths. Moreover, sorry about the typo “ploy” which should be “poly”. To R3 on the comparison results. Our method aims to tackle missing modalities. The SOTA BraTS methods for full modalities cannot handle missing modalities, so we did not add them. Moreover, it is unrealistic for the missing situations to reach the same performance as full modalities. Our method recovers the missing knowledge as much as possible. Also thanks R3 for pointing out the reference typos. All other minor comments will be carefully considered and addressed. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0738/12/31/Paper0901" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0738/12/31/Paper0901" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0738-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ACN: Adversarial Co-training Network for Brain Tumor Segmentation with Missing Modalities" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0738/12/31/Paper0901"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0738/12/31/Paper0901","headline":"ACN: Adversarial Co-training Network for Brain Tumor Segmentation with Missing Modalities","dateModified":"0739-01-05T00:00:00-05:17","datePublished":"0738-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yixin Wang, Yang Zhang, Yang Liu, Zihao Lin, Jiang Tian, Cheng Zhong, Zhongchao Shi, Jianping Fan, Zhiqiang He Abstract Accurate segmentation of brain tumors from magnetic resonance imaging (MRI) is clinically relevant in diagnoses, prognoses and surgery treatment, which requires multiple modalities to provide complementary morphological and physiopathologic information. However, missing modality commonly occurs due to image corruption, artifacts, different acquisition protocols or allergies to certain contrast agents in clinical practice. Though existing efforts demonstrate the possibility of a unified model for all missing situations, most of them perform poorly when more than one modality is missing. In this paper, we propose a novel Adversarial Co-training Network (ACN) to solve this issue, in which a series of independent yet related models are trained dedicated to each missing situation with significantly better results. Specifically, ACN adopts a novel co-training network, which enables a coupled learning process for both full modality and missing modality to supplement each other’s domain and feature representations, and more importantly, to recover the `missing’ information of absent modalities. Then, two unsupervised modules, i.e., entropy and knowledge adversarial learning modules are proposed to minimize the domain gap while enhancing prediction reliability and encouraging the alignment of latent representations, respectively. We also adapt modality-mutual information knowledge transfer learning to ACN to retain the rich mutual information among modalities. Extensive experiments on BraTS2018 dataset show that our proposed method significantly outperforms all state-of-the-art methods under any missing situation. Link to paper https://doi.org/10.1007/978-3-030-87234-2_39 Link to the code repository https://github.com/Wangyixinxin/ACN Link to the dataset(s) https://www.med.upenn.edu/sbia/brats2018/registration.html Reviews Review #1 Please describe the contribution of the paper The paper presents a segmentation method for multi-modal images with missing modalities, using co-training and adversarial learning objectives to make it less sensitive to missing modalities. The authors demonstrate their method on the BRATS 2018 tumor segmentation dataset, showing improved performance in comparison with other methods. In particular, they claim their method is better able to deal with more than one missing modality. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The co-training approach is interesting, as are the adversarial and modality-mutual information components. The results suggest that the proposed method is better able to handle scenarios with more than one missing modality. For these cases, they show a clear improvement over the other methods in the comparison. The experiments are fairly complete, including an ablation study to evaluate the various components of this complex model. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. It is not clear to me how the method works at test time. For training, the model produces at least two segmentations per subject (one from the multimodal and one from the unimodal path). Which segmentation is used to make the final predictions? The model consists of two learning paths, multimodal and unimodal, but it is not clear to me how this works. Is the unimodal path trained for one specific modality, is there one unimodal path for each modality, or is a single unimodal path trained for all modalities at the same time? A limitation of the approach is that it requires a complete training set (I think). Other methods in the comparison (such as HeMiS) can be trained with incomplete datasets. This limitation is not discussed. The dataset is randomly split into a training and validation set (Section 3.1), but there is no mention of a test set. How does this work? Some of the state-of-the-art methods (e.g., HeMis) use modality dropout during training. It is not clear whether the authors used a similar approach here. This can have a strong influence on the performance. There is no discussion of the complexity of the models. For example, the proposed ACN method uses a multimodal and a unimodal branch. Does this mean that it has twice as many parameters as the HeMiS and HVED models? The text claims that there are “significant” differences between the performance of the methods. How was this determined? There is no mention of a statistical test and we are only shown mean performances. There are quite a few textual problems (spelling, grammar, missing words) in the paper, which sometimes make the arguments hard to follow. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The description of the model and evaluation is somewhat limited. The hyperparameters and training procedure are explained well, but it it not entirely clear how the method works in practice. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The entropy adversarial learning module and the knowledge adversarial learning module both work on the intermediate representation of the segmentation U-Net. Does this mean they serve a similar purpose, and are potentially redundant? Section 2.2: “These pixel-level vectors can be seen as the disentanglement of the Shannon Entropy, which reveals the prediction confidence.” What does this mean? Section 2.3: “KnA serves as a soft-alignment to encourage unimodal path to learn abundant and ‘missing’ knowledge from full modality.” This sentence has some grammatical problems (the unimodal path, full modality). I don’t know what “abundant” means in this context and how “missing” knowledge could be learnt. Section 2.4: How is the variational distribution q(m u) approximated? Where do the mu and sigma come from? Section 3.1: The initial learning rate is adjusted using a “ploy policy”. I have not heard this term before, and it appears in only one or two papers in a Google search. Is this a misspelling? Comments about the text: There are quite a few missing words, most often articles. It would be good to carefully check the paper for these cases. For example: Section 2.2: “The prediction of multimodal path” Section 2.3: “may easily disturb the underlying learning of unimodal path” (I’m also not sure what this “disturbance” is.”) Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? While the general approach is interesting, the presentation of the method is not entirely clear. I am not completely sure how it works. The evaluation shows promising results, but it is not clear whether the compared baselines have a similar complexity and how they were trained. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This work aims at performing brain tumor segmentation with missing modalities at inference time. A different network is trained for each possible subset of imaging modalities as input. To encourage the subset-specific networks to learn a rich feature representation of the incomplete input data, the authors additionally use a teacher network using the complete set of modalities as input. Specifically, the outputs and feature representations of the subset-specific and teacher models are aligned using adversarial learning. The approach significantly outperforms state-of-the-art techniques on the training fold from the BRATS 2018 challenge. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work addresses a relevant clinical problem: medical image segmentation with missing imaging modalities at inference time The paper is well motivated and well written The proposed method improves an existing teacher-student approach (KD-Net) by using recent approaches proposed in the non-medical CS community: adversarial learning, Variational Mutual Information Distillation Intensive evaluation over all subsets of modalities with convincing results compared to state-of-the-art approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The notations are sometimes unclear. The technical novelty of the approach is limited. The approach combines various existing CS work together and the main contribution is to apply them to a different problem: handling missing modalities at inference stage. Since a model is used for each possible set of modalities as input, the approach is cumbersome and computationally expensive There are missing implementation details and no discussion on the choice of the hyperparameters The authors do not discuss important drawbacks of the proposed method enough. For example, the technique requires to have access to all the imaging modalities for each training case. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist has not been filled correctly: No discussion on the hyper-parameters The description of results doesn’t include the central variation (e.g. error bars). There isn’t any statistical test of reported differences in performance between methods. Some criteria are applicable even though the authors claimed the opposite (e.g., analysis of situations in which the method failed, memory footprint, average runtime) The authors claim that they will release their code in the reproducibility checklist. Given that 1/ the authors assume that all reproducibility criteria have been met when they have not; 2/ there isn’t any mention in the manuscript that the code will be released, I have serious doubts that the authors will release their code and pre-trained models. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Notations: 1/ The qualification of the two paths is confusing (“unimodal” and “multimodal”). Indeed, the input of the unimodal path is multimodal (with missing modalities). Moreover, other techniques such as HeMIS or U-HVED encode each modality independently before aggregating each embedding. Consequently, the “unimodal” term is confusing. I would suggest naming the two paths “student” and “teacher” where the “teacher” corresponds to the model trained with the complete set of modalities and the “student” model is trained with missing modalities. 2/ Iq is used multiple times in the manuscript but referred to different objects (2.1: softened logits; 2.4 variational distributions) Implementation details: 1/ Which U-Net did you use? 2/ What are the architecture of the discriminative networks? How did you train them? 3/ How did you choose the hyperparameters? Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the technical novelty of the work is limited, the approach tackles an important clinical problem and obtains state-of-the-art performance. Moreover, the paper is easy to read. Experiments are extensive. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper propose a novel Adversarial Co-training Network (ACN) to delineate the brain tumor based on multi-modality MRI. It is designed to treat the missing modality problem. It adopts a novel co-training network to enable a coupled learning process for both full modality and missing modality with the purpose of supplementing each other’s domain and feature representations, and recovering the ‘missing’ information due to lack of modalities. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Topic is important and hot. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the idea looks good, the result seems not that impressive from Table1. Actually, there is a distance from the results of the proposed method on full modality to the winner of the BRATS18. How do you comment? Also in Table1, the Dice of ET depends on T1ce most, and that of WT depends on Flair. The missing of the two modalities decrease the model performance significantly. How does the result support the sentence “recover the ‘missing’ information of absent modalities”? The manuscript should be double checked to avoid any typos. i.e. reference 9-11 lose necessary information. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It could be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper employ one of the most famous public dataset so that to be easy to compare. In this case, it would be better to have several sentences to comment the comparison with competing methods, not only with miss-modality method, but also with the full modality method. Because you train your model in full modality, it would be more convincing. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Topic is interesing and method is applicable. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall an interesting paper, which however, in agreement with the reviewers, I find that few critical points that the authors need to address in a rebuttal: One of drawbacks is that the technique requires to have access to all the imaging modalities for each training case. This limitation is not discussed. The presentation of the method is not entirely clear. There are missing implementation details and no discussion on the choice of the hyper parameters. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall it’s an interesting article. The responses in the rebuttal allowed the critical points to be clarified. My proposition is “accept”. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposed a co-training based brain tumor segmentation model that could handle missing modalities during the inference time. The proposed method addresses a challenging and interesting research problem, has acceptable technical contributions, and shows promising performance on a well-known public dataset. The major concerns from Reviewer#1 about the modalities of training and the inference workflows have been addressed in the rebuttal, which are reasonably good. The answer to Reviewer#3’s question about the comparison of full modalities is OK, but incorporating such results could help to better understand the performance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors engineered a framework by combining a few existing works for tumor segmentation using multimodal neuroimages with potentially missing modalities at inference time. Although in the rebuttal the authors have addressed the major concerns raised by the reviewers, they did not articulate the innovative aspects of their methodology. In agreement with R2, the paper still lacks innovation. Since the paper ranked 5th in my pool of 17 rebuttal papers and the results look promising, I recommend an accept based on the understanding that the authors will fulfil their commitments. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Author Feedback We thank the valuable suggestions from ACs and reviewers. As we address the highly-demanded problem of missing modalities in clinical settings, all the reviewers agree that this method is interesting and helpful, which also brings great performance improvements. On the modalities of training and inference workflow R1 may misunderstand the workflow of our method. It is noted that existed SOTA methods HeMIS, HVED, KD-Net also need co-registered four modalities during training. We propose a totally different co-training strategy to replace dropout or knowledge distillation adopted by them and yield significant improvements. During training, full modalities can be easily obtained from many existing public datasets (BraTS). During inference, however, it is able to make accurate predictions with only the available modality(s). Since our ‘One stop shop’ method needs to train ‘dedicated’ models for each missing situation, it may bring training cost, but it brings large improvement during inference without extra cost, which is of great value to clinical application. In detail, the co-training process receives both the full and missing modalities extracted from the same training instances. The unimodal path is trained for each specific missing modality. The predictions of two paths are separately used to compute L_{multi} and L_{uni}. During inference process, we just need to choose corresponding models of the unimodal path to generate final predictions under different missing conditions. On the implementation details and choice of the hyperparameters As for the U-Net, we use the same backbone and settings as the winner of BraTS18 [15], except their VAE part. The discriminative networks are two full-convolutional networks which have five conv blocks with kernel size 4. We train the discriminator to discriminate the given entropy maps and bottleneck features coming from the multimodal and unimodal path. At the same time, we train the segmentation network (Generator) to fool the discriminator. As for the hyperparameters, we keep our 5 hyperparameters the same for all experiments for lower bias and fair re-implementation. They are chosen according to the performance under the circumstance that only T1ce modality is available since it’s the major modality for tumor diagnosis. $\\omega(t)$ is a Gaussian weighting function and we set the weight to 0.1 and scaling constant to 5 following previous works. $\\lambda_0$ should be small in case the entropy drops quickly and the model is biased to some classes. We use Grid-Search to find better values of the three trade-off parameters $\\lambda_0, \\lambda_1, \\lambda_2$. To R1 on some detailed concerns. R1 may misunderstand that KnA and EnA do not both work on the intermediate representations. EnA utilizes the entropy map in the output level (See Sec 2.2 line 9) so they are not redundant. Second, the “abundant” means latent features from the full modality and the “missing” knowledge can be learnt through the feature distribution alignment, which is realized by our designed adversarial network (See Sec 2.3 KnA). Third, Eq(7) has shown how q(m|u) is approximated in our case. $\\mu$ comes from the output of a single unit from the neural network(Unimodal path) and the $\\sigma^{2}$ is a softplus function, i.e., $log(1 + exp(\\alpha_{c})) + \\epsilon$, following [3]. “disturbance” means blindly and wrongly alignment between the two paths. Moreover, sorry about the typo “ploy” which should be “poly”. To R3 on the comparison results. Our method aims to tackle missing modalities. The SOTA BraTS methods for full modalities cannot handle missing modalities, so we did not add them. Moreover, it is unrealistic for the missing situations to reach the same performance as full modalities. Our method recovers the missing knowledge as much as possible. Also thanks R3 for pointing out the reference typos. All other minor comments will be carefully considered and addressed. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wang, Yixin,Zhang, Yang,Liu, Yang,Lin, Zihao,Tian, Jiang,Zhong, Cheng,Shi, Zhongchao,Fan, Jianping,He, Zhiqiang" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>ACN: Adversarial Co-training Network for Brain Tumor Segmentation with Missing Modalities</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Brain Development"
+        class="post-category">
+        Clinical applications - Neuroimaging - Brain Development
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wang, Yixin"
+        class="post-tags">
+        Wang, Yixin
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Yang"
+        class="post-tags">
+        Zhang, Yang
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yang"
+        class="post-tags">
+        Liu, Yang
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Zihao"
+        class="post-tags">
+        Lin, Zihao
+      </a> |  
+      
+      <a href="kittywong/tags#Tian, Jiang"
+        class="post-tags">
+        Tian, Jiang
+      </a> |  
+      
+      <a href="kittywong/tags#Zhong, Cheng"
+        class="post-tags">
+        Zhong, Cheng
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Zhongchao"
+        class="post-tags">
+        Shi, Zhongchao
+      </a> |  
+      
+      <a href="kittywong/tags#Fan, Jianping"
+        class="post-tags">
+        Fan, Jianping
+      </a> |  
+      
+      <a href="kittywong/tags#He, Zhiqiang"
+        class="post-tags">
+        He, Zhiqiang
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yixin Wang, Yang Zhang, Yang Liu, Zihao Lin, Jiang Tian, Cheng Zhong, Zhongchao Shi, Jianping Fan, Zhiqiang He
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Accurate segmentation of brain tumors from magnetic resonance imaging (MRI) is clinically relevant in diagnoses, prognoses and surgery treatment, which requires multiple modalities to provide complementary morphological and physiopathologic information. However, missing modality commonly occurs due to image corruption, artifacts, different acquisition protocols or allergies to certain contrast agents in clinical practice. Though existing efforts demonstrate the possibility of a unified model for all missing situations, most of them perform poorly when more than one modality is missing. In this paper, we propose a novel Adversarial Co-training Network (ACN) to solve this issue, in which a series of independent yet related models are trained dedicated to each missing situation with significantly better results. Specifically, ACN adopts a novel co-training network, which enables a coupled learning process for both full modality and missing modality to supplement each other’s domain and feature representations, and more importantly, to recover the `missing’ information of absent modalities. Then, two unsupervised modules, i.e., entropy and knowledge adversarial learning modules are proposed to minimize the domain gap while enhancing prediction reliability and encouraging the alignment of latent representations, respectively. We also adapt modality-mutual information knowledge transfer learning to ACN to retain the rich mutual information among modalities. Extensive experiments on BraTS2018 dataset show that our proposed method significantly outperforms all state-of-the-art methods under any missing situation.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87234-2_39">https://doi.org/10.1007/978-3-030-87234-2_39</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/Wangyixinxin/ACN
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.med.upenn.edu/sbia/brats2018/registration.html
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a segmentation method for multi-modal images with missing modalities, using co-training and adversarial learning objectives to make it less sensitive to missing modalities. The authors demonstrate their method on the BRATS 2018 tumor segmentation dataset, showing improved performance in comparison with other methods. In particular, they claim their method is better able to deal with more than one missing modality.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The co-training approach is interesting, as are the adversarial and modality-mutual information components.</p>
+        </li>
+        <li>
+          <p>The results suggest that the proposed method is better able to handle scenarios with more than one missing modality. For these cases, they show a clear improvement over the other methods in the comparison.</p>
+        </li>
+        <li>
+          <p>The experiments are fairly complete, including an ablation study to evaluate the various components of this complex model.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>It is not clear to me how the method works at test time. For training, the model produces at least two segmentations per subject (one from the multimodal and one from the unimodal path). Which segmentation is used to make the final predictions?</p>
+        </li>
+        <li>
+          <p>The model consists of two learning paths, multimodal and unimodal, but it is not clear to me how this works. Is the unimodal path trained for one specific modality, is there one unimodal path for each modality, or is a single unimodal path trained for all modalities at the same time?</p>
+        </li>
+        <li>
+          <p>A limitation of the approach is that it requires a complete training set (I think). Other methods in the comparison (such as HeMiS) can be trained with incomplete datasets. This limitation is not discussed.</p>
+        </li>
+        <li>
+          <p>The dataset is randomly split into a training and validation set (Section 3.1), but there is no mention of a test set. How does this work?</p>
+        </li>
+        <li>
+          <p>Some of the state-of-the-art methods (e.g., HeMis) use modality dropout during training. It is not clear whether the authors used a similar approach here. This can have a strong influence on the performance.</p>
+        </li>
+        <li>
+          <p>There is no discussion of the complexity of the models. For example, the proposed ACN method uses a multimodal and a unimodal branch. Does this mean that it has twice as many parameters as the HeMiS and HVED models?</p>
+        </li>
+        <li>
+          <p>The text claims that there are “significant” differences between the performance of the methods. How was this determined? There is no mention of a statistical test and we are only shown mean performances.</p>
+        </li>
+        <li>
+          <p>There are quite a few textual problems (spelling, grammar, missing words) in the paper, which sometimes make the arguments hard to follow.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The description of the model and evaluation is somewhat limited. The hyperparameters and training procedure are explained well, but it it not entirely clear how the method works in practice.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The entropy adversarial learning module and the knowledge adversarial learning module both work on the intermediate representation of the segmentation U-Net. Does this mean they serve a similar purpose, and are potentially redundant?</p>
+
+      <p>Section 2.2: “These pixel-level vectors can be seen as the disentanglement of the Shannon Entropy, which reveals the prediction confidence.”
+What does this mean?</p>
+
+      <p>Section 2.3: “KnA serves as a soft-alignment to encourage unimodal path to learn abundant and ‘missing’ knowledge from full modality.”
+This sentence has some grammatical problems (<em>the</em> unimodal path, full modality). I don’t know what “abundant” means in this context and how “missing” knowledge could be learnt.</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>Section 2.4: How is the variational distribution q(m</td>
+            <td>u) approximated? Where do the mu and sigma come from?</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Section 3.1: The initial learning rate is adjusted using a “ploy policy”. I have not heard this term before, and it appears in only one or two papers in a Google search. Is this a misspelling?</p>
+
+      <p>Comments about the text:</p>
+
+      <p>There are quite a few missing words, most often articles. It would be good to carefully check the paper for these cases. For example:</p>
+
+      <p>Section 2.2: “The prediction of multimodal path”</p>
+
+      <p>Section 2.3:
+“may easily disturb the underlying learning of unimodal path”
+(I’m also not sure what this “disturbance” is.”)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>While the general approach is interesting, the presentation of the method is not entirely clear. I am not completely sure how it works. The evaluation shows promising results, but it is not clear whether the compared baselines have a similar complexity and how they were trained.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This work aims at performing brain tumor segmentation with missing modalities at inference time. A different network is trained for each possible subset of imaging modalities as input. To encourage the subset-specific networks to learn a rich feature representation of the incomplete input data, the authors additionally use a teacher network using the complete set of modalities as input. Specifically, the outputs and feature representations of the subset-specific and teacher models are aligned using adversarial learning. The approach significantly outperforms state-of-the-art techniques on the training fold from the BRATS 2018 challenge.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>This work addresses a relevant clinical problem: medical image segmentation with missing imaging modalities at inference time</li>
+        <li>The paper is well motivated and well written</li>
+        <li>The proposed method improves an existing teacher-student approach (KD-Net) by using recent approaches proposed in the non-medical CS community: adversarial learning, Variational Mutual Information Distillation</li>
+        <li>Intensive evaluation over all subsets of modalities with convincing results compared to state-of-the-art approaches</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The notations are sometimes unclear.</li>
+        <li>The technical novelty of the approach is limited. The approach combines various existing CS work together and the main contribution is to apply them to a different problem: handling missing modalities at inference stage.</li>
+        <li>Since a model is used for each possible set of modalities as input, the approach is cumbersome and computationally expensive</li>
+        <li>There are missing implementation details and no discussion on the choice of the hyperparameters</li>
+        <li>The authors do not discuss important drawbacks of the proposed method enough. For example, the technique requires to have access to all the imaging modalities for each training case.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility checklist has not been filled correctly:</p>
+      <ul>
+        <li>No discussion on the hyper-parameters</li>
+        <li>The description of results doesn’t include the central variation (e.g. error bars).</li>
+        <li>There isn’t any statistical test of reported differences in performance between methods.</li>
+        <li>Some criteria are applicable even though the authors claimed the opposite (e.g., analysis of situations in which the method failed, memory footprint, average runtime)</li>
+      </ul>
+
+      <p>The authors claim that they will release their code in the reproducibility checklist. Given that 1/ the authors assume that all reproducibility criteria have been met when they have not; 2/ there isn’t any mention in the manuscript that the code will be released, I have serious doubts that the authors will release their code and pre-trained models.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Notations:
+1/ The qualification of the two paths is confusing (“unimodal” and “multimodal”). Indeed, the input of the unimodal path is multimodal (with missing modalities). Moreover, other techniques such as HeMIS or U-HVED encode each modality independently before aggregating each embedding. Consequently, the “unimodal” term is confusing. I would suggest naming the two paths “student” and “teacher” where the “teacher” corresponds to the model trained with the complete set of modalities and the “student” model is trained with missing modalities.
+2/ Iq is used multiple times in the manuscript but referred to different objects (2.1: softened logits; 2.4 variational distributions)</p>
+
+      <p>Implementation details:
+1/ Which U-Net did you use?
+2/ What are the architecture of the discriminative networks? How did you train them?
+3/ How did you choose the hyperparameters?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Although the technical novelty of the work is limited, the approach tackles an important clinical problem and obtains state-of-the-art performance. Moreover, the paper is easy to read. Experiments are extensive.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper propose a novel Adversarial Co-training Network (ACN) to delineate the brain tumor based on multi-modality MRI. It is designed to treat the missing modality problem. It adopts a novel co-training network to enable a coupled learning process for both full modality and missing modality with the purpose of supplementing each other’s domain and feature representations, and recovering the ‘missing’ information due to lack of modalities.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Topic is important and hot.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>Although the idea looks good, the result seems not that impressive from Table1. Actually, there is a distance from the results of the proposed method on full modality to the winner of the BRATS18. How do you comment?</li>
+        <li>Also in Table1, the Dice of ET depends on T1ce most, and that of WT depends on Flair. The missing of the two modalities decrease the model performance significantly. How does the result support the sentence “recover the ‘missing’ information of absent modalities”?</li>
+        <li>The manuscript should be double checked to avoid any typos. i.e. reference 9-11 lose necessary information.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It could be reproduced.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper employ one of the most famous public dataset so that to be easy to compare. In this case, it would be better to have several sentences to comment the comparison with competing methods, not only with miss-modality method, but also with the full modality method. Because you train your model in full modality, it would be more convincing.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Topic is interesing and method is applicable.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall an interesting paper, which however, in agreement with the reviewers, I find that few critical points that the authors need to address in a rebuttal:</p>
+      <ul>
+        <li>One of drawbacks is that the technique requires to have access to all the imaging modalities for each training case. This limitation is not discussed.</li>
+        <li>The presentation of the method is not entirely clear.</li>
+        <li>There are missing implementation details and no discussion on the choice of the hyper parameters.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper presents a brain tumor segmentation method from multi-modal images with missing modalities. Paper proposes an interesting co-training approach which improves over the other methods in the comparison. Overall it’s an interesting article. The responses in the rebuttal allowed the critical points to be clarified. My proposition is “accept”.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper proposed a co-training based brain tumor segmentation model that could handle missing modalities during the inference time. The proposed method addresses a challenging and interesting research problem, has acceptable technical contributions, and shows promising performance on a well-known public dataset. The major concerns from Reviewer#1 about the modalities of training and the inference workflows have been addressed in the rebuttal, which are reasonably good.  The answer to Reviewer#3’s question about the comparison of full modalities is OK, but incorporating such results could help to better understand the performance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors engineered a framework by combining a few existing works for tumor segmentation using multimodal neuroimages with potentially missing modalities at inference time. Although in the rebuttal the authors have addressed the major concerns raised by the reviewers, they did not articulate the innovative aspects of their methodology. In agreement with R2, the paper still lacks innovation. Since the paper ranked 5th in my pool of 17 rebuttal papers and the results look promising, I recommend an accept based on the understanding that the authors will fulfil their commitments.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the valuable suggestions from ACs and reviewers. As we address the highly-demanded problem of missing modalities in clinical settings, all the reviewers agree that this method is interesting and helpful, which also brings great performance improvements.</p>
+
+  <ol>
+    <li>
+      <p>On the modalities of training and inference workflow
+R1 may misunderstand the workflow of our method. It is noted that existed SOTA methods HeMIS, HVED, KD-Net also need co-registered four modalities during training. We propose a totally different co-training strategy to replace dropout or knowledge distillation adopted by them and yield significant improvements. During training, full modalities can be easily obtained from many existing public datasets (BraTS). During inference, however, it is able to make accurate predictions with only the available modality(s). Since our ‘One stop shop’ method needs to train ‘dedicated’ models for each missing situation, it may bring training cost, but it brings large improvement during inference without extra cost, which is of great value to clinical application. 
+In detail, the co-training process receives both the full and missing modalities extracted from the same training instances. The unimodal path is trained for each specific missing modality. The predictions of two paths are separately used to compute L_{multi} and L_{uni}. During inference process, we just need to choose corresponding models of the unimodal path to generate final predictions under different missing conditions.</p>
+    </li>
+    <li>
+      <p>On the implementation details and choice of the hyperparameters
+As for the U-Net, we use the same backbone and settings as the winner of BraTS18 [15], except their VAE part. The discriminative networks are two full-convolutional networks which have five conv blocks with kernel size 4. We train the discriminator to discriminate the given entropy maps and bottleneck features coming from the multimodal and unimodal path. At the same time, we train the segmentation network (Generator) to fool the discriminator.</p>
+    </li>
+  </ol>
+
+  <p>As for the hyperparameters, we keep our 5 hyperparameters the same for all experiments for lower bias and fair re-implementation. They are chosen according to the performance under the circumstance that only T1ce modality is available since it’s the major modality for tumor diagnosis. $\omega(t)$ is a Gaussian weighting function and we set the weight to 0.1 and scaling constant to 5 following previous works. $\lambda_0$ should be small in case the entropy drops quickly and the model is biased to some classes. We use Grid-Search to find better values of the three trade-off parameters $\lambda_0, \lambda_1, \lambda_2$.</p>
+
+  <ol>
+    <li>
+      <p>To R1 on some detailed concerns.
+R1 may misunderstand that KnA and EnA do not both work on the intermediate representations. EnA utilizes the entropy map in the output level (See Sec 2.2 line 9) so they are not redundant.
+Second, the “abundant” means latent features from the full modality and the “missing” knowledge can be learnt through the feature distribution alignment, which is realized by our designed adversarial network (See Sec 2.3 KnA). 
+Third, Eq(7) has shown how q(m|u) is approximated in our case. $\mu$ comes from  the output of a single unit from the neural network(Unimodal path) and the $\sigma^{2}$ is a softplus function, i.e., $log(1 + exp(\alpha_{c})) + \epsilon$, following [3]. “disturbance” means blindly and wrongly alignment between the two paths. Moreover, sorry about the typo “ploy” which should be “poly”.</p>
+    </li>
+    <li>
+      <p>To R3 on the comparison results.
+Our method aims to tackle missing modalities. The SOTA BraTS methods for full modalities cannot handle missing modalities, so we did not add them.  Moreover, it is unrealistic for the missing situations to reach the same performance as full modalities. Our method recovers the missing knowledge as much as possible.  Also thanks R3 for pointing out the reference typos.</p>
+    </li>
+  </ol>
+
+  <p>All other minor comments will be carefully considered and addressed.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0738-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0739-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Neuroimaging - Brain Development"
+        class="post-category">
+        Clinical applications - Neuroimaging - Brain Development
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wang, Yixin"
+        class="post-category">
+        Wang, Yixin
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Yang"
+        class="post-category">
+        Zhang, Yang
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Yang"
+        class="post-category">
+        Liu, Yang
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Zihao"
+        class="post-category">
+        Lin, Zihao
+      </a> |  
+      
+      <a href="kittywong/tags#Tian, Jiang"
+        class="post-category">
+        Tian, Jiang
+      </a> |  
+      
+      <a href="kittywong/tags#Zhong, Cheng"
+        class="post-category">
+        Zhong, Cheng
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Zhongchao"
+        class="post-category">
+        Shi, Zhongchao
+      </a> |  
+      
+      <a href="kittywong/tags#Fan, Jianping"
+        class="post-category">
+        Fan, Jianping
+      </a> |  
+      
+      <a href="kittywong/tags#He, Zhiqiang"
+        class="post-category">
+        He, Zhiqiang
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0739/12/31/Paper1203">
+          Covariate Correcting Networks for Identifying Associations between Socioeconomic Factors and Brain Outcomes in Children
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0737/12/31/Paper0761">
+          Longitudinal Correlation Analysis for Decoding Multi-Modal Brain Development
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

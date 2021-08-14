@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Learning to Address Intra-segment Misclassification in Retinal Imaging | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Learning to Address Intra-segment Misclassification in Retinal Imaging" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yukun Zhou, Moucheng Xu, Yipeng Hu, Hongxiang Lin, Joseph Jacob, Pearse A. Keane, Daniel C. Alexander Abstract Accurate multi-class segmentation is a long-standing challenge in medical imaging, especially in scenarios where classes share strong similarity. Segmenting retinal blood vessels in retinal photographs is one such scenario, in which arteries and veins need to be identified and differentiated from each other and from the background. Intra-segment misclassification, i.e. veins classified as arteries or vice versa, frequently occurs when arteries and veins intersect, whereas in binary retinal vessel segmentation, error rates are much lower. We thus propose a new approach that decomposes multi-class segmentation into multiple binary, followed by a binary-to-multi-class fusion network. The network merges representations of artery, vein, and multi-class feature maps, each of which are supervised by expert vessel annotation in adversarial training. A skip-connection based merging process explicitly maintains class-specific gradients to avoid gradient vanishing in deep layers, to favor the discriminative features. The results show that, our model respectively improves F1-score by 4.4%, 5.1%, and 4.2% compared with three state-of-the-art deep learning based methods on DRIVE-AV, LES-AV, and HRF-AV data sets. Link to paper https://doi.org/10.1007/978-3-030-87193-2_46 Link to the code repository https://github.com/rmaphoh/Learning-AVSegmentation Link to the dataset(s) https://medicine.uiowa.edu/eye/rite-dataset https://figshare.com/articles/dataset/LES-AV_dataset/11857698 http://iflexis.com/downloads/HRF_AV_GT.zip https://github.com/rmaphoh/Learning-AVSegmentation Reviews Review #1 Please describe the contribution of the paper The authors propose a framework for artery/vein segmentation from retinal images. Their framework splits up multi-class segmentation into first segmenting arteries and veins independently, and then fusing the binary segmentations with another network into the final multi-class segmentation. Evaluations on three publicly available datasets show good performance of the method, outperforming the previous state-of-the-art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of splitting up the a/v segmentation into first individual binary segmentation and then fusion and multi-class segmentation seems promising. The extensive evaluation shows that the proposed method outperforms the previous state-of-the-art. The ablation study shows the contributions of many individual components. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method section is unclear, missing some details and contains some errors. The GAN equations are wrong. The notation in the text and the figures is not consistent and can be mixed up quite easily (e.g., f_m in section 2.2 and f^m in Fig 3 (a)) The losses BCE and MSE are not defined. For the binary network outputs, I suppose the authors use a sigmoid cross entropy. Is a sigmoid cross entropy (=binary) also used for the multi-class networks or do they use a softmax cross entropy? More comments in 7. Some parts of the method are not justified or discussed. What is the influence of the “Skip-connection based merging process in segmenter”? As I understand from the ablation study, it is only evaluated in combination with the adversarial losses. It should be evaluated independently. Or is it needed for network convergence? If so, I would not see why. A discussion from the authors is needed. Why is deep supervision only used in the “multi-class segmenter” and not in the binary segmenters? Why do you need both BCE and MSE losses? Both of them optimize the same task. At least mention it in the discussion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be well reproducible as the authors state that they will publish the source code upon acceptance and as publicly available datasets are used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The introduction is well written and motivates the proposed method. Figure 1: You could put the row captions directly into the figure, e.g., (a) Input, (b) GT, etc. Figure 3: “Adeversarial Loss” - should be “Adversarial Loss” Some parts are not explained or mentioned in the text, e.g., what is “Artery to Multi-class”? Methods: Skip-connection based merging process in segmenter: This sub-section is hard to follow. The notation of Equation (1) is not consistent with Figure 3 and different terms are used. Also, there is no justification of the proposed merging strategy. Is it really needed? What would be the difference to a vanilla U-Net? Also without this merging strategy, there would be enough contributions in the paper. Adversarial training: “adopt” - should be “adapt” The equations that define the generator and discriminator losses are wrong. “y and z indicate fundus image” - this does not make sense. Should y be a noise vector? The “|” also does not make sense in the equations. I would suggest to look into other papers to fix the equations, e.g., Dai et al. “Towards Diverse and Natural Image Descriptions via a Conditional GAN”. Due to the inexact equations, it is not clear, what is the input for the discriminator, especially as it is shared for all three networks. Are the segmentation inputs one-hot encoded or represented as integer values? From Equation (2) L_BCE and L_MSE it is not clear on which images the losses are calculated. While it is shown in Fig. 3 it should also mentioned in the text. The name “L_main” is not well chosen. Binary-to-multi-class Fusion Network: The first paragraph is hard to follow. It is not clear how the individual network outputs are fused. “The artery segmentation map f_a, multi-class feature map f_m, and vein segmentation map f_v are concatenated to generate fused feature maps for the next convolution operation.” - What is the next convolution operation? Is this a final convolution operation that fuses the concatenated outputs to generate the final multi-class output? This is not clear. The second paragraph does not fit in this sub-section. Maybe another subsection (e.g. “Supervised Training”) that contains the missing description of the losses (L_BCE and L_MSE) as well as the deep supervision would be good. Table 2: “blanket” - should be “bracket” “growth” is not defined - I would simply skip it. Comparing with most recent methods: “remarkably enhances” - the term “remarkably” does not fit. “All segmentation maps refer” - “For all segmentation maps, the reader is referred to” Ablation study: “As shown in Table 2, the adversarial segmentation network performs better due to skip-connection based merging and the pixel-level adversarial learning, when compared with vanilla U-Net [20] in first line.” Does this mean, that the first line in Table 2 is a U-Net without the skip-connection based merging as well as the adversarial loss? If so, this should be split up as otherwise the individual contribution of those two parts are not known. Especially, as otherwise the skip-connection based merging is not justified. Fig. 5: You could put the column captions (GT, Ours, U-Net) directly into the figure. Discussion: “deep supervision also improve the” - should be “improves” Supplementary Materials: While the predictions look good, the groundtruth or difference to the groundtruth should also be shown for comparison. Additionally, the input images could also be shown. General: Some formulations are not good. Another proof read of the paper would be necessary. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall approach of splitting up a/v segmentation into first individual segmentation and then merging is reasonable. The good performance of the proposed method on several datasets further strengthen the contribution. However, especially the method section could be better structured, while some parts also need clarification. Furthermore, the “skip-connection based merging process in segmenter” needs justification and further discussion. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposed a binary-to-multi-class fusion network to merge multi-class representations and binary-class representations for multi-class vessel segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The idea of merging multi-class and binary-class is interesting. (2) The proposed method outperformed some vessel segmentation methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. (1) Some results are not convincing. (see following detailed comments 1). (2) The key ablation studies are missing. (see following detailed comments 2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most key experiment details are included so that it is possible to replicate this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the idea of this paper is interesting, I still have two comments: (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. The authors should address these comments during feedback. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces a system for artery/vein segmentation on retinal fundus images based on the combination of two binary segmentation models (artery vs all, vein vs all) into a multi-class model. The entire model makes use of adversarial training and deep supervision, and seems to result in improved results when compared with some other recently proposed techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The approach here is focused on resolving ambiguities in a vessel segment, where predictions could be mixed instead of only artery or only vein, which is typical in this problem. The method takes advantage of several advanced techniques like adversarial training and deep supervision, which at first glance seem a bit overkill, but the authors included ablation studies to show the contribution of the different pieces. Experimental validation seems quite rigurous, although I have some doubts on this (see below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Handling of the uncertainty class: The three datasets considered in this paper contain pixels labeled in four classes, namely artery, vein, background and uncertain. The authors do not mention how do they handle the uncertain class, but it seems from the evaluation section that they are actually measuring performance on artery, vein, and uncertain pixels (page 6 below). It is not clear if the method predicts uncertain pixels or not? 2) Handling of the background class: In the end, it is very unclear if the proposed technique predicts artery and vein pixels, or it also generates a full segmentation that includes background too. It seems to me that the model is solving artery/vein classification on top of vessel pixels, and the authors start from the vessel map assuming it is given, is this the case? If it is, I would not call this multi-class but rather binary, am I wrong? 3) Evaluation 1: Deriving from the previous points, I don’t understand how the evaluation is done for non-binary measures (ROC, PR, MSE). Is it approached as a multi-class problem? What would be the classes, artery, vein and uncertain? Moreover, it seems a bit funny that 99% of the P-values are 1.83e-4, is this a typo or all P-values ended up being exactly the same? 4) Evaluation 2: Considering that the paper claims to resolve intra-segment contradictory results, I was expecting to see some evaluation that would focus on that particular aspect of the method, but all reported metrics are global (at the image level), instead of local (at the segment level). 5) Hyperparameter impact: It seems from the supplementary material that the behavior of the hyperparameters is very wild and indicates a considerable instability of the proposed technique. For example, why do the authors think that using alpha=0.4 and alpha=0.6 results in good performance, but using alpha=0.5 results in terrible performance? In addition, tuning the hyperparameters for each dataset is a bit weak, one would expect the same model with the same hyperparameters to work for all datasets, otherwise one needs to tune hyperparameters for each new data that arrives. This is particularly weak for the beta hyperparameter: setting it to 0.8 results in the best performance for LES-AV but almost the worst performance for DRIVE. I believe this deserves further discussion. Finally, how were hyperparameters searched for HRF? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The three datasets employed in this paper are public, and the authors promise to release the code. There are a couple of points in the reproducibility sheet that are not really addressed: An analysis of situations in which the method failed/A description of the memory footprint: The authors indicate that these have been fulfilled, but I don’t think that is the case. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The two most important defficiencies in this paper, in my opinion, are as follow: 1) It is not clear if the method performs artery/vein classification from pre-available vessel maps, or artery/vein/background, and how does it deal with uncertain pixels (labeled as such in the ground-truth). This should be clarified from the beginning, since the authors make lots of references to the multi-class to binary fusion, etc. If the background is being considered during training, it seems to me that the evaluation metrics employed are not correct (see F formula in page 6 at the bottom). 2) Since the method claims to be useful for intra-segment disambiguation, I would recommend to adopt some kind of performance analysis that shows how this aspect of the problem is improved by their approach. Possibly splitting the vasculature into separate segments, and observing how uniform the predictions are per-segment. If time/space allows, the other concerns I describe in the “weaknesses” section, particularly the comment on hyperparameters and stability of the methods, should also be discussed, I think. Some minor issues: a) I believe the title of the paper should be switched to “Learning to Address Intra-segment Misclassification in Artery/Vein segmentation b) Please review your figure 3, it reads “adeversarial” Note: Since the authors report results on competing methods by training them and generating their own predictions, I think the comparison is acceptable as it is relative to the same evaluation process (not taking values from other paper’s tables). Nevertheless, evaluation details should be clarified. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the focus of the paper is on resolving intra-segment confusion, which is an interesting aspect of the artery/vein problem, the technique is never evaluated to understand if there is a quantitative improvement on that particular side of the problem. Moreover, as I mentioned above, there is some confusion on the purpose of the method regarding the background and uncertain classes. It is hard to assess the usefulness of the model if this is not clarified. Finally, the technique is quite complicated, with multiple moving parts and lots of losses. This results in quite a few hyperparameters, the effect of which seems unclear by looking at validation performance in the hyperparameter search section of the supplementary material. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While all the reviewers found the merits of this paper, they also agreed that there are a few problems regarding the technique details and experiments. In the rebuttal, the authors should focus on explaining some technique issues (R1), addressing experimental concerns (R2 and R3) What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the issues raised by the reviewers. I recommend for getting accepted of this paper. However, one important reference is missing: Retinal Vascular Network Topology Reconstruction and Artery/Vein Classification via Dominant Set Clustering, IEEE Transactions on Medical Imaging, 2020, 39(2): 341-356 After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors responded to the major concerns, such as technique issues, and experiment. Thus, I prefer to accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Generally, the reviewers have consistently positive feedbacks for this paper in the first round review and the authors have addressed/clarified most major concerns raised by reviewers and the meta-reviewer. Thus, the meta-reviewer would like to suggest “Accept” of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We appreciate the detailed comments and positive feedback from all three reviewers. Following AC’s guidance, we address the technical and experimental issues below. In addition, we will make minor edits regarding the notation and typos. R1.1: GAN equations are wrong, potentially causing the discriminator input unclear. We will correct the typo in the equation as suggested. The discriminator input is indeed the concatenation of segmentation probability map (or ground-truth) and retinal image, as shown in Fig 3. R1.2-1.5: The reviewer raised questions on the motivation and clarification on a number of network architectural choices and the training loss design, including the definitions of BCE, MSE, skip-connection, and deep supervision. 1.2 - BCE and MSE were defined in Fig 3, we will further clarify in the text. For multi-class segmenter, ground-truth binary map and segmentation probability map are both represented by three channels. Over these three channels, the loss was computed by averaging three BCEs - a variant to the standard multi-class CE with different class weighting. 1.3 &amp; 1.4 - Skip-connection based merging and deep supervision location were designed intuitively, but we agree that investigating the effectiveness of alternative designs may be interesting. 1.5 - The next convolution operation is the final convolutional block to generate the multi-class segmentation map (Sec.2.2 and Fig.3). R2.1: Some results are not convincing, e.g., in Table 1, reported results are inconsistent with the original paper [15]. The related comment is R3.1: how the evaluation is done for non-binary measure? and R3.2: Most of P-value in Table 1 are the same. We clarify that the task in this paper is different, arguably more challenging and evaluation is more stringent. 1) a sensitivity of 79.16% was reported in [15] for only segmenting vessels without differentiating the subtypes; 2) As detailed in “Evaluation metrics”, the binary classification metric was for each class (artery, uncertain pixels, and vein), e.g., artery versus background in the artery channel, to obtain F1-scores F_a, F_u, and F_v, then weighted by the ratio of the pixel counts. We argue that this bespoke measure provides a more intuitive and direct assessment for segmenting all vessel subtypes. Each pixel of the retinal photography is one of a wider range of classes (artery, uncertain pixels, vein, and background) compared to binary classification (vessel and background)[15]. A direct comparison may not be appropriate. The same P-values from a ranking-based non-parametric Mann-Whitney U test indicate consistent metric ranking of the proposed method and [2], indeed an interesting observation. R2.2: Key ablation studies are missing, i.e., comparisons between the merged results and multi-class/binary-class results. This important comparison was indeed included in the last two rows of Table 2 (merged results and multi-class results) and “Ensemble” in Table 1 (ensemble of binary-class results). We will highlight them in text. R3.3: We appreciate several suggestions for clarity, including “I am not clear if the method predicts uncertain pixels or not?” and “it seems the model is solving artery/vein classification assuming the vessel map is given?”. We would like to further emphasise that, as described in Sect. 2.2 and Fig 3, the input of the model is retinal photography and output is a three-channel probability map (artery, uncertain pixels, and vein), and no vessel map is needed in inference. R3.4: Reported metrics in Table 1 are global, instead of local. Qualitative local results were provided in Fig 5, with the lack of a widely-accepted definition of local metric. We believe it is an interesting future research question. R3.5: Hyperparameter tuning is sensitive. Tuning the hyperparameters for each dataset is a bit weak. As introduced in “Implementation and Training”, all hyperparameters are fixed. We will update Supplementary Fig 1 to reflect the stableness. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yukun Zhou, Moucheng Xu, Yipeng Hu, Hongxiang Lin, Joseph Jacob, Pearse A. Keane, Daniel C. Alexander Abstract Accurate multi-class segmentation is a long-standing challenge in medical imaging, especially in scenarios where classes share strong similarity. Segmenting retinal blood vessels in retinal photographs is one such scenario, in which arteries and veins need to be identified and differentiated from each other and from the background. Intra-segment misclassification, i.e. veins classified as arteries or vice versa, frequently occurs when arteries and veins intersect, whereas in binary retinal vessel segmentation, error rates are much lower. We thus propose a new approach that decomposes multi-class segmentation into multiple binary, followed by a binary-to-multi-class fusion network. The network merges representations of artery, vein, and multi-class feature maps, each of which are supervised by expert vessel annotation in adversarial training. A skip-connection based merging process explicitly maintains class-specific gradients to avoid gradient vanishing in deep layers, to favor the discriminative features. The results show that, our model respectively improves F1-score by 4.4%, 5.1%, and 4.2% compared with three state-of-the-art deep learning based methods on DRIVE-AV, LES-AV, and HRF-AV data sets. Link to paper https://doi.org/10.1007/978-3-030-87193-2_46 Link to the code repository https://github.com/rmaphoh/Learning-AVSegmentation Link to the dataset(s) https://medicine.uiowa.edu/eye/rite-dataset https://figshare.com/articles/dataset/LES-AV_dataset/11857698 http://iflexis.com/downloads/HRF_AV_GT.zip https://github.com/rmaphoh/Learning-AVSegmentation Reviews Review #1 Please describe the contribution of the paper The authors propose a framework for artery/vein segmentation from retinal images. Their framework splits up multi-class segmentation into first segmenting arteries and veins independently, and then fusing the binary segmentations with another network into the final multi-class segmentation. Evaluations on three publicly available datasets show good performance of the method, outperforming the previous state-of-the-art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of splitting up the a/v segmentation into first individual binary segmentation and then fusion and multi-class segmentation seems promising. The extensive evaluation shows that the proposed method outperforms the previous state-of-the-art. The ablation study shows the contributions of many individual components. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method section is unclear, missing some details and contains some errors. The GAN equations are wrong. The notation in the text and the figures is not consistent and can be mixed up quite easily (e.g., f_m in section 2.2 and f^m in Fig 3 (a)) The losses BCE and MSE are not defined. For the binary network outputs, I suppose the authors use a sigmoid cross entropy. Is a sigmoid cross entropy (=binary) also used for the multi-class networks or do they use a softmax cross entropy? More comments in 7. Some parts of the method are not justified or discussed. What is the influence of the “Skip-connection based merging process in segmenter”? As I understand from the ablation study, it is only evaluated in combination with the adversarial losses. It should be evaluated independently. Or is it needed for network convergence? If so, I would not see why. A discussion from the authors is needed. Why is deep supervision only used in the “multi-class segmenter” and not in the binary segmenters? Why do you need both BCE and MSE losses? Both of them optimize the same task. At least mention it in the discussion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be well reproducible as the authors state that they will publish the source code upon acceptance and as publicly available datasets are used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The introduction is well written and motivates the proposed method. Figure 1: You could put the row captions directly into the figure, e.g., (a) Input, (b) GT, etc. Figure 3: “Adeversarial Loss” - should be “Adversarial Loss” Some parts are not explained or mentioned in the text, e.g., what is “Artery to Multi-class”? Methods: Skip-connection based merging process in segmenter: This sub-section is hard to follow. The notation of Equation (1) is not consistent with Figure 3 and different terms are used. Also, there is no justification of the proposed merging strategy. Is it really needed? What would be the difference to a vanilla U-Net? Also without this merging strategy, there would be enough contributions in the paper. Adversarial training: “adopt” - should be “adapt” The equations that define the generator and discriminator losses are wrong. “y and z indicate fundus image” - this does not make sense. Should y be a noise vector? The “|” also does not make sense in the equations. I would suggest to look into other papers to fix the equations, e.g., Dai et al. “Towards Diverse and Natural Image Descriptions via a Conditional GAN”. Due to the inexact equations, it is not clear, what is the input for the discriminator, especially as it is shared for all three networks. Are the segmentation inputs one-hot encoded or represented as integer values? From Equation (2) L_BCE and L_MSE it is not clear on which images the losses are calculated. While it is shown in Fig. 3 it should also mentioned in the text. The name “L_main” is not well chosen. Binary-to-multi-class Fusion Network: The first paragraph is hard to follow. It is not clear how the individual network outputs are fused. “The artery segmentation map f_a, multi-class feature map f_m, and vein segmentation map f_v are concatenated to generate fused feature maps for the next convolution operation.” - What is the next convolution operation? Is this a final convolution operation that fuses the concatenated outputs to generate the final multi-class output? This is not clear. The second paragraph does not fit in this sub-section. Maybe another subsection (e.g. “Supervised Training”) that contains the missing description of the losses (L_BCE and L_MSE) as well as the deep supervision would be good. Table 2: “blanket” - should be “bracket” “growth” is not defined - I would simply skip it. Comparing with most recent methods: “remarkably enhances” - the term “remarkably” does not fit. “All segmentation maps refer” - “For all segmentation maps, the reader is referred to” Ablation study: “As shown in Table 2, the adversarial segmentation network performs better due to skip-connection based merging and the pixel-level adversarial learning, when compared with vanilla U-Net [20] in first line.” Does this mean, that the first line in Table 2 is a U-Net without the skip-connection based merging as well as the adversarial loss? If so, this should be split up as otherwise the individual contribution of those two parts are not known. Especially, as otherwise the skip-connection based merging is not justified. Fig. 5: You could put the column captions (GT, Ours, U-Net) directly into the figure. Discussion: “deep supervision also improve the” - should be “improves” Supplementary Materials: While the predictions look good, the groundtruth or difference to the groundtruth should also be shown for comparison. Additionally, the input images could also be shown. General: Some formulations are not good. Another proof read of the paper would be necessary. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall approach of splitting up a/v segmentation into first individual segmentation and then merging is reasonable. The good performance of the proposed method on several datasets further strengthen the contribution. However, especially the method section could be better structured, while some parts also need clarification. Furthermore, the “skip-connection based merging process in segmenter” needs justification and further discussion. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposed a binary-to-multi-class fusion network to merge multi-class representations and binary-class representations for multi-class vessel segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The idea of merging multi-class and binary-class is interesting. (2) The proposed method outperformed some vessel segmentation methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. (1) Some results are not convincing. (see following detailed comments 1). (2) The key ablation studies are missing. (see following detailed comments 2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most key experiment details are included so that it is possible to replicate this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the idea of this paper is interesting, I still have two comments: (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. The authors should address these comments during feedback. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces a system for artery/vein segmentation on retinal fundus images based on the combination of two binary segmentation models (artery vs all, vein vs all) into a multi-class model. The entire model makes use of adversarial training and deep supervision, and seems to result in improved results when compared with some other recently proposed techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The approach here is focused on resolving ambiguities in a vessel segment, where predictions could be mixed instead of only artery or only vein, which is typical in this problem. The method takes advantage of several advanced techniques like adversarial training and deep supervision, which at first glance seem a bit overkill, but the authors included ablation studies to show the contribution of the different pieces. Experimental validation seems quite rigurous, although I have some doubts on this (see below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Handling of the uncertainty class: The three datasets considered in this paper contain pixels labeled in four classes, namely artery, vein, background and uncertain. The authors do not mention how do they handle the uncertain class, but it seems from the evaluation section that they are actually measuring performance on artery, vein, and uncertain pixels (page 6 below). It is not clear if the method predicts uncertain pixels or not? 2) Handling of the background class: In the end, it is very unclear if the proposed technique predicts artery and vein pixels, or it also generates a full segmentation that includes background too. It seems to me that the model is solving artery/vein classification on top of vessel pixels, and the authors start from the vessel map assuming it is given, is this the case? If it is, I would not call this multi-class but rather binary, am I wrong? 3) Evaluation 1: Deriving from the previous points, I don’t understand how the evaluation is done for non-binary measures (ROC, PR, MSE). Is it approached as a multi-class problem? What would be the classes, artery, vein and uncertain? Moreover, it seems a bit funny that 99% of the P-values are 1.83e-4, is this a typo or all P-values ended up being exactly the same? 4) Evaluation 2: Considering that the paper claims to resolve intra-segment contradictory results, I was expecting to see some evaluation that would focus on that particular aspect of the method, but all reported metrics are global (at the image level), instead of local (at the segment level). 5) Hyperparameter impact: It seems from the supplementary material that the behavior of the hyperparameters is very wild and indicates a considerable instability of the proposed technique. For example, why do the authors think that using alpha=0.4 and alpha=0.6 results in good performance, but using alpha=0.5 results in terrible performance? In addition, tuning the hyperparameters for each dataset is a bit weak, one would expect the same model with the same hyperparameters to work for all datasets, otherwise one needs to tune hyperparameters for each new data that arrives. This is particularly weak for the beta hyperparameter: setting it to 0.8 results in the best performance for LES-AV but almost the worst performance for DRIVE. I believe this deserves further discussion. Finally, how were hyperparameters searched for HRF? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The three datasets employed in this paper are public, and the authors promise to release the code. There are a couple of points in the reproducibility sheet that are not really addressed: An analysis of situations in which the method failed/A description of the memory footprint: The authors indicate that these have been fulfilled, but I don’t think that is the case. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The two most important defficiencies in this paper, in my opinion, are as follow: 1) It is not clear if the method performs artery/vein classification from pre-available vessel maps, or artery/vein/background, and how does it deal with uncertain pixels (labeled as such in the ground-truth). This should be clarified from the beginning, since the authors make lots of references to the multi-class to binary fusion, etc. If the background is being considered during training, it seems to me that the evaluation metrics employed are not correct (see F formula in page 6 at the bottom). 2) Since the method claims to be useful for intra-segment disambiguation, I would recommend to adopt some kind of performance analysis that shows how this aspect of the problem is improved by their approach. Possibly splitting the vasculature into separate segments, and observing how uniform the predictions are per-segment. If time/space allows, the other concerns I describe in the “weaknesses” section, particularly the comment on hyperparameters and stability of the methods, should also be discussed, I think. Some minor issues: a) I believe the title of the paper should be switched to “Learning to Address Intra-segment Misclassification in Artery/Vein segmentation b) Please review your figure 3, it reads “adeversarial” Note: Since the authors report results on competing methods by training them and generating their own predictions, I think the comparison is acceptable as it is relative to the same evaluation process (not taking values from other paper’s tables). Nevertheless, evaluation details should be clarified. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the focus of the paper is on resolving intra-segment confusion, which is an interesting aspect of the artery/vein problem, the technique is never evaluated to understand if there is a quantitative improvement on that particular side of the problem. Moreover, as I mentioned above, there is some confusion on the purpose of the method regarding the background and uncertain classes. It is hard to assess the usefulness of the model if this is not clarified. Finally, the technique is quite complicated, with multiple moving parts and lots of losses. This results in quite a few hyperparameters, the effect of which seems unclear by looking at validation performance in the hyperparameter search section of the supplementary material. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While all the reviewers found the merits of this paper, they also agreed that there are a few problems regarding the technique details and experiments. In the rebuttal, the authors should focus on explaining some technique issues (R1), addressing experimental concerns (R2 and R3) What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the issues raised by the reviewers. I recommend for getting accepted of this paper. However, one important reference is missing: Retinal Vascular Network Topology Reconstruction and Artery/Vein Classification via Dominant Set Clustering, IEEE Transactions on Medical Imaging, 2020, 39(2): 341-356 After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors responded to the major concerns, such as technique issues, and experiment. Thus, I prefer to accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Generally, the reviewers have consistently positive feedbacks for this paper in the first round review and the authors have addressed/clarified most major concerns raised by reviewers and the meta-reviewer. Thus, the meta-reviewer would like to suggest “Accept” of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We appreciate the detailed comments and positive feedback from all three reviewers. Following AC’s guidance, we address the technical and experimental issues below. In addition, we will make minor edits regarding the notation and typos. R1.1: GAN equations are wrong, potentially causing the discriminator input unclear. We will correct the typo in the equation as suggested. The discriminator input is indeed the concatenation of segmentation probability map (or ground-truth) and retinal image, as shown in Fig 3. R1.2-1.5: The reviewer raised questions on the motivation and clarification on a number of network architectural choices and the training loss design, including the definitions of BCE, MSE, skip-connection, and deep supervision. 1.2 - BCE and MSE were defined in Fig 3, we will further clarify in the text. For multi-class segmenter, ground-truth binary map and segmentation probability map are both represented by three channels. Over these three channels, the loss was computed by averaging three BCEs - a variant to the standard multi-class CE with different class weighting. 1.3 &amp; 1.4 - Skip-connection based merging and deep supervision location were designed intuitively, but we agree that investigating the effectiveness of alternative designs may be interesting. 1.5 - The next convolution operation is the final convolutional block to generate the multi-class segmentation map (Sec.2.2 and Fig.3). R2.1: Some results are not convincing, e.g., in Table 1, reported results are inconsistent with the original paper [15]. The related comment is R3.1: how the evaluation is done for non-binary measure? and R3.2: Most of P-value in Table 1 are the same. We clarify that the task in this paper is different, arguably more challenging and evaluation is more stringent. 1) a sensitivity of 79.16% was reported in [15] for only segmenting vessels without differentiating the subtypes; 2) As detailed in “Evaluation metrics”, the binary classification metric was for each class (artery, uncertain pixels, and vein), e.g., artery versus background in the artery channel, to obtain F1-scores F_a, F_u, and F_v, then weighted by the ratio of the pixel counts. We argue that this bespoke measure provides a more intuitive and direct assessment for segmenting all vessel subtypes. Each pixel of the retinal photography is one of a wider range of classes (artery, uncertain pixels, vein, and background) compared to binary classification (vessel and background)[15]. A direct comparison may not be appropriate. The same P-values from a ranking-based non-parametric Mann-Whitney U test indicate consistent metric ranking of the proposed method and [2], indeed an interesting observation. R2.2: Key ablation studies are missing, i.e., comparisons between the merged results and multi-class/binary-class results. This important comparison was indeed included in the last two rows of Table 2 (merged results and multi-class results) and “Ensemble” in Table 1 (ensemble of binary-class results). We will highlight them in text. R3.3: We appreciate several suggestions for clarity, including “I am not clear if the method predicts uncertain pixels or not?” and “it seems the model is solving artery/vein classification assuming the vessel map is given?”. We would like to further emphasise that, as described in Sect. 2.2 and Fig 3, the input of the model is retinal photography and output is a three-channel probability map (artery, uncertain pixels, and vein), and no vessel map is needed in inference. R3.4: Reported metrics in Table 1 are global, instead of local. Qualitative local results were provided in Fig 5, with the lack of a widely-accepted definition of local metric. We believe it is an interesting future research question. R3.5: Hyperparameter tuning is sensitive. Tuning the hyperparameters for each dataset is a bit weak. As introduced in “Implementation and Training”, all hyperparameters are fixed. We will update Supplementary Fig 1 to reflect the stableness. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0145/12/31/Paper1516" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0145/12/31/Paper1516" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0145-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Learning to Address Intra-segment Misclassification in Retinal Imaging" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0145/12/31/Paper1516"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0145/12/31/Paper1516","headline":"Learning to Address Intra-segment Misclassification in Retinal Imaging","dateModified":"0145-12-31T00:00:00-05:17","datePublished":"0145-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yukun Zhou, Moucheng Xu, Yipeng Hu, Hongxiang Lin, Joseph Jacob, Pearse A. Keane, Daniel C. Alexander Abstract Accurate multi-class segmentation is a long-standing challenge in medical imaging, especially in scenarios where classes share strong similarity. Segmenting retinal blood vessels in retinal photographs is one such scenario, in which arteries and veins need to be identified and differentiated from each other and from the background. Intra-segment misclassification, i.e. veins classified as arteries or vice versa, frequently occurs when arteries and veins intersect, whereas in binary retinal vessel segmentation, error rates are much lower. We thus propose a new approach that decomposes multi-class segmentation into multiple binary, followed by a binary-to-multi-class fusion network. The network merges representations of artery, vein, and multi-class feature maps, each of which are supervised by expert vessel annotation in adversarial training. A skip-connection based merging process explicitly maintains class-specific gradients to avoid gradient vanishing in deep layers, to favor the discriminative features. The results show that, our model respectively improves F1-score by 4.4%, 5.1%, and 4.2% compared with three state-of-the-art deep learning based methods on DRIVE-AV, LES-AV, and HRF-AV data sets. Link to paper https://doi.org/10.1007/978-3-030-87193-2_46 Link to the code repository https://github.com/rmaphoh/Learning-AVSegmentation Link to the dataset(s) https://medicine.uiowa.edu/eye/rite-dataset https://figshare.com/articles/dataset/LES-AV_dataset/11857698 http://iflexis.com/downloads/HRF_AV_GT.zip https://github.com/rmaphoh/Learning-AVSegmentation Reviews Review #1 Please describe the contribution of the paper The authors propose a framework for artery/vein segmentation from retinal images. Their framework splits up multi-class segmentation into first segmenting arteries and veins independently, and then fusing the binary segmentations with another network into the final multi-class segmentation. Evaluations on three publicly available datasets show good performance of the method, outperforming the previous state-of-the-art. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The idea of splitting up the a/v segmentation into first individual binary segmentation and then fusion and multi-class segmentation seems promising. The extensive evaluation shows that the proposed method outperforms the previous state-of-the-art. The ablation study shows the contributions of many individual components. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method section is unclear, missing some details and contains some errors. The GAN equations are wrong. The notation in the text and the figures is not consistent and can be mixed up quite easily (e.g., f_m in section 2.2 and f^m in Fig 3 (a)) The losses BCE and MSE are not defined. For the binary network outputs, I suppose the authors use a sigmoid cross entropy. Is a sigmoid cross entropy (=binary) also used for the multi-class networks or do they use a softmax cross entropy? More comments in 7. Some parts of the method are not justified or discussed. What is the influence of the “Skip-connection based merging process in segmenter”? As I understand from the ablation study, it is only evaluated in combination with the adversarial losses. It should be evaluated independently. Or is it needed for network convergence? If so, I would not see why. A discussion from the authors is needed. Why is deep supervision only used in the “multi-class segmenter” and not in the binary segmenters? Why do you need both BCE and MSE losses? Both of them optimize the same task. At least mention it in the discussion. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The paper should be well reproducible as the authors state that they will publish the source code upon acceptance and as publicly available datasets are used. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Introduction: The introduction is well written and motivates the proposed method. Figure 1: You could put the row captions directly into the figure, e.g., (a) Input, (b) GT, etc. Figure 3: “Adeversarial Loss” - should be “Adversarial Loss” Some parts are not explained or mentioned in the text, e.g., what is “Artery to Multi-class”? Methods: Skip-connection based merging process in segmenter: This sub-section is hard to follow. The notation of Equation (1) is not consistent with Figure 3 and different terms are used. Also, there is no justification of the proposed merging strategy. Is it really needed? What would be the difference to a vanilla U-Net? Also without this merging strategy, there would be enough contributions in the paper. Adversarial training: “adopt” - should be “adapt” The equations that define the generator and discriminator losses are wrong. “y and z indicate fundus image” - this does not make sense. Should y be a noise vector? The “|” also does not make sense in the equations. I would suggest to look into other papers to fix the equations, e.g., Dai et al. “Towards Diverse and Natural Image Descriptions via a Conditional GAN”. Due to the inexact equations, it is not clear, what is the input for the discriminator, especially as it is shared for all three networks. Are the segmentation inputs one-hot encoded or represented as integer values? From Equation (2) L_BCE and L_MSE it is not clear on which images the losses are calculated. While it is shown in Fig. 3 it should also mentioned in the text. The name “L_main” is not well chosen. Binary-to-multi-class Fusion Network: The first paragraph is hard to follow. It is not clear how the individual network outputs are fused. “The artery segmentation map f_a, multi-class feature map f_m, and vein segmentation map f_v are concatenated to generate fused feature maps for the next convolution operation.” - What is the next convolution operation? Is this a final convolution operation that fuses the concatenated outputs to generate the final multi-class output? This is not clear. The second paragraph does not fit in this sub-section. Maybe another subsection (e.g. “Supervised Training”) that contains the missing description of the losses (L_BCE and L_MSE) as well as the deep supervision would be good. Table 2: “blanket” - should be “bracket” “growth” is not defined - I would simply skip it. Comparing with most recent methods: “remarkably enhances” - the term “remarkably” does not fit. “All segmentation maps refer” - “For all segmentation maps, the reader is referred to” Ablation study: “As shown in Table 2, the adversarial segmentation network performs better due to skip-connection based merging and the pixel-level adversarial learning, when compared with vanilla U-Net [20] in first line.” Does this mean, that the first line in Table 2 is a U-Net without the skip-connection based merging as well as the adversarial loss? If so, this should be split up as otherwise the individual contribution of those two parts are not known. Especially, as otherwise the skip-connection based merging is not justified. Fig. 5: You could put the column captions (GT, Ours, U-Net) directly into the figure. Discussion: “deep supervision also improve the” - should be “improves” Supplementary Materials: While the predictions look good, the groundtruth or difference to the groundtruth should also be shown for comparison. Additionally, the input images could also be shown. General: Some formulations are not good. Another proof read of the paper would be necessary. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall approach of splitting up a/v segmentation into first individual segmentation and then merging is reasonable. The good performance of the proposed method on several datasets further strengthen the contribution. However, especially the method section could be better structured, while some parts also need clarification. Furthermore, the “skip-connection based merging process in segmenter” needs justification and further discussion. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposed a binary-to-multi-class fusion network to merge multi-class representations and binary-class representations for multi-class vessel segmentation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. (1) The idea of merging multi-class and binary-class is interesting. (2) The proposed method outperformed some vessel segmentation methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. (1) Some results are not convincing. (see following detailed comments 1). (2) The key ablation studies are missing. (see following detailed comments 2). Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most key experiment details are included so that it is possible to replicate this work. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the idea of this paper is interesting, I still have two comments: (1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason. (2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved. The authors should address these comments during feedback. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper introduces a system for artery/vein segmentation on retinal fundus images based on the combination of two binary segmentation models (artery vs all, vein vs all) into a multi-class model. The entire model makes use of adversarial training and deep supervision, and seems to result in improved results when compared with some other recently proposed techniques. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The approach here is focused on resolving ambiguities in a vessel segment, where predictions could be mixed instead of only artery or only vein, which is typical in this problem. The method takes advantage of several advanced techniques like adversarial training and deep supervision, which at first glance seem a bit overkill, but the authors included ablation studies to show the contribution of the different pieces. Experimental validation seems quite rigurous, although I have some doubts on this (see below). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Handling of the uncertainty class: The three datasets considered in this paper contain pixels labeled in four classes, namely artery, vein, background and uncertain. The authors do not mention how do they handle the uncertain class, but it seems from the evaluation section that they are actually measuring performance on artery, vein, and uncertain pixels (page 6 below). It is not clear if the method predicts uncertain pixels or not? 2) Handling of the background class: In the end, it is very unclear if the proposed technique predicts artery and vein pixels, or it also generates a full segmentation that includes background too. It seems to me that the model is solving artery/vein classification on top of vessel pixels, and the authors start from the vessel map assuming it is given, is this the case? If it is, I would not call this multi-class but rather binary, am I wrong? 3) Evaluation 1: Deriving from the previous points, I don’t understand how the evaluation is done for non-binary measures (ROC, PR, MSE). Is it approached as a multi-class problem? What would be the classes, artery, vein and uncertain? Moreover, it seems a bit funny that 99% of the P-values are 1.83e-4, is this a typo or all P-values ended up being exactly the same? 4) Evaluation 2: Considering that the paper claims to resolve intra-segment contradictory results, I was expecting to see some evaluation that would focus on that particular aspect of the method, but all reported metrics are global (at the image level), instead of local (at the segment level). 5) Hyperparameter impact: It seems from the supplementary material that the behavior of the hyperparameters is very wild and indicates a considerable instability of the proposed technique. For example, why do the authors think that using alpha=0.4 and alpha=0.6 results in good performance, but using alpha=0.5 results in terrible performance? In addition, tuning the hyperparameters for each dataset is a bit weak, one would expect the same model with the same hyperparameters to work for all datasets, otherwise one needs to tune hyperparameters for each new data that arrives. This is particularly weak for the beta hyperparameter: setting it to 0.8 results in the best performance for LES-AV but almost the worst performance for DRIVE. I believe this deserves further discussion. Finally, how were hyperparameters searched for HRF? Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The three datasets employed in this paper are public, and the authors promise to release the code. There are a couple of points in the reproducibility sheet that are not really addressed: An analysis of situations in which the method failed/A description of the memory footprint: The authors indicate that these have been fulfilled, but I don’t think that is the case. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The two most important defficiencies in this paper, in my opinion, are as follow: 1) It is not clear if the method performs artery/vein classification from pre-available vessel maps, or artery/vein/background, and how does it deal with uncertain pixels (labeled as such in the ground-truth). This should be clarified from the beginning, since the authors make lots of references to the multi-class to binary fusion, etc. If the background is being considered during training, it seems to me that the evaluation metrics employed are not correct (see F formula in page 6 at the bottom). 2) Since the method claims to be useful for intra-segment disambiguation, I would recommend to adopt some kind of performance analysis that shows how this aspect of the problem is improved by their approach. Possibly splitting the vasculature into separate segments, and observing how uniform the predictions are per-segment. If time/space allows, the other concerns I describe in the “weaknesses” section, particularly the comment on hyperparameters and stability of the methods, should also be discussed, I think. Some minor issues: a) I believe the title of the paper should be switched to “Learning to Address Intra-segment Misclassification in Artery/Vein segmentation b) Please review your figure 3, it reads “adeversarial” Note: Since the authors report results on competing methods by training them and generating their own predictions, I think the comparison is acceptable as it is relative to the same evaluation process (not taking values from other paper’s tables). Nevertheless, evaluation details should be clarified. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the focus of the paper is on resolving intra-segment confusion, which is an interesting aspect of the artery/vein problem, the technique is never evaluated to understand if there is a quantitative improvement on that particular side of the problem. Moreover, as I mentioned above, there is some confusion on the purpose of the method regarding the background and uncertain classes. It is hard to assess the usefulness of the model if this is not clarified. Finally, the technique is quite complicated, with multiple moving parts and lots of losses. This results in quite a few hyperparameters, the effect of which seems unclear by looking at validation performance in the hyperparameter search section of the supplementary material. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. While all the reviewers found the merits of this paper, they also agreed that there are a few problems regarding the technique details and experiments. In the rebuttal, the authors should focus on explaining some technique issues (R1), addressing experimental concerns (R2 and R3) What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the issues raised by the reviewers. I recommend for getting accepted of this paper. However, one important reference is missing: Retinal Vascular Network Topology Reconstruction and Artery/Vein Classification via Dominant Set Clustering, IEEE Transactions on Medical Imaging, 2020, 39(2): 341-356 After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors responded to the major concerns, such as technique issues, and experiment. Thus, I prefer to accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Generally, the reviewers have consistently positive feedbacks for this paper in the first round review and the authors have addressed/clarified most major concerns raised by reviewers and the meta-reviewer. Thus, the meta-reviewer would like to suggest “Accept” of this paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Author Feedback We appreciate the detailed comments and positive feedback from all three reviewers. Following AC’s guidance, we address the technical and experimental issues below. In addition, we will make minor edits regarding the notation and typos. R1.1: GAN equations are wrong, potentially causing the discriminator input unclear. We will correct the typo in the equation as suggested. The discriminator input is indeed the concatenation of segmentation probability map (or ground-truth) and retinal image, as shown in Fig 3. R1.2-1.5: The reviewer raised questions on the motivation and clarification on a number of network architectural choices and the training loss design, including the definitions of BCE, MSE, skip-connection, and deep supervision. 1.2 - BCE and MSE were defined in Fig 3, we will further clarify in the text. For multi-class segmenter, ground-truth binary map and segmentation probability map are both represented by three channels. Over these three channels, the loss was computed by averaging three BCEs - a variant to the standard multi-class CE with different class weighting. 1.3 &amp; 1.4 - Skip-connection based merging and deep supervision location were designed intuitively, but we agree that investigating the effectiveness of alternative designs may be interesting. 1.5 - The next convolution operation is the final convolutional block to generate the multi-class segmentation map (Sec.2.2 and Fig.3). R2.1: Some results are not convincing, e.g., in Table 1, reported results are inconsistent with the original paper [15]. The related comment is R3.1: how the evaluation is done for non-binary measure? and R3.2: Most of P-value in Table 1 are the same. We clarify that the task in this paper is different, arguably more challenging and evaluation is more stringent. 1) a sensitivity of 79.16% was reported in [15] for only segmenting vessels without differentiating the subtypes; 2) As detailed in “Evaluation metrics”, the binary classification metric was for each class (artery, uncertain pixels, and vein), e.g., artery versus background in the artery channel, to obtain F1-scores F_a, F_u, and F_v, then weighted by the ratio of the pixel counts. We argue that this bespoke measure provides a more intuitive and direct assessment for segmenting all vessel subtypes. Each pixel of the retinal photography is one of a wider range of classes (artery, uncertain pixels, vein, and background) compared to binary classification (vessel and background)[15]. A direct comparison may not be appropriate. The same P-values from a ranking-based non-parametric Mann-Whitney U test indicate consistent metric ranking of the proposed method and [2], indeed an interesting observation. R2.2: Key ablation studies are missing, i.e., comparisons between the merged results and multi-class/binary-class results. This important comparison was indeed included in the last two rows of Table 2 (merged results and multi-class results) and “Ensemble” in Table 1 (ensemble of binary-class results). We will highlight them in text. R3.3: We appreciate several suggestions for clarity, including “I am not clear if the method predicts uncertain pixels or not?” and “it seems the model is solving artery/vein classification assuming the vessel map is given?”. We would like to further emphasise that, as described in Sect. 2.2 and Fig 3, the input of the model is retinal photography and output is a three-channel probability map (artery, uncertain pixels, and vein), and no vessel map is needed in inference. R3.4: Reported metrics in Table 1 are global, instead of local. Qualitative local results were provided in Fig 5, with the lack of a widely-accepted definition of local metric. We believe it is an interesting future research question. R3.5: Hyperparameter tuning is sensitive. Tuning the hyperparameters for each dataset is a bit weak. As introduced in “Implementation and Training”, all hyperparameters are fixed. We will update Supplementary Fig 1 to reflect the stableness. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Zhou, Yukun,Xu, Moucheng,Hu, Yipeng,Lin, Hongxiang,Jacob, Joseph,Keane, Pearse A.,Alexander, Daniel C." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Learning to Address Intra-segment Misclassification in Retinal Imaging</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Ophthalmology"
+        class="post-category">
+        Clinical applications - Ophthalmology
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Zhou, Yukun"
+        class="post-tags">
+        Zhou, Yukun
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Moucheng"
+        class="post-tags">
+        Xu, Moucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Yipeng"
+        class="post-tags">
+        Hu, Yipeng
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Hongxiang"
+        class="post-tags">
+        Lin, Hongxiang
+      </a> |  
+      
+      <a href="kittywong/tags#Jacob, Joseph"
+        class="post-tags">
+        Jacob, Joseph
+      </a> |  
+      
+      <a href="kittywong/tags#Keane, Pearse A."
+        class="post-tags">
+        Keane, Pearse A.
+      </a> |  
+      
+      <a href="kittywong/tags#Alexander, Daniel C."
+        class="post-tags">
+        Alexander, Daniel C.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yukun Zhou, Moucheng Xu, Yipeng Hu, Hongxiang Lin, Joseph Jacob, Pearse A. Keane, Daniel C. Alexander
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Accurate multi-class segmentation is a long-standing challenge in medical imaging, especially in scenarios where classes share strong similarity. Segmenting retinal blood vessels in retinal photographs is one such scenario, in which arteries and veins need to be identified and differentiated from each other and from the background. Intra-segment misclassification, i.e. veins classified as arteries or vice versa, frequently occurs when arteries and veins intersect, whereas in binary retinal vessel segmentation, error rates are much lower. We thus propose a new approach that decomposes multi-class segmentation into multiple binary, followed by a binary-to-multi-class fusion network. The network merges representations of artery, vein, and multi-class feature maps, each of which are supervised by expert vessel annotation in adversarial training. A skip-connection based merging process explicitly maintains class-specific gradients to avoid gradient vanishing in deep layers, to favor the discriminative features. The results show that, our model respectively improves F1-score by 4.4%, 5.1%, and 4.2% compared with three state-of-the-art deep learning based methods on DRIVE-AV, LES-AV, and HRF-AV data sets.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_46">https://doi.org/10.1007/978-3-030-87193-2_46</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/rmaphoh/Learning-AVSegmentation
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://medicine.uiowa.edu/eye/rite-dataset
+https://figshare.com/articles/dataset/LES-AV_dataset/11857698
+http://iflexis.com/downloads/HRF_AV_GT.zip
+https://github.com/rmaphoh/Learning-AVSegmentation
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose a framework for artery/vein segmentation from retinal images.
+Their framework splits up multi-class segmentation into first segmenting arteries and veins independently, and then fusing the binary segmentations with another network into the final multi-class segmentation. Evaluations on three publicly available datasets show good performance of the method, outperforming the previous state-of-the-art.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>The idea of splitting up the a/v segmentation into first individual binary segmentation and then fusion and multi-class segmentation seems promising.</li>
+        <li>The extensive evaluation shows that the proposed method outperforms the previous state-of-the-art.</li>
+        <li>The ablation study shows the contributions of many individual components.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The method section is unclear, missing some details and contains some errors.
+          <ul>
+            <li>The GAN equations are wrong.</li>
+            <li>The notation in the text and the figures is not consistent and can be mixed up quite easily (e.g., f_m in section 2.2 and f^m in Fig 3 (a))</li>
+            <li>The losses BCE and MSE are not defined. For the binary network outputs, I suppose the authors use a sigmoid cross entropy. Is a sigmoid cross entropy (=binary) also used for the multi-class networks or do they use a softmax cross entropy?</li>
+            <li>More comments in 7.</li>
+          </ul>
+        </li>
+        <li>Some parts of the method are not justified or discussed.
+          <ul>
+            <li>What is the influence of the “Skip-connection based merging process in segmenter”? As I understand from the ablation study, it is only evaluated in combination with the adversarial losses. It should be evaluated independently. Or is it needed for network convergence? If so, I would not see why. A discussion from the authors is needed.</li>
+            <li>Why is deep supervision only used in the “multi-class segmenter” and not in the binary segmenters?</li>
+            <li>Why do you need both BCE and MSE losses? Both of them optimize the same task. At least mention it in the discussion.</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The paper should be well reproducible as the authors state that they will publish the source code upon acceptance and as publicly available datasets are used.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Introduction:
+The introduction is well written and motivates the proposed method.</p>
+
+      <p>Figure 1:
+You could put the row captions directly into the figure, e.g., (a) Input, (b) GT, etc.</p>
+
+      <p>Figure 3:
+“Adeversarial Loss” - should be “Adversarial Loss”
+Some parts are not explained or mentioned in the text, e.g., what is “Artery to Multi-class”?</p>
+
+      <p>Methods:</p>
+
+      <p>Skip-connection based merging process in segmenter:
+This sub-section is hard to follow. The notation of Equation (1) is not consistent with Figure 3 and different terms are used. Also, there is no justification of the proposed merging strategy. Is it really needed? What would be the difference to a vanilla U-Net? Also without this merging strategy, there would be enough contributions in the paper.</p>
+
+      <p>Adversarial training:
+“adopt” - should be “adapt”
+The equations that define the generator and discriminator losses are wrong. “y and z indicate fundus image” - this does not make sense. Should y be a noise vector? The “|” also does not make sense in the equations. I would suggest to look into other papers to fix the equations, e.g., Dai et al. “Towards Diverse and Natural Image Descriptions via a Conditional GAN”.
+Due to the inexact equations, it is not clear, what is the input for the discriminator, especially as it is shared for all three networks. Are the segmentation inputs one-hot encoded or represented as integer values?
+From Equation (2) L_BCE and L_MSE it is not clear on which images the losses are calculated. While it is shown in Fig. 3 it should also mentioned in the text.
+The name “L_main” is not well chosen.</p>
+
+      <p>Binary-to-multi-class Fusion Network:
+The first paragraph is hard to follow. It is not clear how the individual network outputs are fused.
+“The artery segmentation map f_a, multi-class feature map f_m, and vein segmentation map f_v are concatenated to generate fused feature maps for the next convolution operation.” - What is the next convolution operation? Is this a final convolution operation that fuses the concatenated outputs to generate the final multi-class output? This is not clear.
+The second paragraph does not fit in this sub-section. Maybe another subsection (e.g. “Supervised Training”) that contains the missing description of the losses (L_BCE and L_MSE) as well as the deep supervision would be good.</p>
+
+      <p>Table 2:
+“blanket” - should be “bracket”
+“growth” is not defined - I would simply skip it.</p>
+
+      <p>Comparing with most recent methods:
+“remarkably enhances” - the term “remarkably” does not fit.
+“All segmentation maps refer” - “For all segmentation maps, the reader is referred to”</p>
+
+      <p>Ablation study:
+“As shown in Table 2, the adversarial segmentation network performs better due to skip-connection based merging and the pixel-level adversarial learning, when compared with vanilla U-Net [20] in first line.” Does this mean, that the first line in Table 2 is a U-Net without the skip-connection based merging as well as the adversarial loss? If so, this should be split up as otherwise the individual contribution of those two parts are not known. Especially, as otherwise the skip-connection based merging is not justified.</p>
+
+      <p>Fig. 5:
+You could put the column captions (GT, Ours, U-Net) directly into the figure.</p>
+
+      <p>Discussion:
+“deep supervision also improve the” - should be “improves”</p>
+
+      <p>Supplementary Materials:
+While the predictions look good, the groundtruth or difference to the groundtruth should also be shown for comparison. Additionally, the input images could also be shown.</p>
+
+      <p>General:
+Some formulations are not good. Another proof read of the paper would be necessary.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The overall approach of splitting up a/v segmentation into first individual segmentation and then merging is reasonable. The good performance of the proposed method on several datasets further strengthen the contribution. However, especially the method section could be better structured, while some parts also need clarification. Furthermore, the “skip-connection based merging process in segmenter” needs justification and further discussion.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a binary-to-multi-class fusion network to merge multi-class representations and binary-class representations for multi-class vessel segmentation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>(1) The idea of merging multi-class and binary-class is interesting.
+(2) The proposed method outperformed some vessel segmentation methods.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>(1) Some results are not convincing. (see following detailed comments 1). 
+(2) The key ablation studies are missing. (see following detailed comments 2).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Most key experiment details are included so that it is possible to replicate this work.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>(1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason.</p>
+
+      <p>(2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Although the idea of this paper is interesting, I still have two comments:</p>
+
+      <p>(1) Some results are not convincing. In Table 1, the author reported the sensitivity of MNNSA method [15] as 59.88% on DRIVE-AV dataset. However, in the original paper [15], the sensitivity of vessel segmentation is 79.16% on DRIVE-AV dataset. The reported results of MNNSA are inconsistent with their original paper. Please explain the reason.</p>
+
+      <p>(2) The key ablation studies are missing. This paper aims to merge multi-class representations and binary-class representations for multi-class vessel segmentation. But the comparisons between the merged results and multi-class/binary-class results are missing. So, the contribution of this paper cannot be proved.</p>
+
+      <p>The authors should address these comments during feedback.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper introduces a system for artery/vein segmentation on retinal fundus images based on the combination of two binary segmentation models (artery vs all, vein vs all) into a multi-class model. The entire model makes use of adversarial training and deep supervision, and seems to result in improved results when compared with some other recently proposed techniques.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The approach here is focused on resolving ambiguities in a vessel segment, where predictions could be mixed instead of only artery or only vein, which is typical in this problem. The method takes advantage of several advanced techniques like adversarial training and deep supervision, which at first glance seem a bit overkill, but the authors included ablation studies to show the contribution of the different pieces. Experimental validation seems quite rigurous, although I have some doubts on this (see below).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>1) Handling of the uncertainty class: The three datasets considered in this paper contain pixels labeled in four classes, namely artery, vein, background and uncertain. The authors do not mention how do they handle the uncertain class, but it seems from the evaluation section that they are actually measuring performance on artery, vein, and uncertain pixels (page 6 below). It is not clear if the method predicts uncertain pixels or not?
+2) Handling of the background class: In the end, it is very unclear if the proposed technique predicts artery and vein pixels, or it also generates a full segmentation that includes background too. It seems to me that the model is solving artery/vein classification on top of vessel pixels, and the authors start from the vessel map assuming it is given, is this the case? If it is, I would not call this multi-class but rather binary, am I wrong?
+3) Evaluation 1: Deriving from the previous points, I don’t understand how the evaluation is done for non-binary measures (ROC, PR, MSE). Is it approached as a multi-class problem? What would be the classes, artery, vein and uncertain? Moreover, it seems a bit funny that 99% of the P-values are 1.83e-4, is this a typo or all P-values ended up being exactly the same?
+4) Evaluation 2: Considering that the paper claims to resolve intra-segment contradictory results, I was expecting to see some evaluation that would focus on that particular aspect of the method, but all reported metrics are global (at the image level), instead of local (at the segment level).
+5) Hyperparameter impact: It seems from the supplementary material that the behavior of the hyperparameters is very wild and indicates a considerable instability of the proposed technique. For example, why do the authors think that using alpha=0.4 and alpha=0.6 results in good performance, but using alpha=0.5 results in terrible performance? In addition, tuning the hyperparameters for each dataset is a bit weak, one would expect the same model with the same hyperparameters to work for all datasets, otherwise one needs to tune hyperparameters for each new data that arrives. This is particularly weak for the beta hyperparameter: setting it to 0.8 results in the best performance for LES-AV but almost the worst performance for DRIVE. I believe this deserves further discussion. Finally, how were hyperparameters searched for HRF?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The three datasets employed in this paper are public, and the authors promise to release the code. There are a couple of points in the reproducibility sheet that are not really addressed:
+An analysis of situations in which the method failed/A description of the memory footprint: The authors indicate that these have been fulfilled, but I don’t think that is the case.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The two most important defficiencies in this paper, in my opinion, are as follow:
+1) It is not clear if the method performs artery/vein classification from pre-available vessel maps, or artery/vein/background, and how does it deal with uncertain pixels (labeled as such in the ground-truth). This should be clarified from the beginning, since the authors make lots of references to the multi-class to binary fusion, etc. If the background is being considered during training, it seems to me that the evaluation metrics employed are not correct (see F formula in page 6 at the bottom). 
+2) Since the method claims to be useful for intra-segment disambiguation, I would recommend to adopt some kind of performance analysis that shows how this aspect of the problem is improved by their approach. Possibly splitting the vasculature into separate segments, and observing how uniform the predictions are per-segment.</p>
+
+      <p>If time/space allows, the other concerns I describe in the “weaknesses” section, particularly the comment on hyperparameters and stability of the methods, should also be discussed, I think.
+Some minor issues:
+a) I believe the title of the paper should be switched to “Learning to Address Intra-segment Misclassification in Artery/Vein segmentation
+b) Please review your figure 3, it reads “adeversarial”</p>
+
+      <p>Note: Since the authors report results on competing methods by training them and generating their own predictions, I think the comparison is acceptable as it is relative to the same evaluation process (not taking values from other paper’s tables). Nevertheless, evaluation details should be clarified.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Although the focus of the paper is on resolving intra-segment confusion, which is an interesting aspect of the artery/vein problem, the technique is never evaluated to understand if there is a quantitative improvement on that particular side of the problem. Moreover, as I mentioned above, there is some confusion on the purpose of the method regarding the background and uncertain classes. It is hard to assess the usefulness of the model if this is not clarified. Finally, the technique is quite complicated, with multiple moving parts and lots of losses. This results in quite a few hyperparameters, the effect of which seems unclear by looking at validation performance in the hyperparameter search section of the supplementary material.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>While all the reviewers found the merits of this paper, they also agreed that there are a few problems regarding the technique details and experiments. In the rebuttal, the authors should focus on explaining some technique issues (R1), addressing experimental concerns (R2 and R3)</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have addressed most of the issues raised by the reviewers. I recommend for getting accepted of this paper. However, one important reference is missing: Retinal Vascular Network Topology Reconstruction and Artery/Vein Classification via Dominant Set Clustering, IEEE Transactions on Medical Imaging, 2020, 39(2): 341-356</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors responded to the major concerns, such as technique issues, and experiment. Thus, I prefer to accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Generally, the reviewers have consistently positive feedbacks for this paper in the first round review and the authors have addressed/clarified most major concerns raised by reviewers and the meta-reviewer. Thus, the meta-reviewer would like to suggest “Accept” of this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+
+  <p>We appreciate the detailed comments and positive feedback from all three reviewers. Following AC’s guidance, we address the technical and experimental issues below. In addition, we will make minor edits regarding the notation and typos.</p>
+
+  <p>R1.1: GAN equations are wrong, potentially causing the discriminator input unclear.
+We will correct the typo in the equation as suggested. The discriminator input is indeed the concatenation of segmentation probability map (or ground-truth) and retinal image, as shown in Fig 3.</p>
+
+  <p>R1.2-1.5: The reviewer raised questions on the motivation and clarification on a number of network architectural choices and the training loss design, including the definitions of BCE, MSE, skip-connection, and deep supervision.</p>
+
+  <p>1.2 - BCE and MSE were defined in Fig 3, we will further clarify in the text. For multi-class segmenter, ground-truth binary map and segmentation probability map are both represented by three channels. Over these three channels, the loss was computed by averaging three BCEs - a variant to the standard multi-class CE with different class weighting.</p>
+
+  <p>1.3 &amp; 1.4 - Skip-connection based merging and deep supervision location were designed intuitively, but we agree that investigating the effectiveness of alternative designs may be interesting.</p>
+
+  <p>1.5 - The next convolution operation is the final convolutional block to generate the multi-class segmentation map (Sec.2.2 and Fig.3).</p>
+
+  <p>R2.1: Some results are not convincing, e.g., in Table 1, reported results are inconsistent with the original paper [15]. The related comment is R3.1: how the evaluation is done for non-binary measure? and R3.2: Most of P-value in Table 1 are the same.
+We clarify that the task in this paper is different, arguably more challenging and evaluation is more stringent. 1) a sensitivity of 79.16% was reported in [15] for only segmenting vessels without differentiating the subtypes; 2) As detailed in “Evaluation metrics”, the binary classification metric was for each class (artery, uncertain pixels, and vein), e.g., artery versus background in the artery channel, to obtain F1-scores F_a, F_u, and F_v, then weighted by the ratio of the pixel counts. We argue that this bespoke measure provides a more intuitive and direct assessment for segmenting all vessel subtypes. Each pixel of the retinal photography is one of a wider range of classes (artery, uncertain pixels, vein, and background) compared to binary classification (vessel and background)[15]. A direct comparison may not be appropriate.</p>
+
+  <p>The same P-values from a ranking-based non-parametric Mann-Whitney U test indicate consistent metric ranking of the proposed method and [2], indeed an interesting observation.</p>
+
+  <p>R2.2: Key ablation studies are missing, i.e., comparisons between the merged results and multi-class/binary-class results.
+This important comparison was indeed included in the last two rows of Table 2 (merged results and multi-class results) and “Ensemble” in Table 1 (ensemble of binary-class results). We will highlight them in text.</p>
+
+  <p>R3.3: We appreciate several suggestions for clarity, including “I am not clear if the method predicts uncertain pixels or not?” and “it seems the model is solving artery/vein classification assuming the vessel map is given?”.
+We would like to further emphasise that, as described in Sect. 2.2 and Fig 3, the input of the model is retinal photography and output is a three-channel probability map (artery, uncertain pixels, and vein), and no vessel map is needed in inference.</p>
+
+  <p>R3.4: Reported metrics in Table 1 are global, instead of local. 
+Qualitative local results were provided in Fig 5, with the lack of a widely-accepted definition of local metric. We believe it is an interesting future research question.</p>
+
+  <p>R3.5: Hyperparameter tuning is sensitive. Tuning the hyperparameters for each dataset is a bit weak.
+As introduced in “Implementation and Training”, all hyperparameters are fixed. We will update Supplementary Fig 1 to reflect the stableness.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0145-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0146-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Ophthalmology"
+        class="post-category">
+        Clinical applications - Ophthalmology
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Zhou, Yukun"
+        class="post-category">
+        Zhou, Yukun
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Moucheng"
+        class="post-category">
+        Xu, Moucheng
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Yipeng"
+        class="post-category">
+        Hu, Yipeng
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Hongxiang"
+        class="post-category">
+        Lin, Hongxiang
+      </a> |  
+      
+      <a href="kittywong/tags#Jacob, Joseph"
+        class="post-category">
+        Jacob, Joseph
+      </a> |  
+      
+      <a href="kittywong/tags#Keane, Pearse A."
+        class="post-category">
+        Keane, Pearse A.
+      </a> |  
+      
+      <a href="kittywong/tags#Alexander, Daniel C."
+        class="post-category">
+        Alexander, Daniel C.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0146/12/31/Paper1545">
+          Flip Learning: Erase to Segment
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0144/12/31/Paper1418">
+          Residual Feedback Network for Breast Lesion Segmentation in Ultrasound Image
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

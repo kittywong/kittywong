@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A Deep Reinforced Tree-traversal Agent for Coronary Artery Centerline Extraction | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="A Deep Reinforced Tree-traversal Agent for Coronary Artery Centerline Extraction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhuowei Li, Qing Xia, Zhiqiang Hu, Wenji Wang, Lijian Xu, Shaoting Zhang Abstract Vessel centerline extraction is fundamental for plentiful medical applications. Majority of current methods require pre-segmentations, distance maps or similar sorts of scanning whole volume action and followed by minimal-path or skeletonization algorithms. In this paper, we demonstrate a deep reinforced tree-traversal agent that automatically traces tree-structure centerlines assuming no post-prune or post-merging. It takes raw images as input and generates tree-structure centerlines naturally. To this end, road mark and dynamic reward mechanisms are proposed to make tree-structure vessels learnable and impart the agent how to learn correspondingly. Besides, a multi-task discriminator is raised to simultaneously detect bifurcations and decide terminations. We experimentally show that traced centerlines have an overlap of more than 90% and a distance less than 0.25mm with annotated reference centerlines on coronary arteries. Beyond the promising accuracy, the proposed method also surpasses other existing methods by a large margin in terms of the time and memory efficiency. And a flexible trade-off between accuracy and time efficiency is exhibited at the inference. Codes are available at https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal. Link to paper https://doi.org/10.1007/978-3-030-87240-3_40 Link to the code repository https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents a framework to extract the coronary artery centerline without post-prune or fusion by combining a reinforcement learning model with the tree-traversal process. The authors proposed a multi-task discriminator to detect the bifurcations of the tree structures and when to terminate. By using a dynamic rewarding mechanism, the model is able to trace and find the correct directions. Specifically, the authors designed road mark mechanism to ensure the tracing not getting into traps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. 1.Coronary artery has more complex structures compared to published paper using DRL on aortic artery. 2.The method automatically identifies the bifurcation and terminate the tracing which was a challenge 3.The method uses a road map to mark the location that being visited to avoid the trapping situation often happened in the tracing task. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The discriminator for detecting the bifurcations or the termination of the tracing is trained separately from the Agent which makes the inference a bit complex. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Overall, the paper has high reproducibility 1.Based on the reproducibility checklist, the authors make the train/evaluation codes available together with readme file to make a full description 2.The authors have a relatively detailed descriptions regarding the training and inference: (1)The pre-processing steps (2)The split of the train and validation datasets (3)The performance metrics (4)Some of the parameters set in their experiments Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written with clear structure and detailed description of the methodology and results. I appreciate the work from the authors. 1.The author proposes a road mark mechanism to remind the agent of trajectories that being visited. Page 4, section “Road Mark” describes that “the road mark, a cube with size n and value c, will be left to the raw environment where the agent has passed”. My question is how the road mark being used? Do you set all passed location with road marks? And how the value c will be applied during the tracing? Please Clarify. 2.In the section of “Dataset”, the authors state that “Most of these patients contain a certain degree of stenosis and plaques”. (1)Do you have a distribution of the severity of the stenosis or plaques? Severe stenosis or plaques will sure affect the lumen of the coronary artery and therefore affect the centerlines. (2) Did you evaluate the performance of your method regarding the different severity of the stenosis or plaques? 3.The last line in the first paragraph, page6 “The whole dataset is split into 140 training and 140 validation”. In earlier part of this section, it says that the 280 patients were from four clinical institutions. (1) How do you split the train and validation, by randomly split these 280 patients? (2) If randomly, how do you verify your method to deal with a different distribution, such as from a fifth institution? Please add some details. 4.In the metrics section, the authors describe two metrics, the overlap and the distance between the extracted and the ground truth. The metrics calculate the overlap and also the distance using both directions, from extracted centerline to ground truth, and from ground truth to the extracted centerline to make the values more robust, similar to a point set registration results evaluation. But the description needs to be improved to make it more readable, especially that the terms Rt, Rf, Tt,Tf, and similary Dr, Dt which actually confuses me more. 5.Table 2 listed the results for using different step-size, and the author concludes in the last two lines, section “coronary artery centerline extraction”, page 7, that step-size equaling to 1.0 generates the highest cost performance. Why didn’t the author chooses the step-size as 1.2 which has higher overlap accuracy, and less time cost with only 0.01mm average distance increase compared to the step-size as 1.0. Should the reader need to interpret the table in a different way? 6.Some settings of the experimental parameters are missing, such as the maximum searching steps, the cubic size for the road mark, etc. adding these values will increase the reproducibility of the proposed method. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. The paper is well written with clear structure and detailed description of the methodology and results. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper is about segmentation of coronary arteries with a traversal agent i.e. starting from a reference point and exploring the tree. It deals with the challenge of bifurcation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is to expand use the traversal agent for this segmentation task. Traversal agent have the capability to process very efficiently since they do not need to explore the full volume. The focus on bifucation is pretty useful since it is an important challenge of this approach. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper suffers from several weaknesses: the internal behavior of the traversal agent is neither explained. What is the criteria used to analyze the pixels values? It is mentioned that it is trained episodically (page 5). I have a hard time to understand that it means. The concept of “road mark” used to avoid circular trajectories lacks clarity. You write “‘As indicated by the name, a distinctive mark (a cube with size n and value c in our setting) is left to the raw environment where the agent has passed.’ what does it mean? Are you modifying the image content ? You paper does not mention at all the concept of scale. How do you deal with vessels of different diameters which are likely to show up as you go through a bifurcation? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In my view, main limitation of the reproducibility is that some key algorithmic elements such as the internal design of the traversal agent are not explained at all. Did I miss a cross-reference? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The concept of “reference point” and “reference centerlines” is used before being introduced even intuitively. The reading of the paragraph “Reward design” is very difficult. It is only later that it looks to be the ground-truth. Why not calling it simply ground-truth? closet point → closest point Why taking into account the length of the step I.e   xt   in the definition of the reward function? It is not explained in the text. Is it just to make a scale normalization. Is the length of a step constant or not ? In defining T for the reward as the difference between the norm of v1 and v2, you treat equally two vector components the parallel and the orthogonal to the trajectory. In my mind, they play a different role. Indeed both curves are discretized and so the parallel component is the consequence of using discrete step to model the centerline. Consequently it shall not account the same way. In the presented result, the ratio of coverage of traced centerline an the ratio for the reference centerline are only given as a sum of both. Consequently, the reader cannot estimate if there is tendency to over segment or under segment. The included mp4 shows several segmented branches without reference centerline. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think that the work is interesting although the writing of the paper is weak and lacks key details. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors propose a deep reinforcement learning method to segment vessel centerline in 3D medical images. Starting with a manual seed point, a trained agent is traversing patch by patch the image in order to segment the vascular tree. They design a reward system and mechanisms to choose right bifurcations order and avoid going backward during the tracing. The orientations to choose and the finding of bifurcations are inspired from previous methods. The evaluation on annotated cardiac CTA shows a better robustness to the state-of-the-art, and a faster and more efficient computation. Ablation study is also done to control how useful are the different rewards. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is a novel method using deep reinforcement learning combining previous method designs and new designs. The method is fully sequential which explain the fast and efficient computation. There is comparisons with state-of-the-art methods and robustness is the best for their method. Ablation study is done Evaluation data is sufficient Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method is not fully clear to me How the road mark is combined with dynamic reward and buffer? How is combined the reward metric with the loss function of the agent? Is the CNN tracker neural network pre-trained beforehand? or at the same time as an agent? For the reproducibility of the methods, a lot of used parameters are missing for the experiments (see reproducibility part), but it is stated that code will be shared. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is stated that code will be available which is nice In the paper itself, there is no information on the following parameters used during the experiments: gamma (loss function), k (target reference point), cube size n (road mark), Z (buffer zone time step), T (multi-task discriminator), safe range and maximum steps (end of trajectory), discriminator regression parameters? optimizer + parameters used by the agent? number of episodes during the training? Data is not shared Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Page 1 Abstract “no post-prone” -&gt; Do you mean post-prune? “assuming no post-prune or merging” -&gt; This is two times in two consecutive sentences, maybe rephrase this part. “and a distance less than 0.25mm” -&gt; average distance? “with annotated reference centerlines on coronary arteries” -&gt; Can you precise if you work with 2D or 3D images “surpasses other existing methods by a large margin in terms of efficiency” -&gt; Efficiency is too vague. Can you please rephrase. Page 2 “Despite the heuristic effect of the work” -&gt; What do you mean by heuristic effect of the work? “post-prone and merging” -&gt; post-prune? Methods Equation 1: is r_{t+1} the reward? Page 3 Figure 1 What is the purpose of “Null ?” as you just push p_{t+1}? Maybe the null should be on the green line? Or the backtrack routine is computed in parallel with the sequential tracing process? It is not clear to me what’s happening when “Stop?” is No and at the same time “Bifurcation?” is Yes. In this case p_{t+1} will be traced two times? Maybe the Road Mark mechanism could be added in the figure to understand how previous done bifurcation are discarded. Is it possible to have two bifurcations at the same time for one point p_t? Reward Design “Here we propose a target that merges two subgoals into one by directly pulling current proposed centerline point p_t to next target reference point g_{t+k}” -&gt; It is not clear to me why g_{t+1} is not used all the time. Can you give the intuition on why g_{t+k} with k &gt; 1 is relevant? “by finding closet point” -&gt; closest? Equation 2 &amp; 3: you should define v1, v2 and x_t (even though it is in Fig. 2) Equation 3: why do you divide by 2? Page 4 Figure 2 W.r.t to T, I would have chosen v1 as the vector from p_t to g_t. Can you give the intuition on the reason why v1 is the vector from p_t to g_{t+k}? The auxiliary signal A is a sigmoid. So the closest you are from the reference point the closest A is to 0.5. The farther it is and A reaches 1. So you get more reward when the point is far from the reference point. It is not what we expect. What am I doing wrong in my reasoning? Dynamic Reward. Is there any interference with the road mark and the dynamic reward? when all potential candidates are collected you do traverse the buzzer zone several times? “in what order should the agent trace at bifurcations” -&gt; How a bifurcation is defined? When to decide to start a buffer zone? “Then accumulated rewards Rn” -&gt; maybe for clarity add that n \in [0,N-1] Page 5 Dynamic Reward “When the agent backtracks to the same bifurcation, the reference centerline already used will be disregarded from the candidate pool, then the same strategy is executed again.” -&gt; Is the Road Mark mechanism used here to disregard candidate? How the Road Mark is done here with the bifurcation point, the buffer? Do you remove the Road Mark there when you go back here to do the other paths? Multi-task discriminator. “jiitering” -&gt; jittering Page 6 Metric. “and it’s the corresponding point” -&gt; and its corresponding point Page 7 Table 1: Could you discuss the cases with minimum overlap (e.g. the one with 54.93%)? Table 1: Your 3D image has been resampled with a spacing of 0.5mm. It would be nice in the dataset section that you mention what is the pixel size and slice thickness of your raw image. The ground truth centerline is extracted with the original image and here the methods extract the centerline with the 0.5mm image sampling. When we look at the results, the maximum distance is 0.41mm. So below the voxel sampling. It makes me wonder if all these numbers are significant between all the methods as they are all pretty good and below the voxel sampling. Coronary Artery Centerline Extraction. “The architecture used in our work is the same as what was proposed in the CNN Tracker to perform an impartial comparison. Ostium locations are provided for both CNN Tracker and our method for the sake of justice” -&gt; In your work, where this network is used? Is this the target network of the agent? I am a bit confused with target and policy network. Are they the same network? “Here we measure step-size from 0.5 to 2.0” -&gt; What unit is it? What step-size did you use at training time. Do you mean the step-size between p_t to p_{t+1}? Page 8 “According to our off-line visualization results, the agent will always trace the same path and sometimes traces loops without a road mark” -&gt; Does the tracing continue endlessly sometime? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factor is providing a novel method combining robustness, accuracy, speed and memory efficiency all at the same time. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for extracting the coronary artery centerline. The new framework uses a reinforcement learning model with the tree-traversal agent. Bifurcations are detected by a multi-task discriminator, which is interesting. The method has been evaluated, and the results are good. The reviewers are all positive about this paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Road-mark in detail (R1, R2, R3) We leave the road-mark (a cube with size n=3 and value c and c &gt; 1) at every time step in the raw environment (CTA volume). Since HU value of CTA image is normalized to (0,1). So the road-mark is visualized as a highlight cube and we modify the input environment as train or inference process progressing. Dataset in detail (R1) We randomly split 280 patients into 140 train and 140 validation. We do not comprehensively or statistically evaluate how stenosis or plaques can impact our method at this stage. However according to off-table visualizations. Extremely severe stenosis or poor image quality do can cause early stop of the agent. Agent in detail (R2) Both the tracing agent and the discriminator is a relatively shallow CNN. Scales in our method (R2) We leverage the agent (CNN) to implicitly learn vessels with different scales. However, the input patch size is designed to cover vessels with the largest diameter in order to guarantee a full observation of vessels. Reward &amp; loss in detail (R3) The agent (CNN) is trained with a standard DRL framework. So the agent is trained with rewards solely. Rewards is calculated according to reference centerlines. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Zhuowei Li, Qing Xia, Zhiqiang Hu, Wenji Wang, Lijian Xu, Shaoting Zhang Abstract Vessel centerline extraction is fundamental for plentiful medical applications. Majority of current methods require pre-segmentations, distance maps or similar sorts of scanning whole volume action and followed by minimal-path or skeletonization algorithms. In this paper, we demonstrate a deep reinforced tree-traversal agent that automatically traces tree-structure centerlines assuming no post-prune or post-merging. It takes raw images as input and generates tree-structure centerlines naturally. To this end, road mark and dynamic reward mechanisms are proposed to make tree-structure vessels learnable and impart the agent how to learn correspondingly. Besides, a multi-task discriminator is raised to simultaneously detect bifurcations and decide terminations. We experimentally show that traced centerlines have an overlap of more than 90% and a distance less than 0.25mm with annotated reference centerlines on coronary arteries. Beyond the promising accuracy, the proposed method also surpasses other existing methods by a large margin in terms of the time and memory efficiency. And a flexible trade-off between accuracy and time efficiency is exhibited at the inference. Codes are available at https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal. Link to paper https://doi.org/10.1007/978-3-030-87240-3_40 Link to the code repository https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents a framework to extract the coronary artery centerline without post-prune or fusion by combining a reinforcement learning model with the tree-traversal process. The authors proposed a multi-task discriminator to detect the bifurcations of the tree structures and when to terminate. By using a dynamic rewarding mechanism, the model is able to trace and find the correct directions. Specifically, the authors designed road mark mechanism to ensure the tracing not getting into traps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. 1.Coronary artery has more complex structures compared to published paper using DRL on aortic artery. 2.The method automatically identifies the bifurcation and terminate the tracing which was a challenge 3.The method uses a road map to mark the location that being visited to avoid the trapping situation often happened in the tracing task. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The discriminator for detecting the bifurcations or the termination of the tracing is trained separately from the Agent which makes the inference a bit complex. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Overall, the paper has high reproducibility 1.Based on the reproducibility checklist, the authors make the train/evaluation codes available together with readme file to make a full description 2.The authors have a relatively detailed descriptions regarding the training and inference: (1)The pre-processing steps (2)The split of the train and validation datasets (3)The performance metrics (4)Some of the parameters set in their experiments Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written with clear structure and detailed description of the methodology and results. I appreciate the work from the authors. 1.The author proposes a road mark mechanism to remind the agent of trajectories that being visited. Page 4, section “Road Mark” describes that “the road mark, a cube with size n and value c, will be left to the raw environment where the agent has passed”. My question is how the road mark being used? Do you set all passed location with road marks? And how the value c will be applied during the tracing? Please Clarify. 2.In the section of “Dataset”, the authors state that “Most of these patients contain a certain degree of stenosis and plaques”. (1)Do you have a distribution of the severity of the stenosis or plaques? Severe stenosis or plaques will sure affect the lumen of the coronary artery and therefore affect the centerlines. (2) Did you evaluate the performance of your method regarding the different severity of the stenosis or plaques? 3.The last line in the first paragraph, page6 “The whole dataset is split into 140 training and 140 validation”. In earlier part of this section, it says that the 280 patients were from four clinical institutions. (1) How do you split the train and validation, by randomly split these 280 patients? (2) If randomly, how do you verify your method to deal with a different distribution, such as from a fifth institution? Please add some details. 4.In the metrics section, the authors describe two metrics, the overlap and the distance between the extracted and the ground truth. The metrics calculate the overlap and also the distance using both directions, from extracted centerline to ground truth, and from ground truth to the extracted centerline to make the values more robust, similar to a point set registration results evaluation. But the description needs to be improved to make it more readable, especially that the terms Rt, Rf, Tt,Tf, and similary Dr, Dt which actually confuses me more. 5.Table 2 listed the results for using different step-size, and the author concludes in the last two lines, section “coronary artery centerline extraction”, page 7, that step-size equaling to 1.0 generates the highest cost performance. Why didn’t the author chooses the step-size as 1.2 which has higher overlap accuracy, and less time cost with only 0.01mm average distance increase compared to the step-size as 1.0. Should the reader need to interpret the table in a different way? 6.Some settings of the experimental parameters are missing, such as the maximum searching steps, the cubic size for the road mark, etc. adding these values will increase the reproducibility of the proposed method. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. The paper is well written with clear structure and detailed description of the methodology and results. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper is about segmentation of coronary arteries with a traversal agent i.e. starting from a reference point and exploring the tree. It deals with the challenge of bifurcation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is to expand use the traversal agent for this segmentation task. Traversal agent have the capability to process very efficiently since they do not need to explore the full volume. The focus on bifucation is pretty useful since it is an important challenge of this approach. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper suffers from several weaknesses: the internal behavior of the traversal agent is neither explained. What is the criteria used to analyze the pixels values? It is mentioned that it is trained episodically (page 5). I have a hard time to understand that it means. The concept of “road mark” used to avoid circular trajectories lacks clarity. You write “‘As indicated by the name, a distinctive mark (a cube with size n and value c in our setting) is left to the raw environment where the agent has passed.’ what does it mean? Are you modifying the image content ? You paper does not mention at all the concept of scale. How do you deal with vessels of different diameters which are likely to show up as you go through a bifurcation? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In my view, main limitation of the reproducibility is that some key algorithmic elements such as the internal design of the traversal agent are not explained at all. Did I miss a cross-reference? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The concept of “reference point” and “reference centerlines” is used before being introduced even intuitively. The reading of the paragraph “Reward design” is very difficult. It is only later that it looks to be the ground-truth. Why not calling it simply ground-truth? closet point → closest point Why taking into account the length of the step I.e   xt   in the definition of the reward function? It is not explained in the text. Is it just to make a scale normalization. Is the length of a step constant or not ? In defining T for the reward as the difference between the norm of v1 and v2, you treat equally two vector components the parallel and the orthogonal to the trajectory. In my mind, they play a different role. Indeed both curves are discretized and so the parallel component is the consequence of using discrete step to model the centerline. Consequently it shall not account the same way. In the presented result, the ratio of coverage of traced centerline an the ratio for the reference centerline are only given as a sum of both. Consequently, the reader cannot estimate if there is tendency to over segment or under segment. The included mp4 shows several segmented branches without reference centerline. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think that the work is interesting although the writing of the paper is weak and lacks key details. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors propose a deep reinforcement learning method to segment vessel centerline in 3D medical images. Starting with a manual seed point, a trained agent is traversing patch by patch the image in order to segment the vascular tree. They design a reward system and mechanisms to choose right bifurcations order and avoid going backward during the tracing. The orientations to choose and the finding of bifurcations are inspired from previous methods. The evaluation on annotated cardiac CTA shows a better robustness to the state-of-the-art, and a faster and more efficient computation. Ablation study is also done to control how useful are the different rewards. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is a novel method using deep reinforcement learning combining previous method designs and new designs. The method is fully sequential which explain the fast and efficient computation. There is comparisons with state-of-the-art methods and robustness is the best for their method. Ablation study is done Evaluation data is sufficient Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method is not fully clear to me How the road mark is combined with dynamic reward and buffer? How is combined the reward metric with the loss function of the agent? Is the CNN tracker neural network pre-trained beforehand? or at the same time as an agent? For the reproducibility of the methods, a lot of used parameters are missing for the experiments (see reproducibility part), but it is stated that code will be shared. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is stated that code will be available which is nice In the paper itself, there is no information on the following parameters used during the experiments: gamma (loss function), k (target reference point), cube size n (road mark), Z (buffer zone time step), T (multi-task discriminator), safe range and maximum steps (end of trajectory), discriminator regression parameters? optimizer + parameters used by the agent? number of episodes during the training? Data is not shared Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Page 1 Abstract “no post-prone” -&gt; Do you mean post-prune? “assuming no post-prune or merging” -&gt; This is two times in two consecutive sentences, maybe rephrase this part. “and a distance less than 0.25mm” -&gt; average distance? “with annotated reference centerlines on coronary arteries” -&gt; Can you precise if you work with 2D or 3D images “surpasses other existing methods by a large margin in terms of efficiency” -&gt; Efficiency is too vague. Can you please rephrase. Page 2 “Despite the heuristic effect of the work” -&gt; What do you mean by heuristic effect of the work? “post-prone and merging” -&gt; post-prune? Methods Equation 1: is r_{t+1} the reward? Page 3 Figure 1 What is the purpose of “Null ?” as you just push p_{t+1}? Maybe the null should be on the green line? Or the backtrack routine is computed in parallel with the sequential tracing process? It is not clear to me what’s happening when “Stop?” is No and at the same time “Bifurcation?” is Yes. In this case p_{t+1} will be traced two times? Maybe the Road Mark mechanism could be added in the figure to understand how previous done bifurcation are discarded. Is it possible to have two bifurcations at the same time for one point p_t? Reward Design “Here we propose a target that merges two subgoals into one by directly pulling current proposed centerline point p_t to next target reference point g_{t+k}” -&gt; It is not clear to me why g_{t+1} is not used all the time. Can you give the intuition on why g_{t+k} with k &gt; 1 is relevant? “by finding closet point” -&gt; closest? Equation 2 &amp; 3: you should define v1, v2 and x_t (even though it is in Fig. 2) Equation 3: why do you divide by 2? Page 4 Figure 2 W.r.t to T, I would have chosen v1 as the vector from p_t to g_t. Can you give the intuition on the reason why v1 is the vector from p_t to g_{t+k}? The auxiliary signal A is a sigmoid. So the closest you are from the reference point the closest A is to 0.5. The farther it is and A reaches 1. So you get more reward when the point is far from the reference point. It is not what we expect. What am I doing wrong in my reasoning? Dynamic Reward. Is there any interference with the road mark and the dynamic reward? when all potential candidates are collected you do traverse the buzzer zone several times? “in what order should the agent trace at bifurcations” -&gt; How a bifurcation is defined? When to decide to start a buffer zone? “Then accumulated rewards Rn” -&gt; maybe for clarity add that n \in [0,N-1] Page 5 Dynamic Reward “When the agent backtracks to the same bifurcation, the reference centerline already used will be disregarded from the candidate pool, then the same strategy is executed again.” -&gt; Is the Road Mark mechanism used here to disregard candidate? How the Road Mark is done here with the bifurcation point, the buffer? Do you remove the Road Mark there when you go back here to do the other paths? Multi-task discriminator. “jiitering” -&gt; jittering Page 6 Metric. “and it’s the corresponding point” -&gt; and its corresponding point Page 7 Table 1: Could you discuss the cases with minimum overlap (e.g. the one with 54.93%)? Table 1: Your 3D image has been resampled with a spacing of 0.5mm. It would be nice in the dataset section that you mention what is the pixel size and slice thickness of your raw image. The ground truth centerline is extracted with the original image and here the methods extract the centerline with the 0.5mm image sampling. When we look at the results, the maximum distance is 0.41mm. So below the voxel sampling. It makes me wonder if all these numbers are significant between all the methods as they are all pretty good and below the voxel sampling. Coronary Artery Centerline Extraction. “The architecture used in our work is the same as what was proposed in the CNN Tracker to perform an impartial comparison. Ostium locations are provided for both CNN Tracker and our method for the sake of justice” -&gt; In your work, where this network is used? Is this the target network of the agent? I am a bit confused with target and policy network. Are they the same network? “Here we measure step-size from 0.5 to 2.0” -&gt; What unit is it? What step-size did you use at training time. Do you mean the step-size between p_t to p_{t+1}? Page 8 “According to our off-line visualization results, the agent will always trace the same path and sometimes traces loops without a road mark” -&gt; Does the tracing continue endlessly sometime? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factor is providing a novel method combining robustness, accuracy, speed and memory efficiency all at the same time. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for extracting the coronary artery centerline. The new framework uses a reinforcement learning model with the tree-traversal agent. Bifurcations are detected by a multi-task discriminator, which is interesting. The method has been evaluated, and the results are good. The reviewers are all positive about this paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Road-mark in detail (R1, R2, R3) We leave the road-mark (a cube with size n=3 and value c and c &gt; 1) at every time step in the raw environment (CTA volume). Since HU value of CTA image is normalized to (0,1). So the road-mark is visualized as a highlight cube and we modify the input environment as train or inference process progressing. Dataset in detail (R1) We randomly split 280 patients into 140 train and 140 validation. We do not comprehensively or statistically evaluate how stenosis or plaques can impact our method at this stage. However according to off-table visualizations. Extremely severe stenosis or poor image quality do can cause early stop of the agent. Agent in detail (R2) Both the tracing agent and the discriminator is a relatively shallow CNN. Scales in our method (R2) We leverage the agent (CNN) to implicitly learn vessels with different scales. However, the input patch size is designed to cover vessels with the largest diameter in order to guarantee a full observation of vessels. Reward &amp; loss in detail (R3) The agent (CNN) is trained with a standard DRL framework. So the agent is trained with rewards solely. Rewards is calculated according to reference centerlines. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0539/12/31/Paper1256" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0539/12/31/Paper1256" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0539-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Deep Reinforced Tree-traversal Agent for Coronary Artery Centerline Extraction" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0539/12/31/Paper1256"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0539/12/31/Paper1256","headline":"A Deep Reinforced Tree-traversal Agent for Coronary Artery Centerline Extraction","dateModified":"0540-01-03T00:00:00-05:17","datePublished":"0539-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Zhuowei Li, Qing Xia, Zhiqiang Hu, Wenji Wang, Lijian Xu, Shaoting Zhang Abstract Vessel centerline extraction is fundamental for plentiful medical applications. Majority of current methods require pre-segmentations, distance maps or similar sorts of scanning whole volume action and followed by minimal-path or skeletonization algorithms. In this paper, we demonstrate a deep reinforced tree-traversal agent that automatically traces tree-structure centerlines assuming no post-prune or post-merging. It takes raw images as input and generates tree-structure centerlines naturally. To this end, road mark and dynamic reward mechanisms are proposed to make tree-structure vessels learnable and impart the agent how to learn correspondingly. Besides, a multi-task discriminator is raised to simultaneously detect bifurcations and decide terminations. We experimentally show that traced centerlines have an overlap of more than 90% and a distance less than 0.25mm with annotated reference centerlines on coronary arteries. Beyond the promising accuracy, the proposed method also surpasses other existing methods by a large margin in terms of the time and memory efficiency. And a flexible trade-off between accuracy and time efficiency is exhibited at the inference. Codes are available at https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal. Link to paper https://doi.org/10.1007/978-3-030-87240-3_40 Link to the code repository https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper presents a framework to extract the coronary artery centerline without post-prune or fusion by combining a reinforcement learning model with the tree-traversal process. The authors proposed a multi-task discriminator to detect the bifurcations of the tree structures and when to terminate. By using a dynamic rewarding mechanism, the model is able to trace and find the correct directions. Specifically, the authors designed road mark mechanism to ensure the tracing not getting into traps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. 1.Coronary artery has more complex structures compared to published paper using DRL on aortic artery. 2.The method automatically identifies the bifurcation and terminate the tracing which was a challenge 3.The method uses a road map to mark the location that being visited to avoid the trapping situation often happened in the tracing task. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The discriminator for detecting the bifurcations or the termination of the tracing is trained separately from the Agent which makes the inference a bit complex. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Overall, the paper has high reproducibility 1.Based on the reproducibility checklist, the authors make the train/evaluation codes available together with readme file to make a full description 2.The authors have a relatively detailed descriptions regarding the training and inference: (1)The pre-processing steps (2)The split of the train and validation datasets (3)The performance metrics (4)Some of the parameters set in their experiments Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Overall, the paper is well written with clear structure and detailed description of the methodology and results. I appreciate the work from the authors. 1.The author proposes a road mark mechanism to remind the agent of trajectories that being visited. Page 4, section “Road Mark” describes that “the road mark, a cube with size n and value c, will be left to the raw environment where the agent has passed”. My question is how the road mark being used? Do you set all passed location with road marks? And how the value c will be applied during the tracing? Please Clarify. 2.In the section of “Dataset”, the authors state that “Most of these patients contain a certain degree of stenosis and plaques”. (1)Do you have a distribution of the severity of the stenosis or plaques? Severe stenosis or plaques will sure affect the lumen of the coronary artery and therefore affect the centerlines. (2) Did you evaluate the performance of your method regarding the different severity of the stenosis or plaques? 3.The last line in the first paragraph, page6 “The whole dataset is split into 140 training and 140 validation”. In earlier part of this section, it says that the 280 patients were from four clinical institutions. (1) How do you split the train and validation, by randomly split these 280 patients? (2) If randomly, how do you verify your method to deal with a different distribution, such as from a fifth institution? Please add some details. 4.In the metrics section, the authors describe two metrics, the overlap and the distance between the extracted and the ground truth. The metrics calculate the overlap and also the distance using both directions, from extracted centerline to ground truth, and from ground truth to the extracted centerline to make the values more robust, similar to a point set registration results evaluation. But the description needs to be improved to make it more readable, especially that the terms Rt, Rf, Tt,Tf, and similary Dr, Dt which actually confuses me more. 5.Table 2 listed the results for using different step-size, and the author concludes in the last two lines, section “coronary artery centerline extraction”, page 7, that step-size equaling to 1.0 generates the highest cost performance. Why didn’t the author chooses the step-size as 1.2 which has higher overlap accuracy, and less time cost with only 0.01mm average distance increase compared to the step-size as 1.0. Should the reader need to interpret the table in a different way? 6.Some settings of the experimental parameters are missing, such as the maximum searching steps, the cubic size for the road mark, etc. adding these values will increase the reproducibility of the proposed method. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches. The paper is well written with clear structure and detailed description of the methodology and results. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper is about segmentation of coronary arteries with a traversal agent i.e. starting from a reference point and exploring the tree. It deals with the challenge of bifurcation. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength of this paper is to expand use the traversal agent for this segmentation task. Traversal agent have the capability to process very efficiently since they do not need to explore the full volume. The focus on bifucation is pretty useful since it is an important challenge of this approach. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The paper suffers from several weaknesses: the internal behavior of the traversal agent is neither explained. What is the criteria used to analyze the pixels values? It is mentioned that it is trained episodically (page 5). I have a hard time to understand that it means. The concept of “road mark” used to avoid circular trajectories lacks clarity. You write “‘As indicated by the name, a distinctive mark (a cube with size n and value c in our setting) is left to the raw environment where the agent has passed.’ what does it mean? Are you modifying the image content ? You paper does not mention at all the concept of scale. How do you deal with vessels of different diameters which are likely to show up as you go through a bifurcation? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance In my view, main limitation of the reproducibility is that some key algorithmic elements such as the internal design of the traversal agent are not explained at all. Did I miss a cross-reference? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The concept of “reference point” and “reference centerlines” is used before being introduced even intuitively. The reading of the paragraph “Reward design” is very difficult. It is only later that it looks to be the ground-truth. Why not calling it simply ground-truth? closet point → closest point Why taking into account the length of the step I.e   xt   in the definition of the reward function? It is not explained in the text. Is it just to make a scale normalization. Is the length of a step constant or not ? In defining T for the reward as the difference between the norm of v1 and v2, you treat equally two vector components the parallel and the orthogonal to the trajectory. In my mind, they play a different role. Indeed both curves are discretized and so the parallel component is the consequence of using discrete step to model the centerline. Consequently it shall not account the same way. In the presented result, the ratio of coverage of traced centerline an the ratio for the reference centerline are only given as a sum of both. Consequently, the reader cannot estimate if there is tendency to over segment or under segment. The included mp4 shows several segmented branches without reference centerline. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? I think that the work is interesting although the writing of the paper is weak and lacks key details. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The authors propose a deep reinforcement learning method to segment vessel centerline in 3D medical images. Starting with a manual seed point, a trained agent is traversing patch by patch the image in order to segment the vascular tree. They design a reward system and mechanisms to choose right bifurcations order and avoid going backward during the tracing. The orientations to choose and the finding of bifurcations are inspired from previous methods. The evaluation on annotated cardiac CTA shows a better robustness to the state-of-the-art, and a faster and more efficient computation. Ablation study is also done to control how useful are the different rewards. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. It is a novel method using deep reinforcement learning combining previous method designs and new designs. The method is fully sequential which explain the fast and efficient computation. There is comparisons with state-of-the-art methods and robustness is the best for their method. Ablation study is done Evaluation data is sufficient Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The method is not fully clear to me How the road mark is combined with dynamic reward and buffer? How is combined the reward metric with the loss function of the agent? Is the CNN tracker neural network pre-trained beforehand? or at the same time as an agent? For the reproducibility of the methods, a lot of used parameters are missing for the experiments (see reproducibility part), but it is stated that code will be shared. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is stated that code will be available which is nice In the paper itself, there is no information on the following parameters used during the experiments: gamma (loss function), k (target reference point), cube size n (road mark), Z (buffer zone time step), T (multi-task discriminator), safe range and maximum steps (end of trajectory), discriminator regression parameters? optimizer + parameters used by the agent? number of episodes during the training? Data is not shared Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Page 1 Abstract “no post-prone” -&gt; Do you mean post-prune? “assuming no post-prune or merging” -&gt; This is two times in two consecutive sentences, maybe rephrase this part. “and a distance less than 0.25mm” -&gt; average distance? “with annotated reference centerlines on coronary arteries” -&gt; Can you precise if you work with 2D or 3D images “surpasses other existing methods by a large margin in terms of efficiency” -&gt; Efficiency is too vague. Can you please rephrase. Page 2 “Despite the heuristic effect of the work” -&gt; What do you mean by heuristic effect of the work? “post-prone and merging” -&gt; post-prune? Methods Equation 1: is r_{t+1} the reward? Page 3 Figure 1 What is the purpose of “Null ?” as you just push p_{t+1}? Maybe the null should be on the green line? Or the backtrack routine is computed in parallel with the sequential tracing process? It is not clear to me what’s happening when “Stop?” is No and at the same time “Bifurcation?” is Yes. In this case p_{t+1} will be traced two times? Maybe the Road Mark mechanism could be added in the figure to understand how previous done bifurcation are discarded. Is it possible to have two bifurcations at the same time for one point p_t? Reward Design “Here we propose a target that merges two subgoals into one by directly pulling current proposed centerline point p_t to next target reference point g_{t+k}” -&gt; It is not clear to me why g_{t+1} is not used all the time. Can you give the intuition on why g_{t+k} with k &gt; 1 is relevant? “by finding closet point” -&gt; closest? Equation 2 &amp; 3: you should define v1, v2 and x_t (even though it is in Fig. 2) Equation 3: why do you divide by 2? Page 4 Figure 2 W.r.t to T, I would have chosen v1 as the vector from p_t to g_t. Can you give the intuition on the reason why v1 is the vector from p_t to g_{t+k}? The auxiliary signal A is a sigmoid. So the closest you are from the reference point the closest A is to 0.5. The farther it is and A reaches 1. So you get more reward when the point is far from the reference point. It is not what we expect. What am I doing wrong in my reasoning? Dynamic Reward. Is there any interference with the road mark and the dynamic reward? when all potential candidates are collected you do traverse the buzzer zone several times? “in what order should the agent trace at bifurcations” -&gt; How a bifurcation is defined? When to decide to start a buffer zone? “Then accumulated rewards Rn” -&gt; maybe for clarity add that n \\in [0,N-1] Page 5 Dynamic Reward “When the agent backtracks to the same bifurcation, the reference centerline already used will be disregarded from the candidate pool, then the same strategy is executed again.” -&gt; Is the Road Mark mechanism used here to disregard candidate? How the Road Mark is done here with the bifurcation point, the buffer? Do you remove the Road Mark there when you go back here to do the other paths? Multi-task discriminator. “jiitering” -&gt; jittering Page 6 Metric. “and it’s the corresponding point” -&gt; and its corresponding point Page 7 Table 1: Could you discuss the cases with minimum overlap (e.g. the one with 54.93%)? Table 1: Your 3D image has been resampled with a spacing of 0.5mm. It would be nice in the dataset section that you mention what is the pixel size and slice thickness of your raw image. The ground truth centerline is extracted with the original image and here the methods extract the centerline with the 0.5mm image sampling. When we look at the results, the maximum distance is 0.41mm. So below the voxel sampling. It makes me wonder if all these numbers are significant between all the methods as they are all pretty good and below the voxel sampling. Coronary Artery Centerline Extraction. “The architecture used in our work is the same as what was proposed in the CNN Tracker to perform an impartial comparison. Ostium locations are provided for both CNN Tracker and our method for the sake of justice” -&gt; In your work, where this network is used? Is this the target network of the agent? I am a bit confused with target and policy network. Are they the same network? “Here we measure step-size from 0.5 to 2.0” -&gt; What unit is it? What step-size did you use at training time. Do you mean the step-size between p_t to p_{t+1}? Page 8 “According to our off-line visualization results, the agent will always trace the same path and sometimes traces loops without a road mark” -&gt; Does the tracing continue endlessly sometime? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The major factor is providing a novel method combining robustness, accuracy, speed and memory efficiency all at the same time. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for extracting the coronary artery centerline. The new framework uses a reinforcement learning model with the tree-traversal agent. Bifurcations are detected by a multi-task discriminator, which is interesting. The method has been evaluated, and the results are good. The reviewers are all positive about this paper. After reading the comments raised by the reviewers, my recommendation is given in Q3. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Road-mark in detail (R1, R2, R3) We leave the road-mark (a cube with size n=3 and value c and c &gt; 1) at every time step in the raw environment (CTA volume). Since HU value of CTA image is normalized to (0,1). So the road-mark is visualized as a highlight cube and we modify the input environment as train or inference process progressing. Dataset in detail (R1) We randomly split 280 patients into 140 train and 140 validation. We do not comprehensively or statistically evaluate how stenosis or plaques can impact our method at this stage. However according to off-table visualizations. Extremely severe stenosis or poor image quality do can cause early stop of the agent. Agent in detail (R2) Both the tracing agent and the discriminator is a relatively shallow CNN. Scales in our method (R2) We leverage the agent (CNN) to implicitly learn vessels with different scales. However, the input patch size is designed to cover vessels with the largest diameter in order to guarantee a full observation of vessels. Reward &amp; loss in detail (R3) The agent (CNN) is trained with a standard DRL framework. So the agent is trained with rewards solely. Rewards is calculated according to reference centerlines. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Li, Zhuowei,Xia, Qing,Hu, Zhiqiang,Wang, Wenji,Xu, Lijian,Zhang, Shaoting" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>A Deep Reinforced Tree-traversal Agent for Coronary Artery Centerline Extraction</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Cardiac"
+        class="post-category">
+        Clinical applications - Cardiac
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Reinforcement learning"
+        class="post-category">
+        Machine Learning - Reinforcement learning
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Li, Zhuowei"
+        class="post-tags">
+        Li, Zhuowei
+      </a> |  
+      
+      <a href="kittywong/tags#Xia, Qing"
+        class="post-tags">
+        Xia, Qing
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Zhiqiang"
+        class="post-tags">
+        Hu, Zhiqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Wenji"
+        class="post-tags">
+        Wang, Wenji
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Lijian"
+        class="post-tags">
+        Xu, Lijian
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Shaoting"
+        class="post-tags">
+        Zhang, Shaoting
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Zhuowei Li, Qing Xia, Zhiqiang Hu, Wenji Wang, Lijian Xu, Shaoting Zhang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Vessel centerline extraction is fundamental for plentiful medical applications. Majority of current methods require pre-segmentations, distance maps or similar sorts of scanning whole volume action and followed by minimal-path or skeletonization algorithms. In this paper, we demonstrate a deep reinforced tree-traversal agent that automatically traces tree-structure centerlines assuming no post-prune or post-merging. It takes raw images as input and generates tree-structure centerlines naturally. To this end, road mark and dynamic reward mechanisms are proposed to make tree-structure vessels learnable and impart the agent how to learn correspondingly. Besides, a multi-task discriminator is raised to simultaneously detect bifurcations and decide terminations. We experimentally show that traced centerlines have an overlap of more than 90% and a distance less than 0.25mm with annotated reference centerlines on coronary arteries. Beyond the promising accuracy, the proposed method also surpasses other existing methods by a large margin in terms of the time and memory efficiency. And a flexible trade-off between accuracy and time efficiency is exhibited at the inference. Codes are available at https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87240-3_40">https://doi.org/10.1007/978-3-030-87240-3_40</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/LzVv123456/Deep-Reinforced-Tree-Traversal
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a framework to extract the coronary artery centerline without post-prune or fusion by combining a reinforcement learning model with the tree-traversal process. The authors proposed a multi-task discriminator to detect the bifurcations of the tree structures and when to terminate. By using a dynamic rewarding mechanism, the model is able to trace and find the correct directions. Specifically, the authors designed road mark mechanism to ensure the tracing not getting into traps.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches.
+1.Coronary artery has more complex structures compared to published paper using DRL on aortic artery.
+2.The method automatically identifies the bifurcation and terminate the tracing which was a challenge
+3.The method uses a road map to mark the location that being visited to avoid the trapping situation often happened in the tracing task.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The discriminator for detecting the bifurcations or the termination of the tracing is trained separately from the Agent which makes the inference a bit complex.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Overall, the paper has high reproducibility
+1.Based on the reproducibility checklist, the authors make the train/evaluation codes available together with readme file to make a full description
+2.The authors have a relatively detailed descriptions regarding the training and inference:
+(1)The pre-processing steps
+(2)The split of the train and validation datasets
+(3)The performance metrics
+(4)Some of the parameters set in their experiments</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Overall, the paper is well written with clear structure and detailed description of the methodology and results. I appreciate the work from the authors.
+1.The author proposes a road mark mechanism to remind the agent of trajectories that being visited. Page 4, section “Road Mark” describes that “the road mark, a cube with size n and value c, will be left to the raw environment where the agent has passed”. My question is how the road mark being used?  Do you set all passed location with road marks? And how the value c will be applied during the tracing? Please Clarify.
+2.In the section of “Dataset”, the authors state that “Most of these patients contain a certain degree of stenosis and plaques”. (1)Do you have a distribution of the severity of the stenosis or plaques? Severe stenosis or plaques will sure affect the lumen of the coronary artery and therefore affect the centerlines. (2) Did you evaluate the performance of your method regarding the different severity of the stenosis or plaques?
+3.The last line in the first paragraph, page6 “The whole dataset is split into 140 training and 140 validation”. In earlier part of this section, it says that the 280 patients were from four clinical institutions. (1) How do you split the train and validation, by randomly split these 280 patients? (2) If randomly, how do you verify your method to deal with a different distribution, such as from a fifth institution? Please add some details.
+4.In the metrics section, the authors describe two metrics, the overlap and the distance between the extracted and the ground truth. The metrics calculate the overlap and also the distance using both directions, from extracted centerline to ground truth, and from ground truth to the extracted centerline to make the values more robust, similar to a point set registration results evaluation. But the description needs to be improved to make it more readable, especially that the terms Rt, Rf, Tt,Tf, and similary Dr, Dt which actually confuses me more.
+5.Table 2 listed the results for using different step-size, and the author concludes in the last two lines, section “coronary artery centerline extraction”, page 7, that step-size equaling to 1.0 generates the highest cost performance. Why didn’t the author chooses the step-size as 1.2 which has higher overlap accuracy, and less time cost with only 0.01mm average distance increase compared to the step-size as 1.0. Should the reader need to interpret the table in a different way? 
+6.Some settings of the experimental parameters are missing, such as the maximum searching steps, the cubic size for the road mark, etc. adding these values will increase the reproducibility of the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <ol>
+        <li>The proposed method combines the deep reinforced learning (DRL) and the tree-traversal process to extract centerlines for tubular structures with side branches.</li>
+        <li>The paper is well written with clear structure and detailed description of the methodology and results.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper is about segmentation of coronary arteries with a traversal agent i.e. starting from a reference point and exploring the tree. It deals with the challenge of bifurcation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength of this paper is to expand use the traversal agent for this segmentation task. Traversal agent have the capability to process very efficiently since they do not need to explore the full volume. The focus on bifucation is pretty useful since it is an important challenge of this approach.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The paper suffers from several weaknesses:</p>
+      <ul>
+        <li>the internal behavior of the traversal agent is neither explained. What  is the criteria used to analyze the pixels values? It is mentioned that it is trained episodically (page 5). I have a hard time to understand that it means.</li>
+        <li>
+          <p>The concept of “road mark” used to avoid circular trajectories lacks clarity. You write “‘As indicated by the name, a distinctive mark (a cube with size n and value c in our setting) is left to the raw environment where the agent has passed.’ what does it mean? Are you modifying the image content ?</p>
+        </li>
+        <li>You paper does not mention at all the concept of scale. How do you deal with vessels of different diameters which are likely to show up as you go through a bifurcation?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>In my view, main limitation of the reproducibility is that some key algorithmic elements such as the internal design of the traversal agent are not explained at all. Did I miss a cross-reference?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The concept of “reference point” and “reference centerlines” is used before being introduced even intuitively. The reading of the paragraph “Reward design” is very difficult. It is only later that it looks to be the ground-truth. Why not calling it simply ground-truth?</p>
+
+      <p>closet point → closest point</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>Why taking into account the length of the step I.e</td>
+            <td> </td>
+            <td>xt</td>
+            <td> </td>
+            <td>in the definition of the reward function? It is not explained in the text. Is it just to make a scale normalization. Is the length of a step constant or not ?</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>In defining T for the reward as the difference between the norm of v1 and v2, you treat equally two vector components the parallel and the orthogonal to the trajectory. In my mind, they play a different role. Indeed both curves are discretized and so the parallel component is the consequence of using discrete step to model the centerline. Consequently it shall not account the same way.</p>
+
+      <p>In the presented result, the ratio of coverage of traced centerline an the ratio for the reference centerline are only given as a sum of both. Consequently, the reader cannot estimate if there is tendency to over segment or under segment. The included mp4 shows several segmented branches without reference centerline.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>I think that the work is interesting although the writing of the paper is weak and lacks key details.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose a deep reinforcement learning method to segment vessel centerline in 3D medical images. Starting with a manual seed point, a trained agent is traversing patch by patch the image in order to segment the vascular tree. They design a reward system and mechanisms to choose right bifurcations order and avoid going backward during the tracing. The orientations to choose and the finding of bifurcations are inspired from previous methods. The evaluation on annotated cardiac CTA shows a better robustness to the state-of-the-art, and a faster and more efficient computation. Ablation study is also done to control how useful are the different rewards.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>It is a novel method using deep reinforcement learning combining previous method designs and new designs. The method is fully sequential which explain the fast and efficient computation.</li>
+        <li>There is comparisons with state-of-the-art methods and robustness is the best for their method.</li>
+        <li>Ablation study is done</li>
+        <li>Evaluation data is sufficient</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The method is not fully clear to me
+          <ul>
+            <li>How the road mark is combined with dynamic reward and buffer?</li>
+            <li>How is combined the reward metric with the loss function of the agent? Is the CNN tracker neural network pre-trained beforehand? or at the same time as an agent?</li>
+          </ul>
+        </li>
+        <li>For the reproducibility of the methods, a lot of used parameters are missing for the experiments (see reproducibility part), but it is stated that code will be shared.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <ul>
+        <li>It is stated that code will be available which is nice</li>
+        <li>In the paper itself, there is no information on the following parameters used during the experiments: gamma (loss function), k (target reference point), cube size n (road mark), Z (buffer zone time step), T (multi-task discriminator), safe range and maximum steps (end of trajectory), discriminator regression parameters? optimizer + parameters used by the agent? number of episodes during the training?</li>
+        <li>Data is not shared</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Page 1
+	Abstract</p>
+      <ul>
+        <li>“no post-prone” -&gt; Do you mean post-prune?</li>
+        <li>“assuming no post-prune or merging” -&gt; This is two times in two consecutive sentences, maybe rephrase this part.</li>
+        <li>“and a distance less than 0.25mm” -&gt; average distance?</li>
+        <li>“with annotated reference centerlines on coronary arteries” -&gt; Can you precise if you work with 2D or 3D images</li>
+        <li>“surpasses other existing methods by a large margin in terms of efficiency” -&gt; Efficiency is too vague. Can you please rephrase.</li>
+      </ul>
+
+      <p>Page 2</p>
+      <ul>
+        <li>“Despite the heuristic effect of the work” -&gt; What do you mean by heuristic effect of the work?</li>
+        <li>“post-prone and merging” -&gt; post-prune?</li>
+      </ul>
+
+      <ol>
+        <li>Methods
+          <ul>
+            <li>Equation 1: is r_{t+1} the reward?</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p>Page 3</p>
+      <ul>
+        <li>Figure 1
+          <ul>
+            <li>What is the purpose of “Null ?” as you just push p_{t+1}? Maybe the null should be on the green line? Or the backtrack routine is computed in parallel with the sequential tracing process?</li>
+            <li>It is not clear to me what’s happening when “Stop?” is No and at the same time “Bifurcation?” is Yes. In this case p_{t+1} will be traced two times? Maybe the Road Mark mechanism could be added in the figure to understand how previous done bifurcation are discarded.</li>
+            <li>Is it possible to have two bifurcations at the same time for one point p_t?</li>
+          </ul>
+
+          <p>Reward Design</p>
+        </li>
+        <li>“Here we propose a target that merges two subgoals into one by directly pulling current proposed centerline point p_t to next target reference point g_{t+k}” -&gt; It is not clear to me why g_{t+1} is not used all the time. Can you give the intuition on why g_{t+k} with k &gt; 1 is relevant?</li>
+        <li>“by finding closet point” -&gt; closest?</li>
+        <li>Equation 2 &amp; 3: you should define v1, v2 and x_t (even though it is in Fig. 2)</li>
+        <li>Equation 3: why do you divide by 2?</li>
+      </ul>
+
+      <p>Page 4</p>
+      <ul>
+        <li>Figure 2
+          <ul>
+            <li>W.r.t to T, I would have chosen v1 as the vector from p_t to g_t. Can you give the intuition on the reason why v1 is the vector from p_t to g_{t+k}?</li>
+          </ul>
+        </li>
+        <li>
+          <p>The auxiliary signal A is a sigmoid. So the closest you are from the reference point the closest A is to 0.5. The farther it is and A reaches 1. So you get more reward when the point is far from the reference point. It is not what we expect. What am I doing wrong in my reasoning?</p>
+
+          <p>Dynamic Reward.</p>
+        </li>
+        <li>Is there any interference with the road mark and the dynamic reward? when all potential candidates are collected you do traverse the buzzer zone several times?</li>
+        <li>“in what order should the agent trace at bifurcations” -&gt; How a bifurcation is defined? When to decide to start a buffer zone?</li>
+        <li>“Then accumulated rewards Rn” -&gt; maybe for clarity add that n \in [0,N-1]</li>
+      </ul>
+
+      <p>Page 5
+	Dynamic Reward</p>
+      <ul>
+        <li>
+          <p>“When the agent backtracks to the same bifurcation, the reference centerline already used will be disregarded from the candidate pool, then the same strategy is executed again.” -&gt; Is the Road Mark mechanism used here to disregard candidate? How the Road Mark is done here with the bifurcation point, the buffer? Do you remove the Road Mark there when you go back here to do the other paths?</p>
+
+          <p>Multi-task discriminator.</p>
+        </li>
+        <li>
+          <p>“jiitering” -&gt; jittering</p>
+        </li>
+      </ul>
+
+      <p>Page 6
+	Metric.</p>
+      <ul>
+        <li>“and it’s the corresponding point” -&gt; and its corresponding point</li>
+      </ul>
+
+      <p>Page 7</p>
+      <ul>
+        <li>Table 1: Could you discuss the cases with minimum overlap (e.g. the one with 54.93%)?</li>
+        <li>
+          <p>Table 1: Your 3D image has been resampled with a spacing of 0.5mm. It would be nice in the dataset section that you mention what is the pixel size and slice thickness of your raw image. The ground truth centerline is extracted with the original image and here the methods extract the centerline with the 0.5mm image sampling. When we look at the results, the maximum distance is 0.41mm. So below the voxel sampling. It makes me wonder if all these numbers are significant between all the methods as they are all pretty good and below the voxel sampling.</p>
+
+          <p>Coronary Artery Centerline Extraction.</p>
+        </li>
+        <li>“The architecture used in our work is the same as what was proposed in the CNN Tracker to perform an impartial comparison. Ostium locations are provided for both CNN Tracker and our method for the sake of justice” -&gt; In your work, where this network is used? Is this the target network of the agent? I am a bit confused with target and policy network. Are they the same network?</li>
+        <li>“Here we measure step-size from 0.5 to 2.0” -&gt; What unit is it? What step-size did you use at training time. Do you mean the step-size between p_t to p_{t+1}?</li>
+      </ul>
+
+      <p>Page 8</p>
+      <ul>
+        <li>“According to our off-line visualization results, the agent will always trace the same path and sometimes traces loops without a road mark” -&gt; Does the tracing continue endlessly sometime?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The major factor is providing a novel method combining robustness, accuracy, speed and memory efficiency all at the same time.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper presents a method for extracting the coronary artery centerline. The new framework uses a reinforcement learning model with the tree-traversal agent. Bifurcations are detected by a multi-task discriminator, which is interesting. The method has been evaluated, and the results are good. The reviewers are all positive about this paper. After reading the comments raised by the reviewers, my recommendation is given in Q3.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <ol>
+    <li>
+      <p>Road-mark in detail (R1,  R2,  R3) 
+We leave the road-mark (a cube with size n=3 and value c and c &gt; 1) at every time step in the raw environment (CTA volume). Since HU value of CTA image is normalized to (0,1). So the road-mark is visualized as a highlight cube and we modify the input environment as train or inference process progressing.</p>
+    </li>
+    <li>
+      <p>Dataset in detail (R1)
+We randomly split 280 patients into 140 train and 140 validation. We do not comprehensively or statistically evaluate how stenosis or plaques can impact our method at this stage. However according to off-table visualizations. Extremely severe stenosis or poor image quality do can cause early stop of the agent.</p>
+    </li>
+    <li>
+      <p>Agent in detail (R2)
+Both the tracing agent and the discriminator is a relatively shallow CNN.</p>
+    </li>
+    <li>
+      <p>Scales in our method (R2)
+We leverage the agent (CNN) to implicitly learn vessels with different scales. However, the input patch size is designed to cover vessels with the largest diameter in order to guarantee a full observation of vessels.</p>
+    </li>
+    <li>
+      <p>Reward &amp; loss in detail (R3)
+The agent (CNN) is trained with a standard DRL framework. So the agent is trained with rewards solely. Rewards is calculated according to reference centerlines.</p>
+    </li>
+  </ol>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0539-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0540-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Cardiac"
+        class="post-category">
+        Clinical applications - Cardiac
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Reinforcement learning"
+        class="post-category">
+        Machine Learning - Reinforcement learning
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Li, Zhuowei"
+        class="post-category">
+        Li, Zhuowei
+      </a> |  
+      
+      <a href="kittywong/tags#Xia, Qing"
+        class="post-category">
+        Xia, Qing
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Zhiqiang"
+        class="post-category">
+        Hu, Zhiqiang
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Wenji"
+        class="post-category">
+        Wang, Wenji
+      </a> |  
+      
+      <a href="kittywong/tags#Xu, Lijian"
+        class="post-category">
+        Xu, Lijian
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Shaoting"
+        class="post-category">
+        Zhang, Shaoting
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0540/12/31/Paper1279">
+          Sequential Gaussian Process Regression for Simultaneous Pathology Detection and Shape Reconstruction
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0538/12/31/Paper1249">
+          Alleviating Data Imbalance Issue with Perturbed Input during Inference
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

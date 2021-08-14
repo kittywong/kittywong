@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Point-Unet: A Context-aware Point-based Neural Network for Volumetric Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Point-Unet: A Context-aware Point-based Neural Network for Volumetric Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Ngoc-Vuong Ho, Tan Nguyen, Gia-Han Diep, Ngan Le, Binh-Son Hua Abstract Medical image analysis using deep learning has recently been prevalent, showing great performance for various downstream tasks in- cluding medical image segmentation and its sibling, volumetric image segmentation. Particularly, a typical volumetric segmentation network strongly relies on a voxel grid representation which treats volumetric data as a stack of individual voxel ‘slices’, which allows learning to segment a voxel grid to be as straightforward as extending existing image-based segmentation networks to the 3D domain. However, using a voxel grid rep- resentation requires a large memory footprint, expensive test-time and lim- iting the scalability of the solutions. In this paper, we propose Point-Unet, a novel method that incorporates the efficiency of deep learning with 3D point clouds into volumetric segmentation. Our key idea is to first predict the regions of interest in the volume by learning an attentional probability map, which is then used for sampling the volume into a sparse point cloud that is subsequently segmented using a point-based neural network. We have conducted the experiments on the medical volumetric segmentation task with both a small-scale dataset Pancreas and large-scale datasets BraTS18, BraTS19, and BraTS20 challenges. A comprehensive bench- mark on different metrics has shown that our context-aware Point-Unet robustly outperforms the SOTA voxel-based networks at both accuracies, memory usage during training, and time consumption during testing. Our code is available at https://github.com/VinAIResearch/Point-Unet Link to paper https://doi.org/10.1007/978-3-030-87193-2_61 Link to the code repository https://github.com/VinAIResearch/Point-Unet Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Authors suggest new algorithm for volumetric segmentation, which is a combination of point-based segmentation and novel method of points sampling. Methods are compared on several BraTS datasets (including online version) and pancreas dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel method for sampling segmentation points that outperforms existing methods. Authors use several BraTS datasets for validations, including online version. It is a reliable way to accurately compare with best methods. Wide range of methods for comparison. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Claim that suggested method is more accurate than best point-based segmentation algorithms is not supported by the results on online datasets, which are more reliable than offline versions. But suggested method is about as good as best point-based segmentation algorithms and novel enough to be interesting for the research community. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors promise to release the code upon acceptance. Given that, results can be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be great to have ablation study. For instance, you use DICE loss, which usually significantly increase segmentation performance. I wonder if improvement in accuracy came primarily from better loss function, rather than novel sampling or segmentation model. You didn’t apply the same algorithms on pancreas dataset and BraTS dataset. Table for results on pancreas dataset is much smaller. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method which introduces point-based segmentation to medical image segmentation. Results on par with best voxel segmentation methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the author proposed to perform volumetric segmentation with point cloud representation with an efficient attention based sampling strategy. The proposed method achieves considerable performance on several publically available datasets and is proved to speed up inference with less memory footprint. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper proposes a novel perspective in medical segmentation with the help of point cloud analysis. 2) It has a faster inference speed by taking the advantage of the sparsity of point cloud. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Too many important details are missing, which makes it hardly possible to be reproducible. 1a. How is the model trained? The complete framework consists of two stages: voxel segmentation and point-cloud segmentation. In this paper, the author describes the voxel segmentation stage simply as a saliency attention extractor. The first stage of the model outputs the saliency map (significance) of each voxel, according to which the point cloud segmentation stages samples points. However, the instruction for training the voxel segmentation model is not mentioned, at all. What is the target against which the voxel segmentation output is trained? What is the loss in this stage? The second stage relies on the first stage to sample points. Does the results from the first stage covers all points in second stage? 1b. How to make the sparse point prediction into dense volume prediction? 1c. Are the dice evaluated on points or volume? 1d. Are the running speed and memory evaluated on points or volume? 1e. How many points are used? 2) Technical contributions are limited. First, the overal idea is highly related to PointRend [1], where point candidates are used to refine the segmentation. Second, the author claims 2 contributions in model design: (1) A saliency proposal network to extract an attentional probability map which emphasizes the regions of interests in a volume; (2) An efficient context-aware point sampling mechanism for capturing better local dependencies within regions of interest while maintaining global relations. IMHO, the two contributions above are basically not novel. The saliency proposal network is simply a spatial attention mechanism widely adopted in computer vision research, for example [2]. The point sampling strategy proposed is not clear. The authors claims that in places where saliencies are high, points are “densely” sampled. What does “densely” mean? Is it a simple thresholding or something else? It is not mentioned. Furthermore, the saliency map that this sampling strategy is based on is not clearly described either. Therefore, the sampling strategy cannot be made one of the contributions in this paper either. [1] Kirillov, et al. Pointrend: Image segmentation as rendering. CVPR 2020. [2] Woo, et al. CBAM: Convolutional Block Attention Module. ECCV 2018. 3) Lack of ablation experiments. The proposed method includes context-aware sampling, modified network architectures and losses. A question is: what is the contribution of each component? For example, the author mentioned that Generalized Dice Loss (GDL) is utilized compared to cross-entropy (CE) in RandLA-Net. Then, it is possible that the performance gain is due to utilizing GDL rather than CE, rather than due to the attention based point cloud sampling strategy. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is not reproducible based on the fact that so many important details are missing. Code is not given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A detailed description on how to training your saliency attention network should be added in the revision of this paper. Things that should be added include and are not limited to: training target, training loss and whether or not it is end-to-end trained together with the second stage. It should be made clear on how point candidates are selected in the sampling strategy. Minor: I was wondering whether the training of the framework is end-to-end? It seems that attention based sampling is not a differentiable operation. Minor: Are the inference time listed in Fig.5 (b) the results of single-run or average results of multiple runs? Besides of inference time, FLOPs is a stable evaluation metric of the complexity of different models. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Too many important details are missing, I don’t think that this paper should be accepted. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper proposes a 3D image segmentation method, by resampling regions of interest into 3d point cloud and applying segmentation on points, and resampling back. An additional Unet based network is first used to find regions of interest (to sample more dense point clouds) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A paper brings attention to 3D cloud based segmentation, in the field mostly dominated by volumetric semantic segmentation Unet based method, which is nice. The paper introduces several clever and practical step, e.g. to pre-estimate the map (region of interest) first. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results on online validation are inferior to other approaches (except for only one ET subregion in one dataset) Results on their own split (offline validation) are not convincing. it seems there were no validation/testing splits used. So the hyper-parameters were probably tuned on this internal validation set, which would result in artificially high performance. Resampling from 3D point cloud to 3D volumetric masks are not well explained. This can introduce artifacts. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance 1) it seems other method are generally better using leaderboard submissions (online validation set). why do you state that this approach is better then other SOTA methods? You mentioned that without post-processing other SOTA methods are worse. What are the performances of other SOTA method without post-processing on online validation? Or are you basing this statement only based on the internal data split (offline)? What post-processing are you referring to here? If you know what it is, why not apply it for your “online validation” submission. 2) Internal split (offline validation) seems to use only a single split for validation. Was there no testing split used? or no cross-validation? How did you tune the hyper-parameters of your network? If you used the same offline validation split for tuning and final evaluation, that your results will look artificially higher than other approaches. 3) how did you resample from 3D point cloud back to Volumentric maks? how long does it take? does it require specially initial 3D point sampling strategy to avoid artifacts? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Generally I appreciate a less conventional approach for 3D segmentation, thank you for bringing up an alternative method for 3D segmentation. However evaluation results seems unconvincing. Please elaborate on internal split (was there a testing set?) and make a more fair statement when comparing yourself to other SOTA approaches (in online validation) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? validation is not convincing, the online validation seems inferior to other methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Despite that one reviewer mentioned that similar works on point-based neural network has been used in the computer vision community, the other two reviewers acknowledge that this paper is interesting and it brings a new alternative to conventional grid-based segmentation. They mainly have concerns on the ablation study, implementation details, data split and comparison with existing methods. The authors are invited to give a rebuttal for these concerns. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Overall this paper has some novelty by using point-cloud convolution to reduce the grid-based convolution for segmentation of volumetric images. The idea is novel for medical image computing. Reviewers mainly have concerns on its ablation study and reducibility. In the rebuttal, the authors provided more ablation study results and promised to put them in the supplementary material. They also clarified more details and promised to release the code later. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting alternative to 3D segmentation that yields interesting results and warrants discussion in a forum such as MICCAI. Despite shortcomings in the initial experimental design, the rebuttal highlights better the benefits of the method and clarifies the main points of concerns After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided a detailed answer to all the concerns raised by the reviewers. Although the core of the proposed method is a well-studied technique in computer vision tasks, mostly in 2D images, the idea of applying it to 3D medical images is novel, challengin enough and the presented results look promising. Therefore, I recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for comments. The reviewers agreed that our method has a new perspective in medical segmentation by using the concept of point-based segmentation with traditional volume-based segmentation, showing very good performance across datasets (BraTS, Pancreas). Such encouraging results could inspire more works on point-based representation in medical imaging. We respond to five keypoints in the comments, below. ** KP1: Ablation study ** Model   ET WT TC Avg. E 3D U-Net [15] 66.92 82.86 72.98 74.25 D Attention U-Net [40] 69.87 89.68 79.28 79.61 C A without GDL 69.33 89.36 69.51 76.06 B A without saliency (RandLANet) 67.40 87.74 76.85 77.33 A Our model 76.43 89.67 82.97 83.02 We conducted an ablation study on the offline validation set of BraTS20. We provided variants of our model to demonstrate the significance of the volumetric saliency attention network, point-based segmentation network, and the GDL loss. We will add this ablation study to the supplementary. ** KP2: Online/offline split ** Offline evaluation is a common practice in medical segmentation. Similar evaluations can be found in previous works [1, 12] also in MICCAI. In fact, online evaluations might not be fair as the experimental setup of the submitted methods cannot be reproduced; the leaderboard results should be taken with a grain of salt. For example, nnU-Net [10] has post-processing to remove small enhancing tumor lesions, but it is not clear how to define “small lesions”. When we retrained and submitted the results of their method to online validation without post-processing, we found a gap between performance w/ and w/o post-processing. (See Table 1, 2, 3, and footnotes in the paper.) Offline setting allows more fair and reproducible evaluations as all methods are controlled to have the same setting. For data split, we followed the common evaluation protocol in previous works [1, 10, 12, 37] to split the data randomly with 80:20 ratio. As mentioned by Reviewer 3, more splits are preferable, but they are not practical to us due to the lack of large training data in the medical domain, and due to the huge computational resources required for validating multiple splits. ** KP3: Sampling ** We threshold the confidence output of the attention network (threshold 0.9), and voxels passing the threshold become foreground (FG) points. We randomly sample remaining voxels to obtain background (BG) points. The union of FG and BG points form an input point cloud for segmentation. Note that the FG already contains tumor regions, and the BG only provides additional context data for learning. The segmentation results of the FG can be simply used as the final tumor segmentation results, and no resampling from point cloud to volume is required. We also tested with different thresholds and found that it is quite insensitive to the model performance (~1-percent difference when varying the threshold in [0.6, 0.95]). ** KP4: Reproducibility ** We will release our code publicly. @Reviewer 2: we will provide additional details of our network training in the supplementary material and in the code release. ** KP5: Novelty ** @Reviewer 2: Attention and point-based segmentation are popular topics in computer vision (CV). Despite that, due to the difference between 2D still images/3D volumetric data in CV and MRI in medical imaging, CV techniques cannot be directly used for medical segmentation. For the suggested references, PointRend is a post-processing method on the boundaries while our network performs point-based segmentation. Different from CBAM, our attention network is built on pyramid features with dilated convolution for context-aware learning. We will cite these papers as potential extensions to our method. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Ngoc-Vuong Ho, Tan Nguyen, Gia-Han Diep, Ngan Le, Binh-Son Hua Abstract Medical image analysis using deep learning has recently been prevalent, showing great performance for various downstream tasks in- cluding medical image segmentation and its sibling, volumetric image segmentation. Particularly, a typical volumetric segmentation network strongly relies on a voxel grid representation which treats volumetric data as a stack of individual voxel ‘slices’, which allows learning to segment a voxel grid to be as straightforward as extending existing image-based segmentation networks to the 3D domain. However, using a voxel grid rep- resentation requires a large memory footprint, expensive test-time and lim- iting the scalability of the solutions. In this paper, we propose Point-Unet, a novel method that incorporates the efficiency of deep learning with 3D point clouds into volumetric segmentation. Our key idea is to first predict the regions of interest in the volume by learning an attentional probability map, which is then used for sampling the volume into a sparse point cloud that is subsequently segmented using a point-based neural network. We have conducted the experiments on the medical volumetric segmentation task with both a small-scale dataset Pancreas and large-scale datasets BraTS18, BraTS19, and BraTS20 challenges. A comprehensive bench- mark on different metrics has shown that our context-aware Point-Unet robustly outperforms the SOTA voxel-based networks at both accuracies, memory usage during training, and time consumption during testing. Our code is available at https://github.com/VinAIResearch/Point-Unet Link to paper https://doi.org/10.1007/978-3-030-87193-2_61 Link to the code repository https://github.com/VinAIResearch/Point-Unet Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Authors suggest new algorithm for volumetric segmentation, which is a combination of point-based segmentation and novel method of points sampling. Methods are compared on several BraTS datasets (including online version) and pancreas dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel method for sampling segmentation points that outperforms existing methods. Authors use several BraTS datasets for validations, including online version. It is a reliable way to accurately compare with best methods. Wide range of methods for comparison. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Claim that suggested method is more accurate than best point-based segmentation algorithms is not supported by the results on online datasets, which are more reliable than offline versions. But suggested method is about as good as best point-based segmentation algorithms and novel enough to be interesting for the research community. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors promise to release the code upon acceptance. Given that, results can be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be great to have ablation study. For instance, you use DICE loss, which usually significantly increase segmentation performance. I wonder if improvement in accuracy came primarily from better loss function, rather than novel sampling or segmentation model. You didn’t apply the same algorithms on pancreas dataset and BraTS dataset. Table for results on pancreas dataset is much smaller. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method which introduces point-based segmentation to medical image segmentation. Results on par with best voxel segmentation methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the author proposed to perform volumetric segmentation with point cloud representation with an efficient attention based sampling strategy. The proposed method achieves considerable performance on several publically available datasets and is proved to speed up inference with less memory footprint. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper proposes a novel perspective in medical segmentation with the help of point cloud analysis. 2) It has a faster inference speed by taking the advantage of the sparsity of point cloud. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Too many important details are missing, which makes it hardly possible to be reproducible. 1a. How is the model trained? The complete framework consists of two stages: voxel segmentation and point-cloud segmentation. In this paper, the author describes the voxel segmentation stage simply as a saliency attention extractor. The first stage of the model outputs the saliency map (significance) of each voxel, according to which the point cloud segmentation stages samples points. However, the instruction for training the voxel segmentation model is not mentioned, at all. What is the target against which the voxel segmentation output is trained? What is the loss in this stage? The second stage relies on the first stage to sample points. Does the results from the first stage covers all points in second stage? 1b. How to make the sparse point prediction into dense volume prediction? 1c. Are the dice evaluated on points or volume? 1d. Are the running speed and memory evaluated on points or volume? 1e. How many points are used? 2) Technical contributions are limited. First, the overal idea is highly related to PointRend [1], where point candidates are used to refine the segmentation. Second, the author claims 2 contributions in model design: (1) A saliency proposal network to extract an attentional probability map which emphasizes the regions of interests in a volume; (2) An efficient context-aware point sampling mechanism for capturing better local dependencies within regions of interest while maintaining global relations. IMHO, the two contributions above are basically not novel. The saliency proposal network is simply a spatial attention mechanism widely adopted in computer vision research, for example [2]. The point sampling strategy proposed is not clear. The authors claims that in places where saliencies are high, points are “densely” sampled. What does “densely” mean? Is it a simple thresholding or something else? It is not mentioned. Furthermore, the saliency map that this sampling strategy is based on is not clearly described either. Therefore, the sampling strategy cannot be made one of the contributions in this paper either. [1] Kirillov, et al. Pointrend: Image segmentation as rendering. CVPR 2020. [2] Woo, et al. CBAM: Convolutional Block Attention Module. ECCV 2018. 3) Lack of ablation experiments. The proposed method includes context-aware sampling, modified network architectures and losses. A question is: what is the contribution of each component? For example, the author mentioned that Generalized Dice Loss (GDL) is utilized compared to cross-entropy (CE) in RandLA-Net. Then, it is possible that the performance gain is due to utilizing GDL rather than CE, rather than due to the attention based point cloud sampling strategy. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is not reproducible based on the fact that so many important details are missing. Code is not given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A detailed description on how to training your saliency attention network should be added in the revision of this paper. Things that should be added include and are not limited to: training target, training loss and whether or not it is end-to-end trained together with the second stage. It should be made clear on how point candidates are selected in the sampling strategy. Minor: I was wondering whether the training of the framework is end-to-end? It seems that attention based sampling is not a differentiable operation. Minor: Are the inference time listed in Fig.5 (b) the results of single-run or average results of multiple runs? Besides of inference time, FLOPs is a stable evaluation metric of the complexity of different models. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Too many important details are missing, I don’t think that this paper should be accepted. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper proposes a 3D image segmentation method, by resampling regions of interest into 3d point cloud and applying segmentation on points, and resampling back. An additional Unet based network is first used to find regions of interest (to sample more dense point clouds) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A paper brings attention to 3D cloud based segmentation, in the field mostly dominated by volumetric semantic segmentation Unet based method, which is nice. The paper introduces several clever and practical step, e.g. to pre-estimate the map (region of interest) first. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results on online validation are inferior to other approaches (except for only one ET subregion in one dataset) Results on their own split (offline validation) are not convincing. it seems there were no validation/testing splits used. So the hyper-parameters were probably tuned on this internal validation set, which would result in artificially high performance. Resampling from 3D point cloud to 3D volumetric masks are not well explained. This can introduce artifacts. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance 1) it seems other method are generally better using leaderboard submissions (online validation set). why do you state that this approach is better then other SOTA methods? You mentioned that without post-processing other SOTA methods are worse. What are the performances of other SOTA method without post-processing on online validation? Or are you basing this statement only based on the internal data split (offline)? What post-processing are you referring to here? If you know what it is, why not apply it for your “online validation” submission. 2) Internal split (offline validation) seems to use only a single split for validation. Was there no testing split used? or no cross-validation? How did you tune the hyper-parameters of your network? If you used the same offline validation split for tuning and final evaluation, that your results will look artificially higher than other approaches. 3) how did you resample from 3D point cloud back to Volumentric maks? how long does it take? does it require specially initial 3D point sampling strategy to avoid artifacts? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Generally I appreciate a less conventional approach for 3D segmentation, thank you for bringing up an alternative method for 3D segmentation. However evaluation results seems unconvincing. Please elaborate on internal split (was there a testing set?) and make a more fair statement when comparing yourself to other SOTA approaches (in online validation) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? validation is not convincing, the online validation seems inferior to other methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Despite that one reviewer mentioned that similar works on point-based neural network has been used in the computer vision community, the other two reviewers acknowledge that this paper is interesting and it brings a new alternative to conventional grid-based segmentation. They mainly have concerns on the ablation study, implementation details, data split and comparison with existing methods. The authors are invited to give a rebuttal for these concerns. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Overall this paper has some novelty by using point-cloud convolution to reduce the grid-based convolution for segmentation of volumetric images. The idea is novel for medical image computing. Reviewers mainly have concerns on its ablation study and reducibility. In the rebuttal, the authors provided more ablation study results and promised to put them in the supplementary material. They also clarified more details and promised to release the code later. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting alternative to 3D segmentation that yields interesting results and warrants discussion in a forum such as MICCAI. Despite shortcomings in the initial experimental design, the rebuttal highlights better the benefits of the method and clarifies the main points of concerns After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided a detailed answer to all the concerns raised by the reviewers. Although the core of the proposed method is a well-studied technique in computer vision tasks, mostly in 2D images, the idea of applying it to 3D medical images is novel, challengin enough and the presented results look promising. Therefore, I recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for comments. The reviewers agreed that our method has a new perspective in medical segmentation by using the concept of point-based segmentation with traditional volume-based segmentation, showing very good performance across datasets (BraTS, Pancreas). Such encouraging results could inspire more works on point-based representation in medical imaging. We respond to five keypoints in the comments, below. ** KP1: Ablation study ** Model   ET WT TC Avg. E 3D U-Net [15] 66.92 82.86 72.98 74.25 D Attention U-Net [40] 69.87 89.68 79.28 79.61 C A without GDL 69.33 89.36 69.51 76.06 B A without saliency (RandLANet) 67.40 87.74 76.85 77.33 A Our model 76.43 89.67 82.97 83.02 We conducted an ablation study on the offline validation set of BraTS20. We provided variants of our model to demonstrate the significance of the volumetric saliency attention network, point-based segmentation network, and the GDL loss. We will add this ablation study to the supplementary. ** KP2: Online/offline split ** Offline evaluation is a common practice in medical segmentation. Similar evaluations can be found in previous works [1, 12] also in MICCAI. In fact, online evaluations might not be fair as the experimental setup of the submitted methods cannot be reproduced; the leaderboard results should be taken with a grain of salt. For example, nnU-Net [10] has post-processing to remove small enhancing tumor lesions, but it is not clear how to define “small lesions”. When we retrained and submitted the results of their method to online validation without post-processing, we found a gap between performance w/ and w/o post-processing. (See Table 1, 2, 3, and footnotes in the paper.) Offline setting allows more fair and reproducible evaluations as all methods are controlled to have the same setting. For data split, we followed the common evaluation protocol in previous works [1, 10, 12, 37] to split the data randomly with 80:20 ratio. As mentioned by Reviewer 3, more splits are preferable, but they are not practical to us due to the lack of large training data in the medical domain, and due to the huge computational resources required for validating multiple splits. ** KP3: Sampling ** We threshold the confidence output of the attention network (threshold 0.9), and voxels passing the threshold become foreground (FG) points. We randomly sample remaining voxels to obtain background (BG) points. The union of FG and BG points form an input point cloud for segmentation. Note that the FG already contains tumor regions, and the BG only provides additional context data for learning. The segmentation results of the FG can be simply used as the final tumor segmentation results, and no resampling from point cloud to volume is required. We also tested with different thresholds and found that it is quite insensitive to the model performance (~1-percent difference when varying the threshold in [0.6, 0.95]). ** KP4: Reproducibility ** We will release our code publicly. @Reviewer 2: we will provide additional details of our network training in the supplementary material and in the code release. ** KP5: Novelty ** @Reviewer 2: Attention and point-based segmentation are popular topics in computer vision (CV). Despite that, due to the difference between 2D still images/3D volumetric data in CV and MRI in medical imaging, CV techniques cannot be directly used for medical segmentation. For the suggested references, PointRend is a post-processing method on the boundaries while our network performs point-based segmentation. Different from CBAM, our attention network is built on pyramid features with dilated convolution for context-aware learning. We will cite these papers as potential extensions to our method. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0160/12/31/Paper2053" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0160/12/31/Paper2053" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0160-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Point-Unet: A Context-aware Point-based Neural Network for Volumetric Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0160/12/31/Paper2053"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0160/12/31/Paper2053","headline":"Point-Unet: A Context-aware Point-based Neural Network for Volumetric Segmentation","dateModified":"0160-12-31T00:00:00-05:17","datePublished":"0160-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Ngoc-Vuong Ho, Tan Nguyen, Gia-Han Diep, Ngan Le, Binh-Son Hua Abstract Medical image analysis using deep learning has recently been prevalent, showing great performance for various downstream tasks in- cluding medical image segmentation and its sibling, volumetric image segmentation. Particularly, a typical volumetric segmentation network strongly relies on a voxel grid representation which treats volumetric data as a stack of individual voxel ‘slices’, which allows learning to segment a voxel grid to be as straightforward as extending existing image-based segmentation networks to the 3D domain. However, using a voxel grid rep- resentation requires a large memory footprint, expensive test-time and lim- iting the scalability of the solutions. In this paper, we propose Point-Unet, a novel method that incorporates the efficiency of deep learning with 3D point clouds into volumetric segmentation. Our key idea is to first predict the regions of interest in the volume by learning an attentional probability map, which is then used for sampling the volume into a sparse point cloud that is subsequently segmented using a point-based neural network. We have conducted the experiments on the medical volumetric segmentation task with both a small-scale dataset Pancreas and large-scale datasets BraTS18, BraTS19, and BraTS20 challenges. A comprehensive bench- mark on different metrics has shown that our context-aware Point-Unet robustly outperforms the SOTA voxel-based networks at both accuracies, memory usage during training, and time consumption during testing. Our code is available at https://github.com/VinAIResearch/Point-Unet Link to paper https://doi.org/10.1007/978-3-030-87193-2_61 Link to the code repository https://github.com/VinAIResearch/Point-Unet Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Authors suggest new algorithm for volumetric segmentation, which is a combination of point-based segmentation and novel method of points sampling. Methods are compared on several BraTS datasets (including online version) and pancreas dataset. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Novel method for sampling segmentation points that outperforms existing methods. Authors use several BraTS datasets for validations, including online version. It is a reliable way to accurately compare with best methods. Wide range of methods for comparison. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Claim that suggested method is more accurate than best point-based segmentation algorithms is not supported by the results on online datasets, which are more reliable than offline versions. But suggested method is about as good as best point-based segmentation algorithms and novel enough to be interesting for the research community. Please rate the clarity and organization of this paper Excellent Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Authors promise to release the code upon acceptance. Given that, results can be reproduced. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html It would be great to have ablation study. For instance, you use DICE loss, which usually significantly increase segmentation performance. I wonder if improvement in accuracy came primarily from better loss function, rather than novel sampling or segmentation model. You didn’t apply the same algorithms on pancreas dataset and BraTS dataset. Table for results on pancreas dataset is much smaller. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Novel method which introduces point-based segmentation to medical image segmentation. Results on par with best voxel segmentation methods. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 3 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper In this paper, the author proposed to perform volumetric segmentation with point cloud representation with an efficient attention based sampling strategy. The proposed method achieves considerable performance on several publically available datasets and is proved to speed up inference with less memory footprint. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper proposes a novel perspective in medical segmentation with the help of point cloud analysis. 2) It has a faster inference speed by taking the advantage of the sparsity of point cloud. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) Too many important details are missing, which makes it hardly possible to be reproducible. 1a. How is the model trained? The complete framework consists of two stages: voxel segmentation and point-cloud segmentation. In this paper, the author describes the voxel segmentation stage simply as a saliency attention extractor. The first stage of the model outputs the saliency map (significance) of each voxel, according to which the point cloud segmentation stages samples points. However, the instruction for training the voxel segmentation model is not mentioned, at all. What is the target against which the voxel segmentation output is trained? What is the loss in this stage? The second stage relies on the first stage to sample points. Does the results from the first stage covers all points in second stage? 1b. How to make the sparse point prediction into dense volume prediction? 1c. Are the dice evaluated on points or volume? 1d. Are the running speed and memory evaluated on points or volume? 1e. How many points are used? 2) Technical contributions are limited. First, the overal idea is highly related to PointRend [1], where point candidates are used to refine the segmentation. Second, the author claims 2 contributions in model design: (1) A saliency proposal network to extract an attentional probability map which emphasizes the regions of interests in a volume; (2) An efficient context-aware point sampling mechanism for capturing better local dependencies within regions of interest while maintaining global relations. IMHO, the two contributions above are basically not novel. The saliency proposal network is simply a spatial attention mechanism widely adopted in computer vision research, for example [2]. The point sampling strategy proposed is not clear. The authors claims that in places where saliencies are high, points are “densely” sampled. What does “densely” mean? Is it a simple thresholding or something else? It is not mentioned. Furthermore, the saliency map that this sampling strategy is based on is not clearly described either. Therefore, the sampling strategy cannot be made one of the contributions in this paper either. [1] Kirillov, et al. Pointrend: Image segmentation as rendering. CVPR 2020. [2] Woo, et al. CBAM: Convolutional Block Attention Module. ECCV 2018. 3) Lack of ablation experiments. The proposed method includes context-aware sampling, modified network architectures and losses. A question is: what is the contribution of each component? For example, the author mentioned that Generalized Dice Loss (GDL) is utilized compared to cross-entropy (CE) in RandLA-Net. Then, it is possible that the performance gain is due to utilizing GDL rather than CE, rather than due to the attention based point cloud sampling strategy. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance It is not reproducible based on the fact that so many important details are missing. Code is not given. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A detailed description on how to training your saliency attention network should be added in the revision of this paper. Things that should be added include and are not limited to: training target, training loss and whether or not it is end-to-end trained together with the second stage. It should be made clear on how point candidates are selected in the sampling strategy. Minor: I was wondering whether the training of the framework is end-to-end? It seems that attention based sampling is not a differentiable operation. Minor: Are the inference time listed in Fig.5 (b) the results of single-run or average results of multiple runs? Besides of inference time, FLOPs is a stable evaluation metric of the complexity of different models. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Too many important details are missing, I don’t think that this paper should be accepted. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper The paper proposes a 3D image segmentation method, by resampling regions of interest into 3d point cloud and applying segmentation on points, and resampling back. An additional Unet based network is first used to find regions of interest (to sample more dense point clouds) Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A paper brings attention to 3D cloud based segmentation, in the field mostly dominated by volumetric semantic segmentation Unet based method, which is nice. The paper introduces several clever and practical step, e.g. to pre-estimate the map (region of interest) first. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Results on online validation are inferior to other approaches (except for only one ET subregion in one dataset) Results on their own split (offline validation) are not convincing. it seems there were no validation/testing splits used. So the hyper-parameters were probably tuned on this internal validation set, which would result in artificially high performance. Resampling from 3D point cloud to 3D volumetric masks are not well explained. This can introduce artifacts. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance 1) it seems other method are generally better using leaderboard submissions (online validation set). why do you state that this approach is better then other SOTA methods? You mentioned that without post-processing other SOTA methods are worse. What are the performances of other SOTA method without post-processing on online validation? Or are you basing this statement only based on the internal data split (offline)? What post-processing are you referring to here? If you know what it is, why not apply it for your “online validation” submission. 2) Internal split (offline validation) seems to use only a single split for validation. Was there no testing split used? or no cross-validation? How did you tune the hyper-parameters of your network? If you used the same offline validation split for tuning and final evaluation, that your results will look artificially higher than other approaches. 3) how did you resample from 3D point cloud back to Volumentric maks? how long does it take? does it require specially initial 3D point sampling strategy to avoid artifacts? Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Generally I appreciate a less conventional approach for 3D segmentation, thank you for bringing up an alternative method for 3D segmentation. However evaluation results seems unconvincing. Please elaborate on internal split (was there a testing set?) and make a more fair statement when comparing yourself to other SOTA approaches (in online validation) Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? validation is not convincing, the online validation seems inferior to other methods. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. Despite that one reviewer mentioned that similar works on point-based neural network has been used in the computer vision community, the other two reviewers acknowledge that this paper is interesting and it brings a new alternative to conventional grid-based segmentation. They mainly have concerns on the ablation study, implementation details, data split and comparison with existing methods. The authors are invited to give a rebuttal for these concerns. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. Overall this paper has some novelty by using point-cloud convolution to reduce the grid-based convolution for segmentation of volumetric images. The idea is novel for medical image computing. Reviewers mainly have concerns on its ablation study and reducibility. In the rebuttal, the authors provided more ablation study results and promised to put them in the supplementary material. They also clarified more details and promised to release the code later. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 11 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting alternative to 3D segmentation that yields interesting results and warrants discussion in a forum such as MICCAI. Despite shortcomings in the initial experimental design, the rebuttal highlights better the benefits of the method and clarifies the main points of concerns After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided a detailed answer to all the concerns raised by the reviewers. Although the core of the proposed method is a well-studied technique in computer vision tasks, mostly in 2D images, the idea of applying it to 3D medical images is novel, challengin enough and the presented results look promising. Therefore, I recommend acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We thank the reviewers for comments. The reviewers agreed that our method has a new perspective in medical segmentation by using the concept of point-based segmentation with traditional volume-based segmentation, showing very good performance across datasets (BraTS, Pancreas). Such encouraging results could inspire more works on point-based representation in medical imaging. We respond to five keypoints in the comments, below. ** KP1: Ablation study ** Model   ET WT TC Avg. E 3D U-Net [15] 66.92 82.86 72.98 74.25 D Attention U-Net [40] 69.87 89.68 79.28 79.61 C A without GDL 69.33 89.36 69.51 76.06 B A without saliency (RandLANet) 67.40 87.74 76.85 77.33 A Our model 76.43 89.67 82.97 83.02 We conducted an ablation study on the offline validation set of BraTS20. We provided variants of our model to demonstrate the significance of the volumetric saliency attention network, point-based segmentation network, and the GDL loss. We will add this ablation study to the supplementary. ** KP2: Online/offline split ** Offline evaluation is a common practice in medical segmentation. Similar evaluations can be found in previous works [1, 12] also in MICCAI. In fact, online evaluations might not be fair as the experimental setup of the submitted methods cannot be reproduced; the leaderboard results should be taken with a grain of salt. For example, nnU-Net [10] has post-processing to remove small enhancing tumor lesions, but it is not clear how to define “small lesions”. When we retrained and submitted the results of their method to online validation without post-processing, we found a gap between performance w/ and w/o post-processing. (See Table 1, 2, 3, and footnotes in the paper.) Offline setting allows more fair and reproducible evaluations as all methods are controlled to have the same setting. For data split, we followed the common evaluation protocol in previous works [1, 10, 12, 37] to split the data randomly with 80:20 ratio. As mentioned by Reviewer 3, more splits are preferable, but they are not practical to us due to the lack of large training data in the medical domain, and due to the huge computational resources required for validating multiple splits. ** KP3: Sampling ** We threshold the confidence output of the attention network (threshold 0.9), and voxels passing the threshold become foreground (FG) points. We randomly sample remaining voxels to obtain background (BG) points. The union of FG and BG points form an input point cloud for segmentation. Note that the FG already contains tumor regions, and the BG only provides additional context data for learning. The segmentation results of the FG can be simply used as the final tumor segmentation results, and no resampling from point cloud to volume is required. We also tested with different thresholds and found that it is quite insensitive to the model performance (~1-percent difference when varying the threshold in [0.6, 0.95]). ** KP4: Reproducibility ** We will release our code publicly. @Reviewer 2: we will provide additional details of our network training in the supplementary material and in the code release. ** KP5: Novelty ** @Reviewer 2: Attention and point-based segmentation are popular topics in computer vision (CV). Despite that, due to the difference between 2D still images/3D volumetric data in CV and MRI in medical imaging, CV techniques cannot be directly used for medical segmentation. For the suggested references, PointRend is a post-processing method on the boundaries while our network performs point-based segmentation. Different from CBAM, our attention network is built on pyramid features with dilated convolution for context-aware learning. We will cite these papers as potential extensions to our method. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Ho, Ngoc-Vuong,Nguyen, Tan,Diep, Gia-Han,Le, Ngan,Hua, Binh-Son" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Point-Unet: A Context-aware Point-based Neural Network for Volumetric Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Ho, Ngoc-Vuong"
+        class="post-tags">
+        Ho, Ngoc-Vuong
+      </a> |  
+      
+      <a href="kittywong/tags#Nguyen, Tan"
+        class="post-tags">
+        Nguyen, Tan
+      </a> |  
+      
+      <a href="kittywong/tags#Diep, Gia-Han"
+        class="post-tags">
+        Diep, Gia-Han
+      </a> |  
+      
+      <a href="kittywong/tags#Le, Ngan"
+        class="post-tags">
+        Le, Ngan
+      </a> |  
+      
+      <a href="kittywong/tags#Hua, Binh-Son"
+        class="post-tags">
+        Hua, Binh-Son
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Ngoc-Vuong Ho, Tan Nguyen, Gia-Han Diep, Ngan Le, Binh-Son Hua
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Medical image analysis using deep learning has recently been prevalent, showing great performance for various downstream tasks in- cluding medical image segmentation and its sibling, volumetric image segmentation. Particularly, a typical volumetric segmentation network strongly relies on a voxel grid representation which treats volumetric data as a stack of individual voxel ‘slices’, which allows learning to segment a voxel grid to be as straightforward as extending existing image-based segmentation networks to the 3D domain. However, using a voxel grid rep- resentation requires a large memory footprint, expensive test-time and lim- iting the scalability of the solutions. In this paper, we propose Point-Unet, a novel method that incorporates the efficiency of deep learning with 3D point clouds into volumetric segmentation. Our key idea is to first predict the regions of interest in the volume by learning an attentional probability map, which is then used for sampling the volume into a sparse point cloud that is subsequently segmented using a point-based neural network. We have conducted the experiments on the medical volumetric segmentation task with both a small-scale dataset Pancreas and large-scale datasets BraTS18, BraTS19, and BraTS20 challenges. A comprehensive bench- mark on different metrics has shown that our context-aware Point-Unet robustly outperforms the SOTA voxel-based networks at both accuracies, memory usage during training, and time consumption during testing. Our code is available at https://github.com/VinAIResearch/Point-Unet
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_61">https://doi.org/10.1007/978-3-030-87193-2_61</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/VinAIResearch/Point-Unet
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Authors suggest new algorithm for volumetric segmentation, which is a combination of point-based segmentation and novel method of points sampling. Methods are compared on several BraTS datasets (including online version) and pancreas dataset.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Novel method for sampling segmentation points that outperforms existing methods.</li>
+        <li>Authors use several BraTS datasets for validations, including online version. It is a reliable way to accurately compare with best methods.</li>
+        <li>Wide range of methods for comparison.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Claim that suggested method is more accurate than best point-based segmentation algorithms is not supported by the results on online datasets, which are more reliable than offline versions. But suggested method is about as good as best point-based segmentation algorithms and novel enough to be interesting for the research community.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Excellent</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Authors promise to release the code upon acceptance. Given that, results can be reproduced.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>It would be great to have ablation study. For instance, you use DICE loss, which usually significantly increase segmentation performance. I wonder if improvement in accuracy came primarily from better loss function, rather than novel sampling or segmentation model.
+You didn’t apply the same algorithms on pancreas dataset and BraTS dataset. Table for results on pancreas dataset is much smaller.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Novel method which introduces point-based segmentation to medical image segmentation. Results on par with best voxel segmentation methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>In this paper, the author proposed to perform volumetric segmentation with point cloud representation with an efficient attention based sampling strategy. The proposed method achieves considerable performance on several publically available datasets and is proved to speed up inference with less memory footprint.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>1) The paper proposes a novel perspective in medical segmentation with the help of point cloud analysis. 
+2) It has a faster inference speed by taking the advantage of the sparsity of point cloud.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>1) Too many important details are missing, which makes it hardly possible to be reproducible.
+1a. How is the model trained? The complete framework consists of two stages: voxel segmentation and point-cloud segmentation. In this paper, the author describes the voxel segmentation stage simply as a saliency attention extractor. The first stage of the model outputs the saliency map (significance) of each voxel, according to which the point cloud segmentation stages samples points. However, the instruction for training the voxel segmentation model is not mentioned, at all. What is the target against which the voxel segmentation output is trained? What is the loss in this stage? The second stage relies on the first stage to sample points. Does the results from the first stage covers all points in second stage?
+1b. How to make the sparse point prediction into dense volume prediction? 
+1c. Are the dice evaluated on points or volume?
+1d. Are the running speed and memory evaluated on points or volume?
+1e. How many points are used?</p>
+
+      <p>2) Technical contributions are limited. First, the overal idea is highly related to PointRend [1], where point candidates are used to refine the segmentation. Second, the author claims 2 contributions in model design: (1) A saliency proposal network to extract an attentional probability map which emphasizes the regions of interests in a volume; (2) An efficient context-aware point sampling mechanism for capturing better local dependencies within regions of interest while maintaining global relations. IMHO, the two contributions above are basically not novel. The saliency proposal network is simply a spatial attention mechanism widely adopted in computer vision research, for example [2]. The point sampling strategy proposed is not clear. The authors claims that in places where saliencies are high, points are “densely” sampled. What does “densely” mean? Is it a simple thresholding or something else? It is not mentioned. Furthermore, the saliency map that this sampling strategy is based on is not clearly described either. Therefore, the sampling strategy cannot be made one of the contributions in this paper either.</p>
+
+      <p>[1] Kirillov, et al. Pointrend: Image segmentation as rendering. CVPR 2020.
+[2] Woo, et al. CBAM: Convolutional Block Attention Module. ECCV 2018.</p>
+
+      <p>3) Lack of ablation experiments. The proposed method includes context-aware sampling, modified network architectures and losses. A question is: what is the contribution of each component? For example, the author mentioned that Generalized Dice Loss (GDL) is utilized compared to cross-entropy (CE) in RandLA-Net. Then, it is possible that the performance gain is due to utilizing GDL rather than CE, rather than due to the attention based point cloud sampling strategy.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>It is not reproducible based on the fact that so many important details are missing. Code is not given.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>A detailed description on how to training your saliency attention network should be added in the revision of this paper. Things that should be added include and are not limited to: training target, training loss and whether or not it is end-to-end trained together with the second stage.</li>
+        <li>It should be made clear on how point candidates are selected in the sampling strategy.</li>
+        <li>Minor: I was wondering whether the training of the framework is end-to-end? It seems that attention based sampling is not a differentiable operation.</li>
+        <li>Minor: Are the inference time listed in Fig.5 (b) the results of single-run or average results of multiple runs? Besides of inference time, FLOPs is a stable evaluation metric of the complexity of different models.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Too many important details are missing, I don’t think that this paper should be accepted.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes a 3D image segmentation method, by resampling regions of interest into 3d point cloud and applying segmentation on points, and resampling back.  An additional Unet based network is first used to find regions of interest (to sample more dense point clouds)</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>A paper brings attention to 3D cloud based segmentation, in the field mostly dominated by volumetric semantic segmentation Unet based method, which is nice.</p>
+
+      <p>The paper introduces several clever and practical step, e.g. to pre-estimate the map (region of interest) first.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Results on online validation are inferior to other approaches (except for only one ET subregion in one dataset)</p>
+
+      <p>Results on their own split (offline validation) are not convincing. it seems there were no validation/testing splits used. So the hyper-parameters were probably tuned on this internal validation set, which would result in artificially high performance.</p>
+
+      <p>Resampling from 3D point cloud to 3D volumetric masks are not well explained. This can introduce artifacts.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>1) it seems other method are generally  better using leaderboard submissions (online validation set). why do you state that this approach is better then other SOTA methods?
+You mentioned that without post-processing other SOTA methods are worse. What are the performances of other SOTA method without post-processing on online validation? Or are you  basing this statement only based on the internal data split (offline)?
+What post-processing are you referring to here? If you know what it is, why not apply it for your “online validation” submission.</p>
+
+      <p>2) Internal split (offline validation) seems to use only  a single split for validation. Was there no testing split used? or no cross-validation?  How did you tune the hyper-parameters of your network? If you used the  same offline validation split for tuning and final evaluation, that your results will look artificially higher than other approaches.</p>
+
+      <p>3) how did you resample from 3D point cloud back to Volumentric maks? how long does it take? does it require specially initial 3D point sampling strategy to avoid artifacts?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Generally I appreciate a less conventional approach for 3D segmentation, thank you for bringing  up an alternative method for 3D segmentation.</p>
+
+      <p>However evaluation results seems unconvincing.  Please elaborate on internal split (was there a testing set?) and make a more fair statement when comparing yourself to other SOTA approaches (in online validation)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>validation is not convincing, the online validation seems inferior to other methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>Despite that one reviewer mentioned that similar works on point-based neural network has been used in the computer vision community, the other two reviewers acknowledge that this paper is interesting and it brings a new alternative to conventional grid-based segmentation. They mainly have concerns on the ablation study, implementation details, data split and comparison with existing methods. The authors are invited to give a rebuttal for these concerns.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>Overall this paper has some novelty by using point-cloud convolution to reduce the grid-based convolution for segmentation of volumetric images. The idea is novel for medical image computing. Reviewers mainly have concerns on its ablation study and reducibility. In the rebuttal, the authors provided more ablation study results and promised to put them in the supplementary material. They also clarified more details and promised to release the code later.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>11</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper proposes an interesting alternative to 3D segmentation that yields interesting results and warrants discussion in a forum such as MICCAI. Despite shortcomings in the initial experimental design, the rebuttal highlights better the benefits of the method and clarifies the main points of concerns</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have provided a detailed answer to all the concerns raised by the reviewers. Although the core of the proposed method is a well-studied technique in computer vision tasks, mostly in 2D images, the idea of applying it to 3D medical images is novel, challengin enough and the presented results look promising. Therefore, I recommend acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the reviewers for comments. 
+The reviewers agreed that our method has a new perspective in medical segmentation by using the concept of point-based segmentation with traditional volume-based segmentation, showing very good performance across datasets (BraTS, Pancreas). Such encouraging results could inspire more works on point-based representation in medical imaging.</p>
+
+  <p>We respond to five keypoints in the comments, below.</p>
+
+  <p>** KP1: Ablation study **</p>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>Model</td>
+        <td> </td>
+        <td>ET</td>
+        <td>WT</td>
+        <td>TC</td>
+        <td>Avg.</td>
+      </tr>
+      <tr>
+        <td>E</td>
+        <td>3D U-Net [15]</td>
+        <td>66.92</td>
+        <td>82.86</td>
+        <td>72.98</td>
+        <td>74.25</td>
+      </tr>
+      <tr>
+        <td>D</td>
+        <td>Attention U-Net [40]</td>
+        <td>69.87</td>
+        <td>89.68</td>
+        <td>79.28</td>
+        <td>79.61</td>
+      </tr>
+      <tr>
+        <td>C</td>
+        <td>A without GDL</td>
+        <td>69.33</td>
+        <td>89.36</td>
+        <td>69.51</td>
+        <td>76.06</td>
+      </tr>
+      <tr>
+        <td>B</td>
+        <td>A without saliency (RandLANet)</td>
+        <td>67.40</td>
+        <td>87.74</td>
+        <td>76.85</td>
+        <td>77.33</td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>Our model</td>
+        <td>76.43</td>
+        <td>89.67</td>
+        <td>82.97</td>
+        <td>83.02</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>We conducted an ablation study on the offline validation set of BraTS20. We provided variants of our model to demonstrate the significance of the volumetric saliency attention network, point-based segmentation network, and the GDL loss. We will add this ablation study to the supplementary.</p>
+
+  <p>** KP2: Online/offline split **</p>
+
+  <p>Offline evaluation is a common practice in medical segmentation. Similar evaluations can be found in previous works [1, 12] also in MICCAI. In fact, online evaluations might not be fair as the experimental setup of the submitted methods cannot be reproduced; the leaderboard results should be taken with a grain of salt.</p>
+
+  <p>For example, nnU-Net [10] has post-processing to remove small enhancing tumor lesions, but it is not clear how to define “small lesions”. When we retrained and submitted the results of their method to online validation <em>without</em> post-processing, we found a gap between performance w/ and w/o post-processing. (See Table 1, 2, 3, and footnotes in the paper.)
+Offline setting allows more fair and reproducible evaluations as all methods are controlled to have the same setting.</p>
+
+  <p>For data split, we followed the common evaluation protocol in previous works [1, 10, 12, 37] to split the data randomly with 80:20 ratio. As mentioned by Reviewer 3, more splits are preferable, but they are not practical to us due to the lack of large training data in the medical domain, and due to the huge computational resources required for validating multiple splits.</p>
+
+  <p>** KP3: Sampling **</p>
+
+  <p>We threshold the confidence output of the attention network (threshold 0.9), and voxels passing the threshold become foreground (FG) points. We randomly sample remaining voxels to obtain background (BG) points. The union of FG and BG points form an input point cloud for segmentation. Note that the FG already contains tumor regions, and the BG only provides additional context data for learning. The segmentation results of the FG can be simply used as the final tumor segmentation results, and <em>no resampling</em> from point cloud to volume is required. We also tested with different thresholds and found that it is quite insensitive to the model performance (~1-percent difference when varying the threshold in [0.6, 0.95]).</p>
+
+  <p>** KP4: Reproducibility **
+We will release our code publicly. @Reviewer 2: we will provide additional details of our network training in the supplementary material and in the code release.</p>
+
+  <p>** KP5: Novelty ** 
+@Reviewer 2: Attention and point-based segmentation are popular topics in computer vision (CV). Despite that, due to the difference between 2D still images/3D volumetric data in CV and MRI in medical imaging, CV techniques cannot be directly used for medical segmentation.</p>
+
+  <p>For the suggested references, PointRend is a post-processing method on the boundaries while our network performs point-based segmentation. Different from CBAM, our attention network is built on pyramid features with dilated convolution for context-aware learning. We will cite these papers as potential extensions to our method.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0160-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0161-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Interpretability / Explainability"
+        class="post-category">
+        Machine Learning - Interpretability / Explainability
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - CT"
+        class="post-category">
+        Modalities - CT
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Ho, Ngoc-Vuong"
+        class="post-category">
+        Ho, Ngoc-Vuong
+      </a> |  
+      
+      <a href="kittywong/tags#Nguyen, Tan"
+        class="post-category">
+        Nguyen, Tan
+      </a> |  
+      
+      <a href="kittywong/tags#Diep, Gia-Han"
+        class="post-category">
+        Diep, Gia-Han
+      </a> |  
+      
+      <a href="kittywong/tags#Le, Ngan"
+        class="post-category">
+        Le, Ngan
+      </a> |  
+      
+      <a href="kittywong/tags#Hua, Binh-Son"
+        class="post-category">
+        Hua, Binh-Son
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0161/12/31/Paper2064">
+          TUN-Det: A Novel Network for Thyroid Ultrasound Nodule Detection
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0159/12/31/Paper2052">
+          CCBANet: Cascading Context and Balancing Attention for Polyp Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

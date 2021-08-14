@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yundong Zhang, Huiye Liu, Qiang Hu Abstract Medical image segmentation - the prerequisite of numerous clinical needs - has been significantly prospered by recent advances in convolutional neural networks (CNNs). However, it exhibits general limitations on modeling explicit long-range relation, and existing cures, resorting to building deep encoders along with aggressive downsampling operations, leads to redundant deepened networks and loss of localized details. Hence, the segmentation task awaits a better solution to improve the efficiency of modeling global contexts while maintaining a strong grasp of low-level details. In this paper, we propose a novel parallel-in-branch architecture, TransFuse, to address this challenge. TransFuse combines Transformers and CNNs in a parallel style, where both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to efficiently fuse the multi-level features from both branches. Extensive experiments demonstrate that TransFuse achieves the newest state-of-the-art results on both 2D and 3D medical image sets including polyp, skin leison, hip, and prostate segmentation, with significant parameter decrease and inference speed improvement. Link to paper https://doi.org/10.1007/978-3-030-87193-2_2 Link to the code repository https://github.com/Rayicer/TransFuse Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to combine vision transformers and CNN in a parallel fashion to effectively model long range relations for medical image segmentation and a fusion module for combining features from the two branches. The models were developed using pre-trained CNN and vision transformer networks as backbone for three different applications. Performance is reported for different sizes of backbone models and ablation experiments to understand the effect of parallel vs serial and fusion module are provided. The developed models have slightly improved performance and reduced inference speed than SOTA models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Good summary of the different components of the proposed model evaluation on multiple datasets and comparison with many SOTA approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvement in performance and inference speed is marginal compared to the serial configuration The authors claim that the proposed model does not need deeper architectures, however only the last deeper set of features (H/32, W/32) is removed Low level features seem to be ignored in the proposed model. It is unclear as to how this affects segmentation of smaller lesions / objects Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is sufficient implementation details to reproduce the model if needed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Given that CNNs and vision transformer have been used in a serial configuration and achieved better performance than Unet based models, is there a reason to believe a parallel configuration will perform better than the serial configuration and why? The listed advantage (2) of not building very deep nets seems to be driven by patch size chosen in the vision transformer and the proposed model is only one level shallower than the base resnet models. This is misleading as the proposed model is not a shallow network. Transformer branch: is L the same the as the original paper, L=6? The description provided is from ref [7] but the base transformer model is from ref [22], which adapts/replace the MLP layer with a feed forward network. A brief description of the difference of the transformer models in ref [7] and [22] will be helpful as both are used as base models. CNN branch: are the features from first block ignored? If so, how does it affect the segmentation quality especially for smaller objets? The bifusion module is heavily engineered with channel attention for transformer features, spatial attention for CNN features, dot product to fuse the CNN and transformer features and gated skip attention for the concatenated features. A simple concatenate and residual connections for fusing the transformer and CNN features provides nearly equivalent performance (Table 4). Can this module be simplified? An ablation study on the effect of individual components of the bifusion module will help in explaining the need for the various components. Data acquisition: Why were these particular datasets chosen to evaluate the proposed model? What was the original resolution for polyp and skin lesion datasets? What is the sample size for different polyp datasets? This would be helpful to interpret the results presented in Table 1. Consider cross validation splits for smaller datasets (hip segmentation). -Implementation details: What is the training time for TransFuse S, L and L* models? -Polyp segmentation: The performance of HarDNet-MSEG is comparable to TransFuse-S in Kvasir and ClinicDB (datasets used for training). How does pre-taining on a larger dataset contribute to the improved generalizaton of all transformer based models to ColonDB, EndoScene and ETIS datasets? Please provide the model size for TransUnet, TransFuse-L and TransFuse-L* Ablation Study: Rationale for E.2 is unclear as Resnet and VGG16 are probably extracting similar / redundant features. Consider providing the performance of CNN alone and transformer alone models. Fig 2: Please provide a diverse set of illustrative examples. All lesion examples contain only one lesion though of different sizes. Are these cases with multiple lesions? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed model improves upon the performance of the serial configuration marginally and the improvement in inference speed is not drastic. As these models are deployed over the cloud typically and not on edge devices, the slight reduction in parameters and inference speed might not affect user experience. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The author proposed a fusion technique (BiFusion) among featuremaps captured through Transformer and CNN in a parallel manner. Extensive experiments were performed on three different medical image segmentation datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors explored and exploited transformer-alike architectures on medical segmentation tasks. Extensive experiments were demonstrated on different medical image segmentation tasks, including polyp, skin lesion, and hip segmentation. Overall, the paper is well-written. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The contribution of each Transformer/CNN branch was not explicitly and visually justified. It would be great if more qualitative analysis could be added to demonstrate the contributions of each branch, for example, by inserting more contents in Fig. 2. In terms of method, the design of BiFusion module is mostly engineering or system building built on slightly weak motivations, using several existing attention mechanisms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The release of source code is not mentioned in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Apart from the aforementioned qualitative analysis, adding more detailed ablation studies of each CNN/Transformer branch would help the readers to get a clue about their individual contribution towards the final segmentation results. The design motivation of the proposed BiFusion module should be enhanced. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Both of the two weaknesses points mentioned in Sec. 4. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper TransFuse combines Transformers and CNNs in a parallel style, with which both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to fuse the multi-level features from both branches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Potentially low GPU memory requirements: “Extensive experiments demonstrate that TransFuse achieves newest state-of-the-arts on different medical image sets including polyp, skin lesion and hip segmentation, with up to 20% parameter decrease and 15% inference speed (FPS) improvement compared to CNN-based methods.” Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experiments are only on 2D image: Most medical images are 3D images, but the author only implement their experiments on 2D medical image segmentation tasks. Considering 3D format is one most different feature between medical image (CT, MR, X-Ray, etc.) and natural image, the author should include 3D medical image segmentation tasks to show TransFuse outperforms other SOTA results. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I don’t know the reproducibility of the paper and I can’t believe the huge result gap between U-Net and TransUnet/TransFuse. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Implementing experiments on 3D medical image segmentation tasks and comparing with nnUNet (https://github.com/MIC-DKFZ/nnUNet/) to show its real performance. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are all implemented only on 2D, which is not typical in medical image segmentation tasks. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper combines two parallel branches including CNN and vision transformers for medical image segmentation. A fusion branch is designed to integrate features from these two branches. Experimental results on three different 2D segmentation tasks demonstrate consistent better performance in comparison with other methods. However, further justification and comments are required for major issues raised by reviewers. For example, the improvement in performance and inference speed is marginal compared to serial configuration and SOTA methods. Further justification on the performance improvement and motivation for parallel configuration design is required. The efficacy of the proposed method with shallow architectures and how the low-level features can be handled properly. The motivation of BiFusion and whether it can be simplified. The extension and efficacy of proposed method to volumetric medical images. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the concerns raised by the reviewers in the rebuttal and other minor ones could be addressed in the final version. Therefore, I am happy to recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The additional two experiments conducted during the rebuttal period are impressive, especially considering the short rebuttal period. For the additional experiments, the proposed method demonstrates a large improvement to the state-of-the-art nnUNet method on the 3D Prostate MRI segmentation dataset. These results illustrate the efficiency and generalizability of the proposed method. Unfortunately, there are still some concerns which were not properly addressed during the rebuttal. 1) As indicated by the Reviewer 1, the proposed method shows incremental improvement to the state-of-the-art in Table 1 and Table 2. It’s relatively difficult to understand whether these results are significant; 2) As indicated by the Reviewer 2, the design motivation of BiFusion module and the parallel configuration is still unclear. As indicated by Reviewer 2, the design of BiFusion seems to be a minor medication of the existing attention methods. We appreciate that authors explained the main components of the BiFusion module. However, their main differences to the existing attention methods are still not clear. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 18 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have thoroughly justified the main concerns summarized by MR through additional experimental data and included quantitative results validating their design choice and method’s performance improvement. With these additional justifications and quantitative results (must include in camera read), the paper is recommended for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Sincere thanks for all the insightful feedback! For conciseness, we use “CC” as “common comment”, “R” as “reply”, “r” as “reviewer”, “mr” as “meta reviewer”, “Transformer” as “TFM”. The structured response is provided as follows: CC1(mr; r1: 6.5; r2: 3.2/6.2) The design motivation of BiFusion Module and if it can be simplified R1:The motivation is explained in Sec.2 BiFusion Module. Essentially, 1)spatial attention, which can be viewed as a spatial filter, is to smooth low-level but noisy CNN features while preserving fine-grained details; 2)channel attention is to promote information related to the current TFM patch from a wealthy global context; 3)dot product is to model the cross dynamics between the two branches. As suggested by r1, an additional ablation study of BiFusion is conducted on the skin lesion task, which is more challenging and has more test samples compared to Polyp in Tab.4. The table below starts from naive concatenation and each row adds a BiFusion component. As each component shows its unique benefit and requires little computational cost, we believe this should not be simplified. Fusion IoU Dice Concat 0.778 0.857 +Spatial Attn 0.782 0.861 +Channel Attn 0.787 0.865 +Dot Product 0.795 0.872 CC2(mr; r3: 3/6) Performance on 3D medical data R2:As suggested by r3, we extended the experiments to the Prostate Multi-modality MRI Segmentation task hosted in Medical Segmentation Decathlon, where nnUNet ranked 1st. Under the same setting, the 5-fold cross-validation results of TransFuse-S are shown below (could be added to the final version): Model nnUNet-2d nnUNet-3d_fullres TransFuse-S mDice 0.7333 0.7537(+2.78%) 0.7639(+4.17%) #Params(M) 29.97 44.80 26.30 Inference(vol/s) 0.21 0.38 0.19 where TransFuse-S surpasses nnUNet-2d by a large margin. Compared to nnUNet-3d, TransFuse-S achieves better performance while reducing parameters by 41% and increasing speed by 50%. CC3(mr; r1: 3.1/8) Is the improvement of TransFuse marginal? Explain the significance of TransFuse R3:We believe TransFuse shows non-marginal performance improvement: 1)as discussed in the paper, parallel execution of both branches increases inference speed, e.g., by 20% on PolyP while improving generalization on unseen set by a large margin (5.2% as in Sec.3 and 3.2% as in Tab.4 E.4 vs E.1); 2)in the skin lesion task, our performance improvement is on par with prior works; 3)TransFuse-S also shows large improvement on 3D data (see in R2). With significantly better efficiency, our solution can be deployed at both edge and cloud, which is essential to meet the growing demands in preventive, personalized and privacy-preserving edge healthcare. Also, TransFuse is the 1st parallel-in-branch model synthesizing CNN and TFM. CC4(mr; r1: 3.2/6.2) Is the net used in TransFuse shallow? R4:Comparing the backbones of TransFuse-S (28 CNN + 8 TFM layers) to previous CNNs, e.g. HardNet has 68 CNN layers, TransFuse-S is much shallower. Besides, TransFuse removes the last block of the CNN branch, which typically contains most of the params. TransFuse achieves promising performance and is more efficient, which validates the effectiveness of our design. CC5(mr; r1: 3.3/6.4) TransFuse on low-level features R5:The low-level features are captured by the CNN branch and fused in later stages. In fact, TransFuse-S performs well on small skin lesions: on the 100 lesions with the smallest area in our test set, TransFuse-S achieves a Jaccard of 0.792, which is comparable to 0.795 in Tab.2. The 1st level CNN features are not used as typically done in SOTA models, e.g. HRNet, PraNet, which does not affect the performance much. CC6(r1: 6.9; r2: 6.1) Performance of each branch alone in TransFuse R6:On Polyp, DeiT-S alone achieves mDice of 0.889(Kvasir) and 0.727(ColonDB); R34 alone gets 0.890(Kvasir) and 0.645(ColonDB). As stronger baselines are shown in Tab.4: E.1 and E.2, we didn’t provide single branch performance in the original paper. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yundong Zhang, Huiye Liu, Qiang Hu Abstract Medical image segmentation - the prerequisite of numerous clinical needs - has been significantly prospered by recent advances in convolutional neural networks (CNNs). However, it exhibits general limitations on modeling explicit long-range relation, and existing cures, resorting to building deep encoders along with aggressive downsampling operations, leads to redundant deepened networks and loss of localized details. Hence, the segmentation task awaits a better solution to improve the efficiency of modeling global contexts while maintaining a strong grasp of low-level details. In this paper, we propose a novel parallel-in-branch architecture, TransFuse, to address this challenge. TransFuse combines Transformers and CNNs in a parallel style, where both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to efficiently fuse the multi-level features from both branches. Extensive experiments demonstrate that TransFuse achieves the newest state-of-the-art results on both 2D and 3D medical image sets including polyp, skin leison, hip, and prostate segmentation, with significant parameter decrease and inference speed improvement. Link to paper https://doi.org/10.1007/978-3-030-87193-2_2 Link to the code repository https://github.com/Rayicer/TransFuse Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to combine vision transformers and CNN in a parallel fashion to effectively model long range relations for medical image segmentation and a fusion module for combining features from the two branches. The models were developed using pre-trained CNN and vision transformer networks as backbone for three different applications. Performance is reported for different sizes of backbone models and ablation experiments to understand the effect of parallel vs serial and fusion module are provided. The developed models have slightly improved performance and reduced inference speed than SOTA models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Good summary of the different components of the proposed model evaluation on multiple datasets and comparison with many SOTA approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvement in performance and inference speed is marginal compared to the serial configuration The authors claim that the proposed model does not need deeper architectures, however only the last deeper set of features (H/32, W/32) is removed Low level features seem to be ignored in the proposed model. It is unclear as to how this affects segmentation of smaller lesions / objects Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is sufficient implementation details to reproduce the model if needed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Given that CNNs and vision transformer have been used in a serial configuration and achieved better performance than Unet based models, is there a reason to believe a parallel configuration will perform better than the serial configuration and why? The listed advantage (2) of not building very deep nets seems to be driven by patch size chosen in the vision transformer and the proposed model is only one level shallower than the base resnet models. This is misleading as the proposed model is not a shallow network. Transformer branch: is L the same the as the original paper, L=6? The description provided is from ref [7] but the base transformer model is from ref [22], which adapts/replace the MLP layer with a feed forward network. A brief description of the difference of the transformer models in ref [7] and [22] will be helpful as both are used as base models. CNN branch: are the features from first block ignored? If so, how does it affect the segmentation quality especially for smaller objets? The bifusion module is heavily engineered with channel attention for transformer features, spatial attention for CNN features, dot product to fuse the CNN and transformer features and gated skip attention for the concatenated features. A simple concatenate and residual connections for fusing the transformer and CNN features provides nearly equivalent performance (Table 4). Can this module be simplified? An ablation study on the effect of individual components of the bifusion module will help in explaining the need for the various components. Data acquisition: Why were these particular datasets chosen to evaluate the proposed model? What was the original resolution for polyp and skin lesion datasets? What is the sample size for different polyp datasets? This would be helpful to interpret the results presented in Table 1. Consider cross validation splits for smaller datasets (hip segmentation). -Implementation details: What is the training time for TransFuse S, L and L* models? -Polyp segmentation: The performance of HarDNet-MSEG is comparable to TransFuse-S in Kvasir and ClinicDB (datasets used for training). How does pre-taining on a larger dataset contribute to the improved generalizaton of all transformer based models to ColonDB, EndoScene and ETIS datasets? Please provide the model size for TransUnet, TransFuse-L and TransFuse-L* Ablation Study: Rationale for E.2 is unclear as Resnet and VGG16 are probably extracting similar / redundant features. Consider providing the performance of CNN alone and transformer alone models. Fig 2: Please provide a diverse set of illustrative examples. All lesion examples contain only one lesion though of different sizes. Are these cases with multiple lesions? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed model improves upon the performance of the serial configuration marginally and the improvement in inference speed is not drastic. As these models are deployed over the cloud typically and not on edge devices, the slight reduction in parameters and inference speed might not affect user experience. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The author proposed a fusion technique (BiFusion) among featuremaps captured through Transformer and CNN in a parallel manner. Extensive experiments were performed on three different medical image segmentation datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors explored and exploited transformer-alike architectures on medical segmentation tasks. Extensive experiments were demonstrated on different medical image segmentation tasks, including polyp, skin lesion, and hip segmentation. Overall, the paper is well-written. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The contribution of each Transformer/CNN branch was not explicitly and visually justified. It would be great if more qualitative analysis could be added to demonstrate the contributions of each branch, for example, by inserting more contents in Fig. 2. In terms of method, the design of BiFusion module is mostly engineering or system building built on slightly weak motivations, using several existing attention mechanisms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The release of source code is not mentioned in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Apart from the aforementioned qualitative analysis, adding more detailed ablation studies of each CNN/Transformer branch would help the readers to get a clue about their individual contribution towards the final segmentation results. The design motivation of the proposed BiFusion module should be enhanced. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Both of the two weaknesses points mentioned in Sec. 4. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper TransFuse combines Transformers and CNNs in a parallel style, with which both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to fuse the multi-level features from both branches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Potentially low GPU memory requirements: “Extensive experiments demonstrate that TransFuse achieves newest state-of-the-arts on different medical image sets including polyp, skin lesion and hip segmentation, with up to 20% parameter decrease and 15% inference speed (FPS) improvement compared to CNN-based methods.” Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experiments are only on 2D image: Most medical images are 3D images, but the author only implement their experiments on 2D medical image segmentation tasks. Considering 3D format is one most different feature between medical image (CT, MR, X-Ray, etc.) and natural image, the author should include 3D medical image segmentation tasks to show TransFuse outperforms other SOTA results. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I don’t know the reproducibility of the paper and I can’t believe the huge result gap between U-Net and TransUnet/TransFuse. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Implementing experiments on 3D medical image segmentation tasks and comparing with nnUNet (https://github.com/MIC-DKFZ/nnUNet/) to show its real performance. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are all implemented only on 2D, which is not typical in medical image segmentation tasks. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper combines two parallel branches including CNN and vision transformers for medical image segmentation. A fusion branch is designed to integrate features from these two branches. Experimental results on three different 2D segmentation tasks demonstrate consistent better performance in comparison with other methods. However, further justification and comments are required for major issues raised by reviewers. For example, the improvement in performance and inference speed is marginal compared to serial configuration and SOTA methods. Further justification on the performance improvement and motivation for parallel configuration design is required. The efficacy of the proposed method with shallow architectures and how the low-level features can be handled properly. The motivation of BiFusion and whether it can be simplified. The extension and efficacy of proposed method to volumetric medical images. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the concerns raised by the reviewers in the rebuttal and other minor ones could be addressed in the final version. Therefore, I am happy to recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The additional two experiments conducted during the rebuttal period are impressive, especially considering the short rebuttal period. For the additional experiments, the proposed method demonstrates a large improvement to the state-of-the-art nnUNet method on the 3D Prostate MRI segmentation dataset. These results illustrate the efficiency and generalizability of the proposed method. Unfortunately, there are still some concerns which were not properly addressed during the rebuttal. 1) As indicated by the Reviewer 1, the proposed method shows incremental improvement to the state-of-the-art in Table 1 and Table 2. It’s relatively difficult to understand whether these results are significant; 2) As indicated by the Reviewer 2, the design motivation of BiFusion module and the parallel configuration is still unclear. As indicated by Reviewer 2, the design of BiFusion seems to be a minor medication of the existing attention methods. We appreciate that authors explained the main components of the BiFusion module. However, their main differences to the existing attention methods are still not clear. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 18 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have thoroughly justified the main concerns summarized by MR through additional experimental data and included quantitative results validating their design choice and method’s performance improvement. With these additional justifications and quantitative results (must include in camera read), the paper is recommended for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Sincere thanks for all the insightful feedback! For conciseness, we use “CC” as “common comment”, “R” as “reply”, “r” as “reviewer”, “mr” as “meta reviewer”, “Transformer” as “TFM”. The structured response is provided as follows: CC1(mr; r1: 6.5; r2: 3.2/6.2) The design motivation of BiFusion Module and if it can be simplified R1:The motivation is explained in Sec.2 BiFusion Module. Essentially, 1)spatial attention, which can be viewed as a spatial filter, is to smooth low-level but noisy CNN features while preserving fine-grained details; 2)channel attention is to promote information related to the current TFM patch from a wealthy global context; 3)dot product is to model the cross dynamics between the two branches. As suggested by r1, an additional ablation study of BiFusion is conducted on the skin lesion task, which is more challenging and has more test samples compared to Polyp in Tab.4. The table below starts from naive concatenation and each row adds a BiFusion component. As each component shows its unique benefit and requires little computational cost, we believe this should not be simplified. Fusion IoU Dice Concat 0.778 0.857 +Spatial Attn 0.782 0.861 +Channel Attn 0.787 0.865 +Dot Product 0.795 0.872 CC2(mr; r3: 3/6) Performance on 3D medical data R2:As suggested by r3, we extended the experiments to the Prostate Multi-modality MRI Segmentation task hosted in Medical Segmentation Decathlon, where nnUNet ranked 1st. Under the same setting, the 5-fold cross-validation results of TransFuse-S are shown below (could be added to the final version): Model nnUNet-2d nnUNet-3d_fullres TransFuse-S mDice 0.7333 0.7537(+2.78%) 0.7639(+4.17%) #Params(M) 29.97 44.80 26.30 Inference(vol/s) 0.21 0.38 0.19 where TransFuse-S surpasses nnUNet-2d by a large margin. Compared to nnUNet-3d, TransFuse-S achieves better performance while reducing parameters by 41% and increasing speed by 50%. CC3(mr; r1: 3.1/8) Is the improvement of TransFuse marginal? Explain the significance of TransFuse R3:We believe TransFuse shows non-marginal performance improvement: 1)as discussed in the paper, parallel execution of both branches increases inference speed, e.g., by 20% on PolyP while improving generalization on unseen set by a large margin (5.2% as in Sec.3 and 3.2% as in Tab.4 E.4 vs E.1); 2)in the skin lesion task, our performance improvement is on par with prior works; 3)TransFuse-S also shows large improvement on 3D data (see in R2). With significantly better efficiency, our solution can be deployed at both edge and cloud, which is essential to meet the growing demands in preventive, personalized and privacy-preserving edge healthcare. Also, TransFuse is the 1st parallel-in-branch model synthesizing CNN and TFM. CC4(mr; r1: 3.2/6.2) Is the net used in TransFuse shallow? R4:Comparing the backbones of TransFuse-S (28 CNN + 8 TFM layers) to previous CNNs, e.g. HardNet has 68 CNN layers, TransFuse-S is much shallower. Besides, TransFuse removes the last block of the CNN branch, which typically contains most of the params. TransFuse achieves promising performance and is more efficient, which validates the effectiveness of our design. CC5(mr; r1: 3.3/6.4) TransFuse on low-level features R5:The low-level features are captured by the CNN branch and fused in later stages. In fact, TransFuse-S performs well on small skin lesions: on the 100 lesions with the smallest area in our test set, TransFuse-S achieves a Jaccard of 0.792, which is comparable to 0.795 in Tab.2. The 1st level CNN features are not used as typically done in SOTA models, e.g. HRNet, PraNet, which does not affect the performance much. CC6(r1: 6.9; r2: 6.1) Performance of each branch alone in TransFuse R6:On Polyp, DeiT-S alone achieves mDice of 0.889(Kvasir) and 0.727(ColonDB); R34 alone gets 0.890(Kvasir) and 0.645(ColonDB). As stronger baselines are shown in Tab.4: E.1 and E.2, we didn’t provide single branch performance in the original paper. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0101/12/31/Paper0016" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0101/12/31/Paper0016" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0101-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0101/12/31/Paper0016"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0101/12/31/Paper0016","headline":"TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation","dateModified":"0101-12-31T00:00:00-05:17","datePublished":"0101-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yundong Zhang, Huiye Liu, Qiang Hu Abstract Medical image segmentation - the prerequisite of numerous clinical needs - has been significantly prospered by recent advances in convolutional neural networks (CNNs). However, it exhibits general limitations on modeling explicit long-range relation, and existing cures, resorting to building deep encoders along with aggressive downsampling operations, leads to redundant deepened networks and loss of localized details. Hence, the segmentation task awaits a better solution to improve the efficiency of modeling global contexts while maintaining a strong grasp of low-level details. In this paper, we propose a novel parallel-in-branch architecture, TransFuse, to address this challenge. TransFuse combines Transformers and CNNs in a parallel style, where both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to efficiently fuse the multi-level features from both branches. Extensive experiments demonstrate that TransFuse achieves the newest state-of-the-art results on both 2D and 3D medical image sets including polyp, skin leison, hip, and prostate segmentation, with significant parameter decrease and inference speed improvement. Link to paper https://doi.org/10.1007/978-3-030-87193-2_2 Link to the code repository https://github.com/Rayicer/TransFuse Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The authors propose to combine vision transformers and CNN in a parallel fashion to effectively model long range relations for medical image segmentation and a fusion module for combining features from the two branches. The models were developed using pre-trained CNN and vision transformer networks as backbone for three different applications. Performance is reported for different sizes of backbone models and ablation experiments to understand the effect of parallel vs serial and fusion module are provided. The developed models have slightly improved performance and reduced inference speed than SOTA models. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Good summary of the different components of the proposed model evaluation on multiple datasets and comparison with many SOTA approaches Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The improvement in performance and inference speed is marginal compared to the serial configuration The authors claim that the proposed model does not need deeper architectures, however only the last deeper set of features (H/32, W/32) is removed Low level features seem to be ignored in the proposed model. It is unclear as to how this affects segmentation of smaller lesions / objects Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is sufficient implementation details to reproduce the model if needed. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Given that CNNs and vision transformer have been used in a serial configuration and achieved better performance than Unet based models, is there a reason to believe a parallel configuration will perform better than the serial configuration and why? The listed advantage (2) of not building very deep nets seems to be driven by patch size chosen in the vision transformer and the proposed model is only one level shallower than the base resnet models. This is misleading as the proposed model is not a shallow network. Transformer branch: is L the same the as the original paper, L=6? The description provided is from ref [7] but the base transformer model is from ref [22], which adapts/replace the MLP layer with a feed forward network. A brief description of the difference of the transformer models in ref [7] and [22] will be helpful as both are used as base models. CNN branch: are the features from first block ignored? If so, how does it affect the segmentation quality especially for smaller objets? The bifusion module is heavily engineered with channel attention for transformer features, spatial attention for CNN features, dot product to fuse the CNN and transformer features and gated skip attention for the concatenated features. A simple concatenate and residual connections for fusing the transformer and CNN features provides nearly equivalent performance (Table 4). Can this module be simplified? An ablation study on the effect of individual components of the bifusion module will help in explaining the need for the various components. Data acquisition: Why were these particular datasets chosen to evaluate the proposed model? What was the original resolution for polyp and skin lesion datasets? What is the sample size for different polyp datasets? This would be helpful to interpret the results presented in Table 1. Consider cross validation splits for smaller datasets (hip segmentation). -Implementation details: What is the training time for TransFuse S, L and L* models? -Polyp segmentation: The performance of HarDNet-MSEG is comparable to TransFuse-S in Kvasir and ClinicDB (datasets used for training). How does pre-taining on a larger dataset contribute to the improved generalizaton of all transformer based models to ColonDB, EndoScene and ETIS datasets? Please provide the model size for TransUnet, TransFuse-L and TransFuse-L* Ablation Study: Rationale for E.2 is unclear as Resnet and VGG16 are probably extracting similar / redundant features. Consider providing the performance of CNN alone and transformer alone models. Fig 2: Please provide a diverse set of illustrative examples. All lesion examples contain only one lesion though of different sizes. Are these cases with multiple lesions? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed model improves upon the performance of the serial configuration marginally and the improvement in inference speed is not drastic. As these models are deployed over the cloud typically and not on edge devices, the slight reduction in parameters and inference speed might not affect user experience. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The author proposed a fusion technique (BiFusion) among featuremaps captured through Transformer and CNN in a parallel manner. Extensive experiments were performed on three different medical image segmentation datasets. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The authors explored and exploited transformer-alike architectures on medical segmentation tasks. Extensive experiments were demonstrated on different medical image segmentation tasks, including polyp, skin lesion, and hip segmentation. Overall, the paper is well-written. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The contribution of each Transformer/CNN branch was not explicitly and visually justified. It would be great if more qualitative analysis could be added to demonstrate the contributions of each branch, for example, by inserting more contents in Fig. 2. In terms of method, the design of BiFusion module is mostly engineering or system building built on slightly weak motivations, using several existing attention mechanisms. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The release of source code is not mentioned in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Apart from the aforementioned qualitative analysis, adding more detailed ablation studies of each CNN/Transformer branch would help the readers to get a clue about their individual contribution towards the final segmentation results. The design motivation of the proposed BiFusion module should be enhanced. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Both of the two weaknesses points mentioned in Sec. 4. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 3 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper TransFuse combines Transformers and CNNs in a parallel style, with which both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to fuse the multi-level features from both branches. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Potentially low GPU memory requirements: “Extensive experiments demonstrate that TransFuse achieves newest state-of-the-arts on different medical image sets including polyp, skin lesion and hip segmentation, with up to 20% parameter decrease and 15% inference speed (FPS) improvement compared to CNN-based methods.” Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Experiments are only on 2D image: Most medical images are 3D images, but the author only implement their experiments on 2D medical image segmentation tasks. Considering 3D format is one most different feature between medical image (CT, MR, X-Ray, etc.) and natural image, the author should include 3D medical image segmentation tasks to show TransFuse outperforms other SOTA results. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I don’t know the reproducibility of the paper and I can’t believe the huge result gap between U-Net and TransUnet/TransFuse. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Implementing experiments on 3D medical image segmentation tasks and comparing with nnUNet (https://github.com/MIC-DKFZ/nnUNet/) to show its real performance. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The results are all implemented only on 2D, which is not typical in medical image segmentation tasks. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Somewhat confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper combines two parallel branches including CNN and vision transformers for medical image segmentation. A fusion branch is designed to integrate features from these two branches. Experimental results on three different 2D segmentation tasks demonstrate consistent better performance in comparison with other methods. However, further justification and comments are required for major issues raised by reviewers. For example, the improvement in performance and inference speed is marginal compared to serial configuration and SOTA methods. Further justification on the performance improvement and motivation for parallel configuration design is required. The efficacy of the proposed method with shallow architectures and how the low-level features can be handled properly. The motivation of BiFusion and whether it can be simplified. The extension and efficacy of proposed method to volumetric medical images. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have addressed most of the concerns raised by the reviewers in the rebuttal and other minor ones could be addressed in the final version. Therefore, I am happy to recommend accept. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The additional two experiments conducted during the rebuttal period are impressive, especially considering the short rebuttal period. For the additional experiments, the proposed method demonstrates a large improvement to the state-of-the-art nnUNet method on the 3D Prostate MRI segmentation dataset. These results illustrate the efficiency and generalizability of the proposed method. Unfortunately, there are still some concerns which were not properly addressed during the rebuttal. 1) As indicated by the Reviewer 1, the proposed method shows incremental improvement to the state-of-the-art in Table 1 and Table 2. It’s relatively difficult to understand whether these results are significant; 2) As indicated by the Reviewer 2, the design motivation of BiFusion module and the parallel configuration is still unclear. As indicated by Reviewer 2, the design of BiFusion seems to be a minor medication of the existing attention methods. We appreciate that authors explained the main components of the BiFusion module. However, their main differences to the existing attention methods are still not clear. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 18 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have thoroughly justified the main concerns summarized by MR through additional experimental data and included quantitative results validating their design choice and method’s performance improvement. With these additional justifications and quantitative results (must include in camera read), the paper is recommended for MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Sincere thanks for all the insightful feedback! For conciseness, we use “CC” as “common comment”, “R” as “reply”, “r” as “reviewer”, “mr” as “meta reviewer”, “Transformer” as “TFM”. The structured response is provided as follows: CC1(mr; r1: 6.5; r2: 3.2/6.2) The design motivation of BiFusion Module and if it can be simplified R1:The motivation is explained in Sec.2 BiFusion Module. Essentially, 1)spatial attention, which can be viewed as a spatial filter, is to smooth low-level but noisy CNN features while preserving fine-grained details; 2)channel attention is to promote information related to the current TFM patch from a wealthy global context; 3)dot product is to model the cross dynamics between the two branches. As suggested by r1, an additional ablation study of BiFusion is conducted on the skin lesion task, which is more challenging and has more test samples compared to Polyp in Tab.4. The table below starts from naive concatenation and each row adds a BiFusion component. As each component shows its unique benefit and requires little computational cost, we believe this should not be simplified. Fusion IoU Dice Concat 0.778 0.857 +Spatial Attn 0.782 0.861 +Channel Attn 0.787 0.865 +Dot Product 0.795 0.872 CC2(mr; r3: 3/6) Performance on 3D medical data R2:As suggested by r3, we extended the experiments to the Prostate Multi-modality MRI Segmentation task hosted in Medical Segmentation Decathlon, where nnUNet ranked 1st. Under the same setting, the 5-fold cross-validation results of TransFuse-S are shown below (could be added to the final version): Model nnUNet-2d nnUNet-3d_fullres TransFuse-S mDice 0.7333 0.7537(+2.78%) 0.7639(+4.17%) #Params(M) 29.97 44.80 26.30 Inference(vol/s) 0.21 0.38 0.19 where TransFuse-S surpasses nnUNet-2d by a large margin. Compared to nnUNet-3d, TransFuse-S achieves better performance while reducing parameters by 41% and increasing speed by 50%. CC3(mr; r1: 3.1/8) Is the improvement of TransFuse marginal? Explain the significance of TransFuse R3:We believe TransFuse shows non-marginal performance improvement: 1)as discussed in the paper, parallel execution of both branches increases inference speed, e.g., by 20% on PolyP while improving generalization on unseen set by a large margin (5.2% as in Sec.3 and 3.2% as in Tab.4 E.4 vs E.1); 2)in the skin lesion task, our performance improvement is on par with prior works; 3)TransFuse-S also shows large improvement on 3D data (see in R2). With significantly better efficiency, our solution can be deployed at both edge and cloud, which is essential to meet the growing demands in preventive, personalized and privacy-preserving edge healthcare. Also, TransFuse is the 1st parallel-in-branch model synthesizing CNN and TFM. CC4(mr; r1: 3.2/6.2) Is the net used in TransFuse shallow? R4:Comparing the backbones of TransFuse-S (28 CNN + 8 TFM layers) to previous CNNs, e.g. HardNet has 68 CNN layers, TransFuse-S is much shallower. Besides, TransFuse removes the last block of the CNN branch, which typically contains most of the params. TransFuse achieves promising performance and is more efficient, which validates the effectiveness of our design. CC5(mr; r1: 3.3/6.4) TransFuse on low-level features R5:The low-level features are captured by the CNN branch and fused in later stages. In fact, TransFuse-S performs well on small skin lesions: on the 100 lesions with the smallest area in our test set, TransFuse-S achieves a Jaccard of 0.792, which is comparable to 0.795 in Tab.2. The 1st level CNN features are not used as typically done in SOTA models, e.g. HRNet, PraNet, which does not affect the performance much. CC6(r1: 6.9; r2: 6.1) Performance of each branch alone in TransFuse R6:On Polyp, DeiT-S alone achieves mDice of 0.889(Kvasir) and 0.727(ColonDB); R34 alone gets 0.890(Kvasir) and 0.645(ColonDB). As stronger baselines are shown in Tab.4: E.1 and E.2, we didn’t provide single branch performance in the original paper. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Zhang, Yundong,Liu, Huiye,Hu, Qiang" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>TransFuse: Fusing Transformers and CNNs for Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Zhang, Yundong"
+        class="post-tags">
+        Zhang, Yundong
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Huiye"
+        class="post-tags">
+        Liu, Huiye
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Qiang"
+        class="post-tags">
+        Hu, Qiang
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yundong Zhang, Huiye Liu, Qiang Hu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Medical image segmentation - the prerequisite of numerous clinical needs - has been significantly prospered by recent advances in convolutional neural networks (CNNs). However, it exhibits general limitations on modeling explicit long-range relation, and existing cures, resorting to building deep encoders along with aggressive downsampling operations, leads to redundant deepened networks and loss of localized details. Hence, the segmentation task awaits a better solution to improve the efficiency of modeling global contexts while maintaining a strong grasp of low-level details. In this paper, we propose a novel parallel-in-branch architecture, TransFuse, to address this challenge. TransFuse combines Transformers and CNNs in a parallel style, where both global dependency and low-level spatial details can be efficiently captured in a much shallower manner. Besides, a novel fusion technique - BiFusion module is created to efficiently fuse the multi-level features from both branches. Extensive experiments demonstrate that TransFuse achieves the newest state-of-the-art results on both 2D and 3D medical image sets including polyp, skin leison, hip, and prostate segmentation, with significant parameter decrease and inference speed improvement.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_2">https://doi.org/10.1007/978-3-030-87193-2_2</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/Rayicer/TransFuse
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose to combine vision transformers and CNN in a parallel fashion to effectively model long range relations for medical image segmentation and a fusion module for combining features from the two branches.
+The models were developed using pre-trained CNN and vision transformer networks as backbone  for three different applications. Performance is reported for different sizes of backbone models and ablation experiments to understand the effect of parallel vs serial and fusion module are provided. The developed models have slightly improved performance and reduced inference speed than SOTA models.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>Good summary of the different components of the proposed model</li>
+        <li>evaluation on multiple datasets and comparison with many SOTA approaches</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The improvement in performance and inference speed is marginal compared to the serial configuration</li>
+        <li>The authors claim that the proposed model does not need deeper architectures, however only the last deeper set of features (H/32, W/32) is removed</li>
+        <li>Low level features seem to be ignored in the proposed model. It is unclear as to how this affects segmentation of smaller lesions / objects</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There is sufficient implementation details to reproduce the model if needed.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>Given that CNNs and vision transformer have been used in a serial configuration and achieved better performance than Unet based models, is there a reason to believe a parallel configuration will perform better than the serial configuration and why?</li>
+        <li>The listed advantage (2) of not building very deep nets seems to be driven by patch size chosen in the vision transformer and the proposed model is only one level shallower than the base resnet models. This is misleading as the proposed model is not a shallow network.</li>
+        <li>Transformer branch: is L the same the as the original paper, L=6? The description provided is from ref [7] but the base transformer model is from ref [22], which adapts/replace the MLP layer with a feed forward network. A brief description of the difference of the transformer models in ref [7] and [22] will be helpful as both are used as base models.</li>
+        <li>CNN branch: are the features from first block ignored? If so, how does it affect the segmentation quality especially for smaller objets?</li>
+        <li>The bifusion module is  heavily engineered with channel attention for transformer features, spatial attention for CNN features, dot product to fuse the CNN and transformer features and gated skip attention for the concatenated features. A simple concatenate and residual connections for fusing the transformer and CNN features provides nearly equivalent performance (Table 4). Can this module be simplified? An ablation study on the effect of individual components of the bifusion module will help in  explaining the need for the various components.</li>
+        <li>Data acquisition: Why were these particular datasets chosen to evaluate the proposed model? What was the original resolution for polyp and skin lesion datasets? What is the sample size for different polyp datasets? This would be helpful to interpret the results presented in Table 1. Consider cross validation splits for smaller datasets (hip segmentation).
+-Implementation details: What is the training time for TransFuse S, L and L* models?
+-Polyp segmentation: The performance of HarDNet-MSEG is comparable to TransFuse-S in Kvasir and ClinicDB (datasets used for training). How does pre-taining on a larger dataset contribute to the improved generalizaton of all transformer based models to ColonDB, EndoScene and ETIS datasets? Please provide the model size for TransUnet, TransFuse-L and TransFuse-L*</li>
+        <li>Ablation Study: Rationale for E.2 is unclear as Resnet and VGG16 are probably extracting similar / redundant features. Consider providing the performance of CNN alone and transformer alone models.</li>
+        <li>Fig 2: Please provide a diverse set of illustrative examples. All lesion examples contain only one lesion though of different sizes. Are these cases with multiple lesions?</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The proposed model improves upon the performance of the serial configuration marginally and the improvement in inference speed is not drastic. As these models are deployed over the cloud typically and not on edge devices, the slight reduction in parameters and inference speed might not affect user experience.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The author proposed a fusion technique (BiFusion) among featuremaps captured through Transformer and CNN in a parallel manner. Extensive experiments were performed on three different medical image segmentation datasets.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The authors explored and exploited transformer-alike architectures on medical segmentation tasks.</p>
+        </li>
+        <li>
+          <p>Extensive experiments were demonstrated on different medical image segmentation tasks, including polyp, skin lesion, and hip segmentation.</p>
+        </li>
+        <li>
+          <p>Overall, the paper is well-written.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>The contribution of each Transformer/CNN branch was not explicitly and visually justified. It would be great if more qualitative analysis could be added to demonstrate the contributions of each branch, for example, by inserting more contents in Fig. 2.</p>
+        </li>
+        <li>
+          <p>In terms of method, the design of BiFusion module is mostly engineering or system building built on slightly weak motivations, using several existing attention mechanisms.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The release of source code is not mentioned in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Apart from the aforementioned qualitative analysis, adding more detailed ablation studies of each CNN/Transformer branch would help the readers to get a clue about their individual contribution towards the final segmentation results.</p>
+        </li>
+        <li>
+          <p>The design motivation of the proposed BiFusion module should be enhanced.</p>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Both of the two weaknesses points mentioned in Sec. 4.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>TransFuse combines Transformers and CNNs in a parallel style, with which both global dependency and low-level spatial details can be efficiently captured in a much
+shallower manner. Besides, a novel fusion technique - BiFusion module is created to fuse the multi-level features from both branches.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Potentially low GPU memory requirements: “Extensive experiments demonstrate that TransFuse achieves newest state-of-the-arts on different medical image sets including polyp, skin lesion and hip segmentation, with up to 20% parameter decrease and 15% inference speed (FPS) improvement compared to CNN-based methods.”</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Experiments are only on 2D image:
+Most medical images are 3D images, but the author only implement their experiments on 2D medical image segmentation tasks. Considering 3D format is one most different feature between medical image (CT, MR, X-Ray, etc.) and natural image, the author should include 3D medical image segmentation tasks to show TransFuse outperforms other SOTA results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>I don’t know the reproducibility of the paper and I can’t believe the huge result gap between U-Net and TransUnet/TransFuse.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Implementing experiments on 3D medical image segmentation tasks and comparing with nnUNet (https://github.com/MIC-DKFZ/nnUNet/) to show its real performance.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The results are all implemented only on 2D, which is not typical in medical image segmentation tasks.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper combines two parallel branches including CNN and vision transformers for medical image segmentation. A fusion branch is designed to integrate features from these two branches. Experimental results on three different 2D segmentation tasks demonstrate consistent better performance in comparison with other methods. 
+However, further justification and comments are required for major issues raised by reviewers. For example, the improvement in performance and inference speed is marginal compared to serial configuration and SOTA methods. Further justification on the performance improvement and motivation for parallel configuration design is required. The efficacy of the proposed method with shallow architectures and how the low-level features can be handled properly. The motivation of BiFusion and whether it can be simplified. The extension and efficacy of proposed method to volumetric medical images.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have addressed most of the concerns raised by the reviewers in the rebuttal and other minor ones could be addressed in the final version. Therefore, I am happy to recommend accept.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The additional two experiments conducted during the rebuttal period are impressive, especially considering the short rebuttal period. For the additional experiments, the proposed method demonstrates a large improvement to the state-of-the-art nnUNet method on the 3D Prostate MRI segmentation dataset. These results illustrate the efficiency and generalizability of the proposed method. 
+Unfortunately, there are still some concerns which were not properly addressed during the rebuttal. 1) As indicated by the Reviewer 1, the proposed method shows incremental improvement to the state-of-the-art in Table 1 and Table 2. It’s relatively difficult to understand whether these results are significant; 2) As indicated by the Reviewer 2, the design motivation of BiFusion module and the parallel configuration is still unclear. As indicated by Reviewer 2, the design of BiFusion seems to be a minor medication of the existing attention methods. We appreciate that authors explained the main components of the BiFusion module. However, their main differences to the existing attention methods are still not clear.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>18</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have thoroughly justified the main concerns summarized by MR through additional experimental data and included quantitative results validating their design choice and method’s performance improvement. With these additional justifications and quantitative results (must include in camera read), the paper is recommended for MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Sincere thanks for all the insightful feedback! For conciseness, we use “CC” as “common comment”, “R” as “reply”, “r” as “reviewer”, “mr” as “meta reviewer”, “Transformer” as “TFM”. The structured response is provided as follows:</p>
+
+  <p>CC1(mr; r1: 6.5; r2: 3.2/6.2) The design motivation of BiFusion Module and if it can be simplified</p>
+
+  <p>R1:The motivation is explained in Sec.2 BiFusion Module. Essentially, 1)spatial attention, which can be viewed as a spatial filter, is to smooth low-level but noisy CNN features while preserving fine-grained details; 2)channel attention is to promote information related to the current TFM patch from a wealthy global context; 3)dot product is to model the cross dynamics between the two branches.
+As suggested by r1, an additional ablation study of BiFusion is conducted on the skin lesion task, which is more challenging and has more test samples compared to Polyp in Tab.4. The table below starts from naive concatenation and each row adds a BiFusion component. As each component shows its unique benefit and requires little computational cost, we believe this should not be simplified.</p>
+
+  <p>Fusion	IoU	Dice
+Concat	0.778	0.857
++Spatial Attn	0.782	0.861
++Channel Attn	0.787	0.865                        <br />
++Dot Product	0.795	0.872</p>
+
+  <p>CC2(mr; r3: 3/6) Performance on 3D medical data</p>
+
+  <p>R2:As suggested by r3, we extended the experiments to the Prostate Multi-modality MRI Segmentation task hosted in Medical Segmentation Decathlon, where nnUNet ranked 1st. Under the same setting, the 5-fold cross-validation results of TransFuse-S are shown below (could be added to the final version):</p>
+
+  <p>Model	nnUNet-2d	nnUNet-3d_fullres	TransFuse-S
+mDice	0.7333	0.7537(+2.78%)	0.7639(+4.17%)
+#Params(M)	29.97	44.80	26.30
+Inference(vol/s)	0.21	0.38	0.19</p>
+
+  <p>where TransFuse-S surpasses nnUNet-2d by a large margin. Compared to nnUNet-3d, TransFuse-S achieves better performance while reducing parameters by 41% and increasing speed by 50%.</p>
+
+  <p>CC3(mr; r1: 3.1/8) Is the improvement of TransFuse marginal? Explain the significance of TransFuse</p>
+
+  <p>R3:We believe TransFuse shows non-marginal performance improvement: 1)as discussed in the paper, parallel execution of both branches increases inference speed, e.g., by 20% on PolyP while improving generalization on unseen set by a large margin (5.2% as in Sec.3 and 3.2% as in Tab.4 E.4 vs E.1); 2)in the skin lesion task, our performance improvement is on par with prior works; 3)TransFuse-S also shows large improvement on 3D data (see in R2). With significantly better efficiency, our solution can be deployed at both edge and cloud, which is essential to meet the growing demands in preventive, personalized and privacy-preserving edge healthcare. Also, TransFuse is the 1st parallel-in-branch model synthesizing CNN and TFM.</p>
+
+  <p>CC4(mr; r1: 3.2/6.2) Is the net used in TransFuse shallow?</p>
+
+  <p>R4:Comparing the backbones of TransFuse-S (28 CNN + 8 TFM layers) to previous CNNs, e.g. HardNet has 68 CNN layers, TransFuse-S is much shallower. Besides, TransFuse removes the last block of the CNN branch, which typically contains most of the params. TransFuse achieves promising performance and is more efficient, which validates the effectiveness of our design.</p>
+
+  <p>CC5(mr; r1: 3.3/6.4) TransFuse on low-level features</p>
+
+  <p>R5:The low-level features are captured by the CNN branch and fused in later stages. In fact, TransFuse-S performs well on small skin lesions: on the 100 lesions with the smallest area in our test set, TransFuse-S achieves a Jaccard of 0.792, which is comparable to 0.795 in Tab.2. The 1st level CNN features are not used as typically done in SOTA models, e.g. HRNet, PraNet, which does not affect the performance much.</p>
+
+  <p>CC6(r1: 6.9; r2: 6.1) Performance of each branch alone in TransFuse</p>
+
+  <p>R6:On Polyp, DeiT-S alone achieves mDice of 0.889(Kvasir) and 0.727(ColonDB); R34 alone gets 0.890(Kvasir) and 0.645(ColonDB). As stronger baselines are shown in Tab.4: E.1 and E.2, we didn’t provide single branch performance in the original paper.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0101-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0102-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Attention models"
+        class="post-category">
+        Machine Learning - Attention models
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Zhang, Yundong"
+        class="post-category">
+        Zhang, Yundong
+      </a> |  
+      
+      <a href="kittywong/tags#Liu, Huiye"
+        class="post-category">
+        Liu, Huiye
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Qiang"
+        class="post-category">
+        Hu, Qiang
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0102/12/31/Paper0069">
+          Pancreas CT Segmentation by Predictive Phenotyping
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0100/12/31/Paper0008">
+          Noisy Labels are Treasure: Mean-Teacher-Assisted Confident Learning for Hepatic Vessel Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

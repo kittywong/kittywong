@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Vessel Width Estimation via Convolutional Regression | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Vessel Width Estimation via Convolutional Regression" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Rui-Qi Li, Gui-Bin Bian, Xiao-Hu Zhou, Xiaoliang Xie, Zhen-Liang Ni, Yan-Jie Zhou, Yuhan Wang, Zengguang Hou Abstract Vessel width estimation has a wide range of applications in disease diagnosis and treatment. In this paper, vessel width estimation is cast as a regression problem, and a novel Convolutional Neural Network (CNN) based method is proposed for vessel width estimation. In our CNN-based method, the idea of divide-and-conquer is introduced to solve the challenge of imbalanced training samples. Besides, in order to solve the shortage of training samples required by CNN, a vessel width label generation method is proposed to generate width labels from vessel segmentation labels. In the experiments, we apply our vessel width label generation method and CNN-based width estimation method to two tasks which are retinal vessel width estimation and coronary artery width estimation. Experimental results show that our width label generation method can generate sufficiently realistic width labels using accurate segmentation labels. Also, our CNN-based method can solve the challenge of imbalanced training samples, achieving state-of-the-art performance with less inference time. Link to paper https://doi.org/10.1007/978-3-030-87231-1_58 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper aims to develop a regression network to estimate the width of vessels such as coronary arteries or retinal vessels. The network is trained from ground truth estimates of vessel width obtained by extracting the centerlines of pre-segmented arteries and using the width computed at each point along the centerline to be applicable to all the pixels lying on the vessel surface normal passing through the centerline (called profile in the paper). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of determining vessel width for stenosis estimation is important. The idea of regression networks for estimating vessel width at pixel level is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I worry that the problem is not well-posed here. Estimating vessel width when given a segmented artery is fairly straightforward and already done by most automatic methods using the procedure the authors described as novel contribution in their paper. So if this is being used as the supervision data during training to estimate the vessel width at any pixel location, is this approach any better than staying with a coronary artery segmentation network (there are deep learning-based artery segmentation methods) and using the above procedure to extract the width. If the main argument is to avoid doing this and still compute the width, I am not sure having vessel width computed in different image regions without an understanding of the underlying topology to attach an identity to the associated vessel is helpful in any assessment or even in report generation leaving the clinician to do the recognition of the associated artery. Even so, the standard deviation error is indicating that this method is still problematic in such assessment (0.41). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Hard to check since the dataset is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could you clarify the need for the vessel width estimation in comparison to using a deep learning approach to coronary artery segmentation and directly estimating the vessel width from there? If the main reason is to avoid the continuous contour tracking needed for the full tree extraction, this is not as necessary for the purpose of vessel width estimation. Perhaps this idea is best applied for regressing on other parameters (e.g. FFR) rather than vessel width which is easily obtained from artery segmentation. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application is useful but as it stands, the justification for the approach is weak. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a novel method for vessel width regression using synthetic training labels obtained from ground truth segmentation masks. They propose a divide and conquer regression strategy, featuring multiple regressions and width range classification, using a modified U-Net architecture. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. S1. The presented work addresses vessel width estimation using deep learning, using a novel approach S2. The provided results, despite incomplete, indicate that the proposed method may have some advantages with respect to the state of the art S3. An ablation study is provided, trying to quantify the contribution of the proposed strategy Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. W1. The vessel width evaluation in REVIEW is incomplete. The KPIS dataset is missing, and the average error (accuracy) is not reported, but only the standard deviation (precision). W2. The ablation study is only provided in a private dataset, which complicates the reproducibility of results. W3. A thorough revision of related works is not provided, even though most of the cited methods are included in the comparison results. Instead, a brief summarization of previous works with grouped cite lists is provided. The methodological advances are also not discussed with respect to the state of the art in CNN-based regression. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Regarding reproducibility: R1. The process for manual segmentation of the private coronary dataset, as well as the guidelines followed by the experts, are not provided. R2. The variation over the REVIEW dataset evaluations are not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposes a novel CNN-based vessel width regression approach, consisting in training a modified U-Net [16] using automatic vessel width estimations from vessel profiles extracted from vascular segmentation masks. The modified U-Net consist of a decoder followed by two decoder heads. The decoder heads use bilinear interpolation instead of up-convolution. Each independent decoder head is in charge of width regression or width classification. The regression is performed independently for different width ranges, which are then combined using the classifier results as weigths. This is a similar strategy to [14]. The provided results evaluate the network trained with DRIVE in part of the REVIEW dataset. The paper also provides training/test results on a private coronary artery (CA) dataset. An ablation study comparing the proposed network with networks that only use the regression or the classification heads is provided on the CA dataset. Despite that the overall approach of the paper is fairly clear and provides valuable contributions, there are some major evaluation issues that cast doubt on the actual performance of the proposed methods. That is the reason why I recommend an under-average rating. Major issues The provided results only provide the standard deviation over the error (\sigma_E). It is clear that a bias estimator should be also provided to evaluate the regression performance (see, e.g. [8]). A bias is expected, as it is clear that the measurement criteria used in training and test is different. However, this bias should be reported and discussed taking the limitations of this experimental context into account. The ablation study is only provided for the private dataset. This is relevant as: 2.1. The complexity of the dataset is unknown to readers, thus the evaluation of the actual contribution and significance of the proposed methods is difficult to analyze. 2.2. The CA dataset only provides width estimations as derived by the authors with the automatic algorithm used for training label synthesis. Thus these errors are not as clinically-relevant as those estimated in the REVIEW dataset. The paper claims that the introduction of the divide-and-conquer strategy [14] allows to maintain the performance regardless of uneven distribution of widths. However, it is not clear how the presented ablation study results demonstrate that. Minor issues m1. A more detailed revision of related work (both in terms of application domain, and methodological advances in CNN-base regression) should be provided. m2. The REVIEW dataset provides multi-expert labeling, which could be used to provide a much clinically-relevant analysis of the proposed methods. m3. In the ablation study, it is not clear how the regression estimation is computed for the Classification Only network results. Is there any kind of weighted sum of intervals? m4. p.2, sec 2.1. Step (2). It is not clear how the intersection and bifurcation points are identified m5. p.3. “for the test labels, all error labels must be manually eliminated” -&gt; How? Easily amendable issues a1. pp.1-2. “(…) the automatic methods are more intelligent, but time-consuming”. The term “more intelligent” is vague in this context. It is also not clear the reason why these methods are time-consuming. a2. p.3. “(…) this way can enlarge training samples” -&gt; grammar a3. p.3. “(…) from the point of applications” -&gt; grammar a4. p.4. “(…) N is (…) sub-range” -&gt; plural a4. p.5. “(…) three of them those are challenging” -&gt; grammar a5. p.6. “(…) the evaluation metrics (…) REVIEW dataset is also used” -&gt; plural a6. pp.6-7. Add cites in text for the methods in the comparison. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The 3 highlighted weaknesses are of major importance to asses the actual contributions of the paper. Of the 3 identified strengths, which are relevant for MICCAI, only the novelty on the application of innovative deep learning strategies (similar to [14]) to vessel width regression remains. The other 2 strengths can be put into question as: The provided comparison results and ablation study do not provide an actual regression accuracy estimation, and only the standard deviation over the error is provided. Moreover, similar graphs to that in figure 4.(b), reporting the errors with respect to the width magnitude is desirable for all case studies, but they should include both estimators of the bias and variance of the regression errors. Despite including a public dataset (REVIEW) in the evaluation, the ablation study and the separated vessel width analysis is only provided for the private dataset, without a clear reason. This complicates the assessment of the actual contribution. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a regression-classification CNN-based vessel width estimation. It also proposed a method for vessel width label generation using a pipeline of conventional image processing steps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper is well written. The CNN-based vessel width estimation approach is a novel approach and showed promising results on the clinical benchmark data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the regression CNN-based vessel width estimation method is promising, the authors also calculated vessel widths using a conventional image processing pipeline. Those width labels are later used in deep model training. So, it is not clear from the paper, why a CNN-based approach is necessary when the same task can be performed using conventional image processing. Also, the authors did not discuss how the error (even minor) from the label generation step can affect the subsequent regression-based width prediction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method seems reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A discussion on why a CNN-based approach is necessary when the same task can be performed using conventional image processing would add value to the paper. Also, a discussion/results on how the error from the label generation step can affect the subsequent regression-based width prediction would add value to the paper. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the regression CNN-based vessel width estimation method is very promising, the motivation of this approach is not clear, given that the authors also calculated vessel widths using a conventional image processing pipeline. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel width estimation. The method uses a regression network with CNN for the estimation. The problem is important, and the method is interesting. R1 mentions that the problem is not well-posed as the advantage over using the segmentation network and direct width extraction has not been discussed and shown. R1 has a concern about the relatively large standard deviation error. R3 has concerns about the method evaluation, e.g., SD is reported alone, KPIS dataset is missing, and the ablation study is only provided in a private dataset. And methodological contributions are not discussed. R3 mentions that this application of DL to vessel width estimation is new. R4 mentions that the approach is novel and the results are promising. R4 finds that it is necessary to discuss the use of CNN and how the label error affects subsequent width prediction. After reading the comments, my recommendation is given in Q3 and that the authors could consider addressing the concerns on method motivation (e.g., advantages over other methods), experiment results and evaluation (raised by the reviewers above), on top of the other concerns raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have read the rebuttal. Most of the concerns have been addressed in the rebuttal. My review has been given in Q1. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper firstly generates the vessel width from the vessel segmentation label, and then proposes a deep network for the vessel width classification regression. The vessel width estimation approach is interesting, and the proposed network is easy to follow. The experimental results show the superiority of the method, but lack of some visualization results. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors claimed that the main advantage of the proposed method is its faster speed. However, for vessel segmentation and width estimation, the AC thinks the precision is much more important than efficiency. The authors claimed that their method outperforms the comparison methods which was questioned by R1. The authors did not provide more explanation and analysis of the results to prove their conclusions in the rebuttal letter. Simply saying their performance is the best is not convincing to AC. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Author Feedback Three reviewers all affirmed the innovation of our method. However, due to the relatively unpopular task and the limitation of pages, the reviewers had some misunderstandings. We will explain each of them here. R1 and R4 both wonder what is the advantage of our CNN method over the traditional method of first segmentation and then estimating the vessel width. Actually, the biggest advantage is speed, followed by precision. We’ve explicitly stated that traditional methods are ‘time-consuming’ since they need to iterate each pixel many times. Also, in the experimental analysis of the REVIEW dataset, we have stated that the inference time of our CNN method is 30ms (per image), while the traditional method (excluding segmentation time) needs tens of seconds or even several minutes. This speed gap demonstrates the irreplaceability of our method. As for precision, when we first designed our method, we just wanted a faster inference time, not expected its precision. However, after experiments, we found that the CNN method was even slightly better in precision. What puzzles us is that our result (0.41) is already the minimum error standard deviation of all the results, but R1 thinks it ‘problematic’. In terms of overall results, our CNN method is definitely the best. Also, as we stated in our paper, these results are obtained when the training set and the testing set are different datasets. We believe that the result can be better if the training set and the testing set are from the same dataset. From R3’s comments, it is clear that R3 did a survey of tasks and the REVIEW dataset, but didn’t go deep. First of all, KPIS was indeed not used since it’s useless. KPIS only contains 3 vessel segments and 164 width values, which is too small compared with the other three datasets (including 190 segments and 4902 width values in total). Besides, KPIS is also the simplest of the four datasets. Therefore, to eliminate the useless data, we chose the three most ‘challenging’ datasets as we stated in our paper. Secondly, R3 wonders why the mean bias was not reported. This is because the authors of the REVIEW dataset have pointed out in their paper that the mean bias is useless in evaluation (See their paper for more details). Also, some algorithms used for comparison did not report their mean bias in their papers and therefore cannot be compared. We just evaluated our CNN method in a conventional way proposed by the REVIEW dataset. It’s not that we forget or don’t report it on purpose. Therefore, not reporting the mean bias cannot be a weakness of our paper. Thirdly, R3 wonders why the REVIEW dataset (fundus vessels) was not used in the ablation study. There are three reasons: 1. The divide-and-conquer idea was designed for coronary vessels rather than fundus vessels. 2. For fundus vessels, the testing data (REVIEW) and training data (DRIVE) are not from the same dataset, making the results of the ablation study not reliable. 3. All the test samples (in REVIEW) are the specially selected vessel segments and there is no width imbalance in these samples, making the ablation study meaningless. Therefore, the ablation study was only applied to coronary vessels. The suggestions of R4 are absolutely useful, but due to the limited page, we need to put more important content in our paper. In the end, the biggest advantage of this paper is its innovation. It is also because of the innovation that we do not have the rich research data and methods that other widely studied tasks have. Therefore, we can understand many comments raised by reviewers. What we have to say is that we actually put a lot of thought into the experiment design to demonstrate the performance of the CNN method. But due to the limitations of the data, the current experiments are the best we can do. These experiments can fully prove the effectiveness of our method and our proposed method is definitely the state-of-the-art method in the field of vessel width estimation. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Rui-Qi Li, Gui-Bin Bian, Xiao-Hu Zhou, Xiaoliang Xie, Zhen-Liang Ni, Yan-Jie Zhou, Yuhan Wang, Zengguang Hou Abstract Vessel width estimation has a wide range of applications in disease diagnosis and treatment. In this paper, vessel width estimation is cast as a regression problem, and a novel Convolutional Neural Network (CNN) based method is proposed for vessel width estimation. In our CNN-based method, the idea of divide-and-conquer is introduced to solve the challenge of imbalanced training samples. Besides, in order to solve the shortage of training samples required by CNN, a vessel width label generation method is proposed to generate width labels from vessel segmentation labels. In the experiments, we apply our vessel width label generation method and CNN-based width estimation method to two tasks which are retinal vessel width estimation and coronary artery width estimation. Experimental results show that our width label generation method can generate sufficiently realistic width labels using accurate segmentation labels. Also, our CNN-based method can solve the challenge of imbalanced training samples, achieving state-of-the-art performance with less inference time. Link to paper https://doi.org/10.1007/978-3-030-87231-1_58 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper aims to develop a regression network to estimate the width of vessels such as coronary arteries or retinal vessels. The network is trained from ground truth estimates of vessel width obtained by extracting the centerlines of pre-segmented arteries and using the width computed at each point along the centerline to be applicable to all the pixels lying on the vessel surface normal passing through the centerline (called profile in the paper). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of determining vessel width for stenosis estimation is important. The idea of regression networks for estimating vessel width at pixel level is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I worry that the problem is not well-posed here. Estimating vessel width when given a segmented artery is fairly straightforward and already done by most automatic methods using the procedure the authors described as novel contribution in their paper. So if this is being used as the supervision data during training to estimate the vessel width at any pixel location, is this approach any better than staying with a coronary artery segmentation network (there are deep learning-based artery segmentation methods) and using the above procedure to extract the width. If the main argument is to avoid doing this and still compute the width, I am not sure having vessel width computed in different image regions without an understanding of the underlying topology to attach an identity to the associated vessel is helpful in any assessment or even in report generation leaving the clinician to do the recognition of the associated artery. Even so, the standard deviation error is indicating that this method is still problematic in such assessment (0.41). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Hard to check since the dataset is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could you clarify the need for the vessel width estimation in comparison to using a deep learning approach to coronary artery segmentation and directly estimating the vessel width from there? If the main reason is to avoid the continuous contour tracking needed for the full tree extraction, this is not as necessary for the purpose of vessel width estimation. Perhaps this idea is best applied for regressing on other parameters (e.g. FFR) rather than vessel width which is easily obtained from artery segmentation. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application is useful but as it stands, the justification for the approach is weak. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a novel method for vessel width regression using synthetic training labels obtained from ground truth segmentation masks. They propose a divide and conquer regression strategy, featuring multiple regressions and width range classification, using a modified U-Net architecture. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. S1. The presented work addresses vessel width estimation using deep learning, using a novel approach S2. The provided results, despite incomplete, indicate that the proposed method may have some advantages with respect to the state of the art S3. An ablation study is provided, trying to quantify the contribution of the proposed strategy Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. W1. The vessel width evaluation in REVIEW is incomplete. The KPIS dataset is missing, and the average error (accuracy) is not reported, but only the standard deviation (precision). W2. The ablation study is only provided in a private dataset, which complicates the reproducibility of results. W3. A thorough revision of related works is not provided, even though most of the cited methods are included in the comparison results. Instead, a brief summarization of previous works with grouped cite lists is provided. The methodological advances are also not discussed with respect to the state of the art in CNN-based regression. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Regarding reproducibility: R1. The process for manual segmentation of the private coronary dataset, as well as the guidelines followed by the experts, are not provided. R2. The variation over the REVIEW dataset evaluations are not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposes a novel CNN-based vessel width regression approach, consisting in training a modified U-Net [16] using automatic vessel width estimations from vessel profiles extracted from vascular segmentation masks. The modified U-Net consist of a decoder followed by two decoder heads. The decoder heads use bilinear interpolation instead of up-convolution. Each independent decoder head is in charge of width regression or width classification. The regression is performed independently for different width ranges, which are then combined using the classifier results as weigths. This is a similar strategy to [14]. The provided results evaluate the network trained with DRIVE in part of the REVIEW dataset. The paper also provides training/test results on a private coronary artery (CA) dataset. An ablation study comparing the proposed network with networks that only use the regression or the classification heads is provided on the CA dataset. Despite that the overall approach of the paper is fairly clear and provides valuable contributions, there are some major evaluation issues that cast doubt on the actual performance of the proposed methods. That is the reason why I recommend an under-average rating. Major issues The provided results only provide the standard deviation over the error (\sigma_E). It is clear that a bias estimator should be also provided to evaluate the regression performance (see, e.g. [8]). A bias is expected, as it is clear that the measurement criteria used in training and test is different. However, this bias should be reported and discussed taking the limitations of this experimental context into account. The ablation study is only provided for the private dataset. This is relevant as: 2.1. The complexity of the dataset is unknown to readers, thus the evaluation of the actual contribution and significance of the proposed methods is difficult to analyze. 2.2. The CA dataset only provides width estimations as derived by the authors with the automatic algorithm used for training label synthesis. Thus these errors are not as clinically-relevant as those estimated in the REVIEW dataset. The paper claims that the introduction of the divide-and-conquer strategy [14] allows to maintain the performance regardless of uneven distribution of widths. However, it is not clear how the presented ablation study results demonstrate that. Minor issues m1. A more detailed revision of related work (both in terms of application domain, and methodological advances in CNN-base regression) should be provided. m2. The REVIEW dataset provides multi-expert labeling, which could be used to provide a much clinically-relevant analysis of the proposed methods. m3. In the ablation study, it is not clear how the regression estimation is computed for the Classification Only network results. Is there any kind of weighted sum of intervals? m4. p.2, sec 2.1. Step (2). It is not clear how the intersection and bifurcation points are identified m5. p.3. “for the test labels, all error labels must be manually eliminated” -&gt; How? Easily amendable issues a1. pp.1-2. “(…) the automatic methods are more intelligent, but time-consuming”. The term “more intelligent” is vague in this context. It is also not clear the reason why these methods are time-consuming. a2. p.3. “(…) this way can enlarge training samples” -&gt; grammar a3. p.3. “(…) from the point of applications” -&gt; grammar a4. p.4. “(…) N is (…) sub-range” -&gt; plural a4. p.5. “(…) three of them those are challenging” -&gt; grammar a5. p.6. “(…) the evaluation metrics (…) REVIEW dataset is also used” -&gt; plural a6. pp.6-7. Add cites in text for the methods in the comparison. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The 3 highlighted weaknesses are of major importance to asses the actual contributions of the paper. Of the 3 identified strengths, which are relevant for MICCAI, only the novelty on the application of innovative deep learning strategies (similar to [14]) to vessel width regression remains. The other 2 strengths can be put into question as: The provided comparison results and ablation study do not provide an actual regression accuracy estimation, and only the standard deviation over the error is provided. Moreover, similar graphs to that in figure 4.(b), reporting the errors with respect to the width magnitude is desirable for all case studies, but they should include both estimators of the bias and variance of the regression errors. Despite including a public dataset (REVIEW) in the evaluation, the ablation study and the separated vessel width analysis is only provided for the private dataset, without a clear reason. This complicates the assessment of the actual contribution. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a regression-classification CNN-based vessel width estimation. It also proposed a method for vessel width label generation using a pipeline of conventional image processing steps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper is well written. The CNN-based vessel width estimation approach is a novel approach and showed promising results on the clinical benchmark data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the regression CNN-based vessel width estimation method is promising, the authors also calculated vessel widths using a conventional image processing pipeline. Those width labels are later used in deep model training. So, it is not clear from the paper, why a CNN-based approach is necessary when the same task can be performed using conventional image processing. Also, the authors did not discuss how the error (even minor) from the label generation step can affect the subsequent regression-based width prediction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method seems reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A discussion on why a CNN-based approach is necessary when the same task can be performed using conventional image processing would add value to the paper. Also, a discussion/results on how the error from the label generation step can affect the subsequent regression-based width prediction would add value to the paper. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the regression CNN-based vessel width estimation method is very promising, the motivation of this approach is not clear, given that the authors also calculated vessel widths using a conventional image processing pipeline. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel width estimation. The method uses a regression network with CNN for the estimation. The problem is important, and the method is interesting. R1 mentions that the problem is not well-posed as the advantage over using the segmentation network and direct width extraction has not been discussed and shown. R1 has a concern about the relatively large standard deviation error. R3 has concerns about the method evaluation, e.g., SD is reported alone, KPIS dataset is missing, and the ablation study is only provided in a private dataset. And methodological contributions are not discussed. R3 mentions that this application of DL to vessel width estimation is new. R4 mentions that the approach is novel and the results are promising. R4 finds that it is necessary to discuss the use of CNN and how the label error affects subsequent width prediction. After reading the comments, my recommendation is given in Q3 and that the authors could consider addressing the concerns on method motivation (e.g., advantages over other methods), experiment results and evaluation (raised by the reviewers above), on top of the other concerns raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have read the rebuttal. Most of the concerns have been addressed in the rebuttal. My review has been given in Q1. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper firstly generates the vessel width from the vessel segmentation label, and then proposes a deep network for the vessel width classification regression. The vessel width estimation approach is interesting, and the proposed network is easy to follow. The experimental results show the superiority of the method, but lack of some visualization results. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors claimed that the main advantage of the proposed method is its faster speed. However, for vessel segmentation and width estimation, the AC thinks the precision is much more important than efficiency. The authors claimed that their method outperforms the comparison methods which was questioned by R1. The authors did not provide more explanation and analysis of the results to prove their conclusions in the rebuttal letter. Simply saying their performance is the best is not convincing to AC. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Author Feedback Three reviewers all affirmed the innovation of our method. However, due to the relatively unpopular task and the limitation of pages, the reviewers had some misunderstandings. We will explain each of them here. R1 and R4 both wonder what is the advantage of our CNN method over the traditional method of first segmentation and then estimating the vessel width. Actually, the biggest advantage is speed, followed by precision. We’ve explicitly stated that traditional methods are ‘time-consuming’ since they need to iterate each pixel many times. Also, in the experimental analysis of the REVIEW dataset, we have stated that the inference time of our CNN method is 30ms (per image), while the traditional method (excluding segmentation time) needs tens of seconds or even several minutes. This speed gap demonstrates the irreplaceability of our method. As for precision, when we first designed our method, we just wanted a faster inference time, not expected its precision. However, after experiments, we found that the CNN method was even slightly better in precision. What puzzles us is that our result (0.41) is already the minimum error standard deviation of all the results, but R1 thinks it ‘problematic’. In terms of overall results, our CNN method is definitely the best. Also, as we stated in our paper, these results are obtained when the training set and the testing set are different datasets. We believe that the result can be better if the training set and the testing set are from the same dataset. From R3’s comments, it is clear that R3 did a survey of tasks and the REVIEW dataset, but didn’t go deep. First of all, KPIS was indeed not used since it’s useless. KPIS only contains 3 vessel segments and 164 width values, which is too small compared with the other three datasets (including 190 segments and 4902 width values in total). Besides, KPIS is also the simplest of the four datasets. Therefore, to eliminate the useless data, we chose the three most ‘challenging’ datasets as we stated in our paper. Secondly, R3 wonders why the mean bias was not reported. This is because the authors of the REVIEW dataset have pointed out in their paper that the mean bias is useless in evaluation (See their paper for more details). Also, some algorithms used for comparison did not report their mean bias in their papers and therefore cannot be compared. We just evaluated our CNN method in a conventional way proposed by the REVIEW dataset. It’s not that we forget or don’t report it on purpose. Therefore, not reporting the mean bias cannot be a weakness of our paper. Thirdly, R3 wonders why the REVIEW dataset (fundus vessels) was not used in the ablation study. There are three reasons: 1. The divide-and-conquer idea was designed for coronary vessels rather than fundus vessels. 2. For fundus vessels, the testing data (REVIEW) and training data (DRIVE) are not from the same dataset, making the results of the ablation study not reliable. 3. All the test samples (in REVIEW) are the specially selected vessel segments and there is no width imbalance in these samples, making the ablation study meaningless. Therefore, the ablation study was only applied to coronary vessels. The suggestions of R4 are absolutely useful, but due to the limited page, we need to put more important content in our paper. In the end, the biggest advantage of this paper is its innovation. It is also because of the innovation that we do not have the rich research data and methods that other widely studied tasks have. Therefore, we can understand many comments raised by reviewers. What we have to say is that we actually put a lot of thought into the experiment design to demonstrate the performance of the CNN method. But due to the limitations of the data, the current experiments are the best we can do. These experiments can fully prove the effectiveness of our method and our proposed method is definitely the state-of-the-art method in the field of vessel width estimation. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0657/12/31/Paper1588" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0657/12/31/Paper1588" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0657-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vessel Width Estimation via Convolutional Regression" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0657/12/31/Paper1588"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0657/12/31/Paper1588","headline":"Vessel Width Estimation via Convolutional Regression","dateModified":"0658-01-04T00:00:00-05:17","datePublished":"0657-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Rui-Qi Li, Gui-Bin Bian, Xiao-Hu Zhou, Xiaoliang Xie, Zhen-Liang Ni, Yan-Jie Zhou, Yuhan Wang, Zengguang Hou Abstract Vessel width estimation has a wide range of applications in disease diagnosis and treatment. In this paper, vessel width estimation is cast as a regression problem, and a novel Convolutional Neural Network (CNN) based method is proposed for vessel width estimation. In our CNN-based method, the idea of divide-and-conquer is introduced to solve the challenge of imbalanced training samples. Besides, in order to solve the shortage of training samples required by CNN, a vessel width label generation method is proposed to generate width labels from vessel segmentation labels. In the experiments, we apply our vessel width label generation method and CNN-based width estimation method to two tasks which are retinal vessel width estimation and coronary artery width estimation. Experimental results show that our width label generation method can generate sufficiently realistic width labels using accurate segmentation labels. Also, our CNN-based method can solve the challenge of imbalanced training samples, achieving state-of-the-art performance with less inference time. Link to paper https://doi.org/10.1007/978-3-030-87231-1_58 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper aims to develop a regression network to estimate the width of vessels such as coronary arteries or retinal vessels. The network is trained from ground truth estimates of vessel width obtained by extracting the centerlines of pre-segmented arteries and using the width computed at each point along the centerline to be applicable to all the pixels lying on the vessel surface normal passing through the centerline (called profile in the paper). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The application of determining vessel width for stenosis estimation is important. The idea of regression networks for estimating vessel width at pixel level is interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I worry that the problem is not well-posed here. Estimating vessel width when given a segmented artery is fairly straightforward and already done by most automatic methods using the procedure the authors described as novel contribution in their paper. So if this is being used as the supervision data during training to estimate the vessel width at any pixel location, is this approach any better than staying with a coronary artery segmentation network (there are deep learning-based artery segmentation methods) and using the above procedure to extract the width. If the main argument is to avoid doing this and still compute the width, I am not sure having vessel width computed in different image regions without an understanding of the underlying topology to attach an identity to the associated vessel is helpful in any assessment or even in report generation leaving the clinician to do the recognition of the associated artery. Even so, the standard deviation error is indicating that this method is still problematic in such assessment (0.41). Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Hard to check since the dataset is not available. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Could you clarify the need for the vessel width estimation in comparison to using a deep learning approach to coronary artery segmentation and directly estimating the vessel width from there? If the main reason is to avoid the continuous contour tracking needed for the full tree extraction, this is not as necessary for the purpose of vessel width estimation. Perhaps this idea is best applied for regressing on other parameters (e.g. FFR) rather than vessel width which is easily obtained from artery segmentation. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The application is useful but as it stands, the justification for the approach is weak. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper This paper proposes a novel method for vessel width regression using synthetic training labels obtained from ground truth segmentation masks. They propose a divide and conquer regression strategy, featuring multiple regressions and width range classification, using a modified U-Net architecture. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. S1. The presented work addresses vessel width estimation using deep learning, using a novel approach S2. The provided results, despite incomplete, indicate that the proposed method may have some advantages with respect to the state of the art S3. An ablation study is provided, trying to quantify the contribution of the proposed strategy Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. W1. The vessel width evaluation in REVIEW is incomplete. The KPIS dataset is missing, and the average error (accuracy) is not reported, but only the standard deviation (precision). W2. The ablation study is only provided in a private dataset, which complicates the reproducibility of results. W3. A thorough revision of related works is not provided, even though most of the cited methods are included in the comparison results. Instead, a brief summarization of previous works with grouped cite lists is provided. The methodological advances are also not discussed with respect to the state of the art in CNN-based regression. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Regarding reproducibility: R1. The process for manual segmentation of the private coronary dataset, as well as the guidelines followed by the experts, are not provided. R2. The variation over the REVIEW dataset evaluations are not provided. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html This paper proposes a novel CNN-based vessel width regression approach, consisting in training a modified U-Net [16] using automatic vessel width estimations from vessel profiles extracted from vascular segmentation masks. The modified U-Net consist of a decoder followed by two decoder heads. The decoder heads use bilinear interpolation instead of up-convolution. Each independent decoder head is in charge of width regression or width classification. The regression is performed independently for different width ranges, which are then combined using the classifier results as weigths. This is a similar strategy to [14]. The provided results evaluate the network trained with DRIVE in part of the REVIEW dataset. The paper also provides training/test results on a private coronary artery (CA) dataset. An ablation study comparing the proposed network with networks that only use the regression or the classification heads is provided on the CA dataset. Despite that the overall approach of the paper is fairly clear and provides valuable contributions, there are some major evaluation issues that cast doubt on the actual performance of the proposed methods. That is the reason why I recommend an under-average rating. Major issues The provided results only provide the standard deviation over the error (\\sigma_E). It is clear that a bias estimator should be also provided to evaluate the regression performance (see, e.g. [8]). A bias is expected, as it is clear that the measurement criteria used in training and test is different. However, this bias should be reported and discussed taking the limitations of this experimental context into account. The ablation study is only provided for the private dataset. This is relevant as: 2.1. The complexity of the dataset is unknown to readers, thus the evaluation of the actual contribution and significance of the proposed methods is difficult to analyze. 2.2. The CA dataset only provides width estimations as derived by the authors with the automatic algorithm used for training label synthesis. Thus these errors are not as clinically-relevant as those estimated in the REVIEW dataset. The paper claims that the introduction of the divide-and-conquer strategy [14] allows to maintain the performance regardless of uneven distribution of widths. However, it is not clear how the presented ablation study results demonstrate that. Minor issues m1. A more detailed revision of related work (both in terms of application domain, and methodological advances in CNN-base regression) should be provided. m2. The REVIEW dataset provides multi-expert labeling, which could be used to provide a much clinically-relevant analysis of the proposed methods. m3. In the ablation study, it is not clear how the regression estimation is computed for the Classification Only network results. Is there any kind of weighted sum of intervals? m4. p.2, sec 2.1. Step (2). It is not clear how the intersection and bifurcation points are identified m5. p.3. “for the test labels, all error labels must be manually eliminated” -&gt; How? Easily amendable issues a1. pp.1-2. “(…) the automatic methods are more intelligent, but time-consuming”. The term “more intelligent” is vague in this context. It is also not clear the reason why these methods are time-consuming. a2. p.3. “(…) this way can enlarge training samples” -&gt; grammar a3. p.3. “(…) from the point of applications” -&gt; grammar a4. p.4. “(…) N is (…) sub-range” -&gt; plural a4. p.5. “(…) three of them those are challenging” -&gt; grammar a5. p.6. “(…) the evaluation metrics (…) REVIEW dataset is also used” -&gt; plural a6. pp.6-7. Add cites in text for the methods in the comparison. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The 3 highlighted weaknesses are of major importance to asses the actual contributions of the paper. Of the 3 identified strengths, which are relevant for MICCAI, only the novelty on the application of innovative deep learning strategies (similar to [14]) to vessel width regression remains. The other 2 strengths can be put into question as: The provided comparison results and ablation study do not provide an actual regression accuracy estimation, and only the standard deviation over the error is provided. Moreover, similar graphs to that in figure 4.(b), reporting the errors with respect to the width magnitude is desirable for all case studies, but they should include both estimators of the bias and variance of the regression errors. Despite including a public dataset (REVIEW) in the evaluation, the ablation study and the separated vessel width analysis is only provided for the private dataset, without a clear reason. This complicates the assessment of the actual contribution. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposed a regression-classification CNN-based vessel width estimation. It also proposed a method for vessel width label generation using a pipeline of conventional image processing steps. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This paper is well written. The CNN-based vessel width estimation approach is a novel approach and showed promising results on the clinical benchmark data. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Although the regression CNN-based vessel width estimation method is promising, the authors also calculated vessel widths using a conventional image processing pipeline. Those width labels are later used in deep model training. So, it is not clear from the paper, why a CNN-based approach is necessary when the same task can be performed using conventional image processing. Also, the authors did not discuss how the error (even minor) from the label generation step can affect the subsequent regression-based width prediction. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method seems reproducible. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html A discussion on why a CNN-based approach is necessary when the same task can be performed using conventional image processing would add value to the paper. Also, a discussion/results on how the error from the label generation step can affect the subsequent regression-based width prediction would add value to the paper. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Although the regression CNN-based vessel width estimation method is very promising, the motivation of this approach is not clear, given that the authors also calculated vessel widths using a conventional image processing pipeline. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presents a method for vessel width estimation. The method uses a regression network with CNN for the estimation. The problem is important, and the method is interesting. R1 mentions that the problem is not well-posed as the advantage over using the segmentation network and direct width extraction has not been discussed and shown. R1 has a concern about the relatively large standard deviation error. R3 has concerns about the method evaluation, e.g., SD is reported alone, KPIS dataset is missing, and the ablation study is only provided in a private dataset. And methodological contributions are not discussed. R3 mentions that this application of DL to vessel width estimation is new. R4 mentions that the approach is novel and the results are promising. R4 finds that it is necessary to discuss the use of CNN and how the label error affects subsequent width prediction. After reading the comments, my recommendation is given in Q3 and that the authors could consider addressing the concerns on method motivation (e.g., advantages over other methods), experiment results and evaluation (raised by the reviewers above), on top of the other concerns raised by the reviewers. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. I have read the rebuttal. Most of the concerns have been addressed in the rebuttal. My review has been given in Q1. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper firstly generates the vessel width from the vessel segmentation label, and then proposes a deep network for the vessel width classification regression. The vessel width estimation approach is interesting, and the proposed network is easy to follow. The experimental results show the superiority of the method, but lack of some visualization results. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 2 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors claimed that the main advantage of the proposed method is its faster speed. However, for vessel segmentation and width estimation, the AC thinks the precision is much more important than efficiency. The authors claimed that their method outperforms the comparison methods which was questioned by R1. The authors did not provide more explanation and analysis of the results to prove their conclusions in the rebuttal letter. Simply saying their performance is the best is not convincing to AC. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Author Feedback Three reviewers all affirmed the innovation of our method. However, due to the relatively unpopular task and the limitation of pages, the reviewers had some misunderstandings. We will explain each of them here. R1 and R4 both wonder what is the advantage of our CNN method over the traditional method of first segmentation and then estimating the vessel width. Actually, the biggest advantage is speed, followed by precision. We’ve explicitly stated that traditional methods are ‘time-consuming’ since they need to iterate each pixel many times. Also, in the experimental analysis of the REVIEW dataset, we have stated that the inference time of our CNN method is 30ms (per image), while the traditional method (excluding segmentation time) needs tens of seconds or even several minutes. This speed gap demonstrates the irreplaceability of our method. As for precision, when we first designed our method, we just wanted a faster inference time, not expected its precision. However, after experiments, we found that the CNN method was even slightly better in precision. What puzzles us is that our result (0.41) is already the minimum error standard deviation of all the results, but R1 thinks it ‘problematic’. In terms of overall results, our CNN method is definitely the best. Also, as we stated in our paper, these results are obtained when the training set and the testing set are different datasets. We believe that the result can be better if the training set and the testing set are from the same dataset. From R3’s comments, it is clear that R3 did a survey of tasks and the REVIEW dataset, but didn’t go deep. First of all, KPIS was indeed not used since it’s useless. KPIS only contains 3 vessel segments and 164 width values, which is too small compared with the other three datasets (including 190 segments and 4902 width values in total). Besides, KPIS is also the simplest of the four datasets. Therefore, to eliminate the useless data, we chose the three most ‘challenging’ datasets as we stated in our paper. Secondly, R3 wonders why the mean bias was not reported. This is because the authors of the REVIEW dataset have pointed out in their paper that the mean bias is useless in evaluation (See their paper for more details). Also, some algorithms used for comparison did not report their mean bias in their papers and therefore cannot be compared. We just evaluated our CNN method in a conventional way proposed by the REVIEW dataset. It’s not that we forget or don’t report it on purpose. Therefore, not reporting the mean bias cannot be a weakness of our paper. Thirdly, R3 wonders why the REVIEW dataset (fundus vessels) was not used in the ablation study. There are three reasons: 1. The divide-and-conquer idea was designed for coronary vessels rather than fundus vessels. 2. For fundus vessels, the testing data (REVIEW) and training data (DRIVE) are not from the same dataset, making the results of the ablation study not reliable. 3. All the test samples (in REVIEW) are the specially selected vessel segments and there is no width imbalance in these samples, making the ablation study meaningless. Therefore, the ablation study was only applied to coronary vessels. The suggestions of R4 are absolutely useful, but due to the limited page, we need to put more important content in our paper. In the end, the biggest advantage of this paper is its innovation. It is also because of the innovation that we do not have the rich research data and methods that other widely studied tasks have. Therefore, we can understand many comments raised by reviewers. What we have to say is that we actually put a lot of thought into the experiment design to demonstrate the performance of the CNN method. But due to the limitations of the data, the current experiments are the best we can do. These experiments can fully prove the effectiveness of our method and our proposed method is definitely the state-of-the-art method in the field of vessel width estimation. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Li, Rui-Qi,Bian, Gui-Bin,Zhou, Xiao-Hu,Xie, Xiaoliang,Ni, Zhen-Liang,Zhou, Yan-Jie,Wang, Yuhan,Hou, Zengguang" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Vessel Width Estimation via Convolutional Regression</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Vascular"
+        class="post-category">
+        Clinical applications - Vascular
+      </a>
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Li, Rui-Qi"
+        class="post-tags">
+        Li, Rui-Qi
+      </a> |  
+      
+      <a href="kittywong/tags#Bian, Gui-Bin"
+        class="post-tags">
+        Bian, Gui-Bin
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Xiao-Hu"
+        class="post-tags">
+        Zhou, Xiao-Hu
+      </a> |  
+      
+      <a href="kittywong/tags#Xie, Xiaoliang"
+        class="post-tags">
+        Xie, Xiaoliang
+      </a> |  
+      
+      <a href="kittywong/tags#Ni, Zhen-Liang"
+        class="post-tags">
+        Ni, Zhen-Liang
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Yan-Jie"
+        class="post-tags">
+        Zhou, Yan-Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Yuhan"
+        class="post-tags">
+        Wang, Yuhan
+      </a> |  
+      
+      <a href="kittywong/tags#Hou, Zengguang"
+        class="post-tags">
+        Hou, Zengguang
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Rui-Qi Li, Gui-Bin Bian, Xiao-Hu Zhou, Xiaoliang Xie, Zhen-Liang Ni, Yan-Jie Zhou, Yuhan Wang, Zengguang Hou
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Vessel width estimation has a wide range of applications in disease diagnosis and treatment. In this paper, vessel width estimation is cast as a regression problem, and a novel Convolutional Neural Network (CNN) based method is proposed for vessel width estimation. In our CNN-based method, the idea of divide-and-conquer is introduced to solve the challenge of imbalanced training samples. Besides, in order to solve the shortage of training samples required by CNN, a vessel width label generation method is proposed to generate width labels from vessel segmentation labels. In the experiments, we apply our vessel width label generation method and CNN-based width estimation method to two tasks which are retinal vessel width estimation and coronary artery width estimation. Experimental results show that our width label generation method can generate sufficiently realistic width labels using accurate segmentation labels. Also, our CNN-based method can solve the challenge of imbalanced training samples, achieving state-of-the-art performance with less inference time.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87231-1_58">https://doi.org/10.1007/978-3-030-87231-1_58</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper aims to develop a regression network to estimate the width of vessels such as coronary arteries or retinal vessels. The network is trained from ground truth estimates of vessel width obtained by extracting the centerlines of pre-segmented arteries and using the width computed at each point along the centerline to be applicable to all the pixels lying on the vessel surface normal passing through the centerline (called profile in the paper).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The application of determining vessel width for stenosis estimation is important. The idea of regression networks for estimating vessel width at pixel level is interesting.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I worry that the problem is not well-posed here. Estimating vessel width when given a segmented artery is fairly straightforward and already done by most automatic methods using the procedure the authors described as novel contribution in their paper. So if this is being used as the supervision data during training to estimate the vessel width at any pixel location, is this approach any better than staying with a coronary artery segmentation network (there are deep learning-based artery segmentation methods) and using the above procedure to extract the width. If the main argument is to avoid doing this and still compute the width, I am not sure having vessel width computed in different image regions without an understanding of the underlying topology to attach an identity to the associated vessel is helpful in any assessment or even in report generation leaving the clinician to do the recognition of the associated artery.</p>
+
+      <p>Even so, the standard deviation error is indicating that this method is still problematic in such assessment (0.41).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Hard to check since the dataset is not available.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Could you clarify the need for the vessel width estimation in comparison to using a deep learning approach to coronary artery segmentation and directly estimating the vessel width from there? If the main reason is to avoid the continuous contour tracking needed for the full tree extraction, this is not as necessary for the purpose of vessel width estimation.  Perhaps this idea is best applied for regressing on other parameters (e.g. FFR) rather than vessel width which is easily obtained from artery segmentation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The application is useful but as it stands, the justification for the approach is weak.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel method for vessel width regression using synthetic training labels obtained from ground truth segmentation masks. They propose a divide and conquer regression strategy, featuring multiple regressions and width range classification, using a modified U-Net architecture.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>S1. The presented work addresses vessel width estimation using deep learning, using a novel approach</p>
+
+      <p>S2. The provided results, despite incomplete, indicate that the proposed method may have some advantages with respect to the state of the art</p>
+
+      <p>S3. An ablation study is provided, trying to quantify the contribution of the proposed strategy</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>W1. The vessel width evaluation in REVIEW is incomplete. The KPIS dataset is missing, and the average error (accuracy) is not reported, but only the standard deviation (precision).</p>
+
+      <p>W2. The ablation study is only provided in a private dataset, which complicates the reproducibility of results.</p>
+
+      <p>W3. A thorough revision of related works is not provided, even though most of the cited methods are included in the comparison results. Instead, a brief summarization of previous works with grouped cite lists is provided. The methodological advances are also not discussed with respect to the state of the art in CNN-based regression.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Regarding reproducibility:</p>
+
+      <p>R1. The  process for manual segmentation of the private coronary dataset, as well as the guidelines followed by the experts, are not provided.</p>
+
+      <p>R2. The variation over the REVIEW dataset evaluations are not provided.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>This paper proposes a novel CNN-based vessel width regression approach, consisting in training a modified U-Net [16] using automatic vessel width estimations from vessel profiles extracted from vascular segmentation masks. The modified U-Net consist of a decoder followed by two decoder heads. The decoder heads use bilinear interpolation instead of up-convolution. Each independent decoder head is in charge of width regression or width classification. The regression is performed independently for different width ranges, which are then combined using the classifier results as weigths. This is a similar strategy to [14].</p>
+
+      <p>The provided results evaluate the network trained with DRIVE in part of the REVIEW dataset. The paper also provides training/test results  on a private coronary artery (CA) dataset. An ablation study comparing the proposed network with networks that only use the regression or the classification heads is provided on the CA dataset.</p>
+
+      <p>Despite that the overall approach of the paper is fairly clear and provides valuable contributions, there are some major evaluation issues that cast doubt on the actual performance of the proposed methods. That is the reason why I recommend an under-average rating.</p>
+
+      <h2 id="major-issues">Major issues</h2>
+      <ol>
+        <li>
+          <p>The provided results only provide the standard deviation over the error (\sigma_E). It is clear that a bias estimator should be also provided to evaluate the regression performance (see, e.g. [8]). A bias is expected, as it is clear that the measurement criteria used in training and test is different. However, this bias should be reported and discussed taking the limitations of this experimental context into account.</p>
+        </li>
+        <li>
+          <p>The ablation study is only provided for the private dataset. This is relevant as:
+2.1. The complexity of the dataset is unknown to readers, thus the evaluation of the actual contribution and significance of the proposed methods is difficult to analyze.
+2.2. The CA dataset only provides width estimations as derived by the authors with the automatic algorithm used for training label synthesis. Thus these errors are not as clinically-relevant as those estimated in the REVIEW dataset.</p>
+        </li>
+        <li>
+          <p>The paper claims that the introduction of the divide-and-conquer strategy [14] allows to maintain the performance regardless of uneven distribution of widths. However, it is not clear how the presented ablation study results demonstrate that.</p>
+        </li>
+      </ol>
+
+      <h2 id="minor-issues">Minor issues</h2>
+      <p>m1. A more detailed revision of related work (both in terms of application domain, and methodological advances in CNN-base regression) should be provided.</p>
+
+      <p>m2. The REVIEW dataset provides multi-expert labeling, which could be used to provide a much clinically-relevant analysis of the proposed methods.</p>
+
+      <p>m3. In the ablation study, it is not clear how the regression estimation is computed for the Classification Only network results. Is there any kind of weighted sum of intervals?</p>
+
+      <p>m4. p.2, sec 2.1. Step (2). It is not clear how the intersection and bifurcation points are identified</p>
+
+      <p>m5. p.3. “for the test labels, all error labels must be manually eliminated” -&gt; How?</p>
+
+      <h2 id="easily-amendable-issues">Easily amendable issues</h2>
+      <p>a1.  pp.1-2. “(…) the automatic methods are more intelligent, but time-consuming”. The term  “more intelligent” is vague in this context. It is also not clear the reason why these methods are time-consuming.</p>
+
+      <p>a2. p.3. “(…) this way can enlarge training samples” -&gt; grammar</p>
+
+      <p>a3. p.3. “(…) from the point of applications” -&gt; grammar</p>
+
+      <p>a4. p.4. “(…) N is (…) sub-range” -&gt; plural</p>
+
+      <p>a4. p.5. “(…) three of them those are challenging” -&gt; grammar</p>
+
+      <p>a5. p.6. “(…) the evaluation metrics (…) REVIEW dataset <em>is</em> also used” -&gt; plural</p>
+
+      <p>a6. pp.6-7. Add cites in text for the methods in the comparison.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The 3 highlighted weaknesses are of major importance to asses the actual contributions of the paper. Of the 3 identified strengths, which are relevant for MICCAI, only the novelty on the application of innovative deep learning strategies (similar to [14]) to vessel width regression remains. The other 2 strengths can be put into question as:</p>
+      <ol>
+        <li>
+          <p>The provided comparison results and ablation study do not provide an actual regression accuracy estimation, and only the standard deviation over the error is provided. Moreover, similar graphs to that in figure 4.(b), reporting the errors with respect to the width magnitude is desirable for all case studies, but they should include both estimators of the bias and variance of the regression errors.</p>
+        </li>
+        <li>
+          <p>Despite including a public dataset (REVIEW) in the evaluation, the ablation study and the separated vessel width analysis is only provided for the private dataset, without a clear reason. This complicates the assessment of the actual contribution.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposed a regression-classification CNN-based vessel width estimation. It also proposed a method for vessel width label generation using a pipeline of conventional image processing steps.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>This paper is well written. The CNN-based vessel width estimation approach is a novel approach and showed promising results on the clinical benchmark data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>Although the regression CNN-based vessel width estimation method is promising, the authors also calculated vessel widths using a conventional image processing pipeline. Those width labels are later used in deep model training. So, it is not clear from the paper, why a CNN-based approach is necessary when the same task can be performed using conventional image processing.</p>
+        </li>
+        <li>
+          <p>Also, the authors did not discuss how the error (even minor) from the label generation step can affect the subsequent regression-based width prediction.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method seems reproducible.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>
+          <p>A discussion on why a CNN-based approach is necessary when the same task can be performed using conventional image processing would add value to the paper.</p>
+        </li>
+        <li>
+          <p>Also, a discussion/results on how the error from the label generation step can affect the subsequent regression-based width prediction would add value to the paper.</p>
+        </li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Although the regression CNN-based vessel width estimation method is very promising, the motivation of this approach is not clear, given that the authors also calculated vessel widths using a conventional image processing pipeline.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper presents a method for vessel width estimation. The method uses a regression network with CNN for the estimation. The problem is important, and the method is interesting. R1 mentions that the problem is not well-posed as the advantage over using the segmentation network and direct width extraction has not been discussed and shown. R1 has a concern about the relatively large standard deviation error. R3 has concerns about the method evaluation, e.g., SD is reported alone, KPIS dataset is missing, and the ablation study is only provided in a private dataset. And methodological contributions are not discussed. R3 mentions that this application of DL to vessel width estimation is new. R4 mentions that the approach is novel and the results are promising. R4 finds that it is necessary to discuss the use of CNN and how the label error affects subsequent width prediction. After reading the comments, my recommendation is given in Q3 and that the authors could consider addressing the concerns on method motivation (e.g., advantages over other methods), experiment results and evaluation (raised by the reviewers above), on top of the other concerns raised by the reviewers.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>I have read the rebuttal. Most of the concerns have been addressed in the rebuttal. My review has been given in Q1.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper firstly generates the vessel width from the vessel segmentation label, and then proposes a deep network for the vessel width classification regression. The vessel width estimation approach is interesting, and the proposed network is easy to follow. The experimental results show the superiority of the method, but lack of some visualization results.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors claimed that the main advantage of the proposed method is its faster speed. However, for vessel segmentation and width estimation, the AC thinks the precision is much more important than efficiency. The authors claimed that their method outperforms the comparison methods which was questioned by R1. The authors did not provide more explanation and analysis of the results to prove their conclusions in the rebuttal letter. Simply saying their performance is the best is not convincing to AC.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>15</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Three reviewers all affirmed the innovation of our method. However, due to the relatively unpopular task and the limitation of pages, the reviewers had some misunderstandings. We will explain each of them here.
+R1 and R4 both wonder what is the advantage of our CNN method over the traditional method of first segmentation and then estimating the vessel width. Actually, the biggest advantage is speed, followed by precision. We’ve explicitly stated that traditional methods are ‘time-consuming’ since they need to iterate each pixel many times. Also, in the experimental analysis of the REVIEW dataset, we have stated that the inference time of our CNN method is 30ms (per image), while the traditional method (excluding segmentation time) needs tens of seconds or even several minutes. This speed gap demonstrates the irreplaceability of our method. As for precision, when we first designed our method, we just wanted a faster inference time, not expected its precision. However, after experiments, we found that the CNN method was even slightly better in precision. What puzzles us is that our result (0.41) is already the minimum error standard deviation of all the results, but R1 thinks it ‘problematic’. In terms of overall results, our CNN method is definitely the best. Also, as we stated in our paper, these results are obtained when the training set and the testing set are different datasets. We believe that the result can be better if the training set and the testing set are from the same dataset.
+From R3’s comments, it is clear that R3 did a survey of tasks and the REVIEW dataset, but didn’t go deep. First of all, KPIS was indeed not used since it’s useless. KPIS only contains 3 vessel segments and 164 width values, which is too small compared with the other three datasets (including 190 segments and 4902 width values in total). Besides, KPIS is also the simplest of the four datasets. Therefore, to eliminate the useless data, we chose the three most ‘challenging’ datasets as we stated in our paper. Secondly, R3 wonders why the mean bias was not reported. This is because the authors of the REVIEW dataset have pointed out in their paper that the mean bias is useless in evaluation (See their paper for more details). Also, some algorithms used for comparison did not report their mean bias in their papers and therefore cannot be compared. We just evaluated our CNN method in a conventional way proposed by the REVIEW dataset. It’s not that we forget or don’t report it on purpose. Therefore, not reporting the mean bias cannot be a weakness of our paper. Thirdly, R3 wonders why the REVIEW dataset (fundus vessels) was not used in the ablation study. There are three reasons: 1. The divide-and-conquer idea was designed for coronary vessels rather than fundus vessels. 2. For fundus vessels, the testing data (REVIEW) and training data (DRIVE) are not from the same dataset, making the results of the ablation study not reliable. 3. All the test samples (in REVIEW) are the specially selected vessel segments and there is no width imbalance in these samples, making the ablation study meaningless. Therefore, the ablation study was only applied to coronary vessels.
+The suggestions of R4 are absolutely useful, but due to the limited page, we need to put more important content in our paper.
+In the end, the biggest advantage of this paper is its innovation. It is also because of the innovation that we do not have the rich research data and methods that other widely studied tasks have. Therefore, we can understand many comments raised by reviewers. What we have to say is that we actually put a lot of thought into the experiment design to demonstrate the performance of the CNN method. But due to the limitations of the data, the current experiments are the best we can do. These experiments can fully prove the effectiveness of our method and our proposed method is definitely the state-of-the-art method in the field of vessel width estimation.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0657-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0658-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Clinical applications - Vascular"
+        class="post-category">
+        Clinical applications - Vascular
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Computer Aided Diagnosis"
+        class="post-category">
+        Computer Aided Diagnosis
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Li, Rui-Qi"
+        class="post-category">
+        Li, Rui-Qi
+      </a> |  
+      
+      <a href="kittywong/tags#Bian, Gui-Bin"
+        class="post-category">
+        Bian, Gui-Bin
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Xiao-Hu"
+        class="post-category">
+        Zhou, Xiao-Hu
+      </a> |  
+      
+      <a href="kittywong/tags#Xie, Xiaoliang"
+        class="post-category">
+        Xie, Xiaoliang
+      </a> |  
+      
+      <a href="kittywong/tags#Ni, Zhen-Liang"
+        class="post-category">
+        Ni, Zhen-Liang
+      </a> |  
+      
+      <a href="kittywong/tags#Zhou, Yan-Jie"
+        class="post-category">
+        Zhou, Yan-Jie
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Yuhan"
+        class="post-category">
+        Wang, Yuhan
+      </a> |  
+      
+      <a href="kittywong/tags#Hou, Zengguang"
+        class="post-category">
+        Hou, Zengguang
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0658/12/31/Paper2045">
+          Renal Cell Carcinoma Classification from Vascular Morphology
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0656/12/31/Paper1048">
+          MASC-Units: Training Oriented Filters for Segmenting Curvilinear Structures
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

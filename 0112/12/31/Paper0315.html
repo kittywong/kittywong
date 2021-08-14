@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Patch-Free 3D Medical Image Segmentation Driven by Super-Resolution Technique and Self-Supervised Guidance | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Patch-Free 3D Medical Image Segmentation Driven by Super-Resolution Technique and Self-Supervised Guidance" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hongyi Wang, Lanfen Lin, Hongjie Hu, Qingqing Chen, Yinhao Li, Yutaro Iwamoto, Xian-Hua Han, Yen-Wei Chen, Ruofeng Tong Abstract 3D medical image segmentation with high resolution is an important issue for accurate diagnosis. The main challenge for this task is its large computational cost and GPU memory restriction. Most of the existing 3D medical image segmentation methods are patch-based methods, which ignore the global context information for accurate segmentation and also reduce the efficiency of inference. To tackle this problem, we propose a patch-free 3D medical image segmentation method, which can realize high-resolution (HR) segmentation with low-resolution (LR) input. It contains a multi-task learning framework (Semantic Segmentation and Super-Resolution (SR)) and a Self-Supervised Guidance Module (SGM). SR is used as an auxiliary task for the main segmentation task to restore the HR details, while the SGM, which uses the original HR image patch as a guidance image, is designed to keep the high-frequency information for accurate segmentation. Besides, we also introduce a Task-Fusion Module (TFM) to exploit the inter connections between the segmentation and SR tasks. Since the SR task and TFM are only used in the training phase, they do not introduce extra computational costs when predicting. We conduct the experiments on two different datasets, and the experimental results show that our framework outperforms current patch-based methods as well as has a 4× higher speed when predicting. Link to paper https://doi.org/10.1007/978-3-030-87193-2_13 Link to the code repository https://github.com/Dootmaan/PFSeg Link to the dataset(s) https://www.med.upenn.edu/cbica/brats2020/ Reviews Review #1 Please describe the contribution of the paper Improve the segmentation of medical images by exploiting global context using low resolution images as input and using a multi task approach that combines image super-resolution and semantic segmentation Addition of a self guidance module to better capture high frequency information to guide segmentation and a task fusion module to effectively combine the segmentation and super resolution tasks Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Addition of self supervised guidance modules to both segmentation and super resolution branches and task fusion module to combine the two tasks Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96 x 96 x 64 in their experiments. The method is a minor improvement on [1]. However the increase in model size with the addition of self guidance modules is not provided. Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4 higher speed when predicting. [1] Wang et.al., Dual super-resolution learning for semantic segmentation. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 3774-3783 (2020) Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is not enough information in the paper to reimplement / reproduce the proposed model Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The statement “if the network is trained with patches, it also have to use patches (such as sliding window strategy) in inference stage” is not true. Most segmentation models (Unet or FCN models) are fully convolutional models which can be trained on patches and inferred on the entire image. The first point in the contribution “We propose a patch-free 3D medical image segmentation method, which can realize HR segmentation with LR input” is misleading as the authors use a patch of 96 x 96 x 64 in their experiments. No results are provided with the entire / larger 3D volumes. How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? Fig 3: Are the SGM modules in super resolution and segmentation branches shared similar to the shared encoder or are they separate? Equation (1) seems to be the MSE loss for super resolution task in the ROI of the high resolution self-supervised guidance patch. If so, this is redundant with the MSE loss for SR in the overall objective function. The term task fusion module is misleading as it adds a few terms to the overall objective function and is not a module that combines the features from the two tasks. Spatial similarity loss in the task fusion module is equivalent to feature affinity loss in [1] and target enhanced loss is the new component added by the authors. Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? Both BRATS2020 and the liver dataset are relatively small datasets. Would suggest using cross validation splits for training. For BRATS2020, comparison with Unet models that use a larger patch size (128 x 128 x 128) [2, 3] would be better suited here than models that use a smaller patch. Also models in [2, 3] achieved higher performance than SOTA models listed in Table 2. If authors were focussing on models evaluated on both BRATS2020 and liver datasets, would suggest splitting the table for the two datasets and provide the SOTA results for each task independently. [2] Isensee et. al. No New-Net MICCAI 2018 [3] Henry et. al. Brain Tumor Segmentation with Self-ensembled, Deeply-Supervised 3D U-Net Neural Networks: A BraTS 2020 Challenge Solution. MICCAI 2020 The statement “Since our framework can directly output a complete segmentation mask at a time, it also has a faster inference speed than most of the other methods” is unclear. Was the inference done on the entire 192 x 192 x 128 volume? Please provide the inference times for the various models to support this statement. Overall, there are a few novel components to the proposed model. However with the details provided in the paper it is hard to compare with current SOTA models: is there an improvement in performance with a similar model-size or is there an improvement in inference time. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Claims not supported by data/results provided What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper Author proposed a patch-free 3D image segmentation method by integrating with super-resolution guidance. This method is of interesting, and is important to clinical applications, which challenged by large 3D volumetric data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A patch-free 3D medical image segmentation method, using low resolution input to generate high resolution segmentation result. A self-supervised guidance module is proposed too guide the segmentation and preserve high frequency information. A multi-task in employed to construct the network for information learning without hampering the inference efficiency. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The organization and writing need more improvements, as it is hard to follow and understand the method. Some descriptions are unclear, such as the way to extract the HR 3D patch. Results are limited without reporting std. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Seems the code will be published, but the statistical results are not sufficient without std. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, please include STD in the statistical result evaluation, otherwise, it is hard to see the results distribution. For me, the one thing I am caring about is how to extract patch from HR image, any requirement for position or randomly obtained? I believe different patch location would significantly influence the segmentation results, as it has different high frequency knowledge. However the paper just mention this without detailed discussion. I am curious about the performance of super-resolution branch, as the author state the method is a multi-task learning approach (just interesting about this). Overall, this paper is interesting to readers and have some potentials to be improved in the future. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is interesting What is the ranking of this paper in your review stack? 2 Number of papers in your stack 7 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This is overall a well presented work with certain novelties. It presents an effective patch-free segmentation model to take down-sampled medical images as input and output high quality segmentations. Compared with patch-based approaches, the presented patch-free model learns useful global information and therefore produces less false segmentations. The logic of the presented method is sound. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work is well motivated by the introduction section and Fig. 3. The method is sound and of certain novelty. The workflow is novel to integrate the auxiliary super resolution task into the pipeline of segmentation. The objective functions, including self-supervised guidance loss, spatial similarity loss, target enhanced loss, BCE loss, Dice loss, MSE loss are clearly introduced. The ablation study is convincing showing the proposed SR, TEL, SSL, and SGM components are effective. Compared with many existing studies and the proposed method shows superior accuracy and relatively fast speed. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no obvious weakness of the paper. Only some minor comments, How is the feature of HR 3D patch concatenated to the feature of LR 3D image? It is not intuitive to image as the patch and image represents different image regions. If the features are concatenated directly, how to deal with misalignment, semantic misalignment which means the features represent different image contents. On page 6, “The cropped MRI image and its segmentation mask are used as ground truth of US and SR, while the input is the cropped image after down-sampling.” should be “… are used as ground truth of SR and US, …” Errors in case 1 of Fig. 4 can be solved by connected component analysis. If time allows, some simple post-processing operations need to be applied after segmentation. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This article will provide its code and it uses public dataset. Therefore, it should be able to reproduce the reported main results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see part 4. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given part 2 and 3, I give a probably accept rating to this article. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presented a patch-free 3D medical image segmentation framework, which took down-sampled medical images as input and output high quality segmentations. Overall, it is well-written, and the logic in this method was sound. Although the novelty could be limited, but the techniques were applied usefully. The most important issues raised by the reviewers were about the experiments. The authors should provide details about the batch size, std values, the pre-processing, such as the patch extraction. I agree with Reviewer#1 that cross-validation should be applied for solid evaluation. There are other minor errors and missing information that should be revised and added. Detailed comments have been provided to the authors to help improve their work to be more solid. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presented a patch-free 3D medical image segmentation framework. The paper has been well written. The method is sound though with limited novelty. The authors have answered the concerns raised by the reviewers well, such as details about the batch size, std values, the pre-processing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is an interesting work for deep learning based 3D segmentation. It takes down-sampled volumes as input and produced high resolution segmentation by integrating with super resolution techniques. The rebuttal clarified key concerns raised on experimental evaluation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposes patch-free segmentation framework for 3D images. It is in line with a recent trend to combine global context with local details for semantic segmentations. While reviewers put forward many issues in detail, the merit of this paper was mostly acknowledged. In rebuttal, the authors made further justification, most of which were for their experiments. The authors also noted they would release code plus data, which is necessary to support their paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Author Feedback Thank you for your valuable comments. Our itemized responses to the questions are as follows: Comment 1: The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96×96×64 in their experiments. (Reviewer #1) Response: We have to point out that reviewer #1 misunderstood our method. Our patch-free segmentation method does NOT use patches as input, but use a down-sampled entire 3D image as LR input (the LR image size is 96×96×64) due to limited GPU memory. The proposed segmentation method will directly generate a HR segmentation mask at a time by combining super-resolution and self-supervised guidance. In contrast, conventional patch-based methods usually first decompose a HR 3D image into several small patches (the patch size is also 96×96×64 in our experiment) and perform segmentation on these patches separately. The final result is combined by the segmentation results of all these patches, and the whole process is very time-consuming. Comment 2: The increase in model size with the addition of self-guidance modules is not provided. (Reviewer #1) Response: The parameters of a single self-guidance module is about 0.4M, which accounts for 4.7% of the parameters of the main segmentation network. Comment 3: Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4× higher speed when predicting. (Reviewer #1) Response: Actually, there are experimental results supporting our claims. The last column of Table 2 provides the inference time of different models. Comment 4: How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? (Reviewer #1, #2, Meta-Reviewer) Response: We did experiments on this issue. We compared random cropping and central area cropping. Experiments demonstrated that central area cropping leads to a better result (+0.27% dice). Random cropping may cause instability since for every testing case the content of the guidance patch may vary a lot. Though this part was not included in the paper right now, we will include this issue in the final version. Comment 5: Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? (Reviewer #1, Meta Reviewer) Response: Yes, the inference for patch-based methods use a sliding window strategy, which is described in Section 3.2. The batch size for our proposed method is 1. For other patch-based methods, we have tested different batch size settings of 1, 2 and 4 (on BRATS2020) and we found quite a few models perform best with a batch size of 1, such as UNet3D and ResUNet3D. The final experimental results in the paper are all reported with batch size being 1. Comment 6: Would suggest using cross validation splits for training. (Reviewer #1, Meta reviewer) Response: We managed to finish 4 splits of the 5-fold cross validation of our method before rebuttal deadline, and the average DSC is 83.83% (84.27%, 83.82%, 83.62%, 83.62%), which is very close to what is reported in the paper, thus proving the stability of the proposed method. We also conducted some extra experiments with 6/2/2 train/val/test splits of BRATS2020 after submission, and the results are also consistent with those in the paper, our framework outperforming backbone baseline with 2.2% higher DSC. Comment 7: Results are limited without reporting std. (Reviewer #2) Response: Some STD values of the results on BRATS2020 are listed as follows, in the format of [Method, DSC STD, HD95 STD]. The full STD results will be presented along with our code on the GitHub page. V-Net, 0.1345, 18.6006; UNet3D, 0.1277, 21.1204; ResUNet3D, 0.1182, 19.4195; ResUNet3D↑, 0.1525, 8.0853; HDResUNet, 0.1474, 12.0561; Ours, 0.1433, 8.6250. Our framework shows its great stability on 95% Hausdorff and also outperforms other patch-free methods’ STD of DSC. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Hongyi Wang, Lanfen Lin, Hongjie Hu, Qingqing Chen, Yinhao Li, Yutaro Iwamoto, Xian-Hua Han, Yen-Wei Chen, Ruofeng Tong Abstract 3D medical image segmentation with high resolution is an important issue for accurate diagnosis. The main challenge for this task is its large computational cost and GPU memory restriction. Most of the existing 3D medical image segmentation methods are patch-based methods, which ignore the global context information for accurate segmentation and also reduce the efficiency of inference. To tackle this problem, we propose a patch-free 3D medical image segmentation method, which can realize high-resolution (HR) segmentation with low-resolution (LR) input. It contains a multi-task learning framework (Semantic Segmentation and Super-Resolution (SR)) and a Self-Supervised Guidance Module (SGM). SR is used as an auxiliary task for the main segmentation task to restore the HR details, while the SGM, which uses the original HR image patch as a guidance image, is designed to keep the high-frequency information for accurate segmentation. Besides, we also introduce a Task-Fusion Module (TFM) to exploit the inter connections between the segmentation and SR tasks. Since the SR task and TFM are only used in the training phase, they do not introduce extra computational costs when predicting. We conduct the experiments on two different datasets, and the experimental results show that our framework outperforms current patch-based methods as well as has a 4× higher speed when predicting. Link to paper https://doi.org/10.1007/978-3-030-87193-2_13 Link to the code repository https://github.com/Dootmaan/PFSeg Link to the dataset(s) https://www.med.upenn.edu/cbica/brats2020/ Reviews Review #1 Please describe the contribution of the paper Improve the segmentation of medical images by exploiting global context using low resolution images as input and using a multi task approach that combines image super-resolution and semantic segmentation Addition of a self guidance module to better capture high frequency information to guide segmentation and a task fusion module to effectively combine the segmentation and super resolution tasks Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Addition of self supervised guidance modules to both segmentation and super resolution branches and task fusion module to combine the two tasks Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96 x 96 x 64 in their experiments. The method is a minor improvement on [1]. However the increase in model size with the addition of self guidance modules is not provided. Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4 higher speed when predicting. [1] Wang et.al., Dual super-resolution learning for semantic segmentation. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 3774-3783 (2020) Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is not enough information in the paper to reimplement / reproduce the proposed model Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The statement “if the network is trained with patches, it also have to use patches (such as sliding window strategy) in inference stage” is not true. Most segmentation models (Unet or FCN models) are fully convolutional models which can be trained on patches and inferred on the entire image. The first point in the contribution “We propose a patch-free 3D medical image segmentation method, which can realize HR segmentation with LR input” is misleading as the authors use a patch of 96 x 96 x 64 in their experiments. No results are provided with the entire / larger 3D volumes. How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? Fig 3: Are the SGM modules in super resolution and segmentation branches shared similar to the shared encoder or are they separate? Equation (1) seems to be the MSE loss for super resolution task in the ROI of the high resolution self-supervised guidance patch. If so, this is redundant with the MSE loss for SR in the overall objective function. The term task fusion module is misleading as it adds a few terms to the overall objective function and is not a module that combines the features from the two tasks. Spatial similarity loss in the task fusion module is equivalent to feature affinity loss in [1] and target enhanced loss is the new component added by the authors. Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? Both BRATS2020 and the liver dataset are relatively small datasets. Would suggest using cross validation splits for training. For BRATS2020, comparison with Unet models that use a larger patch size (128 x 128 x 128) [2, 3] would be better suited here than models that use a smaller patch. Also models in [2, 3] achieved higher performance than SOTA models listed in Table 2. If authors were focussing on models evaluated on both BRATS2020 and liver datasets, would suggest splitting the table for the two datasets and provide the SOTA results for each task independently. [2] Isensee et. al. No New-Net MICCAI 2018 [3] Henry et. al. Brain Tumor Segmentation with Self-ensembled, Deeply-Supervised 3D U-Net Neural Networks: A BraTS 2020 Challenge Solution. MICCAI 2020 The statement “Since our framework can directly output a complete segmentation mask at a time, it also has a faster inference speed than most of the other methods” is unclear. Was the inference done on the entire 192 x 192 x 128 volume? Please provide the inference times for the various models to support this statement. Overall, there are a few novel components to the proposed model. However with the details provided in the paper it is hard to compare with current SOTA models: is there an improvement in performance with a similar model-size or is there an improvement in inference time. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Claims not supported by data/results provided What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper Author proposed a patch-free 3D image segmentation method by integrating with super-resolution guidance. This method is of interesting, and is important to clinical applications, which challenged by large 3D volumetric data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A patch-free 3D medical image segmentation method, using low resolution input to generate high resolution segmentation result. A self-supervised guidance module is proposed too guide the segmentation and preserve high frequency information. A multi-task in employed to construct the network for information learning without hampering the inference efficiency. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The organization and writing need more improvements, as it is hard to follow and understand the method. Some descriptions are unclear, such as the way to extract the HR 3D patch. Results are limited without reporting std. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Seems the code will be published, but the statistical results are not sufficient without std. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, please include STD in the statistical result evaluation, otherwise, it is hard to see the results distribution. For me, the one thing I am caring about is how to extract patch from HR image, any requirement for position or randomly obtained? I believe different patch location would significantly influence the segmentation results, as it has different high frequency knowledge. However the paper just mention this without detailed discussion. I am curious about the performance of super-resolution branch, as the author state the method is a multi-task learning approach (just interesting about this). Overall, this paper is interesting to readers and have some potentials to be improved in the future. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is interesting What is the ranking of this paper in your review stack? 2 Number of papers in your stack 7 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This is overall a well presented work with certain novelties. It presents an effective patch-free segmentation model to take down-sampled medical images as input and output high quality segmentations. Compared with patch-based approaches, the presented patch-free model learns useful global information and therefore produces less false segmentations. The logic of the presented method is sound. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work is well motivated by the introduction section and Fig. 3. The method is sound and of certain novelty. The workflow is novel to integrate the auxiliary super resolution task into the pipeline of segmentation. The objective functions, including self-supervised guidance loss, spatial similarity loss, target enhanced loss, BCE loss, Dice loss, MSE loss are clearly introduced. The ablation study is convincing showing the proposed SR, TEL, SSL, and SGM components are effective. Compared with many existing studies and the proposed method shows superior accuracy and relatively fast speed. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no obvious weakness of the paper. Only some minor comments, How is the feature of HR 3D patch concatenated to the feature of LR 3D image? It is not intuitive to image as the patch and image represents different image regions. If the features are concatenated directly, how to deal with misalignment, semantic misalignment which means the features represent different image contents. On page 6, “The cropped MRI image and its segmentation mask are used as ground truth of US and SR, while the input is the cropped image after down-sampling.” should be “… are used as ground truth of SR and US, …” Errors in case 1 of Fig. 4 can be solved by connected component analysis. If time allows, some simple post-processing operations need to be applied after segmentation. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This article will provide its code and it uses public dataset. Therefore, it should be able to reproduce the reported main results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see part 4. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given part 2 and 3, I give a probably accept rating to this article. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presented a patch-free 3D medical image segmentation framework, which took down-sampled medical images as input and output high quality segmentations. Overall, it is well-written, and the logic in this method was sound. Although the novelty could be limited, but the techniques were applied usefully. The most important issues raised by the reviewers were about the experiments. The authors should provide details about the batch size, std values, the pre-processing, such as the patch extraction. I agree with Reviewer#1 that cross-validation should be applied for solid evaluation. There are other minor errors and missing information that should be revised and added. Detailed comments have been provided to the authors to help improve their work to be more solid. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presented a patch-free 3D medical image segmentation framework. The paper has been well written. The method is sound though with limited novelty. The authors have answered the concerns raised by the reviewers well, such as details about the batch size, std values, the pre-processing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is an interesting work for deep learning based 3D segmentation. It takes down-sampled volumes as input and produced high resolution segmentation by integrating with super resolution techniques. The rebuttal clarified key concerns raised on experimental evaluation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposes patch-free segmentation framework for 3D images. It is in line with a recent trend to combine global context with local details for semantic segmentations. While reviewers put forward many issues in detail, the merit of this paper was mostly acknowledged. In rebuttal, the authors made further justification, most of which were for their experiments. The authors also noted they would release code plus data, which is necessary to support their paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Author Feedback Thank you for your valuable comments. Our itemized responses to the questions are as follows: Comment 1: The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96×96×64 in their experiments. (Reviewer #1) Response: We have to point out that reviewer #1 misunderstood our method. Our patch-free segmentation method does NOT use patches as input, but use a down-sampled entire 3D image as LR input (the LR image size is 96×96×64) due to limited GPU memory. The proposed segmentation method will directly generate a HR segmentation mask at a time by combining super-resolution and self-supervised guidance. In contrast, conventional patch-based methods usually first decompose a HR 3D image into several small patches (the patch size is also 96×96×64 in our experiment) and perform segmentation on these patches separately. The final result is combined by the segmentation results of all these patches, and the whole process is very time-consuming. Comment 2: The increase in model size with the addition of self-guidance modules is not provided. (Reviewer #1) Response: The parameters of a single self-guidance module is about 0.4M, which accounts for 4.7% of the parameters of the main segmentation network. Comment 3: Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4× higher speed when predicting. (Reviewer #1) Response: Actually, there are experimental results supporting our claims. The last column of Table 2 provides the inference time of different models. Comment 4: How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? (Reviewer #1, #2, Meta-Reviewer) Response: We did experiments on this issue. We compared random cropping and central area cropping. Experiments demonstrated that central area cropping leads to a better result (+0.27% dice). Random cropping may cause instability since for every testing case the content of the guidance patch may vary a lot. Though this part was not included in the paper right now, we will include this issue in the final version. Comment 5: Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? (Reviewer #1, Meta Reviewer) Response: Yes, the inference for patch-based methods use a sliding window strategy, which is described in Section 3.2. The batch size for our proposed method is 1. For other patch-based methods, we have tested different batch size settings of 1, 2 and 4 (on BRATS2020) and we found quite a few models perform best with a batch size of 1, such as UNet3D and ResUNet3D. The final experimental results in the paper are all reported with batch size being 1. Comment 6: Would suggest using cross validation splits for training. (Reviewer #1, Meta reviewer) Response: We managed to finish 4 splits of the 5-fold cross validation of our method before rebuttal deadline, and the average DSC is 83.83% (84.27%, 83.82%, 83.62%, 83.62%), which is very close to what is reported in the paper, thus proving the stability of the proposed method. We also conducted some extra experiments with 6/2/2 train/val/test splits of BRATS2020 after submission, and the results are also consistent with those in the paper, our framework outperforming backbone baseline with 2.2% higher DSC. Comment 7: Results are limited without reporting std. (Reviewer #2) Response: Some STD values of the results on BRATS2020 are listed as follows, in the format of [Method, DSC STD, HD95 STD]. The full STD results will be presented along with our code on the GitHub page. V-Net, 0.1345, 18.6006; UNet3D, 0.1277, 21.1204; ResUNet3D, 0.1182, 19.4195; ResUNet3D↑, 0.1525, 8.0853; HDResUNet, 0.1474, 12.0561; Ours, 0.1433, 8.6250. Our framework shows its great stability on 95% Hausdorff and also outperforms other patch-free methods’ STD of DSC. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0112/12/31/Paper0315" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0112/12/31/Paper0315" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0112-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Patch-Free 3D Medical Image Segmentation Driven by Super-Resolution Technique and Self-Supervised Guidance" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0112/12/31/Paper0315"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0112/12/31/Paper0315","headline":"Patch-Free 3D Medical Image Segmentation Driven by Super-Resolution Technique and Self-Supervised Guidance","dateModified":"0112-12-31T00:00:00-05:17","datePublished":"0112-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Hongyi Wang, Lanfen Lin, Hongjie Hu, Qingqing Chen, Yinhao Li, Yutaro Iwamoto, Xian-Hua Han, Yen-Wei Chen, Ruofeng Tong Abstract 3D medical image segmentation with high resolution is an important issue for accurate diagnosis. The main challenge for this task is its large computational cost and GPU memory restriction. Most of the existing 3D medical image segmentation methods are patch-based methods, which ignore the global context information for accurate segmentation and also reduce the efficiency of inference. To tackle this problem, we propose a patch-free 3D medical image segmentation method, which can realize high-resolution (HR) segmentation with low-resolution (LR) input. It contains a multi-task learning framework (Semantic Segmentation and Super-Resolution (SR)) and a Self-Supervised Guidance Module (SGM). SR is used as an auxiliary task for the main segmentation task to restore the HR details, while the SGM, which uses the original HR image patch as a guidance image, is designed to keep the high-frequency information for accurate segmentation. Besides, we also introduce a Task-Fusion Module (TFM) to exploit the inter connections between the segmentation and SR tasks. Since the SR task and TFM are only used in the training phase, they do not introduce extra computational costs when predicting. We conduct the experiments on two different datasets, and the experimental results show that our framework outperforms current patch-based methods as well as has a 4× higher speed when predicting. Link to paper https://doi.org/10.1007/978-3-030-87193-2_13 Link to the code repository https://github.com/Dootmaan/PFSeg Link to the dataset(s) https://www.med.upenn.edu/cbica/brats2020/ Reviews Review #1 Please describe the contribution of the paper Improve the segmentation of medical images by exploiting global context using low resolution images as input and using a multi task approach that combines image super-resolution and semantic segmentation Addition of a self guidance module to better capture high frequency information to guide segmentation and a task fusion module to effectively combine the segmentation and super resolution tasks Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Addition of self supervised guidance modules to both segmentation and super resolution branches and task fusion module to combine the two tasks Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96 x 96 x 64 in their experiments. The method is a minor improvement on [1]. However the increase in model size with the addition of self guidance modules is not provided. Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4\u0002 higher speed when predicting. [1] Wang et.al., Dual super-resolution learning for semantic segmentation. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 3774-3783 (2020) Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance There is not enough information in the paper to reimplement / reproduce the proposed model Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The statement “if the network is trained with patches, it also have to use patches (such as sliding window strategy) in inference stage” is not true. Most segmentation models (Unet or FCN models) are fully convolutional models which can be trained on patches and inferred on the entire image. The first point in the contribution “We propose a patch-free 3D medical image segmentation method, which can realize HR segmentation with LR input” is misleading as the authors use a patch of 96 x 96 x 64 in their experiments. No results are provided with the entire / larger 3D volumes. How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? Fig 3: Are the SGM modules in super resolution and segmentation branches shared similar to the shared encoder or are they separate? Equation (1) seems to be the MSE loss for super resolution task in the ROI of the high resolution self-supervised guidance patch. If so, this is redundant with the MSE loss for SR in the overall objective function. The term task fusion module is misleading as it adds a few terms to the overall objective function and is not a module that combines the features from the two tasks. Spatial similarity loss in the task fusion module is equivalent to feature affinity loss in [1] and target enhanced loss is the new component added by the authors. Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? Both BRATS2020 and the liver dataset are relatively small datasets. Would suggest using cross validation splits for training. For BRATS2020, comparison with Unet models that use a larger patch size (128 x 128 x 128) [2, 3] would be better suited here than models that use a smaller patch. Also models in [2, 3] achieved higher performance than SOTA models listed in Table 2. If authors were focussing on models evaluated on both BRATS2020 and liver datasets, would suggest splitting the table for the two datasets and provide the SOTA results for each task independently. [2] Isensee et. al. No New-Net MICCAI 2018 [3] Henry et. al. Brain Tumor Segmentation with Self-ensembled, Deeply-Supervised 3D U-Net Neural Networks: A BraTS 2020 Challenge Solution. MICCAI 2020 The statement “Since our framework can directly output a complete segmentation mask at a time, it also has a faster inference speed than most of the other methods” is unclear. Was the inference done on the entire 192 x 192 x 128 volume? Please provide the inference times for the various models to support this statement. Overall, there are a few novel components to the proposed model. However with the details provided in the paper it is hard to compare with current SOTA models: is there an improvement in performance with a similar model-size or is there an improvement in inference time. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Claims not supported by data/results provided What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper Author proposed a patch-free 3D image segmentation method by integrating with super-resolution guidance. This method is of interesting, and is important to clinical applications, which challenged by large 3D volumetric data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. A patch-free 3D medical image segmentation method, using low resolution input to generate high resolution segmentation result. A self-supervised guidance module is proposed too guide the segmentation and preserve high frequency information. A multi-task in employed to construct the network for information learning without hampering the inference efficiency. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The organization and writing need more improvements, as it is hard to follow and understand the method. Some descriptions are unclear, such as the way to extract the HR 3D patch. Results are limited without reporting std. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Seems the code will be published, but the statistical results are not sufficient without std. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html First of all, please include STD in the statistical result evaluation, otherwise, it is hard to see the results distribution. For me, the one thing I am caring about is how to extract patch from HR image, any requirement for position or randomly obtained? I believe different patch location would significantly influence the segmentation results, as it has different high frequency knowledge. However the paper just mention this without detailed discussion. I am curious about the performance of super-resolution branch, as the author state the method is a multi-task learning approach (just interesting about this). Overall, this paper is interesting to readers and have some potentials to be improved in the future. Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Method is interesting What is the ranking of this paper in your review stack? 2 Number of papers in your stack 7 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This is overall a well presented work with certain novelties. It presents an effective patch-free segmentation model to take down-sampled medical images as input and output high quality segmentations. Compared with patch-based approaches, the presented patch-free model learns useful global information and therefore produces less false segmentations. The logic of the presented method is sound. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. This work is well motivated by the introduction section and Fig. 3. The method is sound and of certain novelty. The workflow is novel to integrate the auxiliary super resolution task into the pipeline of segmentation. The objective functions, including self-supervised guidance loss, spatial similarity loss, target enhanced loss, BCE loss, Dice loss, MSE loss are clearly introduced. The ablation study is convincing showing the proposed SR, TEL, SSL, and SGM components are effective. Compared with many existing studies and the proposed method shows superior accuracy and relatively fast speed. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. There is no obvious weakness of the paper. Only some minor comments, How is the feature of HR 3D patch concatenated to the feature of LR 3D image? It is not intuitive to image as the patch and image represents different image regions. If the features are concatenated directly, how to deal with misalignment, semantic misalignment which means the features represent different image contents. On page 6, “The cropped MRI image and its segmentation mask are used as ground truth of US and SR, while the input is the cropped image after down-sampling.” should be “… are used as ground truth of SR and US, …” Errors in case 1 of Fig. 4 can be solved by connected component analysis. If time allows, some simple post-processing operations need to be applied after segmentation. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This article will provide its code and it uses public dataset. Therefore, it should be able to reproduce the reported main results. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Please see part 4. Please state your overall opinion of the paper Probably accept (7) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given part 2 and 3, I give a probably accept rating to this article. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper presented a patch-free 3D medical image segmentation framework, which took down-sampled medical images as input and output high quality segmentations. Overall, it is well-written, and the logic in this method was sound. Although the novelty could be limited, but the techniques were applied usefully. The most important issues raised by the reviewers were about the experiments. The authors should provide details about the batch size, std values, the pre-processing, such as the patch extraction. I agree with Reviewer#1 that cross-validation should be applied for solid evaluation. There are other minor errors and missing information that should be revised and added. Detailed comments have been provided to the authors to help improve their work to be more solid. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper presented a patch-free 3D medical image segmentation framework. The paper has been well written. The method is sound though with limited novelty. The authors have answered the concerns raised by the reviewers well, such as details about the batch size, std values, the pre-processing. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This is an interesting work for deep learning based 3D segmentation. It takes down-sampled volumes as input and produced high resolution segmentation by integrating with super resolution techniques. The rebuttal clarified key concerns raised on experimental evaluation. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper proposes patch-free segmentation framework for 3D images. It is in line with a recent trend to combine global context with local details for semantic segmentations. While reviewers put forward many issues in detail, the merit of this paper was mostly acknowledged. In rebuttal, the authors made further justification, most of which were for their experiments. The authors also noted they would release code plus data, which is necessary to support their paper. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Author Feedback Thank you for your valuable comments. Our itemized responses to the questions are as follows: Comment 1: The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96×96×64 in their experiments. (Reviewer #1) Response: We have to point out that reviewer #1 misunderstood our method. Our patch-free segmentation method does NOT use patches as input, but use a down-sampled entire 3D image as LR input (the LR image size is 96×96×64) due to limited GPU memory. The proposed segmentation method will directly generate a HR segmentation mask at a time by combining super-resolution and self-supervised guidance. In contrast, conventional patch-based methods usually first decompose a HR 3D image into several small patches (the patch size is also 96×96×64 in our experiment) and perform segmentation on these patches separately. The final result is combined by the segmentation results of all these patches, and the whole process is very time-consuming. Comment 2: The increase in model size with the addition of self-guidance modules is not provided. (Reviewer #1) Response: The parameters of a single self-guidance module is about 0.4M, which accounts for 4.7% of the parameters of the main segmentation network. Comment 3: Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4× higher speed when predicting. (Reviewer #1) Response: Actually, there are experimental results supporting our claims. The last column of Table 2 provides the inference time of different models. Comment 4: How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? (Reviewer #1, #2, Meta-Reviewer) Response: We did experiments on this issue. We compared random cropping and central area cropping. Experiments demonstrated that central area cropping leads to a better result (+0.27% dice). Random cropping may cause instability since for every testing case the content of the guidance patch may vary a lot. Though this part was not included in the paper right now, we will include this issue in the final version. Comment 5: Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? (Reviewer #1, Meta Reviewer) Response: Yes, the inference for patch-based methods use a sliding window strategy, which is described in Section 3.2. The batch size for our proposed method is 1. For other patch-based methods, we have tested different batch size settings of 1, 2 and 4 (on BRATS2020) and we found quite a few models perform best with a batch size of 1, such as UNet3D and ResUNet3D. The final experimental results in the paper are all reported with batch size being 1. Comment 6: Would suggest using cross validation splits for training. (Reviewer #1, Meta reviewer) Response: We managed to finish 4 splits of the 5-fold cross validation of our method before rebuttal deadline, and the average DSC is 83.83% (84.27%, 83.82%, 83.62%, 83.62%), which is very close to what is reported in the paper, thus proving the stability of the proposed method. We also conducted some extra experiments with 6/2/2 train/val/test splits of BRATS2020 after submission, and the results are also consistent with those in the paper, our framework outperforming backbone baseline with 2.2% higher DSC. Comment 7: Results are limited without reporting std. (Reviewer #2) Response: Some STD values of the results on BRATS2020 are listed as follows, in the format of [Method, DSC STD, HD95 STD]. The full STD results will be presented along with our code on the GitHub page. V-Net, 0.1345, 18.6006; UNet3D, 0.1277, 21.1204; ResUNet3D, 0.1182, 19.4195; ResUNet3D↑, 0.1525, 8.0853; HDResUNet, 0.1474, 12.0561; Ours, 0.1433, 8.6250. Our framework shows its great stability on 95% Hausdorff and also outperforms other patch-free methods’ STD of DSC. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wang, Hongyi,Lin, Lanfen,Hu, Hongjie,Chen, Qingqing,Li, Yinhao,Iwamoto, Yutaro,Han, Xian-Hua,Chen, Yen-Wei,Tong, Ruofeng" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Patch-Free 3D Medical Image Segmentation Driven by Super-Resolution Technique and Self-Supervised Guidance</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wang, Hongyi"
+        class="post-tags">
+        Wang, Hongyi
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Lanfen"
+        class="post-tags">
+        Lin, Lanfen
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Hongjie"
+        class="post-tags">
+        Hu, Hongjie
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Qingqing"
+        class="post-tags">
+        Chen, Qingqing
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yinhao"
+        class="post-tags">
+        Li, Yinhao
+      </a> |  
+      
+      <a href="kittywong/tags#Iwamoto, Yutaro"
+        class="post-tags">
+        Iwamoto, Yutaro
+      </a> |  
+      
+      <a href="kittywong/tags#Han, Xian-Hua"
+        class="post-tags">
+        Han, Xian-Hua
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Yen-Wei"
+        class="post-tags">
+        Chen, Yen-Wei
+      </a> |  
+      
+      <a href="kittywong/tags#Tong, Ruofeng"
+        class="post-tags">
+        Tong, Ruofeng
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Hongyi Wang, Lanfen Lin, Hongjie Hu, Qingqing Chen, Yinhao Li, Yutaro Iwamoto, Xian-Hua Han, Yen-Wei Chen, Ruofeng Tong
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>3D medical image segmentation with high resolution is an important issue for accurate diagnosis. The main challenge for this task is its large computational cost and GPU memory restriction. Most of the existing 3D medical image segmentation methods are patch-based methods, which ignore the global context information for accurate segmentation and also reduce the efficiency of inference. To tackle this problem, we propose a patch-free 3D medical image segmentation method, which can realize high-resolution (HR) segmentation with low-resolution (LR) input. It contains a multi-task learning framework (Semantic Segmentation and Super-Resolution (SR)) and a Self-Supervised Guidance Module (SGM). SR is used as an auxiliary task for the main segmentation task to restore the HR details, while the SGM, which uses the original HR image patch as a guidance image, is designed to keep the high-frequency information for accurate segmentation. Besides, we also introduce a Task-Fusion Module (TFM) to exploit the inter connections between the segmentation and SR tasks. Since the SR task and TFM are only used in the training phase, they do not introduce extra computational costs when predicting. We conduct the experiments on two different datasets, and the experimental results show that our framework outperforms current patch-based methods as well as has a 4× higher speed when predicting.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87193-2_13">https://doi.org/10.1007/978-3-030-87193-2_13</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/Dootmaan/PFSeg
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>https://www.med.upenn.edu/cbica/brats2020/
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <ul>
+        <li>Improve the segmentation of medical images by exploiting global context using low resolution images as input and using a multi task approach that combines image super-resolution and semantic segmentation</li>
+        <li>Addition of a self guidance module to better capture high frequency information to guide segmentation and a task fusion module to effectively combine the segmentation and super resolution tasks</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Addition of self supervised guidance modules to both segmentation and super resolution branches and task fusion module to combine the two tasks</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96 x 96 x 64 in their experiments.</p>
+
+      <p>The method is a minor improvement on [1]. However the increase in model size with the addition of self guidance modules is not provided.</p>
+
+      <p>Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4 higher speed when predicting.</p>
+
+      <p>[1] Wang et.al., Dual super-resolution learning for semantic segmentation. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 3774-3783 (2020)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>There is not enough information in the paper to reimplement / reproduce the proposed model</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The statement “if the network is trained with patches, it also have to use patches (such as sliding window strategy) in inference stage” is not true. Most segmentation models (Unet or FCN models) are fully convolutional models which can be trained on patches and inferred on the entire image.</p>
+
+      <p>The first point in the contribution “We propose a patch-free 3D medical image segmentation method, which can realize HR segmentation with LR input” is misleading as the authors use a patch of 96 x 96 x 64 in their experiments. No results are provided with the entire / larger 3D volumes.</p>
+
+      <p>How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch?</p>
+
+      <p>Fig 3: Are the SGM modules in super resolution and segmentation branches shared similar to the shared encoder or are they separate?</p>
+
+      <p>Equation (1) seems to be the MSE loss for super resolution task in the ROI of the high resolution self-supervised guidance patch. If so, this is redundant with the MSE loss for SR in the overall objective function.</p>
+
+      <p>The term task fusion module is misleading as it adds a few terms to the overall objective function and is not a module that combines the features from the two tasks.</p>
+
+      <p>Spatial similarity loss in the task fusion module is equivalent to feature affinity loss in [1] and target enhanced loss is the new component added by the authors.</p>
+
+      <p>Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training?</p>
+
+      <p>Both BRATS2020 and the liver dataset are relatively small datasets. Would suggest using cross validation splits for training.</p>
+
+      <p>For BRATS2020, comparison with Unet models that use a larger patch size (128 x 128 x 128) [2, 3] would be better suited here than models that use a smaller patch. Also models in [2, 3] achieved higher performance than SOTA models listed in Table 2. If authors were focussing on models evaluated on both BRATS2020 and liver datasets, would suggest splitting the table for the two datasets and provide the SOTA results for each task independently.</p>
+
+      <p>[2] Isensee et. al. No New-Net MICCAI 2018
+[3] Henry et. al. Brain Tumor Segmentation with Self-ensembled, Deeply-Supervised 3D U-Net Neural Networks: A BraTS 2020 Challenge Solution. MICCAI 2020</p>
+
+      <p>The statement “Since our framework can directly output a complete segmentation mask at a time, it also has a faster inference speed than most of the other methods” is unclear. Was the inference done on the entire 192 x 192 x 128 volume? Please provide the inference times for the various models to support this statement.</p>
+
+      <p>Overall, there are a few novel components to the proposed model. However with the details provided in the paper it is hard to compare with current SOTA models: is there an improvement in performance with a similar model-size or is there an improvement in inference time.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Claims not supported by data/results provided</p>
+
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Author proposed a patch-free 3D image segmentation method by integrating with super-resolution guidance. This method is of interesting, and is important to clinical applications, which challenged by large 3D volumetric data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>A patch-free 3D medical image segmentation method, using low resolution input to generate high resolution segmentation result.</li>
+        <li>A self-supervised guidance module is proposed too guide the segmentation and preserve high frequency information.</li>
+        <li>A multi-task in employed to construct the network for information learning without hampering the inference efficiency.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The organization and writing need more improvements, as it is hard to follow and understand the method.</li>
+        <li>Some descriptions are unclear, such as the way to extract the HR 3D patch.</li>
+        <li>Results are limited without reporting std.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Seems the code will be published, but the statistical results are not sufficient without std.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ul>
+        <li>First of all, please include STD in the statistical result evaluation, otherwise, it is hard to see the results distribution.</li>
+        <li>For me, the one thing I am caring about is how to extract patch from HR image, any requirement for position or randomly obtained? I believe different patch location would significantly influence the segmentation results, as it has different high frequency knowledge. However the paper just mention this without detailed discussion.</li>
+        <li>I am curious about the performance of super-resolution branch, as the author state the method is a multi-task learning approach (just interesting about this).</li>
+      </ul>
+
+      <p>Overall, this paper is interesting to readers and have some potentials to be improved in the future.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Method is interesting</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This is overall a well presented work with certain novelties. It presents an effective patch-free segmentation model to take down-sampled medical images as input and output high quality segmentations. Compared with patch-based approaches, the presented patch-free model learns useful global information and therefore produces less false segmentations. The logic of the presented method is sound.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>This work is well motivated by the introduction section and Fig. 3.</p>
+        </li>
+        <li>
+          <p>The method is sound and of certain novelty. The workflow is novel to integrate the auxiliary super resolution task into the pipeline of segmentation. The objective functions, including self-supervised guidance loss, spatial similarity loss, target enhanced loss, BCE loss, Dice loss, MSE loss are clearly introduced.</p>
+        </li>
+        <li>
+          <p>The ablation study is convincing showing the proposed SR, TEL, SSL, and SGM components are effective.</p>
+        </li>
+        <li>
+          <p>Compared with many existing studies and the proposed method shows superior accuracy and relatively fast speed.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>There is no obvious weakness of the paper. Only some minor comments,</p>
+
+      <ol>
+        <li>
+          <p>How is the feature of HR 3D patch concatenated to the feature of LR 3D image? It is not intuitive to image as the patch and image represents different image regions. If the features are concatenated directly, how to deal with misalignment, semantic misalignment which means the features represent different image contents.</p>
+        </li>
+        <li>
+          <p>On page 6, “The cropped MRI image and its segmentation mask are used as ground truth of US and SR, while the input is the cropped image after down-sampling.” should be “… are used as ground truth of SR and US, …”</p>
+        </li>
+        <li>
+          <p>Errors in case 1 of Fig. 4 can be solved by connected component analysis. If time allows, some simple post-processing operations need to be applied after segmentation.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>This article will provide its code and it uses public dataset. Therefore, it should be able to reproduce the reported main results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Please see part 4.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>Probably accept (7)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Given part 2 and 3, I give a probably accept rating to this article.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper presented a patch-free 3D medical image segmentation framework, which took down-sampled medical images as input and output high quality segmentations. Overall, it is well-written, and the logic in this method was sound. Although the novelty could be limited, but the techniques were applied usefully. The most important issues raised by the reviewers were about the experiments. The authors should provide details about the batch size, std values, the pre-processing, such as the patch extraction. I agree with Reviewer#1 that cross-validation should be applied for solid evaluation. There are other minor errors and missing information that should be revised and added. Detailed comments have been provided to the authors to help improve their work to be more solid.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper presented a patch-free 3D medical image segmentation framework. The paper has been well written. The method is sound though with limited novelty.  The authors have answered the concerns raised by the reviewers well, such as details about the batch size, std values, the pre-processing.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This is an interesting work for deep learning based 3D segmentation. It takes down-sampled volumes as input and produced high resolution segmentation by integrating with super resolution techniques. The rebuttal clarified key concerns raised on experimental evaluation.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper proposes patch-free segmentation framework for 3D images. It is in line with a recent trend to combine global context with local details for semantic segmentations. While reviewers put forward many issues in detail, the merit of this paper was mostly acknowledged. In rebuttal, the authors made further justification, most of which were for their experiments. The authors also noted they would release code plus data, which is necessary to support their paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Thank you for your valuable comments. Our itemized responses to the questions are as follows:</p>
+
+  <p>Comment 1: The authors state that the main objective is to use larger/global context to improve segmentation using patch free models but they use a patch size of 96×96×64 in their experiments. (Reviewer #1)
+Response: We have to point out that reviewer #1 misunderstood our method. Our patch-free segmentation method does NOT use patches as input, but use a down-sampled entire 3D image as LR input (the LR image size is 96×96×64) due to limited GPU memory. The proposed segmentation method will directly generate a HR segmentation mask at a time by combining super-resolution and self-supervised guidance. In contrast, conventional patch-based methods usually first decompose a HR 3D image into several small patches (the patch size is also 96×96×64 in our experiment) and perform segmentation on these patches separately. The final result is combined by the segmentation results of all these patches, and the whole process is very time-consuming.</p>
+
+  <p>Comment 2: The increase in model size with the addition of self-guidance modules is not provided. (Reviewer #1)
+Response: The parameters of a single self-guidance module is about 0.4M, which accounts for 4.7% of the parameters of the main segmentation network.</p>
+
+  <p>Comment 3: Some of the claims are unwarranted as there is no data to support these claims. For e.x., 4× higher speed when predicting. (Reviewer #1)
+Response: Actually, there are experimental results supporting our claims. The last column of Table 2 provides the inference time of different models.</p>
+
+  <p>Comment 4: How is the patch for self-supervised guidance cropped: randomly within the input patch in high resolution or is it the central patch? (Reviewer #1, #2, Meta-Reviewer)
+Response: We did experiments on this issue. We compared random cropping and central area cropping. Experiments demonstrated that central area cropping leads to a better result (+0.27% dice). Random cropping may cause instability since for every testing case the content of the guidance patch may vary a lot. Though this part was not included in the paper right now, we will include this issue in the final version.</p>
+
+  <p>Comment 5: Was the inference done on patches with a sliding window strategy due to limited GPU memory? What was the batch size during training? (Reviewer #1, Meta Reviewer)
+Response: Yes, the inference for patch-based methods use a sliding window strategy, which is described in Section 3.2. The batch size for our proposed method is 1. For other patch-based methods, we have tested different batch size settings of 1, 2 and 4 (on BRATS2020) and we found quite a few models perform best with a batch size of 1, such as UNet3D and ResUNet3D. The final experimental results in the paper are all reported with batch size being 1.</p>
+
+  <p>Comment 6: Would suggest using cross validation splits for training. (Reviewer #1, Meta reviewer)
+Response: We managed to finish 4 splits of the 5-fold cross validation of our method before rebuttal deadline, and the average DSC is 83.83% (84.27%, 83.82%, 83.62%, 83.62%), which is very close to what is reported in the paper, thus proving the stability of the proposed method. We also conducted some extra experiments with 6/2/2 train/val/test splits of BRATS2020 after submission, and the results are also consistent with those in the paper, our framework outperforming backbone baseline with 2.2% higher DSC.</p>
+
+  <p>Comment 7: Results are limited without reporting std. (Reviewer #2)
+Response: Some STD values of the results on BRATS2020 are listed as follows, in the format of [Method, DSC STD, HD95 STD]. The full STD results will be presented along with our code on the GitHub page.
+V-Net, 0.1345, 18.6006; UNet3D, 0.1277, 21.1204; ResUNet3D, 0.1182, 19.4195; ResUNet3D↑, 0.1525, 8.0853; HDResUNet, 0.1474, 12.0561; Ours, 0.1433, 8.6250. Our framework shows its great stability on 95% Hausdorff and also outperforms other patch-free methods’ STD of DSC.</p>
+
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0112-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0113-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - MRI"
+        class="post-category">
+        Modalities - MRI
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wang, Hongyi"
+        class="post-category">
+        Wang, Hongyi
+      </a> |  
+      
+      <a href="kittywong/tags#Lin, Lanfen"
+        class="post-category">
+        Lin, Lanfen
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Hongjie"
+        class="post-category">
+        Hu, Hongjie
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Qingqing"
+        class="post-category">
+        Chen, Qingqing
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Yinhao"
+        class="post-category">
+        Li, Yinhao
+      </a> |  
+      
+      <a href="kittywong/tags#Iwamoto, Yutaro"
+        class="post-category">
+        Iwamoto, Yutaro
+      </a> |  
+      
+      <a href="kittywong/tags#Han, Xian-Hua"
+        class="post-category">
+        Han, Xian-Hua
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Yen-Wei"
+        class="post-category">
+        Chen, Yen-Wei
+      </a> |  
+      
+      <a href="kittywong/tags#Tong, Ruofeng"
+        class="post-category">
+        Tong, Ruofeng
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0113/12/31/Paper0320">
+          Progressively Normalized Self-Attention Network for Video Polyp Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0111/12/31/Paper0305">
+          Automatic Polyp Segmentation via Multi-scale Subtraction Network
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

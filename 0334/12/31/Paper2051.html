@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Federated Contrastive Learning for Volumetric Medical Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Federated Contrastive Learning for Volumetric Medical Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yawen Wu, Dewen Zeng, Zhepeng Wang, Yiyu Shi, Jingtong Hu Abstract Supervised deep learning needs a large amount of labeled data to achieve high performance. However, in medical imaging analysis, each site may only have a limited amount of data and labels, which makes learning ineffective. Federated learning (FL) can help in this regard by learning a shared model while keeping training data local for privacy. Traditional FL requires fully-labeled data for training, which is inconvenient or sometimes infeasible to obtain due to high labeling cost and the requirement of expertise. Contrastive learning (CL), as a self-supervised learning approach, can effectively learn from unlabeled data to pre-train a neural network encoder, followed by fine-tuning for downstream tasks with limited annotations. However, when adopting CL in FL, the limited data diversity on each client makes federated contrastive learning (FCL) ineffective. In this work, we propose an FCL framework for volumetric medical image segmentation with limited annotations. More specifically, we exchange the features in the FCL pre-training process such that diverse contrastive data are provided to each site for effective local CL while keeping raw data private. Based on the exchanged features, global structural matching further leverages the structural similarity to align local features to the remote ones such that a unified feature space can be learned among different sites. Experiments on the MRI dataset show the proposed framework substantially improves the segmentation performance compared with state-of-the-art techniques. Link to paper https://doi.org/10.1007/978-3-030-87199-4_35 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Although federated learning allows training models on image data distributed over many hospitals, such image data often lacks annotations required to apply supervised federated learning. The authors investigate, as one of the first works in this field, how federated pre-training with contrastive self-supervised learning algorithms can help to train effective image segmentation models through fine-tuning. Their method assumes that it is possible to communicate the encoded feature representations of the images to all other clients participating in the federated learning. A state-of-the-art self-supervised learning algorithm is adapted to make use of the shared features via a memory bank and the method is compared to some baselines in the task of cardiac MRI segmentation. The experiments show that the proposed method consistently outperforms the baselines both in a local and federated fine-tuning setting. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Combining FL and CL is a novel and interesting approach, especially in the context of Medical Imaging, as such a federated setting with limited annotated data is representative of what is often encountered in practice. The authors choose to adapt the positive/negative sampling strategy proposed in [4] 3.2 for the FL setting by also making use of a memory bank as proposed in [10] and sharing feature vectors across clients in order to update the memory bank. This approach seems like a good choice well-suited for this FCL setting. Also, the authors describe their approach in a clear fashion, albeit lacking some details which would be important for improved reproducibility. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Concerning the baselines presented in the paper, it is questionable if they represent the state-of-the-art in federated semi-supervised learning. We note that this might be due to the novelty of the setting. However, when comparing e.g. the random init. results presented in the paper (conservative baseline) with the random init. results presented in [4], the results for the same amount of labeled training data seem significantly stronger in [4]. While this paper investigates a different setting, the presented results for the local fine-tuning case should be somewhat comparable since individual models are trained on the same number of labeled examples in isolation. For this reason, it’s somewhat surprising to see the significantly lower average performance across clients when compared to the result in [4]. Another weak point is the missing description of hyperparameter tuning strategies for all methods evaluated. Without a description of the tuning strategies, it’s hard to tell if the lower performance is due to a different tuning budget. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Clear description of the assumptions and the algorithm (only one detail not perfectly clear) Public datasets used Negative: Not all hyperparameters given Not described how hyperparameters were chosen and how sensitive to changes. How were baselines tuned? Some important details like the number of negatives sampled from the memory bank or the number of update steps in each FL round are missing Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: “the MRI dataset” → a cardiac MRI dataset Related work: The reason why [4] is not applicable to the FL setting seems to be contrary to the proposed method using methods presented in [4]. I would regard the proposed method rather as an extension of [4] to FL by combining it with the memory bank of [10], which is fair. While [4] leverages the structural similarity across volumes, the proposed method also does this, just across clients. The difference to [4] could therefore be described more clearly (see above) Method: The term “local” can easily be confused with how it’s used in [4] (“local features”), maybe this confusion can be prevented by a note early in this chapter. In 3.2 the momentum encoder could be described more accurately, e.g. by stating that it consists of a moving average of weights across update iterations. In 3.2 concerning the feature exchange, it is not completely clear whether you only exchange features or also aggregate models using FedAvg/another algorithm during pre-training. Maybe add this information explicitly to avoid confusion and potentially include this in Fig 1. In 3.2, the reason why more negatives lead to ineffective learning is counter-intuitive and not clearly worked out. In CL in general, we observe that more negative samples usually lead to a harder pretext task and better representations for downstream applications. It is still unclear to me why this is not the case here. The only angle I can see on this, is all feature vectors coming from the memory bank are “fixed” as no gradients can be constructed for them, making the pushing/pulling in feature space harder. If this is what the authors want to convey, this could be stated more explicitly. In 3.3, the Global Structure Matching seems to be exactly the strategy G_D proposed in [4]. This should be referenced accordingly. General: Privacy and scalability aspects of exchanging the feature representations of all images is not discussed. As with exchanging models, there are probably attack surfaces and the “share all” approach may not scale to FL settings with, say, thousands of clients (although it is probably ok in most medical applications). This should be mentioned at least as future work to determine the practical feasibility of this approach. Experiments: Fine-tuning protocol: Is the model initialized with the final global model (assuming something like FedAvg. Is applied during pretext training) or last local checkpoints? Baselines: It’s great that several baselines are included even though this is one of the first works in this field. How were the hyperparameters tuned? Also, as I understand it the proposed approach communicates more (features) than the others, so this should be mentioned here. Since semi-supervised learning methods are direct competitors for the fine-tuning evaluation, it would be great to include a baseline from this field here, too, similar to ref. [4]. (minor) Performance of [4] (random init) on N=1,2,8 is significantly better compared with the reported random init here, even though for the local fine-tuning case, one would expect them to be in a similar range. I’m surprised that for this case, the random init in tab. 2 is so much worse than the proposed approach. If I see it correctly, since you are using an iid. split of the dataset, a local random init model, as well as a FedAvg version of this should be very close to the centralized baseline. Can you elaborate why your results are worse? Some hyperparameters are missing: Network architecture and especially FL parameters: How many update steps per round are taken? (Is momentum reset after each round?) Mention the interesting ablation study in the supplementary material! Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There is a clear connection to the setting investigated in this paper and the general conditions confronted with in current practice. MI data is usually scattered across sites which can’t easily share data due to privacy concerns, while at each site usually not all data contains expert annotations. This relevant setting combined with a sound methodology explained in a clear fashion make this a valuable contribution to the field. However, it seems that baselines could be tuned better in order to more confidently show potential gains by the proposed method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel federated learning technique by leveraging contrastive learning to handle lack of annotated data for a volumetric segmentation task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the problem of lack of annotated datasets in medical imaging and allow sites with limited clinical expertise to contribute to a federation for volumetric segmentation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Performance evaluation with appropriate metrics (Hausdorff, sensitivity, specificity) is missing. The authors seem to have missed some directly related literature that is widely accepted in the field: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1007/978-3-030-11723-8_9 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 GDPR in introduction Some grammar considerations: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My final criticism to the authors would be to consider incorporating (at least) pseudocode of their approach, and address the weaknesses I added above. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is novel and is of great interest to the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposes a contrastive learning scheme in FL. The application is segmentation in medical image analysis. Specifically, this work aims to tackle the problem limited data diversity on each client when applying contrastive learning to FL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strengths: This paper is well written and easy to follow. It tackles two important problems in our field: isolated data and limited annotation. The proposed methods are validated on a publicly available MRI data set. Many recent baseline methods are included in the comparison. The results demonstrate the effectiveness of the proposed methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weaknesses: The proposed method — sharing the structural local features (instead of sharing the raw data in centralized contrastive learning) makes sense. However, the method also poses a few problems. First, the communication cost should be high (O(N^2*T)) as all the clients need to share features with each other at each communication round. Especially in real applications, the number of clients can be a few hundred and distributed worldwide. Second, sharing the sample-wise middle features increases the model’s vulnerability to inversion attack. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most of the implementation details are provided. Although the network architecture is not listed, it does not affect understanding the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The negative samples can be way more than the positive samples at the end of the day. The author proposed to use a subset of the negative samples. In this case, if the sampling can be done before sharing, it will save more communication costs. It is not clear to me how to sample the remote positive. It will be interesting to test the method on non-iid data. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is intuitive and sounds correct to me. The authors conducted sufficient experiments to support their results. However, the method has obstacles for real deployment (pls see weakness). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. I would like to congratulate the authors for this outstanding paper! I agree with the reviewers that the combination of Contrastive Learning and Federated Learning addresses a realistic setup in the medical domain and the proposed method is well derived. There are some minor issues that were raised by the reviewers and I would like to encourage the authors to incorporate the feedback into the paper (e.g. missing description of hyperparameters, tuning strategies, discussion of communication cost and vulnerability to inversion attack). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Response to Reviewer 1: [Q1] Given the same number of annotated volumes for local fine-tuning, the reported result of the baseline (e.g. Random Init) is much lower than the results reported in [4]. [R1] Thanks for the comment. This is because the test set we used is larger than the one used in [4], which aims to evaluate the generalization performance of different approaches. More specifically, in [4], the test set includes 20 volumes. Different from this, our test set includes 40 volumes (i.e. 20 patients in total with 2 patients on each client). The 2x larger test set can cause lower performance. Besides, the performance difference can also be caused by different splits of training/test sets. 5-fold cross-validation was conducted to avoid biases of the splits. While the results of all approaches are seemingly lower, strict testing can validate the generalization performance of all models to meet realistic requirements. [Q2] Why [4] cannot be used in FL? [R2] In [4], for one image, the negative features are the features of other samples in the same batch, and gradients of the negative features need to be back-propagated through the model for learning. When applying [4] in FL setting and using negative features from other clients, either the raw images of other clients need to be present on the local client, or the gradients need to be back-propagated to other clients. The former option violates the privacy regulations, while the latter option results in prohibitive communication latency and cost due to strict batch-wise communication. [Q3] Describe the difference between the proposed approaches and [4] [R3] Both [4] and the proposed approaches leverage structural information in volumetric images to form positive pairs. The difference is that [4] focuses on centralized learning, while we focus on FL. More specifically, we aim to leverage cross-clients structural information, while avoiding raw data exchange. Directly applying [4] to FL is prohibitive, as discussed in [Q2]. To solve this problem, we use a separate memory bank, which is crucial to use the remote structural features since the memory bank can be treated as fixed values when computing the contrastive loss. In this way, by collecting remote features, we can leverage the structural information across clients. [Q4] More descriptions of the methods, proper references, and experimental setup. [R4] We will include these in the revised version of this paper. Response to Reviewer 2: [Q1] Evaluate the proposed approaches with more metrics. [R1] We will add evaluations on these metrics in the revised paper. [Q2] Add pseudo code of the proposed approaches, add proper references, and fix grammar issues. [R2] We will add these to the revised paper and polish the paper as a whole. Response to Reviewer 3: [Q1] The communication cost of sharing features is high. [R1] Thanks for the comment. First, the number of exchanged features is high in each round, but considering the small size of each feature (768-dim vector instead of large images) and the high-speed networks available to healthcare providers, feature exchange is a promising way to greatly improve the performance at the cost of increased communication. Second, we will explore modifications such as buffering features to reduce the communication cost. [Q2] The exchanged features increase the model’s vulnerability to inversion attacks. [R2] Inversion attack is an important concern to FL. Existing works (such as DeepObfuscator) can be employed for improved security. We will explore the performance when defenses are used. [Q3] Detailed model architecture and how to sample the remote positive are not described. [R3] We will add these to the revised paper. [Q4] Evaluate the method on non-iid data. [R4] FL on non-iid and fully annotated data is already a challenging task, and it is more challenging with fewer annotations, which may need a new paper to solve. We plan to address this challenging setting in future work. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yawen Wu, Dewen Zeng, Zhepeng Wang, Yiyu Shi, Jingtong Hu Abstract Supervised deep learning needs a large amount of labeled data to achieve high performance. However, in medical imaging analysis, each site may only have a limited amount of data and labels, which makes learning ineffective. Federated learning (FL) can help in this regard by learning a shared model while keeping training data local for privacy. Traditional FL requires fully-labeled data for training, which is inconvenient or sometimes infeasible to obtain due to high labeling cost and the requirement of expertise. Contrastive learning (CL), as a self-supervised learning approach, can effectively learn from unlabeled data to pre-train a neural network encoder, followed by fine-tuning for downstream tasks with limited annotations. However, when adopting CL in FL, the limited data diversity on each client makes federated contrastive learning (FCL) ineffective. In this work, we propose an FCL framework for volumetric medical image segmentation with limited annotations. More specifically, we exchange the features in the FCL pre-training process such that diverse contrastive data are provided to each site for effective local CL while keeping raw data private. Based on the exchanged features, global structural matching further leverages the structural similarity to align local features to the remote ones such that a unified feature space can be learned among different sites. Experiments on the MRI dataset show the proposed framework substantially improves the segmentation performance compared with state-of-the-art techniques. Link to paper https://doi.org/10.1007/978-3-030-87199-4_35 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Although federated learning allows training models on image data distributed over many hospitals, such image data often lacks annotations required to apply supervised federated learning. The authors investigate, as one of the first works in this field, how federated pre-training with contrastive self-supervised learning algorithms can help to train effective image segmentation models through fine-tuning. Their method assumes that it is possible to communicate the encoded feature representations of the images to all other clients participating in the federated learning. A state-of-the-art self-supervised learning algorithm is adapted to make use of the shared features via a memory bank and the method is compared to some baselines in the task of cardiac MRI segmentation. The experiments show that the proposed method consistently outperforms the baselines both in a local and federated fine-tuning setting. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Combining FL and CL is a novel and interesting approach, especially in the context of Medical Imaging, as such a federated setting with limited annotated data is representative of what is often encountered in practice. The authors choose to adapt the positive/negative sampling strategy proposed in [4] 3.2 for the FL setting by also making use of a memory bank as proposed in [10] and sharing feature vectors across clients in order to update the memory bank. This approach seems like a good choice well-suited for this FCL setting. Also, the authors describe their approach in a clear fashion, albeit lacking some details which would be important for improved reproducibility. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Concerning the baselines presented in the paper, it is questionable if they represent the state-of-the-art in federated semi-supervised learning. We note that this might be due to the novelty of the setting. However, when comparing e.g. the random init. results presented in the paper (conservative baseline) with the random init. results presented in [4], the results for the same amount of labeled training data seem significantly stronger in [4]. While this paper investigates a different setting, the presented results for the local fine-tuning case should be somewhat comparable since individual models are trained on the same number of labeled examples in isolation. For this reason, it’s somewhat surprising to see the significantly lower average performance across clients when compared to the result in [4]. Another weak point is the missing description of hyperparameter tuning strategies for all methods evaluated. Without a description of the tuning strategies, it’s hard to tell if the lower performance is due to a different tuning budget. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Clear description of the assumptions and the algorithm (only one detail not perfectly clear) Public datasets used Negative: Not all hyperparameters given Not described how hyperparameters were chosen and how sensitive to changes. How were baselines tuned? Some important details like the number of negatives sampled from the memory bank or the number of update steps in each FL round are missing Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: “the MRI dataset” → a cardiac MRI dataset Related work: The reason why [4] is not applicable to the FL setting seems to be contrary to the proposed method using methods presented in [4]. I would regard the proposed method rather as an extension of [4] to FL by combining it with the memory bank of [10], which is fair. While [4] leverages the structural similarity across volumes, the proposed method also does this, just across clients. The difference to [4] could therefore be described more clearly (see above) Method: The term “local” can easily be confused with how it’s used in [4] (“local features”), maybe this confusion can be prevented by a note early in this chapter. In 3.2 the momentum encoder could be described more accurately, e.g. by stating that it consists of a moving average of weights across update iterations. In 3.2 concerning the feature exchange, it is not completely clear whether you only exchange features or also aggregate models using FedAvg/another algorithm during pre-training. Maybe add this information explicitly to avoid confusion and potentially include this in Fig 1. In 3.2, the reason why more negatives lead to ineffective learning is counter-intuitive and not clearly worked out. In CL in general, we observe that more negative samples usually lead to a harder pretext task and better representations for downstream applications. It is still unclear to me why this is not the case here. The only angle I can see on this, is all feature vectors coming from the memory bank are “fixed” as no gradients can be constructed for them, making the pushing/pulling in feature space harder. If this is what the authors want to convey, this could be stated more explicitly. In 3.3, the Global Structure Matching seems to be exactly the strategy G_D proposed in [4]. This should be referenced accordingly. General: Privacy and scalability aspects of exchanging the feature representations of all images is not discussed. As with exchanging models, there are probably attack surfaces and the “share all” approach may not scale to FL settings with, say, thousands of clients (although it is probably ok in most medical applications). This should be mentioned at least as future work to determine the practical feasibility of this approach. Experiments: Fine-tuning protocol: Is the model initialized with the final global model (assuming something like FedAvg. Is applied during pretext training) or last local checkpoints? Baselines: It’s great that several baselines are included even though this is one of the first works in this field. How were the hyperparameters tuned? Also, as I understand it the proposed approach communicates more (features) than the others, so this should be mentioned here. Since semi-supervised learning methods are direct competitors for the fine-tuning evaluation, it would be great to include a baseline from this field here, too, similar to ref. [4]. (minor) Performance of [4] (random init) on N=1,2,8 is significantly better compared with the reported random init here, even though for the local fine-tuning case, one would expect them to be in a similar range. I’m surprised that for this case, the random init in tab. 2 is so much worse than the proposed approach. If I see it correctly, since you are using an iid. split of the dataset, a local random init model, as well as a FedAvg version of this should be very close to the centralized baseline. Can you elaborate why your results are worse? Some hyperparameters are missing: Network architecture and especially FL parameters: How many update steps per round are taken? (Is momentum reset after each round?) Mention the interesting ablation study in the supplementary material! Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There is a clear connection to the setting investigated in this paper and the general conditions confronted with in current practice. MI data is usually scattered across sites which can’t easily share data due to privacy concerns, while at each site usually not all data contains expert annotations. This relevant setting combined with a sound methodology explained in a clear fashion make this a valuable contribution to the field. However, it seems that baselines could be tuned better in order to more confidently show potential gains by the proposed method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel federated learning technique by leveraging contrastive learning to handle lack of annotated data for a volumetric segmentation task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the problem of lack of annotated datasets in medical imaging and allow sites with limited clinical expertise to contribute to a federation for volumetric segmentation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Performance evaluation with appropriate metrics (Hausdorff, sensitivity, specificity) is missing. The authors seem to have missed some directly related literature that is widely accepted in the field: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1007/978-3-030-11723-8_9 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 GDPR in introduction Some grammar considerations: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My final criticism to the authors would be to consider incorporating (at least) pseudocode of their approach, and address the weaknesses I added above. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is novel and is of great interest to the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposes a contrastive learning scheme in FL. The application is segmentation in medical image analysis. Specifically, this work aims to tackle the problem limited data diversity on each client when applying contrastive learning to FL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strengths: This paper is well written and easy to follow. It tackles two important problems in our field: isolated data and limited annotation. The proposed methods are validated on a publicly available MRI data set. Many recent baseline methods are included in the comparison. The results demonstrate the effectiveness of the proposed methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weaknesses: The proposed method — sharing the structural local features (instead of sharing the raw data in centralized contrastive learning) makes sense. However, the method also poses a few problems. First, the communication cost should be high (O(N^2*T)) as all the clients need to share features with each other at each communication round. Especially in real applications, the number of clients can be a few hundred and distributed worldwide. Second, sharing the sample-wise middle features increases the model’s vulnerability to inversion attack. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most of the implementation details are provided. Although the network architecture is not listed, it does not affect understanding the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The negative samples can be way more than the positive samples at the end of the day. The author proposed to use a subset of the negative samples. In this case, if the sampling can be done before sharing, it will save more communication costs. It is not clear to me how to sample the remote positive. It will be interesting to test the method on non-iid data. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is intuitive and sounds correct to me. The authors conducted sufficient experiments to support their results. However, the method has obstacles for real deployment (pls see weakness). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. I would like to congratulate the authors for this outstanding paper! I agree with the reviewers that the combination of Contrastive Learning and Federated Learning addresses a realistic setup in the medical domain and the proposed method is well derived. There are some minor issues that were raised by the reviewers and I would like to encourage the authors to incorporate the feedback into the paper (e.g. missing description of hyperparameters, tuning strategies, discussion of communication cost and vulnerability to inversion attack). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Response to Reviewer 1: [Q1] Given the same number of annotated volumes for local fine-tuning, the reported result of the baseline (e.g. Random Init) is much lower than the results reported in [4]. [R1] Thanks for the comment. This is because the test set we used is larger than the one used in [4], which aims to evaluate the generalization performance of different approaches. More specifically, in [4], the test set includes 20 volumes. Different from this, our test set includes 40 volumes (i.e. 20 patients in total with 2 patients on each client). The 2x larger test set can cause lower performance. Besides, the performance difference can also be caused by different splits of training/test sets. 5-fold cross-validation was conducted to avoid biases of the splits. While the results of all approaches are seemingly lower, strict testing can validate the generalization performance of all models to meet realistic requirements. [Q2] Why [4] cannot be used in FL? [R2] In [4], for one image, the negative features are the features of other samples in the same batch, and gradients of the negative features need to be back-propagated through the model for learning. When applying [4] in FL setting and using negative features from other clients, either the raw images of other clients need to be present on the local client, or the gradients need to be back-propagated to other clients. The former option violates the privacy regulations, while the latter option results in prohibitive communication latency and cost due to strict batch-wise communication. [Q3] Describe the difference between the proposed approaches and [4] [R3] Both [4] and the proposed approaches leverage structural information in volumetric images to form positive pairs. The difference is that [4] focuses on centralized learning, while we focus on FL. More specifically, we aim to leverage cross-clients structural information, while avoiding raw data exchange. Directly applying [4] to FL is prohibitive, as discussed in [Q2]. To solve this problem, we use a separate memory bank, which is crucial to use the remote structural features since the memory bank can be treated as fixed values when computing the contrastive loss. In this way, by collecting remote features, we can leverage the structural information across clients. [Q4] More descriptions of the methods, proper references, and experimental setup. [R4] We will include these in the revised version of this paper. Response to Reviewer 2: [Q1] Evaluate the proposed approaches with more metrics. [R1] We will add evaluations on these metrics in the revised paper. [Q2] Add pseudo code of the proposed approaches, add proper references, and fix grammar issues. [R2] We will add these to the revised paper and polish the paper as a whole. Response to Reviewer 3: [Q1] The communication cost of sharing features is high. [R1] Thanks for the comment. First, the number of exchanged features is high in each round, but considering the small size of each feature (768-dim vector instead of large images) and the high-speed networks available to healthcare providers, feature exchange is a promising way to greatly improve the performance at the cost of increased communication. Second, we will explore modifications such as buffering features to reduce the communication cost. [Q2] The exchanged features increase the model’s vulnerability to inversion attacks. [R2] Inversion attack is an important concern to FL. Existing works (such as DeepObfuscator) can be employed for improved security. We will explore the performance when defenses are used. [Q3] Detailed model architecture and how to sample the remote positive are not described. [R3] We will add these to the revised paper. [Q4] Evaluate the method on non-iid data. [R4] FL on non-iid and fully annotated data is already a challenging task, and it is more challenging with fewer annotations, which may need a new paper to solve. We plan to address this challenging setting in future work. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0334/12/31/Paper2051" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0334/12/31/Paper2051" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0334-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Federated Contrastive Learning for Volumetric Medical Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0334/12/31/Paper2051"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0334/12/31/Paper2051","headline":"Federated Contrastive Learning for Volumetric Medical Image Segmentation","dateModified":"0335-01-02T00:00:00-05:17","datePublished":"0334-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yawen Wu, Dewen Zeng, Zhepeng Wang, Yiyu Shi, Jingtong Hu Abstract Supervised deep learning needs a large amount of labeled data to achieve high performance. However, in medical imaging analysis, each site may only have a limited amount of data and labels, which makes learning ineffective. Federated learning (FL) can help in this regard by learning a shared model while keeping training data local for privacy. Traditional FL requires fully-labeled data for training, which is inconvenient or sometimes infeasible to obtain due to high labeling cost and the requirement of expertise. Contrastive learning (CL), as a self-supervised learning approach, can effectively learn from unlabeled data to pre-train a neural network encoder, followed by fine-tuning for downstream tasks with limited annotations. However, when adopting CL in FL, the limited data diversity on each client makes federated contrastive learning (FCL) ineffective. In this work, we propose an FCL framework for volumetric medical image segmentation with limited annotations. More specifically, we exchange the features in the FCL pre-training process such that diverse contrastive data are provided to each site for effective local CL while keeping raw data private. Based on the exchanged features, global structural matching further leverages the structural similarity to align local features to the remote ones such that a unified feature space can be learned among different sites. Experiments on the MRI dataset show the proposed framework substantially improves the segmentation performance compared with state-of-the-art techniques. Link to paper https://doi.org/10.1007/978-3-030-87199-4_35 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper Although federated learning allows training models on image data distributed over many hospitals, such image data often lacks annotations required to apply supervised federated learning. The authors investigate, as one of the first works in this field, how federated pre-training with contrastive self-supervised learning algorithms can help to train effective image segmentation models through fine-tuning. Their method assumes that it is possible to communicate the encoded feature representations of the images to all other clients participating in the federated learning. A state-of-the-art self-supervised learning algorithm is adapted to make use of the shared features via a memory bank and the method is compared to some baselines in the task of cardiac MRI segmentation. The experiments show that the proposed method consistently outperforms the baselines both in a local and federated fine-tuning setting. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Combining FL and CL is a novel and interesting approach, especially in the context of Medical Imaging, as such a federated setting with limited annotated data is representative of what is often encountered in practice. The authors choose to adapt the positive/negative sampling strategy proposed in [4] 3.2 for the FL setting by also making use of a memory bank as proposed in [10] and sharing feature vectors across clients in order to update the memory bank. This approach seems like a good choice well-suited for this FCL setting. Also, the authors describe their approach in a clear fashion, albeit lacking some details which would be important for improved reproducibility. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Concerning the baselines presented in the paper, it is questionable if they represent the state-of-the-art in federated semi-supervised learning. We note that this might be due to the novelty of the setting. However, when comparing e.g. the random init. results presented in the paper (conservative baseline) with the random init. results presented in [4], the results for the same amount of labeled training data seem significantly stronger in [4]. While this paper investigates a different setting, the presented results for the local fine-tuning case should be somewhat comparable since individual models are trained on the same number of labeled examples in isolation. For this reason, it’s somewhat surprising to see the significantly lower average performance across clients when compared to the result in [4]. Another weak point is the missing description of hyperparameter tuning strategies for all methods evaluated. Without a description of the tuning strategies, it’s hard to tell if the lower performance is due to a different tuning budget. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Positive: Clear description of the assumptions and the algorithm (only one detail not perfectly clear) Public datasets used Negative: Not all hyperparameters given Not described how hyperparameters were chosen and how sensitive to changes. How were baselines tuned? Some important details like the number of negatives sampled from the memory bank or the number of update steps in each FL round are missing Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Abstract: “the MRI dataset” → a cardiac MRI dataset Related work: The reason why [4] is not applicable to the FL setting seems to be contrary to the proposed method using methods presented in [4]. I would regard the proposed method rather as an extension of [4] to FL by combining it with the memory bank of [10], which is fair. While [4] leverages the structural similarity across volumes, the proposed method also does this, just across clients. The difference to [4] could therefore be described more clearly (see above) Method: The term “local” can easily be confused with how it’s used in [4] (“local features”), maybe this confusion can be prevented by a note early in this chapter. In 3.2 the momentum encoder could be described more accurately, e.g. by stating that it consists of a moving average of weights across update iterations. In 3.2 concerning the feature exchange, it is not completely clear whether you only exchange features or also aggregate models using FedAvg/another algorithm during pre-training. Maybe add this information explicitly to avoid confusion and potentially include this in Fig 1. In 3.2, the reason why more negatives lead to ineffective learning is counter-intuitive and not clearly worked out. In CL in general, we observe that more negative samples usually lead to a harder pretext task and better representations for downstream applications. It is still unclear to me why this is not the case here. The only angle I can see on this, is all feature vectors coming from the memory bank are “fixed” as no gradients can be constructed for them, making the pushing/pulling in feature space harder. If this is what the authors want to convey, this could be stated more explicitly. In 3.3, the Global Structure Matching seems to be exactly the strategy G_D proposed in [4]. This should be referenced accordingly. General: Privacy and scalability aspects of exchanging the feature representations of all images is not discussed. As with exchanging models, there are probably attack surfaces and the “share all” approach may not scale to FL settings with, say, thousands of clients (although it is probably ok in most medical applications). This should be mentioned at least as future work to determine the practical feasibility of this approach. Experiments: Fine-tuning protocol: Is the model initialized with the final global model (assuming something like FedAvg. Is applied during pretext training) or last local checkpoints? Baselines: It’s great that several baselines are included even though this is one of the first works in this field. How were the hyperparameters tuned? Also, as I understand it the proposed approach communicates more (features) than the others, so this should be mentioned here. Since semi-supervised learning methods are direct competitors for the fine-tuning evaluation, it would be great to include a baseline from this field here, too, similar to ref. [4]. (minor) Performance of [4] (random init) on N=1,2,8 is significantly better compared with the reported random init here, even though for the local fine-tuning case, one would expect them to be in a similar range. I’m surprised that for this case, the random init in tab. 2 is so much worse than the proposed approach. If I see it correctly, since you are using an iid. split of the dataset, a local random init model, as well as a FedAvg version of this should be very close to the centralized baseline. Can you elaborate why your results are worse? Some hyperparameters are missing: Network architecture and especially FL parameters: How many update steps per round are taken? (Is momentum reset after each round?) Mention the interesting ablation study in the supplementary material! Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? There is a clear connection to the setting investigated in this paper and the general conditions confronted with in current practice. MI data is usually scattered across sites which can’t easily share data due to privacy concerns, while at each site usually not all data contains expert annotations. This relevant setting combined with a sound methodology explained in a clear fashion make this a valuable contribution to the field. However, it seems that baselines could be tuned better in order to more confidently show potential gains by the proposed method. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper This paper proposes a novel federated learning technique by leveraging contrastive learning to handle lack of annotated data for a volumetric segmentation task. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method could adequately address the problem of lack of annotated datasets in medical imaging and allow sites with limited clinical expertise to contribute to a federation for volumetric segmentation. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Performance evaluation with appropriate metrics (Hausdorff, sensitivity, specificity) is missing. The authors seem to have missed some directly related literature that is widely accepted in the field: https://doi.org/10.1038/s41746-020-00323-1 https://doi.org/10.1007/978-3-030-11723-8_9 https://doi.org/10.1038/s41598-020-69250-1 https://doi.org/10.1038/s41746-021-00431-6 GDPR in introduction Some grammar considerations: Abstract “Nowadays” &gt; “These days” Introduction “intelligent healthcare system” &gt; “intelligent healthcare systems” “parameters in element-wise” &gt; “parameters in an element-wise manner” Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method and datasets being used are described in detail, but without the source code reproducibility is a concern. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My final criticism to the authors would be to consider incorporating (at least) pseudocode of their approach, and address the weaknesses I added above. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The method is novel and is of great interest to the community. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Very confident Review #3 Please describe the contribution of the paper This paper proposes a contrastive learning scheme in FL. The application is segmentation in medical image analysis. Specifically, this work aims to tackle the problem limited data diversity on each client when applying contrastive learning to FL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Strengths: This paper is well written and easy to follow. It tackles two important problems in our field: isolated data and limited annotation. The proposed methods are validated on a publicly available MRI data set. Many recent baseline methods are included in the comparison. The results demonstrate the effectiveness of the proposed methods. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Weaknesses: The proposed method — sharing the structural local features (instead of sharing the raw data in centralized contrastive learning) makes sense. However, the method also poses a few problems. First, the communication cost should be high (O(N^2*T)) as all the clients need to share features with each other at each communication round. Especially in real applications, the number of clients can be a few hundred and distributed worldwide. Second, sharing the sample-wise middle features increases the model’s vulnerability to inversion attack. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Most of the implementation details are provided. Although the network architecture is not listed, it does not affect understanding the paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The negative samples can be way more than the positive samples at the end of the day. The author proposed to use a subset of the negative samples. In this case, if the sampling can be done before sharing, it will save more communication costs. It is not clear to me how to sample the remote positive. It will be interesting to test the method on non-iid data. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The proposed method is intuitive and sounds correct to me. The authors conducted sufficient experiments to support their results. However, the method has obstacles for real deployment (pls see weakness). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. I would like to congratulate the authors for this outstanding paper! I agree with the reviewers that the combination of Contrastive Learning and Federated Learning addresses a realistic setup in the medical domain and the proposed method is well derived. There are some minor issues that were raised by the reviewers and I would like to encourage the authors to incorporate the feedback into the paper (e.g. missing description of hyperparameters, tuning strategies, discussion of communication cost and vulnerability to inversion attack). What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 1 Author Feedback Response to Reviewer 1: [Q1] Given the same number of annotated volumes for local fine-tuning, the reported result of the baseline (e.g. Random Init) is much lower than the results reported in [4]. [R1] Thanks for the comment. This is because the test set we used is larger than the one used in [4], which aims to evaluate the generalization performance of different approaches. More specifically, in [4], the test set includes 20 volumes. Different from this, our test set includes 40 volumes (i.e. 20 patients in total with 2 patients on each client). The 2x larger test set can cause lower performance. Besides, the performance difference can also be caused by different splits of training/test sets. 5-fold cross-validation was conducted to avoid biases of the splits. While the results of all approaches are seemingly lower, strict testing can validate the generalization performance of all models to meet realistic requirements. [Q2] Why [4] cannot be used in FL? [R2] In [4], for one image, the negative features are the features of other samples in the same batch, and gradients of the negative features need to be back-propagated through the model for learning. When applying [4] in FL setting and using negative features from other clients, either the raw images of other clients need to be present on the local client, or the gradients need to be back-propagated to other clients. The former option violates the privacy regulations, while the latter option results in prohibitive communication latency and cost due to strict batch-wise communication. [Q3] Describe the difference between the proposed approaches and [4] [R3] Both [4] and the proposed approaches leverage structural information in volumetric images to form positive pairs. The difference is that [4] focuses on centralized learning, while we focus on FL. More specifically, we aim to leverage cross-clients structural information, while avoiding raw data exchange. Directly applying [4] to FL is prohibitive, as discussed in [Q2]. To solve this problem, we use a separate memory bank, which is crucial to use the remote structural features since the memory bank can be treated as fixed values when computing the contrastive loss. In this way, by collecting remote features, we can leverage the structural information across clients. [Q4] More descriptions of the methods, proper references, and experimental setup. [R4] We will include these in the revised version of this paper. Response to Reviewer 2: [Q1] Evaluate the proposed approaches with more metrics. [R1] We will add evaluations on these metrics in the revised paper. [Q2] Add pseudo code of the proposed approaches, add proper references, and fix grammar issues. [R2] We will add these to the revised paper and polish the paper as a whole. Response to Reviewer 3: [Q1] The communication cost of sharing features is high. [R1] Thanks for the comment. First, the number of exchanged features is high in each round, but considering the small size of each feature (768-dim vector instead of large images) and the high-speed networks available to healthcare providers, feature exchange is a promising way to greatly improve the performance at the cost of increased communication. Second, we will explore modifications such as buffering features to reduce the communication cost. [Q2] The exchanged features increase the model’s vulnerability to inversion attacks. [R2] Inversion attack is an important concern to FL. Existing works (such as DeepObfuscator) can be employed for improved security. We will explore the performance when defenses are used. [Q3] Detailed model architecture and how to sample the remote positive are not described. [R3] We will add these to the revised paper. [Q4] Evaluate the method on non-iid data. [R4] FL on non-iid and fully annotated data is already a challenging task, and it is more challenging with fewer annotations, which may need a new paper to solve. We plan to address this challenging setting in future work. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Wu, Yawen,Zeng, Dewen,Wang, Zhepeng,Shi, Yiyu,Hu, Jingtong" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Federated Contrastive Learning for Volumetric Medical Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Wu, Yawen"
+        class="post-tags">
+        Wu, Yawen
+      </a> |  
+      
+      <a href="kittywong/tags#Zeng, Dewen"
+        class="post-tags">
+        Zeng, Dewen
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Zhepeng"
+        class="post-tags">
+        Wang, Zhepeng
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Yiyu"
+        class="post-tags">
+        Shi, Yiyu
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Jingtong"
+        class="post-tags">
+        Hu, Jingtong
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yawen Wu, Dewen Zeng, Zhepeng Wang, Yiyu Shi, Jingtong Hu
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Supervised deep learning needs a large amount of labeled data to achieve high performance. However, in medical imaging analysis, each site may only have a limited amount of data and labels, which makes learning ineffective. Federated learning (FL) can help in this regard by learning a shared model while keeping training data local for privacy. Traditional FL requires fully-labeled data for training, which is inconvenient or sometimes infeasible to obtain due to high labeling cost and the requirement of expertise. Contrastive learning (CL), as a self-supervised learning approach, can effectively learn from unlabeled data to pre-train a neural network encoder, followed by fine-tuning for downstream tasks with limited annotations. However, when adopting CL in FL, the limited data diversity on each client makes federated contrastive learning (FCL) ineffective. In this work, we propose an FCL framework for volumetric medical image segmentation with limited annotations. More specifically, we exchange the features in the FCL pre-training process such that diverse contrastive data are provided to each site for effective local CL while keeping raw data private. Based on the exchanged features, global structural matching further leverages the structural similarity to align local features to the remote ones such that a unified feature space can be learned among different sites. Experiments on the MRI dataset show the proposed framework substantially improves the segmentation performance compared with state-of-the-art techniques.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_35">https://doi.org/10.1007/978-3-030-87199-4_35</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Although federated learning allows training models on image data distributed over many hospitals, such image data often lacks annotations required to apply supervised federated learning. The authors investigate, as one of the first works in this field, how federated pre-training with contrastive self-supervised learning algorithms can help to train effective image segmentation models through fine-tuning. Their method assumes that it is possible to communicate the encoded feature representations of the images to all other clients participating in the federated learning. A state-of-the-art self-supervised learning algorithm is adapted to make use of the shared features via a memory bank and the method is compared to some baselines in the task of cardiac MRI segmentation. The experiments show that the proposed method consistently outperforms the baselines both in a local and federated fine-tuning setting.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Combining FL and CL is a novel and interesting approach, especially in the context of Medical Imaging, as such a federated setting with limited annotated data is representative of what is often encountered in practice. The authors choose to adapt the positive/negative sampling strategy proposed in [4] 3.2 for the FL setting by also making use of a memory bank as proposed in [10] and sharing feature vectors across clients in order to update the memory bank. This approach seems like a good choice well-suited for this FCL setting. Also, the authors describe their approach in a clear fashion, albeit lacking some details which would be important for improved reproducibility.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Concerning the baselines presented in the paper, it is questionable if they represent the state-of-the-art in federated semi-supervised learning. We note that this might be due to the novelty of the setting. However, when comparing e.g. the random init. results presented in the paper (conservative baseline) with the random init. results presented in [4], the results for the same amount of labeled training data seem significantly stronger in [4]. While this paper investigates a different setting, the presented results for the local fine-tuning case should be somewhat comparable since individual models are trained on the same number of labeled examples in isolation. For this reason, it’s somewhat surprising to see the significantly lower average performance across clients when compared to the result in [4].
+Another weak point is the missing description of hyperparameter tuning strategies for all methods evaluated. Without a description of the tuning strategies, it’s hard to tell if the lower performance is due to a different tuning budget.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Positive:</p>
+      <ul>
+        <li>Clear description of the assumptions and the algorithm (only one detail not perfectly clear)</li>
+        <li>Public datasets used</li>
+      </ul>
+
+      <p>Negative:</p>
+      <ul>
+        <li>Not all hyperparameters given</li>
+        <li>Not described how hyperparameters were chosen and how sensitive to changes. How were baselines tuned?</li>
+        <li>Some important details like the number of negatives sampled from the memory bank or the number of update steps in each FL round are missing</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Abstract:</p>
+      <ul>
+        <li>“the MRI dataset” → a cardiac MRI dataset</li>
+      </ul>
+
+      <p>Related work:</p>
+      <ul>
+        <li>The reason why [4] is not applicable to the FL setting seems to be contrary to the proposed method using methods presented in [4]. I would regard the proposed method rather as an extension of [4] to FL by combining it with the memory bank of [10], which is fair. While [4] leverages the structural similarity across volumes, the proposed method also does this, just across clients.</li>
+        <li>The difference to [4] could therefore be described more clearly (see above)</li>
+      </ul>
+
+      <p>Method:</p>
+      <ul>
+        <li>The term “local” can easily be confused with how it’s used in [4] (“local features”), maybe this confusion can be prevented by a note early in this chapter.</li>
+        <li>In 3.2 the momentum encoder could be described more accurately, e.g. by stating that it consists of a moving average of weights across update iterations.</li>
+        <li>In 3.2 concerning the feature exchange, it is not completely clear whether you only exchange features or also aggregate models using FedAvg/another algorithm during pre-training. Maybe add this information explicitly to avoid confusion and potentially include this in Fig 1.</li>
+        <li>In 3.2, the reason why more negatives lead to ineffective learning is counter-intuitive and not clearly worked out. In CL in general, we observe that more negative samples usually lead to a harder pretext task and better representations for downstream applications. It is still unclear to me why this is not the case here. The only angle I can see on this, is all feature vectors coming from the memory bank are “fixed” as no gradients can be constructed for them, making the pushing/pulling in feature space harder. If this is what the authors want to convey, this could be stated more explicitly.</li>
+        <li>In 3.3, the Global Structure Matching seems to be exactly the strategy G_D proposed in [4]. This should be referenced accordingly.</li>
+        <li>General: Privacy and scalability aspects of exchanging the feature representations of all images is not discussed. As with exchanging models, there are probably attack surfaces and the “share all” approach may not scale to FL settings with, say, thousands of clients (although it is probably ok in most medical applications). This should be mentioned at least as future work to determine the practical feasibility of this approach.</li>
+      </ul>
+
+      <p>Experiments:</p>
+      <ul>
+        <li>Fine-tuning protocol: Is the model initialized with the final global model (assuming something like FedAvg. Is applied during pretext training) or last local checkpoints?</li>
+        <li>Baselines: It’s great that several baselines are included even though this is one of the first works in this field. How were the hyperparameters tuned? Also, as I understand it the proposed approach communicates more (features) than the others, so this should be mentioned here. Since semi-supervised learning methods are direct competitors for the fine-tuning evaluation, it would be great to include a baseline from this field here, too, similar to ref. [4]. (minor)</li>
+        <li>Performance of [4] (random init) on N=1,2,8 is significantly better compared with the reported random init here, even though for the local fine-tuning case, one would expect them to be in a similar range. I’m surprised that for this case, the random init in tab. 2 is so much worse than the proposed approach. If I see it correctly, since you are using an iid. split of the dataset, a local random init model, as well as a FedAvg version of this should be very close to the centralized baseline. Can you elaborate why your results are worse?</li>
+        <li>Some hyperparameters are missing: Network architecture and especially FL parameters: How many update steps per round are taken? (Is momentum reset after each round?)</li>
+        <li>Mention the interesting ablation study in the supplementary material!</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>There is a clear connection to the setting investigated in this paper and the general conditions confronted with in current practice. MI data is usually scattered across sites which can’t easily share data due to privacy concerns, while at each site usually not all data contains expert annotations. This relevant setting combined with a sound methodology explained in a clear fashion make this a valuable contribution to the field. However, it seems that baselines could be tuned better in order to more confidently show potential gains by the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a novel federated learning technique by leveraging contrastive learning to handle lack of annotated data for a volumetric segmentation task.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The method could adequately address the problem of lack of annotated datasets in medical imaging and allow sites with limited clinical expertise to contribute to a federation for volumetric segmentation.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>Performance evaluation with appropriate metrics (Hausdorff, sensitivity, specificity) is missing.</li>
+      </ul>
+
+      <p>The authors seem to have missed some directly related literature that is widely accepted in the field:</p>
+      <ul>
+        <li>https://doi.org/10.1038/s41746-020-00323-1</li>
+        <li>https://doi.org/10.1007/978-3-030-11723-8_9</li>
+        <li>https://doi.org/10.1038/s41598-020-69250-1</li>
+        <li>https://doi.org/10.1038/s41746-021-00431-6</li>
+        <li>GDPR in introduction</li>
+      </ul>
+
+      <p>Some grammar considerations:</p>
+      <ul>
+        <li>Abstract
+          <ul>
+            <li>“Nowadays” &gt; “These days”</li>
+          </ul>
+        </li>
+        <li>Introduction
+          <ul>
+            <li>“intelligent healthcare system” &gt; “intelligent healthcare systems”</li>
+            <li>“parameters in element-wise” &gt; “parameters in an element-wise manner”</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method and datasets being used are described in detail, but without the source code reproducibility is a concern.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>My final criticism to the authors would be to consider incorporating (at least) pseudocode of their approach, and address the weaknesses I added above.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The method is novel and is of great interest to the community.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper proposes a contrastive learning scheme in FL. The application is segmentation in medical image analysis. Specifically, this work aims to tackle the problem limited data diversity on each client when applying contrastive learning to FL.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>Strengths: This paper is well written and easy to follow. It tackles two important problems in our field: isolated data and limited annotation. The proposed methods are validated on a publicly available MRI data set. Many recent baseline methods are included in the comparison. The results demonstrate the effectiveness of the proposed methods.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>Weaknesses: The proposed method — sharing the structural local features (instead of sharing the raw data in centralized contrastive learning) makes sense. However, the method also poses a few problems. First, the communication cost should be high (O(N^2*T)) as all the clients need to share features with each other at each communication round. Especially in real applications, the number of clients can be a few hundred and distributed worldwide.  Second, sharing the sample-wise middle features increases the model’s vulnerability to inversion attack.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Most of the implementation details are provided. Although the network architecture is not listed, it does not affect understanding the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The negative samples can be way more than the positive samples at the end of the day.  The author proposed to use a subset of the negative samples. In this case, if the sampling can be done before sharing, it will save more communication costs.</p>
+
+      <p>It is not clear to me how to sample the remote positive.</p>
+
+      <p>It will be interesting to test the method on non-iid data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The proposed method is intuitive and sounds correct to me. The authors conducted sufficient experiments to support their results. However, the method has obstacles for real deployment (pls see weakness).</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>I would like to congratulate the authors for this outstanding paper! I agree with the reviewers that the combination of Contrastive Learning and Federated Learning addresses a realistic setup in the medical domain and the proposed method is well derived. There are some minor issues that were raised by the reviewers and I would like to encourage the authors to incorporate the feedback into the paper (e.g. missing description of hyperparameters, tuning strategies, discussion of communication cost and vulnerability to inversion attack).</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>Response to Reviewer 1:
+[Q1]
+Given the same number of annotated volumes for local fine-tuning, the reported result of the baseline (e.g. Random Init) is much lower than the results reported in [4].
+[R1]
+Thanks for the comment. This is because the test set we used is larger than the one used in [4], which aims to evaluate the generalization performance of different approaches. More specifically, in [4], the test set includes 20 volumes. Different from this,  our test set includes 40 volumes (i.e. 20 patients in total with 2 patients on each client). The 2x larger test set can cause lower performance. Besides, the performance difference can also be caused by different splits of training/test sets. 5-fold cross-validation was conducted to avoid biases of the splits. While the results of all approaches are seemingly lower, strict testing can validate the generalization performance of all models to meet realistic requirements.</p>
+
+  <p>[Q2]
+Why [4] cannot be used in FL?
+[R2]
+In [4], for one image, the negative features are the features of other samples in the same batch, and gradients of the negative features need to be back-propagated through the model for learning. When applying [4] in FL setting and using negative features from other clients, either the raw images of other clients need to be present on the local client, or the gradients need to be back-propagated to other clients. The former option violates the privacy regulations, while the latter option results in prohibitive communication latency and cost due to strict batch-wise communication.</p>
+
+  <p>[Q3]
+Describe the difference between the proposed approaches and [4]
+[R3] 
+Both [4] and the proposed approaches leverage structural information in volumetric images to form positive pairs. The difference is that [4] focuses on centralized learning, while we focus on FL. More specifically, we aim to leverage cross-clients structural information, while avoiding raw data exchange. Directly applying [4] to FL is prohibitive, as discussed in [Q2]. To solve this problem, we use a separate memory bank, which is crucial to use the remote structural features since the memory bank can be treated as fixed values when computing the contrastive loss. In this way, by collecting remote features, we can leverage the structural information across clients.</p>
+
+  <p>[Q4] 
+More descriptions of the methods, proper references, and experimental setup.
+[R4]
+We will include these in the revised version of this paper.</p>
+
+  <p>Response to Reviewer 2:
+[Q1]
+Evaluate the proposed approaches with more metrics.
+[R1]
+We will add evaluations on these metrics in the revised paper.</p>
+
+  <p>[Q2]
+Add pseudo code of the proposed approaches, add proper references, and fix grammar issues.
+[R2]
+We will add these to the revised paper and polish the paper as a whole.</p>
+
+  <p>Response to Reviewer 3:
+[Q1]
+The communication cost of sharing features is high.
+[R1]
+Thanks for the comment. First, the number of exchanged features is high in each round, but considering the small size of each feature (768-dim vector instead of large images) and the high-speed networks available to healthcare providers, feature exchange is a promising way to greatly improve the performance at the cost of increased communication. Second, we will explore modifications such as buffering features to reduce the communication cost.</p>
+
+  <p>[Q2]
+The exchanged features increase the model’s vulnerability to inversion attacks.
+[R2]
+Inversion attack is an important concern to FL. Existing works (such as DeepObfuscator) can be employed for improved security. We will explore the performance when defenses are used.</p>
+
+  <p>[Q3]
+Detailed model architecture and how to sample the remote positive are not described.
+[R3]
+We will add these to the revised paper.</p>
+
+  <p>[Q4]
+Evaluate the method on non-iid data.
+[R4]
+FL on non-iid and fully annotated data is already a challenging task, and it is more challenging with fewer annotations, which may need a new paper to solve. We plan to address this challenging setting in future work.</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0334-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0335-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Self-supervised learning"
+        class="post-category">
+        Machine Learning - Self-supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Semi-supervised learning"
+        class="post-category">
+        Machine Learning - Semi-supervised learning
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Wu, Yawen"
+        class="post-category">
+        Wu, Yawen
+      </a> |  
+      
+      <a href="kittywong/tags#Zeng, Dewen"
+        class="post-category">
+        Zeng, Dewen
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Zhepeng"
+        class="post-category">
+        Wang, Zhepeng
+      </a> |  
+      
+      <a href="kittywong/tags#Shi, Yiyu"
+        class="post-category">
+        Shi, Yiyu
+      </a> |  
+      
+      <a href="kittywong/tags#Hu, Jingtong"
+        class="post-category">
+        Hu, Jingtong
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0335/12/31/Paper2060">
+          Federated Contrastive Learning for Decentralized Unlabeled Medical Images
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0333/12/31/Paper1531">
+          Federated Whole Prostate Segmentation in MRI with Personalized Neural Architectures
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

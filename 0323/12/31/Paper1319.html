@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Fully Test-time Adaptation for Image Segmentation | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Fully Test-time Adaptation for Image Segmentation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Minhao Hu, Tao Song, Yujun Gu, Xiangde Luo, Jieneng Chen, Yinan Chen, Ya Zhang, Shaoting Zhang Abstract When adopting a model from the source domain to the target domain, its performance usually degrades due to the domain shift problem. In clinical practice, the source data usually cannot be accessed during adaptation for privacy policy and the label for the target domain is in shortage because of the high cost of professional labeling. Therefore, it is worth considering how to efficiently adopt a pre-trained model with only unlabeled data from the target domain. In this paper, we propose a novel fully test-time unsupervised adaptation method for image segmentation based on Regional Nuclear-norm (RN) and Contour Regularization (CR). The RN loss is specially designed for segmentation tasks to efficiently improve discriminability and diversity of prediction. The CR loss constrains the continuity and connectivity to enhance the relevance between pixels and their neighbors. Instead of retraining all parameters, we modify only the parameters in batch normalization layers with only a few epochs. We demonstrate the effectiveness and efficiency of the proposed method in the pancreas and liver segmentation dataset from the Medical Segmentation Decathlon and CHAOS challenge. Link to paper https://doi.org/10.1007/978-3-030-87199-4_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A method is proposed for unsupervised domain adaptation for image segmentation, using only unlabeled target domain data (that is, without access to source domain data during the adaptation). The adaptation is driven by a combination of two losses that implicitly define a prior on the predicted labels. The first loss encourages certain and diverse (across pixels in the test image) labels, and the second loss encourages smooth labels. The use of these losses for network adaptation based on only target domain images is novel (to the best of my knowledge) and the validation shows promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The definition of label smoothness as range of predicted probabilities in the neighborhood is novel (as per my knowledge) and quite interesting. Further, the computation of the range using max-pooling is cool too! Interesting strategy to divide the pancreas dataset into source and target domains based on intensity statistics. Very impressive performance improvement from the baseline (no adaptation) for both datasets. Acknowledgement that the method does not work very well on large domain shifts such as from CT to MRI. This helps the readers understand the method better and it is great to see a paper acknowledging a limitation. Excellent visualization of quantitative results in figure 3. (I will definitely use something similar in my own work!). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Arguably, using simple geometric and intensity data augmentation should be included in the baseline as it is simple to implement, adds little training overhead and known to substantial help in domain shift issues (“Generalizing deep learning for medical image segmentation to unseen domains via deep stacked transformation.” IEEE TMI 2020). The fact that no data augmentation was used in any of the experiments makes it hard to judge the domain shift in the datasets used in the experiments, and to see if the proposed method would have added benefit over simple data augmentation techniques. Unclear writing - especially while motivating the nuclear norm maximization loss and while describing the contour regularization loss. Lack of qualitative results makes it hard to understand what kind of segmentation errors are corrected by the adaptation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The validation is done using publicly available datasets, and the authors have promised to make the implementation publicly available. Sufficient implementation details such as training-validation-test splits, etc. have been provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Unclear writing: a. The motivation for the nuclear norm maximization loss is not clearly explained. From reading this manuscript, it is not clear why the nuclear norm maximization should provide certain and diverse predictions. Although the idea has been proposed in [1], I believe that it would be helpful to briefly explain the main arguments in Sec 2.1 (as this loss is one of the key components of your method). Instead of this, the authors simply mention “discriminability and diversity of predictions” multiple (six) times, without even explaining what “discriminability” means. This term was totally unclear to me, and only after reading [1], I could understand that “discriminability” refers to “certainty” of predictions. b. Similarly, for the contour regularization loss, the use of the phrase “relevance between a pixel and its neighbors” (used 5 times in the manuscript) is hard to understand. I believe that the authors want to convey label smoothness, but a better choice of words while describing the losses (the main contribution of the paper) would have made the paper much easier to follow. Lack of qualitative results. It will be highly interesting to observe the difference in the source and target domain images and to observe what kind of errors are corrected by the proposed adaptation, especially in comparison with entropy minimization (TENT). The paper claims that the proposed adaptation can be carried out in a few epochs. Does the adaptation loss saturate in these few epochs? What happens if the adaptation is continued for more epochs? Is the performance stable, or does it degrade if further adaptation is carried out? While the method would still have merit even if early stopping is found to be important, I believe that it is important to mention this in the paper. The experiments in this paper are on binary segmentation problems. Can the proposed losses be extended to multi-class segmentations? As target domain labels are not used for adaptation, the segmentation performance can be tested on the adaptation images as well. Is this performance better than that on the testing images of the target domain? Was the segmentation network trained in 2D or 3D? What was the batch size during adaptation? Do D, H, W in Sec 2.1 refer to the size of one 3D image? The article is missing important related works: “Self domain adapted network.” MICCAI 2020, “Source-relaxed domain adaptation for image segmentation.” MICCAI 2020. “Test-time adaptable neural networks for robust medical image segmentation.” Medical Image Analysis 2021. Especially the latter two are particularly relevant as they also use an implicit prior in the label space for source-domain-free adaptation. In case this work is further extended, a simple baseline might be interesting to compare with: is there any performance benefit if the statistics of the test images are used in the batch normalization layers, with the affine parameters fixed to their pretrained values? Typos: a. change “… could improves discriminability and diversity…” to ““… could improve discriminability and diversity…” b. change “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be smaller.” to “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be higher.”? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my opinion, the strengths of the paper (deals with a relatively new, but highly practical setting of source-free domain adaptation; novel combination of loss functions; evaluation on two datasets with good results relative to baseline) outweigh the weaknesses (the writing could be clearer; data augmentation in baseline would be better; lack of qualitative results). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a method to adapt a model trained on a source domain to perform well on a target domain with only unlabeled data in the target domain. For that they propose a regional nuclear-norm and a contour regularization loss to adopt the parameters of batch norm layers to the target domain. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength and novelty of the paper are the proposed unsupervised loss functions: regional nuclear-norm and contour regularization, which are well defined and motivated. The inclusion of a well motivated ablation study in which show the influence of loss terms (parameters) is very interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental design of the study is weak: Authors chose to simulate a target and source data sets from a single pancreas segmentation data set and a liver segmentation data set, respectively. This simulated target/source data set design has the weakness that for pancreas CT the mean-variance of the data as described in the paper can be biased by the field-of-view of the scan, thus the split in target and source is not meaningful. For the liver segmentation task the patients of the source and target data set are overlapping, which could potentially lead to a bias. The data set description is unclear. E.g. authors mention that they resize images to 128x128x128 (without a metric I would assume pixel?) for pancreas segmentation but provide no information if the images are re-sampled to a common voxel spacing beforehand. The results for Tent (the SOTA method authors compare to) and the proposed method are very similar, without the inclusion of mean/variance and/or statistical significance it is not possible to conclude that the proposed method is better. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist does not match the description in the paper. Authors checked yes for every point on the reproducibility checklist, however the paper is missing details on: range of hyper-parameters number of training and evaluation runs description of results with central tendency &amp; variation analysis of statistical significance memory footprint all information regarding a new dataset (unclear why authors checked ‘yes’, since all data used are publicly available) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The method itself tackles a relevant problem and is described well, however to improve the evidence of the advantages of the method a couple of points should be considered: Source and target domain should be obtained from two different sources. This ensures a clean separation of data without overlap of site influence and/or patient cohorts. The way data is pre-processed can be improved by using a fixed windowing for normalization for CT and information about whether resampling was done or not. To better comprehend the differences between methods variance and statistical significance can be added. Some minor comments about the paper: Fig. 3 is never referenced in text, the message of the figure remains unclear ‘More results’ is a sub-heading with little information, consider renaming it ‘Generalization results’ or ‘Liver segmentation results’ Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Methods in test-time domain adaption are important, however the novelty of the proposed method is low and due to the weaknesses in evaluating the method, it is not possible to reliably estimate the performance gains of the method. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This manuscript presents a simple but elegant test-time adaptation method for cross-domain image segmentation. The authors employed a variant of batch nuclear-norm maximization and a proposed contour regularization loss (essentially smoothness term). The proposed method is evaluated on two segmentation datasets, and outperformed a peer method (Tent). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method is simple but elegant, should be compatible with a wide range of segmentation network structures which contain batch normalization layers, without introducing heavy additional computational cost. It also shows better performance against a peer method (Tent). The paper is well-written and the reviewer enjoys reading it. It provides a well-detailed introduction of the method and a thorough analysis of experimental results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed paper is substantially extended from adaptive batch normalization [7], where simply replacing batch statistics with those of the testing domain already leads to favorable performance, the authors may want to also use [7] as a baseline. The proposed contour regularization is essentially a smoothness term. The reviewer therefore suspects that it might lead to degenerate solutions, particularly when foreground and background classes are extremely imbalanced (not uncommon for medical images). Could the authors please comment on this? In either of the two experiments, the source data and target data are essentially from a same dataset. Could the authors provide a specific reason for not using two different datasets (one as source one as target) in one experiment, which is a common practice for a lot of domain adaptation/generalization papers? The reviewer suspects that in the manuscript, the only major different between source and target is intensity distributions, while other real-world domain gaps like demographic factors, manufacturers of imaging devices, etc., remain the same between the source and target. The reviewer therefore cannot be fully convinced by the experiment results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is simple, should be easy to follow. The authors agreed to share the code. The reviewer therefore has no major concerns on reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are expected to provide a detailed introduction on theoretical analysis on why regional nuclear-norm loss benefits segmentation, even though it might be found in the original batch nuclear-norm maximization paper. The authors are expected to evaluate the proposed method on a more realistic scenario where source and target are from two different datasets (see Part 4). Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea is simple and elegant and the paper is well-written. However, the authors didn’t to sufficiently justify the reason for splitting source and target domain from a same dataset, rather than using two separate datasets. This undermines the soundness of the experiments section. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were in agreement with the importance of the topic of this work and that there is novelty in the work presented. Other positives included impressive performance improvement over the baseline and discussion of limitations of the method. On the other hand, significant concerns were raised concerning the experimental set up including, but not limited to, choice of source/target data to come from the same dataset, lack of standard deviations which brings into question the significance of the results. There were also concerns raised about the mismatch of claimed level of reproducibility and what is presented. The authors should carefully address these concerns in their rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The questions about experimental setup and statistical significance as well as reproducibility were clarified by the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting method to adapt pretrained model to new data distribution without relying on labels of the target domain. However, the experiment setting is not convincing in which source and target domains are from the same pancreas dataset. Nevertheless, reviewers agree that the paper has sufficient merit to be published at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work deals with unsupervised test time adaptation of a deep neural network. In general, this is an interesting idea, but there were significant concerns regarding the experimental design; some of which were resolved in the rebuttal. However, one major concern was that in the pancreas experiment (one of the two key experiments in the paper) a data split was artificially created by clustering in the intensity/variance space. This concern still remains after the rebuttal and was, in my opinion, not properly addressed. This strategy appears to be particularly problematic as the adaptation strategy hinges on adapting the batch-normalization layer parameters which seems to be directly matched to the division strategy. Hence, serious concerns regarding the validity of the presented results for test-time adaptation in a real scenario remain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The PCs assessed the paper reviews including meta-reviews, the rebuttal and the submission since one AC mentioned concerns regarding the validity of the results. This paper presents a relatively new setting (called fully test-time adaptation) for unsupervised domain adaptation for image segmentation: the model is trained on the source domain and adapted to the target domain. The target domain images have no labels and during the adaptation phase, we have no access to the source domain data. This setting is relevant in real clinical scenarios. The proposed method has some novelty, especially on the proposed contour regularization loss. The major concerns are on the experiments. The widely used dataset in cross-domain segmentation is the CT/MR cardiac segmentation dataset. The authors mentioned in the paper that the domain gap between CT and MR is too large for fully test-time adaptation. Therefore, they performed experiments on two other datasets. For each dataset, they split it into two “artificial” domains. For the pancreas CT dataset, they split based on mean and variance of the intensity. For the liver MR dataset, they split based on MR scanning sequences (in-phase vs. out-of-phase). For the liver dataset, one reviewer has concerns about the bias (i.e., the same patient may appear in both source and target domains). In the rebuttal, the authors explicitly dismissed the bias concern. So, in the opinion of the PCs, the liver MR dataset is a valid example of two domains. The remaining concern is on the pancreas CT dataset. Without adaptation, the model trained on the source domain performs badly on the target domain. Therefore, there is an obvious gap between these two subsets even though they originally came from the same source. If we treat the pancreas dataset as a simulated dataset and the liver dataset as a real dataset, in the PCs opinion, the experiments are sufficient. The PCs think this paper has some novelty, the topic is relatively new, and the comparison experiments provide sufficient evidence to demonstrate the effectiveness of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 0 Author Feedback We sincerely thank all the reviewers for the constructive comments on our manuscript. The reviewers highlighted the novelty and performance improvement of our method(R1&amp;3) which is simple but elegant and compatible with a wide range of segmentation network structures that contain BN layers, without introducing heavy additional computational cost(R3). The analysis of the proposed method, especially motivated ablation study for loss terms and discussion of limitation, have gained the reviewers’ acceptance(R1&amp;2). We reply to reviewers’ concerns as follows. Q1(R3) Both experiments used one dataset. Could the authors provide a specific reason for not using two different datasets? For Liver dataset, we regarded two different MR modalities(IP&amp;OOP) as two domains. For Pancreas dataset, single dataset can be divided into several domains,e.g.[1] splits randomly a single dataset to simulate data from distributed medical entities. We adapted this idea and divided the Pancreas data into two subsets which have different intensity distribution and considered them as different domains. The two subsets can be regarded as two domains because 1) their intensities follow different distributions 2) there is an unignorable performance degradation(i.e.domain gap) when let the model well-trained on the source domain(dice=0.7) test on the target domain without adaptation(dice=0.26). Table 1 shows our method narrowed domain gap proving its effectiveness. Using two datasets for each experiment will introduce both domain- and label-shift problem while our method only tackles domain-shift problem. Dividing single dataset to simulate two domains can avoid label-shift problem since labeling criteria are consistent. Q2(R2&amp;3) For pancreas dataset, the mean-variance of data can be biased by field of view of the scan, thus the split in target and source is not meaningful. After the preprocessing detailly described in the Q4, the FOVs for all patients are same so it won’t bias the mean-variance of data. Although this splitting strategy(ref Q1) is imperfect due to the lack of exact clinical meaning, as an exploring experiment where all unrelated conditions are controlled, the results are still reliable for analyzing the effectiveness of our method and drawing the same conclusion. Q3(R2) For liver dataset, the patients of source and target dataset are overlapping, which could potentially lead to a bias. The patients aren’t overlapping. As claimed in Section 3.1, the separation of patients remains same for both modalities, thus there are no common patients in source domain’s training set and target domain’s validation set. Therefore, there is no data leakage risk. Q4(R2) The pre-processing for data is not clear. For pancreas dataset, we first resample the spacing of volume to 1.0mm^3, then crop it to size of 128^3 pixel and apply a normalization with fixed windowing [-125,275] as preprocessing. For liver MR dataset, we first resample the spacing of volume to 1.5mm^3, then crop the MR images to the size of 25625664 pixel and apply a normalization after replacing the extreme values by 95th percentile value. Q5(R1) Lack of qualitative results. The qualitative results will be updated in final version. Q6(R2) Lack of standard deviation &amp; statistical significance. For Table1, std of DSC is 0.158 for Tent and 0.155 for Ours which have statistical significance with t-test(p&lt;0.001). For Table3, from OOP to IP, std of DSC is 0.030 for Tent and 0.035 for Ours which also have statistical significance with t-test(p=0.048). Completed results with std will be added in tables of final version. Q7(R2) Mismatch of reproducibility checklist. As the datasets are public, we will release the source code to guarantee the reproducibility of the paper. To follow the reproducibility checklist, more implementation details will be added in Section 3.2 in final version. [1]Q.Chang et al. Multi-modal AsynDGAN: Learn from Distributed Medical Image Data w/o Sharing Private Information TPAMI2020 back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Minhao Hu, Tao Song, Yujun Gu, Xiangde Luo, Jieneng Chen, Yinan Chen, Ya Zhang, Shaoting Zhang Abstract When adopting a model from the source domain to the target domain, its performance usually degrades due to the domain shift problem. In clinical practice, the source data usually cannot be accessed during adaptation for privacy policy and the label for the target domain is in shortage because of the high cost of professional labeling. Therefore, it is worth considering how to efficiently adopt a pre-trained model with only unlabeled data from the target domain. In this paper, we propose a novel fully test-time unsupervised adaptation method for image segmentation based on Regional Nuclear-norm (RN) and Contour Regularization (CR). The RN loss is specially designed for segmentation tasks to efficiently improve discriminability and diversity of prediction. The CR loss constrains the continuity and connectivity to enhance the relevance between pixels and their neighbors. Instead of retraining all parameters, we modify only the parameters in batch normalization layers with only a few epochs. We demonstrate the effectiveness and efficiency of the proposed method in the pancreas and liver segmentation dataset from the Medical Segmentation Decathlon and CHAOS challenge. Link to paper https://doi.org/10.1007/978-3-030-87199-4_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A method is proposed for unsupervised domain adaptation for image segmentation, using only unlabeled target domain data (that is, without access to source domain data during the adaptation). The adaptation is driven by a combination of two losses that implicitly define a prior on the predicted labels. The first loss encourages certain and diverse (across pixels in the test image) labels, and the second loss encourages smooth labels. The use of these losses for network adaptation based on only target domain images is novel (to the best of my knowledge) and the validation shows promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The definition of label smoothness as range of predicted probabilities in the neighborhood is novel (as per my knowledge) and quite interesting. Further, the computation of the range using max-pooling is cool too! Interesting strategy to divide the pancreas dataset into source and target domains based on intensity statistics. Very impressive performance improvement from the baseline (no adaptation) for both datasets. Acknowledgement that the method does not work very well on large domain shifts such as from CT to MRI. This helps the readers understand the method better and it is great to see a paper acknowledging a limitation. Excellent visualization of quantitative results in figure 3. (I will definitely use something similar in my own work!). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Arguably, using simple geometric and intensity data augmentation should be included in the baseline as it is simple to implement, adds little training overhead and known to substantial help in domain shift issues (“Generalizing deep learning for medical image segmentation to unseen domains via deep stacked transformation.” IEEE TMI 2020). The fact that no data augmentation was used in any of the experiments makes it hard to judge the domain shift in the datasets used in the experiments, and to see if the proposed method would have added benefit over simple data augmentation techniques. Unclear writing - especially while motivating the nuclear norm maximization loss and while describing the contour regularization loss. Lack of qualitative results makes it hard to understand what kind of segmentation errors are corrected by the adaptation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The validation is done using publicly available datasets, and the authors have promised to make the implementation publicly available. Sufficient implementation details such as training-validation-test splits, etc. have been provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Unclear writing: a. The motivation for the nuclear norm maximization loss is not clearly explained. From reading this manuscript, it is not clear why the nuclear norm maximization should provide certain and diverse predictions. Although the idea has been proposed in [1], I believe that it would be helpful to briefly explain the main arguments in Sec 2.1 (as this loss is one of the key components of your method). Instead of this, the authors simply mention “discriminability and diversity of predictions” multiple (six) times, without even explaining what “discriminability” means. This term was totally unclear to me, and only after reading [1], I could understand that “discriminability” refers to “certainty” of predictions. b. Similarly, for the contour regularization loss, the use of the phrase “relevance between a pixel and its neighbors” (used 5 times in the manuscript) is hard to understand. I believe that the authors want to convey label smoothness, but a better choice of words while describing the losses (the main contribution of the paper) would have made the paper much easier to follow. Lack of qualitative results. It will be highly interesting to observe the difference in the source and target domain images and to observe what kind of errors are corrected by the proposed adaptation, especially in comparison with entropy minimization (TENT). The paper claims that the proposed adaptation can be carried out in a few epochs. Does the adaptation loss saturate in these few epochs? What happens if the adaptation is continued for more epochs? Is the performance stable, or does it degrade if further adaptation is carried out? While the method would still have merit even if early stopping is found to be important, I believe that it is important to mention this in the paper. The experiments in this paper are on binary segmentation problems. Can the proposed losses be extended to multi-class segmentations? As target domain labels are not used for adaptation, the segmentation performance can be tested on the adaptation images as well. Is this performance better than that on the testing images of the target domain? Was the segmentation network trained in 2D or 3D? What was the batch size during adaptation? Do D, H, W in Sec 2.1 refer to the size of one 3D image? The article is missing important related works: “Self domain adapted network.” MICCAI 2020, “Source-relaxed domain adaptation for image segmentation.” MICCAI 2020. “Test-time adaptable neural networks for robust medical image segmentation.” Medical Image Analysis 2021. Especially the latter two are particularly relevant as they also use an implicit prior in the label space for source-domain-free adaptation. In case this work is further extended, a simple baseline might be interesting to compare with: is there any performance benefit if the statistics of the test images are used in the batch normalization layers, with the affine parameters fixed to their pretrained values? Typos: a. change “… could improves discriminability and diversity…” to ““… could improve discriminability and diversity…” b. change “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be smaller.” to “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be higher.”? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my opinion, the strengths of the paper (deals with a relatively new, but highly practical setting of source-free domain adaptation; novel combination of loss functions; evaluation on two datasets with good results relative to baseline) outweigh the weaknesses (the writing could be clearer; data augmentation in baseline would be better; lack of qualitative results). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a method to adapt a model trained on a source domain to perform well on a target domain with only unlabeled data in the target domain. For that they propose a regional nuclear-norm and a contour regularization loss to adopt the parameters of batch norm layers to the target domain. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength and novelty of the paper are the proposed unsupervised loss functions: regional nuclear-norm and contour regularization, which are well defined and motivated. The inclusion of a well motivated ablation study in which show the influence of loss terms (parameters) is very interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental design of the study is weak: Authors chose to simulate a target and source data sets from a single pancreas segmentation data set and a liver segmentation data set, respectively. This simulated target/source data set design has the weakness that for pancreas CT the mean-variance of the data as described in the paper can be biased by the field-of-view of the scan, thus the split in target and source is not meaningful. For the liver segmentation task the patients of the source and target data set are overlapping, which could potentially lead to a bias. The data set description is unclear. E.g. authors mention that they resize images to 128x128x128 (without a metric I would assume pixel?) for pancreas segmentation but provide no information if the images are re-sampled to a common voxel spacing beforehand. The results for Tent (the SOTA method authors compare to) and the proposed method are very similar, without the inclusion of mean/variance and/or statistical significance it is not possible to conclude that the proposed method is better. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist does not match the description in the paper. Authors checked yes for every point on the reproducibility checklist, however the paper is missing details on: range of hyper-parameters number of training and evaluation runs description of results with central tendency &amp; variation analysis of statistical significance memory footprint all information regarding a new dataset (unclear why authors checked ‘yes’, since all data used are publicly available) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The method itself tackles a relevant problem and is described well, however to improve the evidence of the advantages of the method a couple of points should be considered: Source and target domain should be obtained from two different sources. This ensures a clean separation of data without overlap of site influence and/or patient cohorts. The way data is pre-processed can be improved by using a fixed windowing for normalization for CT and information about whether resampling was done or not. To better comprehend the differences between methods variance and statistical significance can be added. Some minor comments about the paper: Fig. 3 is never referenced in text, the message of the figure remains unclear ‘More results’ is a sub-heading with little information, consider renaming it ‘Generalization results’ or ‘Liver segmentation results’ Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Methods in test-time domain adaption are important, however the novelty of the proposed method is low and due to the weaknesses in evaluating the method, it is not possible to reliably estimate the performance gains of the method. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This manuscript presents a simple but elegant test-time adaptation method for cross-domain image segmentation. The authors employed a variant of batch nuclear-norm maximization and a proposed contour regularization loss (essentially smoothness term). The proposed method is evaluated on two segmentation datasets, and outperformed a peer method (Tent). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method is simple but elegant, should be compatible with a wide range of segmentation network structures which contain batch normalization layers, without introducing heavy additional computational cost. It also shows better performance against a peer method (Tent). The paper is well-written and the reviewer enjoys reading it. It provides a well-detailed introduction of the method and a thorough analysis of experimental results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed paper is substantially extended from adaptive batch normalization [7], where simply replacing batch statistics with those of the testing domain already leads to favorable performance, the authors may want to also use [7] as a baseline. The proposed contour regularization is essentially a smoothness term. The reviewer therefore suspects that it might lead to degenerate solutions, particularly when foreground and background classes are extremely imbalanced (not uncommon for medical images). Could the authors please comment on this? In either of the two experiments, the source data and target data are essentially from a same dataset. Could the authors provide a specific reason for not using two different datasets (one as source one as target) in one experiment, which is a common practice for a lot of domain adaptation/generalization papers? The reviewer suspects that in the manuscript, the only major different between source and target is intensity distributions, while other real-world domain gaps like demographic factors, manufacturers of imaging devices, etc., remain the same between the source and target. The reviewer therefore cannot be fully convinced by the experiment results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is simple, should be easy to follow. The authors agreed to share the code. The reviewer therefore has no major concerns on reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are expected to provide a detailed introduction on theoretical analysis on why regional nuclear-norm loss benefits segmentation, even though it might be found in the original batch nuclear-norm maximization paper. The authors are expected to evaluate the proposed method on a more realistic scenario where source and target are from two different datasets (see Part 4). Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea is simple and elegant and the paper is well-written. However, the authors didn’t to sufficiently justify the reason for splitting source and target domain from a same dataset, rather than using two separate datasets. This undermines the soundness of the experiments section. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were in agreement with the importance of the topic of this work and that there is novelty in the work presented. Other positives included impressive performance improvement over the baseline and discussion of limitations of the method. On the other hand, significant concerns were raised concerning the experimental set up including, but not limited to, choice of source/target data to come from the same dataset, lack of standard deviations which brings into question the significance of the results. There were also concerns raised about the mismatch of claimed level of reproducibility and what is presented. The authors should carefully address these concerns in their rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The questions about experimental setup and statistical significance as well as reproducibility were clarified by the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting method to adapt pretrained model to new data distribution without relying on labels of the target domain. However, the experiment setting is not convincing in which source and target domains are from the same pancreas dataset. Nevertheless, reviewers agree that the paper has sufficient merit to be published at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work deals with unsupervised test time adaptation of a deep neural network. In general, this is an interesting idea, but there were significant concerns regarding the experimental design; some of which were resolved in the rebuttal. However, one major concern was that in the pancreas experiment (one of the two key experiments in the paper) a data split was artificially created by clustering in the intensity/variance space. This concern still remains after the rebuttal and was, in my opinion, not properly addressed. This strategy appears to be particularly problematic as the adaptation strategy hinges on adapting the batch-normalization layer parameters which seems to be directly matched to the division strategy. Hence, serious concerns regarding the validity of the presented results for test-time adaptation in a real scenario remain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The PCs assessed the paper reviews including meta-reviews, the rebuttal and the submission since one AC mentioned concerns regarding the validity of the results. This paper presents a relatively new setting (called fully test-time adaptation) for unsupervised domain adaptation for image segmentation: the model is trained on the source domain and adapted to the target domain. The target domain images have no labels and during the adaptation phase, we have no access to the source domain data. This setting is relevant in real clinical scenarios. The proposed method has some novelty, especially on the proposed contour regularization loss. The major concerns are on the experiments. The widely used dataset in cross-domain segmentation is the CT/MR cardiac segmentation dataset. The authors mentioned in the paper that the domain gap between CT and MR is too large for fully test-time adaptation. Therefore, they performed experiments on two other datasets. For each dataset, they split it into two “artificial” domains. For the pancreas CT dataset, they split based on mean and variance of the intensity. For the liver MR dataset, they split based on MR scanning sequences (in-phase vs. out-of-phase). For the liver dataset, one reviewer has concerns about the bias (i.e., the same patient may appear in both source and target domains). In the rebuttal, the authors explicitly dismissed the bias concern. So, in the opinion of the PCs, the liver MR dataset is a valid example of two domains. The remaining concern is on the pancreas CT dataset. Without adaptation, the model trained on the source domain performs badly on the target domain. Therefore, there is an obvious gap between these two subsets even though they originally came from the same source. If we treat the pancreas dataset as a simulated dataset and the liver dataset as a real dataset, in the PCs opinion, the experiments are sufficient. The PCs think this paper has some novelty, the topic is relatively new, and the comparison experiments provide sufficient evidence to demonstrate the effectiveness of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 0 Author Feedback We sincerely thank all the reviewers for the constructive comments on our manuscript. The reviewers highlighted the novelty and performance improvement of our method(R1&amp;3) which is simple but elegant and compatible with a wide range of segmentation network structures that contain BN layers, without introducing heavy additional computational cost(R3). The analysis of the proposed method, especially motivated ablation study for loss terms and discussion of limitation, have gained the reviewers’ acceptance(R1&amp;2). We reply to reviewers’ concerns as follows. Q1(R3) Both experiments used one dataset. Could the authors provide a specific reason for not using two different datasets? For Liver dataset, we regarded two different MR modalities(IP&amp;OOP) as two domains. For Pancreas dataset, single dataset can be divided into several domains,e.g.[1] splits randomly a single dataset to simulate data from distributed medical entities. We adapted this idea and divided the Pancreas data into two subsets which have different intensity distribution and considered them as different domains. The two subsets can be regarded as two domains because 1) their intensities follow different distributions 2) there is an unignorable performance degradation(i.e.domain gap) when let the model well-trained on the source domain(dice=0.7) test on the target domain without adaptation(dice=0.26). Table 1 shows our method narrowed domain gap proving its effectiveness. Using two datasets for each experiment will introduce both domain- and label-shift problem while our method only tackles domain-shift problem. Dividing single dataset to simulate two domains can avoid label-shift problem since labeling criteria are consistent. Q2(R2&amp;3) For pancreas dataset, the mean-variance of data can be biased by field of view of the scan, thus the split in target and source is not meaningful. After the preprocessing detailly described in the Q4, the FOVs for all patients are same so it won’t bias the mean-variance of data. Although this splitting strategy(ref Q1) is imperfect due to the lack of exact clinical meaning, as an exploring experiment where all unrelated conditions are controlled, the results are still reliable for analyzing the effectiveness of our method and drawing the same conclusion. Q3(R2) For liver dataset, the patients of source and target dataset are overlapping, which could potentially lead to a bias. The patients aren’t overlapping. As claimed in Section 3.1, the separation of patients remains same for both modalities, thus there are no common patients in source domain’s training set and target domain’s validation set. Therefore, there is no data leakage risk. Q4(R2) The pre-processing for data is not clear. For pancreas dataset, we first resample the spacing of volume to 1.0mm^3, then crop it to size of 128^3 pixel and apply a normalization with fixed windowing [-125,275] as preprocessing. For liver MR dataset, we first resample the spacing of volume to 1.5mm^3, then crop the MR images to the size of 25625664 pixel and apply a normalization after replacing the extreme values by 95th percentile value. Q5(R1) Lack of qualitative results. The qualitative results will be updated in final version. Q6(R2) Lack of standard deviation &amp; statistical significance. For Table1, std of DSC is 0.158 for Tent and 0.155 for Ours which have statistical significance with t-test(p&lt;0.001). For Table3, from OOP to IP, std of DSC is 0.030 for Tent and 0.035 for Ours which also have statistical significance with t-test(p=0.048). Completed results with std will be added in tables of final version. Q7(R2) Mismatch of reproducibility checklist. As the datasets are public, we will release the source code to guarantee the reproducibility of the paper. To follow the reproducibility checklist, more implementation details will be added in Section 3.2 in final version. [1]Q.Chang et al. Multi-modal AsynDGAN: Learn from Distributed Medical Image Data w/o Sharing Private Information TPAMI2020 back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0323/12/31/Paper1319" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0323/12/31/Paper1319" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0323-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Fully Test-time Adaptation for Image Segmentation" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0323/12/31/Paper1319"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0323/12/31/Paper1319","headline":"Fully Test-time Adaptation for Image Segmentation","dateModified":"0324-01-02T00:00:00-05:17","datePublished":"0323-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Minhao Hu, Tao Song, Yujun Gu, Xiangde Luo, Jieneng Chen, Yinan Chen, Ya Zhang, Shaoting Zhang Abstract When adopting a model from the source domain to the target domain, its performance usually degrades due to the domain shift problem. In clinical practice, the source data usually cannot be accessed during adaptation for privacy policy and the label for the target domain is in shortage because of the high cost of professional labeling. Therefore, it is worth considering how to efficiently adopt a pre-trained model with only unlabeled data from the target domain. In this paper, we propose a novel fully test-time unsupervised adaptation method for image segmentation based on Regional Nuclear-norm (RN) and Contour Regularization (CR). The RN loss is specially designed for segmentation tasks to efficiently improve discriminability and diversity of prediction. The CR loss constrains the continuity and connectivity to enhance the relevance between pixels and their neighbors. Instead of retraining all parameters, we modify only the parameters in batch normalization layers with only a few epochs. We demonstrate the effectiveness and efficiency of the proposed method in the pancreas and liver segmentation dataset from the Medical Segmentation Decathlon and CHAOS challenge. Link to paper https://doi.org/10.1007/978-3-030-87199-4_24 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper A method is proposed for unsupervised domain adaptation for image segmentation, using only unlabeled target domain data (that is, without access to source domain data during the adaptation). The adaptation is driven by a combination of two losses that implicitly define a prior on the predicted labels. The first loss encourages certain and diverse (across pixels in the test image) labels, and the second loss encourages smooth labels. The use of these losses for network adaptation based on only target domain images is novel (to the best of my knowledge) and the validation shows promising results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The definition of label smoothness as range of predicted probabilities in the neighborhood is novel (as per my knowledge) and quite interesting. Further, the computation of the range using max-pooling is cool too! Interesting strategy to divide the pancreas dataset into source and target domains based on intensity statistics. Very impressive performance improvement from the baseline (no adaptation) for both datasets. Acknowledgement that the method does not work very well on large domain shifts such as from CT to MRI. This helps the readers understand the method better and it is great to see a paper acknowledging a limitation. Excellent visualization of quantitative results in figure 3. (I will definitely use something similar in my own work!). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. Arguably, using simple geometric and intensity data augmentation should be included in the baseline as it is simple to implement, adds little training overhead and known to substantial help in domain shift issues (“Generalizing deep learning for medical image segmentation to unseen domains via deep stacked transformation.” IEEE TMI 2020). The fact that no data augmentation was used in any of the experiments makes it hard to judge the domain shift in the datasets used in the experiments, and to see if the proposed method would have added benefit over simple data augmentation techniques. Unclear writing - especially while motivating the nuclear norm maximization loss and while describing the contour regularization loss. Lack of qualitative results makes it hard to understand what kind of segmentation errors are corrected by the adaptation. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The validation is done using publicly available datasets, and the authors have promised to make the implementation publicly available. Sufficient implementation details such as training-validation-test splits, etc. have been provided in the manuscript. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Unclear writing: a. The motivation for the nuclear norm maximization loss is not clearly explained. From reading this manuscript, it is not clear why the nuclear norm maximization should provide certain and diverse predictions. Although the idea has been proposed in [1], I believe that it would be helpful to briefly explain the main arguments in Sec 2.1 (as this loss is one of the key components of your method). Instead of this, the authors simply mention “discriminability and diversity of predictions” multiple (six) times, without even explaining what “discriminability” means. This term was totally unclear to me, and only after reading [1], I could understand that “discriminability” refers to “certainty” of predictions. b. Similarly, for the contour regularization loss, the use of the phrase “relevance between a pixel and its neighbors” (used 5 times in the manuscript) is hard to understand. I believe that the authors want to convey label smoothness, but a better choice of words while describing the losses (the main contribution of the paper) would have made the paper much easier to follow. Lack of qualitative results. It will be highly interesting to observe the difference in the source and target domain images and to observe what kind of errors are corrected by the proposed adaptation, especially in comparison with entropy minimization (TENT). The paper claims that the proposed adaptation can be carried out in a few epochs. Does the adaptation loss saturate in these few epochs? What happens if the adaptation is continued for more epochs? Is the performance stable, or does it degrade if further adaptation is carried out? While the method would still have merit even if early stopping is found to be important, I believe that it is important to mention this in the paper. The experiments in this paper are on binary segmentation problems. Can the proposed losses be extended to multi-class segmentations? As target domain labels are not used for adaptation, the segmentation performance can be tested on the adaptation images as well. Is this performance better than that on the testing images of the target domain? Was the segmentation network trained in 2D or 3D? What was the batch size during adaptation? Do D, H, W in Sec 2.1 refer to the size of one 3D image? The article is missing important related works: “Self domain adapted network.” MICCAI 2020, “Source-relaxed domain adaptation for image segmentation.” MICCAI 2020. “Test-time adaptable neural networks for robust medical image segmentation.” Medical Image Analysis 2021. Especially the latter two are particularly relevant as they also use an implicit prior in the label space for source-domain-free adaptation. In case this work is further extended, a simple baseline might be interesting to compare with: is there any performance benefit if the statistics of the test images are used in the batch normalization layers, with the affine parameters fixed to their pretrained values? Typos: a. change “… could improves discriminability and diversity…” to ““… could improve discriminability and diversity…” b. change “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be smaller.” to “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be higher.”? Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? In my opinion, the strengths of the paper (deals with a relatively new, but highly practical setting of source-free domain adaptation; novel combination of loss functions; evaluation on two datasets with good results relative to baseline) outweigh the weaknesses (the writing could be clearer; data augmentation in baseline would be better; lack of qualitative results). What is the ranking of this paper in your review stack? 1 Number of papers in your stack 4 Reviewer confidence Confident but not absolutely certain Review #2 Please describe the contribution of the paper The paper describes a method to adapt a model trained on a source domain to perform well on a target domain with only unlabeled data in the target domain. For that they propose a regional nuclear-norm and a contour regularization loss to adopt the parameters of batch norm layers to the target domain. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The main strength and novelty of the paper are the proposed unsupervised loss functions: regional nuclear-norm and contour regularization, which are well defined and motivated. The inclusion of a well motivated ablation study in which show the influence of loss terms (parameters) is very interesting. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The experimental design of the study is weak: Authors chose to simulate a target and source data sets from a single pancreas segmentation data set and a liver segmentation data set, respectively. This simulated target/source data set design has the weakness that for pancreas CT the mean-variance of the data as described in the paper can be biased by the field-of-view of the scan, thus the split in target and source is not meaningful. For the liver segmentation task the patients of the source and target data set are overlapping, which could potentially lead to a bias. The data set description is unclear. E.g. authors mention that they resize images to 128x128x128 (without a metric I would assume pixel?) for pancreas segmentation but provide no information if the images are re-sampled to a common voxel spacing beforehand. The results for Tent (the SOTA method authors compare to) and the proposed method are very similar, without the inclusion of mean/variance and/or statistical significance it is not possible to conclude that the proposed method is better. Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The reproducibility checklist does not match the description in the paper. Authors checked yes for every point on the reproducibility checklist, however the paper is missing details on: range of hyper-parameters number of training and evaluation runs description of results with central tendency &amp; variation analysis of statistical significance memory footprint all information regarding a new dataset (unclear why authors checked ‘yes’, since all data used are publicly available) Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The method itself tackles a relevant problem and is described well, however to improve the evidence of the advantages of the method a couple of points should be considered: Source and target domain should be obtained from two different sources. This ensures a clean separation of data without overlap of site influence and/or patient cohorts. The way data is pre-processed can be improved by using a fixed windowing for normalization for CT and information about whether resampling was done or not. To better comprehend the differences between methods variance and statistical significance can be added. Some minor comments about the paper: Fig. 3 is never referenced in text, the message of the figure remains unclear ‘More results’ is a sub-heading with little information, consider renaming it ‘Generalization results’ or ‘Liver segmentation results’ Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Methods in test-time domain adaption are important, however the novelty of the proposed method is low and due to the weaknesses in evaluating the method, it is not possible to reliably estimate the performance gains of the method. What is the ranking of this paper in your review stack? 4 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper This manuscript presents a simple but elegant test-time adaptation method for cross-domain image segmentation. The authors employed a variant of batch nuclear-norm maximization and a proposed contour regularization loss (essentially smoothness term). The proposed method is evaluated on two segmentation datasets, and outperformed a peer method (Tent). Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The method is simple but elegant, should be compatible with a wide range of segmentation network structures which contain batch normalization layers, without introducing heavy additional computational cost. It also shows better performance against a peer method (Tent). The paper is well-written and the reviewer enjoys reading it. It provides a well-detailed introduction of the method and a thorough analysis of experimental results. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The proposed paper is substantially extended from adaptive batch normalization [7], where simply replacing batch statistics with those of the testing domain already leads to favorable performance, the authors may want to also use [7] as a baseline. The proposed contour regularization is essentially a smoothness term. The reviewer therefore suspects that it might lead to degenerate solutions, particularly when foreground and background classes are extremely imbalanced (not uncommon for medical images). Could the authors please comment on this? In either of the two experiments, the source data and target data are essentially from a same dataset. Could the authors provide a specific reason for not using two different datasets (one as source one as target) in one experiment, which is a common practice for a lot of domain adaptation/generalization papers? The reviewer suspects that in the manuscript, the only major different between source and target is intensity distributions, while other real-world domain gaps like demographic factors, manufacturers of imaging devices, etc., remain the same between the source and target. The reviewer therefore cannot be fully convinced by the experiment results. Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The method is simple, should be easy to follow. The authors agreed to share the code. The reviewer therefore has no major concerns on reproducibility. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The authors are expected to provide a detailed introduction on theoretical analysis on why regional nuclear-norm loss benefits segmentation, even though it might be found in the original batch nuclear-norm maximization paper. The authors are expected to evaluate the proposed method on a more realistic scenario where source and target are from two different datasets (see Part 4). Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The overall idea is simple and elegant and the paper is well-written. However, the authors didn’t to sufficiently justify the reason for splitting source and target domain from a same dataset, rather than using two separate datasets. This undermines the soundness of the experiments section. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. The reviewers were in agreement with the importance of the topic of this work and that there is novelty in the work presented. Other positives included impressive performance improvement over the baseline and discussion of limitations of the method. On the other hand, significant concerns were raised concerning the experimental set up including, but not limited to, choice of source/target data to come from the same dataset, lack of standard deviations which brings into question the significance of the results. There were also concerns raised about the mismatch of claimed level of reproducibility and what is presented. The authors should carefully address these concerns in their rebuttal. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 7 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The questions about experimental setup and statistical significance as well as reproducibility were clarified by the rebuttal. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 5 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The paper proposes an interesting method to adapt pretrained model to new data distribution without relying on labels of the target domain. However, the experiment setting is not convincing in which source and target domains are from the same pancreas dataset. Nevertheless, reviewers agree that the paper has sufficient merit to be published at MICCAI. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 9 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work deals with unsupervised test time adaptation of a deep neural network. In general, this is an interesting idea, but there were significant concerns regarding the experimental design; some of which were resolved in the rebuttal. However, one major concern was that in the pancreas experiment (one of the two key experiments in the paper) a data split was artificially created by clustering in the intensity/variance space. This concern still remains after the rebuttal and was, in my opinion, not properly addressed. This strategy appears to be particularly problematic as the adaptation strategy hinges on adapting the batch-normalization layer parameters which seems to be directly matched to the division strategy. Hence, serious concerns regarding the validity of the presented results for test-time adaptation in a real scenario remain. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 15 Meta-Review #4 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The PCs assessed the paper reviews including meta-reviews, the rebuttal and the submission since one AC mentioned concerns regarding the validity of the results. This paper presents a relatively new setting (called fully test-time adaptation) for unsupervised domain adaptation for image segmentation: the model is trained on the source domain and adapted to the target domain. The target domain images have no labels and during the adaptation phase, we have no access to the source domain data. This setting is relevant in real clinical scenarios. The proposed method has some novelty, especially on the proposed contour regularization loss. The major concerns are on the experiments. The widely used dataset in cross-domain segmentation is the CT/MR cardiac segmentation dataset. The authors mentioned in the paper that the domain gap between CT and MR is too large for fully test-time adaptation. Therefore, they performed experiments on two other datasets. For each dataset, they split it into two “artificial” domains. For the pancreas CT dataset, they split based on mean and variance of the intensity. For the liver MR dataset, they split based on MR scanning sequences (in-phase vs. out-of-phase). For the liver dataset, one reviewer has concerns about the bias (i.e., the same patient may appear in both source and target domains). In the rebuttal, the authors explicitly dismissed the bias concern. So, in the opinion of the PCs, the liver MR dataset is a valid example of two domains. The remaining concern is on the pancreas CT dataset. Without adaptation, the model trained on the source domain performs badly on the target domain. Therefore, there is an obvious gap between these two subsets even though they originally came from the same source. If we treat the pancreas dataset as a simulated dataset and the liver dataset as a real dataset, in the PCs opinion, the experiments are sufficient. The PCs think this paper has some novelty, the topic is relatively new, and the comparison experiments provide sufficient evidence to demonstrate the effectiveness of the proposed method. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 0 Author Feedback We sincerely thank all the reviewers for the constructive comments on our manuscript. The reviewers highlighted the novelty and performance improvement of our method(R1&amp;3) which is simple but elegant and compatible with a wide range of segmentation network structures that contain BN layers, without introducing heavy additional computational cost(R3). The analysis of the proposed method, especially motivated ablation study for loss terms and discussion of limitation, have gained the reviewers’ acceptance(R1&amp;2). We reply to reviewers’ concerns as follows. Q1(R3) Both experiments used one dataset. Could the authors provide a specific reason for not using two different datasets? For Liver dataset, we regarded two different MR modalities(IP&amp;OOP) as two domains. For Pancreas dataset, single dataset can be divided into several domains,e.g.[1] splits randomly a single dataset to simulate data from distributed medical entities. We adapted this idea and divided the Pancreas data into two subsets which have different intensity distribution and considered them as different domains. The two subsets can be regarded as two domains because 1) their intensities follow different distributions 2) there is an unignorable performance degradation(i.e.domain gap) when let the model well-trained on the source domain(dice=0.7) test on the target domain without adaptation(dice=0.26). Table 1 shows our method narrowed domain gap proving its effectiveness. Using two datasets for each experiment will introduce both domain- and label-shift problem while our method only tackles domain-shift problem. Dividing single dataset to simulate two domains can avoid label-shift problem since labeling criteria are consistent. Q2(R2&amp;3) For pancreas dataset, the mean-variance of data can be biased by field of view of the scan, thus the split in target and source is not meaningful. After the preprocessing detailly described in the Q4, the FOVs for all patients are same so it won’t bias the mean-variance of data. Although this splitting strategy(ref Q1) is imperfect due to the lack of exact clinical meaning, as an exploring experiment where all unrelated conditions are controlled, the results are still reliable for analyzing the effectiveness of our method and drawing the same conclusion. Q3(R2) For liver dataset, the patients of source and target dataset are overlapping, which could potentially lead to a bias. The patients aren’t overlapping. As claimed in Section 3.1, the separation of patients remains same for both modalities, thus there are no common patients in source domain’s training set and target domain’s validation set. Therefore, there is no data leakage risk. Q4(R2) The pre-processing for data is not clear. For pancreas dataset, we first resample the spacing of volume to 1.0mm^3, then crop it to size of 128^3 pixel and apply a normalization with fixed windowing [-125,275] as preprocessing. For liver MR dataset, we first resample the spacing of volume to 1.5mm^3, then crop the MR images to the size of 25625664 pixel and apply a normalization after replacing the extreme values by 95th percentile value. Q5(R1) Lack of qualitative results. The qualitative results will be updated in final version. Q6(R2) Lack of standard deviation &amp; statistical significance. For Table1, std of DSC is 0.158 for Tent and 0.155 for Ours which have statistical significance with t-test(p&lt;0.001). For Table3, from OOP to IP, std of DSC is 0.030 for Tent and 0.035 for Ours which also have statistical significance with t-test(p=0.048). Completed results with std will be added in tables of final version. Q7(R2) Mismatch of reproducibility checklist. As the datasets are public, we will release the source code to guarantee the reproducibility of the paper. To follow the reproducibility checklist, more implementation details will be added in Section 3.2 in final version. [1]Q.Chang et al. Multi-modal AsynDGAN: Learn from Distributed Medical Image Data w/o Sharing Private Information TPAMI2020 back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Hu, Minhao,Song, Tao,Gu, Yujun,Luo, Xiangde,Chen, Jieneng,Chen, Yinan,Zhang, Ya,Zhang, Shaoting" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Fully Test-time Adaptation for Image Segmentation</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a>
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Hu, Minhao"
+        class="post-tags">
+        Hu, Minhao
+      </a> |  
+      
+      <a href="kittywong/tags#Song, Tao"
+        class="post-tags">
+        Song, Tao
+      </a> |  
+      
+      <a href="kittywong/tags#Gu, Yujun"
+        class="post-tags">
+        Gu, Yujun
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiangde"
+        class="post-tags">
+        Luo, Xiangde
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Jieneng"
+        class="post-tags">
+        Chen, Jieneng
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Yinan"
+        class="post-tags">
+        Chen, Yinan
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Ya"
+        class="post-tags">
+        Zhang, Ya
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Shaoting"
+        class="post-tags">
+        Zhang, Shaoting
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Minhao Hu, Tao Song, Yujun Gu, Xiangde Luo, Jieneng Chen, Yinan Chen, Ya Zhang, Shaoting Zhang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>When adopting a model from the source domain to the target domain, its performance usually degrades due to the domain shift problem. In clinical practice, the source data usually cannot be accessed during adaptation for privacy policy and the label for the target domain is in shortage because of the high cost of professional labeling. Therefore, it is worth considering how to efficiently adopt a pre-trained model with only unlabeled data from the target domain. In this paper, we propose a novel fully test-time unsupervised adaptation method for image segmentation based on Regional Nuclear-norm (RN) and Contour Regularization (CR). The RN loss is specially designed for segmentation tasks to efficiently improve discriminability and diversity of prediction. The CR loss constrains the continuity and connectivity to enhance the relevance between pixels and their neighbors. Instead of retraining all parameters, we modify only the parameters in batch normalization layers with only a few epochs. We demonstrate the effectiveness and efficiency of the proposed method in the pancreas and liver segmentation dataset from the Medical Segmentation Decathlon and CHAOS challenge.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87199-4_24">https://doi.org/10.1007/978-3-030-87199-4_24</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>A method is proposed for unsupervised domain adaptation for image segmentation, using only unlabeled target domain data (that is, without access to source domain data during the adaptation). The adaptation is driven by a combination of two losses that implicitly define a prior on the predicted labels. The first loss encourages certain and diverse (across pixels in the test image) labels, and the second loss encourages smooth labels. The use of these losses for network adaptation based on only target domain images is novel (to the best of my knowledge) and the validation shows promising results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The definition of label smoothness as range of predicted probabilities in the neighborhood is novel (as per my knowledge) and quite interesting. Further, the computation of the range using max-pooling is cool too!</p>
+        </li>
+        <li>
+          <p>Interesting strategy to divide the pancreas dataset into source and target domains based on intensity statistics.</p>
+        </li>
+        <li>
+          <p>Very impressive performance improvement from the baseline (no adaptation) for both datasets.</p>
+        </li>
+        <li>
+          <p>Acknowledgement that the method does not work very well on large domain shifts such as from CT to MRI. This helps the readers understand the method better and it is great to see a paper acknowledging a limitation.</p>
+        </li>
+        <li>
+          <p>Excellent visualization of quantitative results in figure 3. (I will definitely use something similar in my own work!).</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>Arguably, using simple geometric and intensity data augmentation should be included in the baseline as it is simple to implement, adds little training overhead and known to substantial help in domain shift issues (“Generalizing deep learning for medical image segmentation to unseen domains via deep stacked transformation.” IEEE TMI 2020). The fact that no data augmentation was used in any of the experiments makes it hard to judge the domain shift in the datasets used in the experiments, and to see if the proposed method would have added benefit over simple data augmentation techniques.</p>
+        </li>
+        <li>
+          <p>Unclear writing - especially while motivating the nuclear norm maximization loss and while describing the contour regularization loss.</p>
+        </li>
+        <li>
+          <p>Lack of qualitative results makes it hard to understand what kind of segmentation errors are corrected by the adaptation.</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The validation is done using publicly available datasets, and the authors have promised to make the implementation publicly available. Sufficient implementation details such as training-validation-test splits, etc. have been provided in the manuscript.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>Unclear writing:</li>
+      </ol>
+
+      <p>a. The motivation for the nuclear norm maximization loss is not clearly explained. From reading this manuscript, it is not clear why the nuclear norm maximization should provide certain and diverse predictions. Although the idea has been proposed in [1], I believe that it would be helpful to briefly explain the main arguments in Sec 2.1 (as this loss is one of the key components of your method). Instead of this, the authors simply mention “discriminability and diversity of predictions” multiple (six) times, without even explaining what “discriminability” means. This term was totally unclear to me, and only after reading [1], I could understand that “discriminability” refers to “certainty” of predictions.</p>
+
+      <p>b. Similarly, for the contour regularization loss, the use of the phrase “relevance between a pixel and its neighbors” (used 5 times in the manuscript) is hard to understand. I believe that the authors want to convey label smoothness, but a better choice of words while describing the losses (the main contribution of the paper) would have made the paper much easier to follow.</p>
+
+      <ol>
+        <li>
+          <p>Lack of qualitative results. It will be highly interesting to observe the difference in the source and target domain images and to observe what kind of errors are corrected by the proposed adaptation, especially in comparison with entropy minimization (TENT).</p>
+        </li>
+        <li>
+          <p>The paper claims that the proposed adaptation can be carried out in a few epochs. Does the adaptation loss saturate in these few epochs? What happens if the adaptation is continued for more epochs? Is the performance stable, or does it degrade if further adaptation is carried out? While the method would still have merit even if early stopping is found to be important, I believe that it is important to mention this in the paper.</p>
+        </li>
+        <li>
+          <p>The experiments in this paper are on binary segmentation problems. Can the proposed losses be extended to multi-class segmentations?</p>
+        </li>
+        <li>
+          <p>As target domain labels are not used for adaptation, the segmentation performance can be tested on the adaptation images as well. Is this performance better than that on the testing images of the target domain?</p>
+        </li>
+        <li>
+          <p>Was the segmentation network trained in 2D or 3D? What was the batch size during adaptation? Do D, H, W in Sec 2.1 refer to the size of one 3D image?</p>
+        </li>
+        <li>
+          <p>The article is missing important related works: “Self domain adapted network.” MICCAI 2020, “Source-relaxed domain adaptation for image segmentation.” MICCAI 2020. “Test-time adaptable neural networks for robust medical image segmentation.” Medical Image Analysis 2021. Especially the latter two are particularly relevant as they also use an implicit prior in the label space for source-domain-free adaptation.</p>
+        </li>
+        <li>
+          <p>In case this work is further extended, a simple baseline might be interesting to compare with: is there any performance benefit if the statistics of the test images are used in the batch normalization layers, with the affine parameters fixed to their pretrained values?</p>
+        </li>
+        <li>
+          <p>Typos:
+a. change “… could improves discriminability and diversity…” to ““… could improve discriminability and diversity…”
+b. change “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be smaller.” to “… if we limit the number of epochs for finetuning to the same as our method, their performance gap will be higher.”?</p>
+        </li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>In my opinion, the strengths of the paper (deals with a relatively new, but highly practical setting of source-free domain adaptation; novel combination of loss functions; evaluation on two datasets with good results relative to baseline) outweigh the weaknesses (the writing could be clearer; data augmentation in baseline would be better; lack of qualitative results).</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper describes a method to adapt a model trained on a source domain to perform well on a target domain with only unlabeled data in the target domain. For that they propose a regional nuclear-norm and a contour regularization loss to adopt the parameters of batch norm layers to the target domain.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The main strength and novelty of the paper are the proposed unsupervised loss functions: regional nuclear-norm and contour regularization, which are well defined and motivated.</p>
+
+      <p>The inclusion of a well motivated ablation study in which show the influence of loss terms (parameters) is very interesting.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>
+          <p>The experimental design of the study is weak: Authors chose to simulate a target and source data sets from a single pancreas segmentation data set and a liver segmentation data set, respectively. This simulated target/source data set design has the weakness that for pancreas CT the mean-variance of the data as described in the paper can be biased by the field-of-view of the scan, thus the split in target and source is not meaningful. For the liver segmentation task the patients of the source and target data set are overlapping, which could potentially lead to a bias.</p>
+        </li>
+        <li>
+          <p>The data set description is unclear. E.g. authors mention that they resize images to 128x128x128 (without a metric I would assume pixel?) for pancreas segmentation but provide no information if the images are re-sampled to a common voxel spacing beforehand.</p>
+        </li>
+        <li>
+          <p>The results for Tent (the SOTA method authors compare to) and the proposed method are very similar, without the inclusion of mean/variance and/or statistical significance it is not possible to conclude that the proposed method is better.</p>
+        </li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The reproducibility checklist does not match the description in the paper.<br />
+Authors checked yes for every point on the reproducibility checklist, however the paper is missing details on:</p>
+      <ul>
+        <li>range of hyper-parameters</li>
+        <li>number of training and evaluation runs</li>
+        <li>description of results with central tendency &amp; variation</li>
+        <li>analysis of statistical significance</li>
+        <li>memory footprint</li>
+        <li>all information regarding a new dataset (unclear why authors checked ‘yes’, since all data used are publicly available)</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The method itself tackles a relevant problem and is described well, however to improve the evidence of the advantages of the method a couple of points should be considered:</p>
+      <ul>
+        <li>Source and target domain should be obtained from two different sources. This ensures a clean separation of data without overlap of site influence and/or patient cohorts.</li>
+        <li>The way data is pre-processed can be improved by using a fixed windowing for normalization for CT and information about whether resampling was done or not.</li>
+        <li>To better comprehend the differences between methods variance and statistical significance can be added.</li>
+      </ul>
+
+      <p>Some minor comments about the paper:</p>
+      <ul>
+        <li>Fig. 3 is never referenced in text, the message of the figure remains unclear</li>
+        <li>‘More results’ is a sub-heading with little information, consider renaming it ‘Generalization results’ or ‘Liver segmentation results’</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Methods in test-time domain adaption are important, however the novelty of the proposed method is low and due to the weaknesses in evaluating the method, it is not possible to reliably estimate the performance gains of the method.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This manuscript presents a simple but elegant test-time adaptation method for cross-domain image segmentation. The authors employed a variant of batch nuclear-norm maximization and a proposed contour regularization loss (essentially smoothness term). The proposed method is evaluated on two segmentation datasets, and outperformed a peer method (Tent).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The method is simple but elegant, should be compatible with a wide range of segmentation network structures which contain batch normalization layers, without introducing heavy additional computational cost. It also shows better performance against a peer method (Tent).</p>
+
+      <p>The paper is well-written and the reviewer enjoys reading it. It provides a well-detailed introduction of the method and a thorough analysis of experimental results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The proposed paper is substantially extended from adaptive batch normalization [7], where simply replacing batch statistics with those of the testing domain already leads to favorable performance, the authors may want to also use [7] as a baseline.</p>
+
+      <p>The proposed contour regularization is essentially a smoothness term. The reviewer therefore suspects that it might lead to degenerate solutions, particularly when foreground and background classes are extremely imbalanced (not uncommon for medical images). Could the authors please comment on this?</p>
+
+      <p>In either of the two experiments, the source data and target data are essentially from a same dataset. Could the authors provide a specific reason for not using two different datasets (one as source one as target) in one experiment, which is a common practice for a lot of domain adaptation/generalization papers? The reviewer suspects that in the manuscript, the only major different between source and target is intensity distributions, while other real-world domain gaps like demographic factors, manufacturers of imaging devices, etc., remain the same between the source and target. The reviewer therefore cannot be fully convinced by the experiment results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The method is simple, should be easy to follow. The authors agreed to share the code. The reviewer therefore has no major concerns on reproducibility.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The authors are expected to provide a detailed introduction on theoretical analysis on why regional nuclear-norm loss benefits segmentation, even though it might be found in the original batch nuclear-norm maximization paper.</p>
+
+      <p>The authors are expected to evaluate the proposed method on a more realistic scenario where source and target are from two different datasets (see Part 4).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The overall idea is simple and elegant and the paper is well-written. However, the authors didn’t to sufficiently justify the reason for splitting source and target domain from a same dataset, rather than using two separate datasets. This undermines the soundness of the experiments section.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>The reviewers were in agreement with the importance of the topic of this work and that there is novelty in the work presented. Other positives included impressive performance improvement over the baseline and discussion of limitations of the method. On the other hand, significant concerns were raised concerning the experimental set up including, but not limited to, choice of source/target data to come from the same dataset, lack of standard deviations which brings into question the significance of the results. There were also concerns raised about the mismatch of claimed level of reproducibility and what is presented. The authors should carefully address these concerns in their rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>7</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The questions about experimental setup and statistical significance as well as reproducibility were clarified by the rebuttal.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The paper proposes an interesting method to adapt pretrained model to new data distribution without relying on labels of the target domain. However, the experiment setting is not convincing in which source and target domains are from the same pancreas dataset. Nevertheless, reviewers agree that the paper has sufficient merit to be published at MICCAI.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work deals with unsupervised test time adaptation of a deep neural network. In general, this is an interesting idea, but there were significant concerns regarding the experimental design; some of which were resolved in the rebuttal. However, one major concern was that in the pancreas experiment (one of the two key experiments in the paper) a data split was artificially created by clustering in the intensity/variance space. This concern still remains after the rebuttal and was, in my opinion, not properly addressed. This strategy appears to be particularly problematic as the adaptation strategy hinges on adapting the batch-normalization layer parameters which seems to be directly matched to the division strategy. Hence, serious concerns regarding the validity of the presented results for test-time adaptation in a real scenario remain.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>15</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-4">Meta-Review #4</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The PCs assessed the paper reviews including meta-reviews, the rebuttal and the submission since one AC mentioned concerns regarding the validity of the results.</p>
+
+      <p>This paper presents a relatively new setting (called fully test-time adaptation) for unsupervised domain adaptation for image segmentation: the model is trained on the source domain and adapted to the target domain. The target domain images have no labels and during the adaptation phase, we have no access to the source domain data. This setting is relevant in real clinical scenarios. The proposed method has some novelty, especially on the proposed contour regularization loss. The major concerns are on the experiments. The widely used dataset in cross-domain segmentation is the CT/MR cardiac segmentation dataset. The authors mentioned in the paper that the domain gap between CT and MR is too large for fully test-time adaptation. Therefore, they performed experiments on two other datasets. For each dataset, they split it into two “artificial” domains. For the pancreas CT dataset, they split based on mean and variance of the intensity. For the liver MR dataset, they split based on MR scanning sequences (in-phase vs. out-of-phase). For the liver dataset, one reviewer has concerns about the bias (i.e., the same patient may appear in both source and target domains). In the rebuttal, the authors explicitly dismissed the bias concern. So, in the opinion of the PCs, the liver MR dataset is a valid example of two domains. The remaining concern is on the pancreas CT dataset. Without adaptation, the model trained on the source domain performs badly on the target domain. Therefore, there is an obvious gap between these two subsets even though they originally came from the same source. If we treat the pancreas dataset as a simulated dataset and the liver dataset as a real dataset, in the PCs opinion, the experiments are sufficient.</p>
+
+      <p>The PCs think this paper has some novelty, the topic is relatively new, and the comparison experiments provide sufficient evidence to demonstrate the effectiveness of the proposed method.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>0</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We sincerely thank all the reviewers for the constructive comments on our manuscript. The reviewers highlighted the novelty and performance improvement of our method(R1&amp;3) which is simple but elegant and compatible with a wide range of segmentation network structures that contain BN layers, without introducing heavy additional computational cost(R3). The analysis of the proposed method, especially motivated ablation study for loss terms and discussion of limitation, have gained the reviewers’ acceptance(R1&amp;2). We reply to reviewers’ concerns as follows.
+Q1(R3) Both experiments used one dataset. Could the authors provide a specific reason for not using two different datasets?
+For Liver dataset, we regarded two different MR modalities(IP&amp;OOP) as two domains. For Pancreas dataset, single dataset can be divided into several domains,e.g.[1] splits randomly a single dataset to simulate data from distributed medical entities. We adapted this idea and divided the Pancreas data into two subsets which have different intensity distribution and considered them as different domains.
+The two subsets can be regarded as two domains because 1) their intensities follow different distributions 2) there is an unignorable performance degradation(i.e.domain gap) when let the model well-trained on the source domain(dice=0.7) test on the target domain without adaptation(dice=0.26). Table 1 shows our method narrowed domain gap proving its effectiveness.
+Using two datasets for each experiment will introduce both domain- and label-shift problem while our method only tackles domain-shift problem. Dividing single dataset to simulate two domains can avoid label-shift problem since labeling criteria are consistent.
+Q2(R2&amp;3) For pancreas dataset, the mean-variance of data can be biased by field of view of the scan, thus the split in target and source is not meaningful.
+After the preprocessing detailly described in the Q4, the FOVs for all patients are same so it won’t bias the mean-variance of data. Although this splitting strategy(ref Q1) is imperfect due to the lack of exact clinical meaning, as an exploring experiment where all unrelated conditions are controlled, the results are still reliable for analyzing the effectiveness of our method and drawing the same conclusion.
+Q3(R2) For liver dataset, the patients of source and target dataset are overlapping, which could potentially lead to a bias.
+The patients aren’t overlapping. As claimed in Section 3.1, the separation of patients remains same for both modalities, thus there are no common patients in source domain’s training set and target domain’s validation set. Therefore, there is no data leakage risk.
+Q4(R2) The pre-processing for data is not clear.
+For pancreas dataset, we first resample the spacing of volume to 1.0mm^3, then crop it to size of 128^3 pixel and apply a normalization with fixed windowing [-125,275] as preprocessing. For liver MR dataset, we first resample the spacing of volume to 1.5mm^3, then crop the MR images to the size of 256<em>256</em>64 pixel and apply a normalization after replacing the extreme values by 95th percentile value.
+Q5(R1) Lack of qualitative results.
+The qualitative results will be updated in final version.
+Q6(R2) Lack of standard deviation &amp; statistical significance.
+For Table1, std of DSC is 0.158 for Tent and 0.155 for Ours which have statistical significance with t-test(p&lt;0.001). For Table3, from OOP to IP, std of DSC is 0.030 for Tent and 0.035 for Ours which also have statistical significance with t-test(p=0.048). Completed results with std will be added in tables of final version.
+Q7(R2) Mismatch of reproducibility checklist.
+As the datasets are public, we will release the source code to guarantee the reproducibility of the paper. To follow the reproducibility checklist, more implementation details will be added in Section 3.2 in final version.
+[1]Q.Chang et al. Multi-modal AsynDGAN: Learn from Distributed Medical Image Data w/o Sharing Private Information TPAMI2020</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0323-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0324-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Domain adaptation"
+        class="post-category">
+        Machine Learning - Domain adaptation
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Image Segmentation"
+        class="post-category">
+        Image Segmentation
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Hu, Minhao"
+        class="post-category">
+        Hu, Minhao
+      </a> |  
+      
+      <a href="kittywong/tags#Song, Tao"
+        class="post-category">
+        Song, Tao
+      </a> |  
+      
+      <a href="kittywong/tags#Gu, Yujun"
+        class="post-category">
+        Gu, Yujun
+      </a> |  
+      
+      <a href="kittywong/tags#Luo, Xiangde"
+        class="post-category">
+        Luo, Xiangde
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Jieneng"
+        class="post-category">
+        Chen, Jieneng
+      </a> |  
+      
+      <a href="kittywong/tags#Chen, Yinan"
+        class="post-category">
+        Chen, Yinan
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Ya"
+        class="post-category">
+        Zhang, Ya
+      </a> |  
+      
+      <a href="kittywong/tags#Zhang, Shaoting"
+        class="post-category">
+        Zhang, Shaoting
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0324/12/31/Paper1751">
+          OLVA: Optimal Latent Vector Alignment for Unsupervised Domain Adaptation in Medical Image Segmentation
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0322/12/31/Paper1049">
+          Domain Composition and Attention for Unseen-Domain Generalizable Medical Image Segmentation
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>MRI Super-Resolution Through Generative Degradation Learning | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="MRI Super-Resolution Through Generative Degradation Learning" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yao Sui, Onur Afacan, Ali Gholipour, Simon K. Warfield Abstract Spatial resolution plays a critically important role in MRI for the precise delineation of the imaged tissues. Unfortunately, acquisitions with high spatial resolution require increased imaging time, which increases the potential of subject motion, and suffers from reduced signal-to-noise ratio (SNR). Super-resolution reconstruction (SRR) has recently emerged as a technique that allows for a trade-off between high spatial resolution, high SNR, and short scan duration. Deconvolution-based SRR has recently received significant interest due to the convenience of using the image space. The most critical factor to succeed in deconvolution is the accuracy of the estimated blur kernels that characterize how the image was degraded in the acquisition process. Current methods use handcrafted filters, such as Gaussian filters, to approximate the blur kernels, and have achieved promising SRR results. As the image degradation is complex and varies with different sequences and scanners, handcrafted filters, unfortunately, do not necessarily ensure the success of the deconvolution. We sought to develop a technique that enables accurately estimating blur kernels from the image data itself. We designed a deep architecture that utilizes an adversarial scheme with a generative neural network against its degradation counterparts. This design allows for the SRR tailored to an individual subject, as the training requires the scan-specific data only, ie, it does not require auxiliary datasets of high-quality images, which are practically challenging to obtain. We achieved high-quality brain MRI at an isotropic resolution of 0.125 cubic mm with six minutes of imaging time. Experiments on both simulated data and clinical data acquired from ten pediatric patients demonstrated that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct high-resolution acquisitions. Link to paper https://doi.org/10.1007/978-3-030-87231-1_42 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deconvolution method that estimates the blurring kernels from the data, to achieve super-resolution. This is done in form of deep architecture that uses an adversarial scheme within a generative neural network against its degradation counterparts. Simulations of different kernels and original data are used to test this method on the HCP dataset, showing good visual results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. well-written paper, introducing nice idea of predicting kernels for deconvolutions comparison against state-of-the-art deconvolution method, and extensive simulations some motion simulation is included Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. unclear whether CNN based image restoration method (e.g. convolutional autoencoders) do not implicitly estimate those kernels, which would reduce the novelty of this work motivation a bit unclear - why super-resolution restoration and not super-resolution reconstruction from k-space? discussion of point spread function and partial volume effect is missing difference between experiments 1 and 2 not clear - one simulates kernels for estimation, the other just uses a different resolution for reconstruction, but that does not really make it a clinical application Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Use of public HCP data. No code nor algorithms provided. It would be hard to reimplement without further details, although some optimization details are included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My key question is why this work is operating in the spatial domain and not in k-space, which is where undersampling might be applied, bringing in the need for super-resolution reconstruction. Also the effect of point-spread functions, and potentially how these could be better estimated, could be addressed there. The approach of estimating the (de)convolution kernels is interesting though, but perhaps may be better suited to e.g. optical imaging. Applying degradation in this generative setting is very interesting - are there any insights into whether this could lead to aliasing? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is some nice work but methodological innovation is not entirely clear - this is a super-resolution and not image reconstruction paper which somewhat limits it applicability in the real clinic. It is quite well executed otherwise. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Authors report a technique to estimate blur kernels from the MRI image data and use adversarial schemes with a generative neural network against its degradation counterparts. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. According to my initial search, application of Generative Degradation Learning to MRI data to assess the blur kernels is, perhaps, the first such demonstration (I will wait for the post-rebuttal discussion with the eother reviewers to confirm). Despite missing comparison tables, the paper is well written and reads well. My guess is that this work was just cut in size too severely and could benefit from a larger paper format (surprisingly, no supplementary information has been attached). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state: “Experimental results have shown that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct HR acquisitions.” or “…. considerably outperformed…” The submission would definitely benefit from a statistical justification of how superior the results are. It is hard to follow the text having no comparison tables at hand demonstrating quantitative evaluations of the proposed method and baselines such as HLH-GAN, DRCN etc. as in [1,2]. For example, I would recommend to adding a subsection with the results of SSIM, PSNR (and NRMSE) for different architectures and consider other datasets to show generalizability [3]. The validation set (N=10 patients) is limited. Mitigation on simulated data helps, but what is the rationale when popular datasets such as fastMRI or BRATS are publically available? It would be helpful to consider some perspectives to perform an ablation study. The architecture in Fig. 1 is rather complex, with potentially redundant operations performed by Degradation Networks at different levels. While regularization probably helps, it is hard to estimate its contribution from the provided description. Total Variation loss, by the way, is a well-established optimization constraint, making the novelty claims less strong. As with many MRI reconstruction papers, especially those involving GANs, it is vital to survey the results with radiologists. Even if a metric such as SSIM is improved, the generative method may be prone to producing unrealistic features and anatomiic artefacts, which degrades the value of the method. In fact, some of these artefacts are visible in Fig. 7. Very relevant paper, not referenced by the authors: https://arxiv.org/pdf/1812.04240.pdf Unsupervised Degradation Learning for Single Image Super-Resolution Mentioned (and suggested) References: [1] https://www.ijcai.org/Proceedings/2020/0090.pdf Super-Resolution and Inpainting with Degraded and Upgraded Generative Adversarial Network [2] https://arxiv.org/abs/2003.01217 MRI Super-Resolution with GAN and 3D Multi-Level DenseNet: Smaller, Faster, and Better [3] https://www.tnu.ethz.ch/fileadmin/user_upload/documents/Publications/2020/2020_Fitzgibbon_Harrison_Jenkinson_Baxter.pdf The developing Human Connectome Project (dHCP) automated resting-state functional processing framework for newborn infants Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducibility of the submission is hard to assess due to the absence of any code attached to run the proposed methods versus the baselines. Statistics in Fig. 5 looks feasible. Datasets pose additional reproducibility concerns: one synthetic, the other - private and limited (N=10). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Reduce the use of acronyms in the subsection titles. Legends in Fig. 3 do not correspond to the curves. Save space by removing extra details about estimating the blur kernel from synthetic data (just a calibration, if one thinks about it). Please add values of SSIM/PSNR in the corners of Fig. 7. I sincerely think a basic survey of two-three radiologists would benefit the paper significantly. Consider adding a discussion about the norms used in the formulae. In the precursor field of deconvolution microscopy, e.g., it is commonplace to use L1 norm which yields sharper images. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given that the authors submitted no supplemental material, while some important information is missing, I have had to assume that the SOTA experiments have not been conducted properly (they are not shown). This distributes the PROs and CONs as 40/60. Given that the idea of degradation learning holds promise, I will increase the score if the authors are allowed to append supplementary table showing full comparisons with confidence intervals. I will lower the score if additional evidence is found reporting application of degradation learning to MRI data, e.g., from the other reviewers. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose SR-GDN to improve the through-plane resolution of MR scans, under the hypothesis that the underlying blur kernel is unknown for degradation process. SR-GDN utilises a similar idea as deep image prior [21], which enables learning both HR reconstruction and degradation process simultaneously. The experiments on the simulated data and the clinical data show that SR-GDN outperformed TV, GGR, and TV-BKL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper is well-written and the presentation is clear to understand. 2) The viewpoint of learning the blur kernel together with super resolution reconstruction in MRI seems somewhat innovative, compared to most of MRI super resolution studies having a commonly fixed down-sampling process. 3) The experimental designs convincingly prove the strong evaluation of the SR-GDN approach on a simulated dataset. Image quality metrics and spectrum of blur kernels were used for assessment. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) There are no true reference HR scans for the clinical data, which may hinder the qualitative assessment of SR-GDN in Fig. 7. 2) Following 1), it is doubtful that the SR-GDN model trained on the simulated data is generalisable to the clinical data. 3) The detailed structures of networks, such as the 3D U-Net like network and the fully connected network, are unspecified, plus all source codes may not be available. This may hinder the reproducibility and clarity of the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author has checked nearly half of the items, which probably make this paper irreproducible. Suggest at least providing the items which can also improve the clarity of presentation: A way to access the pre-trained models or the training/evaluation codes; A way to the dataset; A comprehensive list of all used parameters such as batch size. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to Point 4 and Point 6, I have some more concerns: 1) Is there a situation where the proposed SR-GDN may fail? 2) What do you think of the clinical significance of the proposed method? 3) The sentence related to “an adversarial scheme” in the abstract and Discussion confused me. Not sure if the interaction between generative network $f$ and the degradation function $g$ in Eq. (3) is in adversarial fashion. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work has a new viewpoint for MR super-resolution reconstruction along with estimating degradation model. However, it is hardly reproducible without providing the source code, evaluation model, or the evaluation data, compared to other submissions. Besides, the model was trained on simulation data which may not be generated to the clinical LR scans. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presents experiments on 10 subjects from HCP data (simulating LR process) and also show qualitative results on 30 paediatric acquisitions (LR available only). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. All the reviewers acknowledge this work is highly relevant and present some novelty, though R1 and R2 raised some points on author’s claims maybe too strong. I think the paper is interesting and tackles a practical problem of multiple-volume SR, I like the idea of self-supervision on the subject data only. However I think the authors presented a proof of concept more than demonstrate its real practical value. I was somehow disappointed to see this on only 10 subjects from HCP but more importantly I am not convinced by the study using real LR acquisitions in paediatric patients (using LR clinical acquisition without HR reference nor expert evaluation does not add much more as compared to the 1st experiment). It is a pity not to have acquired there a HR resolution scan, though probably a 3D 0.5x0.5x0.5 resolution would have been too noisy or not possible due to scanning time. But probably a T2w 1mm isotropic should have been possible. Otherwise maybe the authors can explore datasets such as fastMRI (suggested by one reviewer) or I would recommend to check Multires7T (OpenNeuro Accession Number: ds000113) where several image resolutions are acquired. Or considering acquiring phantom data (or scanning any object). I would like the authors to clarify some points before taking my final decision, I am summarising here important concerns from the reviewers: Clarify (and/or mild the novelty) Why only 10 subjects? Maybe you included more since the time of the submission? Statistical justification of your results in paediatric data, include the acquisition time that would be needed to acquire a single 3D T2w volume at which resolution Add network details Discuss on possible image artefacts and radiological evaluation Discuss on the decision to work in image space and not k-space as well as the possibility to include Point Spread Function and Partial volume. Comment on the concerns of R2 on SOTA methods. On my side I would add if space allows question on the influence of number and quality of LR to the final SR as well as how the proposed framework would deal with through plane motion in the LR stacks? I would like to remind authors that the purpose of this rebuttal is to provide clarification or to point out misunderstandings, and include new details that can better highlight the value of this work. I will not consider any promise of adding future experiments and results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). - Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presented originally experiments with simulated LR process on 10 subjects from HCP data and also show qualitative results on 30 paediatric acquisitions (no ground truth SR available). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. I had many points in my meta-review and most of them have been addressed. I think indeed that some reviewer misunderstood the fact that no external HR training data is needed here. Not needing external HR data has an important practical value. From the research point of view though I would like to see the performances of these different type of approaches. Please ensure though those important references missing in the original paper are included (the ones requested by R2). Remind also that supplementary material is allowed, and please include the requested statistical significance analysis of the results as requested in the main paper (this needs very few space). I did appreciate that the authors have now included many other subjects in the simulated experiments and results seems consistent with the initial ones. I am expecting these new results to be included in the paper. Just to clarify, I was not suggesting to scan babies at 7T. But your approach should also work in imaging other populations, so 7T images might be also a very nice playground to test your approach. I still believe this paper is a proof of concept of an original idea but given the methodological novelty and comparison with other methods, I think MICCAI community will be interested in this contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on MRI image super-resolution based on multi-scan images. The proposed network is applied individually to LR images of a same subject instead of training on a training dataset. The network can generate image and the blur kernels given multiple LR MRI images. The reviewers and major meta-reviewer raised concerns on the clinical significance, reconstruction not in k-space, values of PSNR / SSIM, limited number of patients, etc. The responses clarified on the details, quantitative results. With these new results and revisions, the paper will have more convincing quantitative comparisons. The remaining unclear points to me is on the reason why not working in k-space (the explanations on this point in rebuttal is not totally convincing to me), practical impact in real clinical application, the optimization time (or number of training steps) for each set of LR images. Overall, the paper does have some merits, e.g., the joint estimation of blur kernel and image, training on single image set, but with the above mentioned weakness. My accurate score for this work is the borderline reject, and I am OK with either accept or reject. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The idea of estimating blur kernels from the data to perform super-resolution reconstruction is a good one. The other aspects of the method are not as novel and the evaluation could have been better executed, as noted by the reviewers. In particular, Fig. 7 is not that convincing and should show the original data for comparison. With that said, I believe Reviewer 3 misunderstood that the algorithm is unsupervised. Some reviewers also expressed concerns about reproducibility. Although it is preferable to have data and code released, I understand that to do so may take time depending on the institution. Reviewer 1 also made an excellent point about the frequency domain. Although it may be challenging to work in the frequency domain, it would have been beneficial to see the effects of the approach within the frequency domain, and whether high frequency information is recovered. Reviewer 2 was concerned about similar approaches in the literature. There are a couple of related papers that have been released after this paper was submitted, so should not be counted against this work ( https://arxiv.org/abs/2104.00100, https://ieeexplore.ieee.org/abstract/document/9434137). I did not find other publications on this topic. Overall, although the clinical data results were not strong, other aspects of the evaluation showed that the method has merit. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank the area chairs and the reviewers for providing thorough and invaluable feedback. We identified two main grounds of criticism: 1) implementation details, and 2) evaluation methods and datasets. Response: We would like to clarify the misunderstandings: Our model is trained for each individual patient, ie, on only the LR data acquired from a patient, with no requirement of auxiliary large-scale HR datasets. 1) We have included in the revised paper the network architectures and parameter settings for reproducibility. Artifacts: Artifacts in SR reconstructions are commonly from aliasing. The downsampling operation is the main source of aliasing. Our approach leverages low-pass filtering through the blur kernel learning before downsampling to ensure the downsampled data meets the requirement of Nyquist Theorem for avoiding aliasing. Also, our fast san protocol mitigates the motion artifacts due to intervolume motion. SR in k-space: Our technique allows for SRR on k-space data. However, it is convenient and efficient to perform SR in the image domain. K-space data consumes more GPU memory than intensity data, and may not be loaded entirely on a GPU for training. For the downsampling pointed out by R2, we downsampled the image in the Fourier domain for an arbitrary downsampling factor. Number of LR scans: The more the LR scans, the higher the SR quality, from the perspective of SR techniques. We use 3 LR scans considering the trade-off between scan time and SR quality. Motion: As we can acquire an LR image in 2min with our fast scan protocol, we consider intervolume motion only in this work. 2) We demonstrated that our approach offered correct reconstructions and kernel estimates through simulations in Experiment 1 in terms of PSNR/SSIM, and achieved high-quality MRI for clinical use in Experiment 2 in terms of AES (sharpness), estimated kernels (Fig 6), and qualitative evaluations (Fig 7). Number of subjects in simulations: We simulated 4 datasets for each subject corresponding to 4 types of kernels. So our approach was assessed on 40 simulated datasets with 10 subjects. We have included further evaluations in the revised paper on 120 simulated datasets from another 30 randomly picked subjects. The SSIM on all the 160 datasets was TV=0.953±0.028, GGR=0.958±0.031, TV-BKL=0.967±0.036, Ours=0.983±0.012 Datasets: The Multires7T dataset is excellent. However, the resolutions vary in voxel size isotropically rather than in thickness only. So it cannot be directly used in our approach. Also, 7T imaging cannot be performed for babies (&lt;66lbs). Assessments on the clinical data: It is costly for us to do radiological evaluations. Instead, we performed more quantitative assessments in the revised paper, including SNR, partial volume effect (PVE), and spatial resolution. SNR(dB): TV=25.1±1.7, GGR=25.7±1.8, TV-BKL=23.5±1.7, Ours=26.4±1.8 The percentage of the voxels suffering from PVE (Laidlaw et al, TMI98) and the measured spatial resolution were PVE(%): TV=7.9±6.9, GGR=8.1±7.3, TV-BKL=7.1±7.2, Ours=3.1±6.1 Spatial resolution(mm): TV=0.539±0.034, GGR=0.541±0.038, TV-BKL=0.535±0.036, Ours=0.518±0.030 These results were consistent with those in terms of AES and shown in Fig 7. Our approach offered high SNR and high spatial resolution due to the generative degradation learning. Baselines: The methods suggested by R2 are excellent. However, they rely on auxiliary large-scale HR training datasets that are difficult to obtain in practice. Our approach requires only the LR data acquired from a patient. It is thus unfair to compare our approach to those methods. Scan time: Our approach requires three 2min scans to achieve high-quality MRI at the isotropic resolution of 0.5mm with an SNR of 26.4±1.8dB. A 3D T2w SPACE MRI acquired at 1 cubic mm typically requires 6min on our 3T scanner. For an acquisition at 0.5 cubic mm with the matched SNR, it would require slightly longer than an entire day in the scanner. back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Yao Sui, Onur Afacan, Ali Gholipour, Simon K. Warfield Abstract Spatial resolution plays a critically important role in MRI for the precise delineation of the imaged tissues. Unfortunately, acquisitions with high spatial resolution require increased imaging time, which increases the potential of subject motion, and suffers from reduced signal-to-noise ratio (SNR). Super-resolution reconstruction (SRR) has recently emerged as a technique that allows for a trade-off between high spatial resolution, high SNR, and short scan duration. Deconvolution-based SRR has recently received significant interest due to the convenience of using the image space. The most critical factor to succeed in deconvolution is the accuracy of the estimated blur kernels that characterize how the image was degraded in the acquisition process. Current methods use handcrafted filters, such as Gaussian filters, to approximate the blur kernels, and have achieved promising SRR results. As the image degradation is complex and varies with different sequences and scanners, handcrafted filters, unfortunately, do not necessarily ensure the success of the deconvolution. We sought to develop a technique that enables accurately estimating blur kernels from the image data itself. We designed a deep architecture that utilizes an adversarial scheme with a generative neural network against its degradation counterparts. This design allows for the SRR tailored to an individual subject, as the training requires the scan-specific data only, ie, it does not require auxiliary datasets of high-quality images, which are practically challenging to obtain. We achieved high-quality brain MRI at an isotropic resolution of 0.125 cubic mm with six minutes of imaging time. Experiments on both simulated data and clinical data acquired from ten pediatric patients demonstrated that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct high-resolution acquisitions. Link to paper https://doi.org/10.1007/978-3-030-87231-1_42 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deconvolution method that estimates the blurring kernels from the data, to achieve super-resolution. This is done in form of deep architecture that uses an adversarial scheme within a generative neural network against its degradation counterparts. Simulations of different kernels and original data are used to test this method on the HCP dataset, showing good visual results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. well-written paper, introducing nice idea of predicting kernels for deconvolutions comparison against state-of-the-art deconvolution method, and extensive simulations some motion simulation is included Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. unclear whether CNN based image restoration method (e.g. convolutional autoencoders) do not implicitly estimate those kernels, which would reduce the novelty of this work motivation a bit unclear - why super-resolution restoration and not super-resolution reconstruction from k-space? discussion of point spread function and partial volume effect is missing difference between experiments 1 and 2 not clear - one simulates kernels for estimation, the other just uses a different resolution for reconstruction, but that does not really make it a clinical application Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Use of public HCP data. No code nor algorithms provided. It would be hard to reimplement without further details, although some optimization details are included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My key question is why this work is operating in the spatial domain and not in k-space, which is where undersampling might be applied, bringing in the need for super-resolution reconstruction. Also the effect of point-spread functions, and potentially how these could be better estimated, could be addressed there. The approach of estimating the (de)convolution kernels is interesting though, but perhaps may be better suited to e.g. optical imaging. Applying degradation in this generative setting is very interesting - are there any insights into whether this could lead to aliasing? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is some nice work but methodological innovation is not entirely clear - this is a super-resolution and not image reconstruction paper which somewhat limits it applicability in the real clinic. It is quite well executed otherwise. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Authors report a technique to estimate blur kernels from the MRI image data and use adversarial schemes with a generative neural network against its degradation counterparts. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. According to my initial search, application of Generative Degradation Learning to MRI data to assess the blur kernels is, perhaps, the first such demonstration (I will wait for the post-rebuttal discussion with the eother reviewers to confirm). Despite missing comparison tables, the paper is well written and reads well. My guess is that this work was just cut in size too severely and could benefit from a larger paper format (surprisingly, no supplementary information has been attached). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state: “Experimental results have shown that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct HR acquisitions.” or “…. considerably outperformed…” The submission would definitely benefit from a statistical justification of how superior the results are. It is hard to follow the text having no comparison tables at hand demonstrating quantitative evaluations of the proposed method and baselines such as HLH-GAN, DRCN etc. as in [1,2]. For example, I would recommend to adding a subsection with the results of SSIM, PSNR (and NRMSE) for different architectures and consider other datasets to show generalizability [3]. The validation set (N=10 patients) is limited. Mitigation on simulated data helps, but what is the rationale when popular datasets such as fastMRI or BRATS are publically available? It would be helpful to consider some perspectives to perform an ablation study. The architecture in Fig. 1 is rather complex, with potentially redundant operations performed by Degradation Networks at different levels. While regularization probably helps, it is hard to estimate its contribution from the provided description. Total Variation loss, by the way, is a well-established optimization constraint, making the novelty claims less strong. As with many MRI reconstruction papers, especially those involving GANs, it is vital to survey the results with radiologists. Even if a metric such as SSIM is improved, the generative method may be prone to producing unrealistic features and anatomiic artefacts, which degrades the value of the method. In fact, some of these artefacts are visible in Fig. 7. Very relevant paper, not referenced by the authors: https://arxiv.org/pdf/1812.04240.pdf Unsupervised Degradation Learning for Single Image Super-Resolution Mentioned (and suggested) References: [1] https://www.ijcai.org/Proceedings/2020/0090.pdf Super-Resolution and Inpainting with Degraded and Upgraded Generative Adversarial Network [2] https://arxiv.org/abs/2003.01217 MRI Super-Resolution with GAN and 3D Multi-Level DenseNet: Smaller, Faster, and Better [3] https://www.tnu.ethz.ch/fileadmin/user_upload/documents/Publications/2020/2020_Fitzgibbon_Harrison_Jenkinson_Baxter.pdf The developing Human Connectome Project (dHCP) automated resting-state functional processing framework for newborn infants Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducibility of the submission is hard to assess due to the absence of any code attached to run the proposed methods versus the baselines. Statistics in Fig. 5 looks feasible. Datasets pose additional reproducibility concerns: one synthetic, the other - private and limited (N=10). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Reduce the use of acronyms in the subsection titles. Legends in Fig. 3 do not correspond to the curves. Save space by removing extra details about estimating the blur kernel from synthetic data (just a calibration, if one thinks about it). Please add values of SSIM/PSNR in the corners of Fig. 7. I sincerely think a basic survey of two-three radiologists would benefit the paper significantly. Consider adding a discussion about the norms used in the formulae. In the precursor field of deconvolution microscopy, e.g., it is commonplace to use L1 norm which yields sharper images. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given that the authors submitted no supplemental material, while some important information is missing, I have had to assume that the SOTA experiments have not been conducted properly (they are not shown). This distributes the PROs and CONs as 40/60. Given that the idea of degradation learning holds promise, I will increase the score if the authors are allowed to append supplementary table showing full comparisons with confidence intervals. I will lower the score if additional evidence is found reporting application of degradation learning to MRI data, e.g., from the other reviewers. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose SR-GDN to improve the through-plane resolution of MR scans, under the hypothesis that the underlying blur kernel is unknown for degradation process. SR-GDN utilises a similar idea as deep image prior [21], which enables learning both HR reconstruction and degradation process simultaneously. The experiments on the simulated data and the clinical data show that SR-GDN outperformed TV, GGR, and TV-BKL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper is well-written and the presentation is clear to understand. 2) The viewpoint of learning the blur kernel together with super resolution reconstruction in MRI seems somewhat innovative, compared to most of MRI super resolution studies having a commonly fixed down-sampling process. 3) The experimental designs convincingly prove the strong evaluation of the SR-GDN approach on a simulated dataset. Image quality metrics and spectrum of blur kernels were used for assessment. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) There are no true reference HR scans for the clinical data, which may hinder the qualitative assessment of SR-GDN in Fig. 7. 2) Following 1), it is doubtful that the SR-GDN model trained on the simulated data is generalisable to the clinical data. 3) The detailed structures of networks, such as the 3D U-Net like network and the fully connected network, are unspecified, plus all source codes may not be available. This may hinder the reproducibility and clarity of the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author has checked nearly half of the items, which probably make this paper irreproducible. Suggest at least providing the items which can also improve the clarity of presentation: A way to access the pre-trained models or the training/evaluation codes; A way to the dataset; A comprehensive list of all used parameters such as batch size. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to Point 4 and Point 6, I have some more concerns: 1) Is there a situation where the proposed SR-GDN may fail? 2) What do you think of the clinical significance of the proposed method? 3) The sentence related to “an adversarial scheme” in the abstract and Discussion confused me. Not sure if the interaction between generative network $f$ and the degradation function $g$ in Eq. (3) is in adversarial fashion. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work has a new viewpoint for MR super-resolution reconstruction along with estimating degradation model. However, it is hardly reproducible without providing the source code, evaluation model, or the evaluation data, compared to other submissions. Besides, the model was trained on simulation data which may not be generated to the clinical LR scans. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presents experiments on 10 subjects from HCP data (simulating LR process) and also show qualitative results on 30 paediatric acquisitions (LR available only). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. All the reviewers acknowledge this work is highly relevant and present some novelty, though R1 and R2 raised some points on author’s claims maybe too strong. I think the paper is interesting and tackles a practical problem of multiple-volume SR, I like the idea of self-supervision on the subject data only. However I think the authors presented a proof of concept more than demonstrate its real practical value. I was somehow disappointed to see this on only 10 subjects from HCP but more importantly I am not convinced by the study using real LR acquisitions in paediatric patients (using LR clinical acquisition without HR reference nor expert evaluation does not add much more as compared to the 1st experiment). It is a pity not to have acquired there a HR resolution scan, though probably a 3D 0.5x0.5x0.5 resolution would have been too noisy or not possible due to scanning time. But probably a T2w 1mm isotropic should have been possible. Otherwise maybe the authors can explore datasets such as fastMRI (suggested by one reviewer) or I would recommend to check Multires7T (OpenNeuro Accession Number: ds000113) where several image resolutions are acquired. Or considering acquiring phantom data (or scanning any object). I would like the authors to clarify some points before taking my final decision, I am summarising here important concerns from the reviewers: Clarify (and/or mild the novelty) Why only 10 subjects? Maybe you included more since the time of the submission? Statistical justification of your results in paediatric data, include the acquisition time that would be needed to acquire a single 3D T2w volume at which resolution Add network details Discuss on possible image artefacts and radiological evaluation Discuss on the decision to work in image space and not k-space as well as the possibility to include Point Spread Function and Partial volume. Comment on the concerns of R2 on SOTA methods. On my side I would add if space allows question on the influence of number and quality of LR to the final SR as well as how the proposed framework would deal with through plane motion in the LR stacks? I would like to remind authors that the purpose of this rebuttal is to provide clarification or to point out misunderstandings, and include new details that can better highlight the value of this work. I will not consider any promise of adding future experiments and results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). - Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presented originally experiments with simulated LR process on 10 subjects from HCP data and also show qualitative results on 30 paediatric acquisitions (no ground truth SR available). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. I had many points in my meta-review and most of them have been addressed. I think indeed that some reviewer misunderstood the fact that no external HR training data is needed here. Not needing external HR data has an important practical value. From the research point of view though I would like to see the performances of these different type of approaches. Please ensure though those important references missing in the original paper are included (the ones requested by R2). Remind also that supplementary material is allowed, and please include the requested statistical significance analysis of the results as requested in the main paper (this needs very few space). I did appreciate that the authors have now included many other subjects in the simulated experiments and results seems consistent with the initial ones. I am expecting these new results to be included in the paper. Just to clarify, I was not suggesting to scan babies at 7T. But your approach should also work in imaging other populations, so 7T images might be also a very nice playground to test your approach. I still believe this paper is a proof of concept of an original idea but given the methodological novelty and comparison with other methods, I think MICCAI community will be interested in this contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on MRI image super-resolution based on multi-scan images. The proposed network is applied individually to LR images of a same subject instead of training on a training dataset. The network can generate image and the blur kernels given multiple LR MRI images. The reviewers and major meta-reviewer raised concerns on the clinical significance, reconstruction not in k-space, values of PSNR / SSIM, limited number of patients, etc. The responses clarified on the details, quantitative results. With these new results and revisions, the paper will have more convincing quantitative comparisons. The remaining unclear points to me is on the reason why not working in k-space (the explanations on this point in rebuttal is not totally convincing to me), practical impact in real clinical application, the optimization time (or number of training steps) for each set of LR images. Overall, the paper does have some merits, e.g., the joint estimation of blur kernel and image, training on single image set, but with the above mentioned weakness. My accurate score for this work is the borderline reject, and I am OK with either accept or reject. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The idea of estimating blur kernels from the data to perform super-resolution reconstruction is a good one. The other aspects of the method are not as novel and the evaluation could have been better executed, as noted by the reviewers. In particular, Fig. 7 is not that convincing and should show the original data for comparison. With that said, I believe Reviewer 3 misunderstood that the algorithm is unsupervised. Some reviewers also expressed concerns about reproducibility. Although it is preferable to have data and code released, I understand that to do so may take time depending on the institution. Reviewer 1 also made an excellent point about the frequency domain. Although it may be challenging to work in the frequency domain, it would have been beneficial to see the effects of the approach within the frequency domain, and whether high frequency information is recovered. Reviewer 2 was concerned about similar approaches in the literature. There are a couple of related papers that have been released after this paper was submitted, so should not be counted against this work ( https://arxiv.org/abs/2104.00100, https://ieeexplore.ieee.org/abstract/document/9434137). I did not find other publications on this topic. Overall, although the clinical data results were not strong, other aspects of the evaluation showed that the method has merit. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank the area chairs and the reviewers for providing thorough and invaluable feedback. We identified two main grounds of criticism: 1) implementation details, and 2) evaluation methods and datasets. Response: We would like to clarify the misunderstandings: Our model is trained for each individual patient, ie, on only the LR data acquired from a patient, with no requirement of auxiliary large-scale HR datasets. 1) We have included in the revised paper the network architectures and parameter settings for reproducibility. Artifacts: Artifacts in SR reconstructions are commonly from aliasing. The downsampling operation is the main source of aliasing. Our approach leverages low-pass filtering through the blur kernel learning before downsampling to ensure the downsampled data meets the requirement of Nyquist Theorem for avoiding aliasing. Also, our fast san protocol mitigates the motion artifacts due to intervolume motion. SR in k-space: Our technique allows for SRR on k-space data. However, it is convenient and efficient to perform SR in the image domain. K-space data consumes more GPU memory than intensity data, and may not be loaded entirely on a GPU for training. For the downsampling pointed out by R2, we downsampled the image in the Fourier domain for an arbitrary downsampling factor. Number of LR scans: The more the LR scans, the higher the SR quality, from the perspective of SR techniques. We use 3 LR scans considering the trade-off between scan time and SR quality. Motion: As we can acquire an LR image in 2min with our fast scan protocol, we consider intervolume motion only in this work. 2) We demonstrated that our approach offered correct reconstructions and kernel estimates through simulations in Experiment 1 in terms of PSNR/SSIM, and achieved high-quality MRI for clinical use in Experiment 2 in terms of AES (sharpness), estimated kernels (Fig 6), and qualitative evaluations (Fig 7). Number of subjects in simulations: We simulated 4 datasets for each subject corresponding to 4 types of kernels. So our approach was assessed on 40 simulated datasets with 10 subjects. We have included further evaluations in the revised paper on 120 simulated datasets from another 30 randomly picked subjects. The SSIM on all the 160 datasets was TV=0.953±0.028, GGR=0.958±0.031, TV-BKL=0.967±0.036, Ours=0.983±0.012 Datasets: The Multires7T dataset is excellent. However, the resolutions vary in voxel size isotropically rather than in thickness only. So it cannot be directly used in our approach. Also, 7T imaging cannot be performed for babies (&lt;66lbs). Assessments on the clinical data: It is costly for us to do radiological evaluations. Instead, we performed more quantitative assessments in the revised paper, including SNR, partial volume effect (PVE), and spatial resolution. SNR(dB): TV=25.1±1.7, GGR=25.7±1.8, TV-BKL=23.5±1.7, Ours=26.4±1.8 The percentage of the voxels suffering from PVE (Laidlaw et al, TMI98) and the measured spatial resolution were PVE(%): TV=7.9±6.9, GGR=8.1±7.3, TV-BKL=7.1±7.2, Ours=3.1±6.1 Spatial resolution(mm): TV=0.539±0.034, GGR=0.541±0.038, TV-BKL=0.535±0.036, Ours=0.518±0.030 These results were consistent with those in terms of AES and shown in Fig 7. Our approach offered high SNR and high spatial resolution due to the generative degradation learning. Baselines: The methods suggested by R2 are excellent. However, they rely on auxiliary large-scale HR training datasets that are difficult to obtain in practice. Our approach requires only the LR data acquired from a patient. It is thus unfair to compare our approach to those methods. Scan time: Our approach requires three 2min scans to achieve high-quality MRI at the isotropic resolution of 0.5mm with an SNR of 26.4±1.8dB. A 3D T2w SPACE MRI acquired at 1 cubic mm typically requires 6min on our 3T scanner. For an acquisition at 0.5 cubic mm with the matched SNR, it would require slightly longer than an entire day in the scanner. back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0641/12/31/Paper1934" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0641/12/31/Paper1934" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0641-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="MRI Super-Resolution Through Generative Degradation Learning" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0641/12/31/Paper1934"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0641/12/31/Paper1934","headline":"MRI Super-Resolution Through Generative Degradation Learning","dateModified":"0642-01-04T00:00:00-05:17","datePublished":"0641-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Yao Sui, Onur Afacan, Ali Gholipour, Simon K. Warfield Abstract Spatial resolution plays a critically important role in MRI for the precise delineation of the imaged tissues. Unfortunately, acquisitions with high spatial resolution require increased imaging time, which increases the potential of subject motion, and suffers from reduced signal-to-noise ratio (SNR). Super-resolution reconstruction (SRR) has recently emerged as a technique that allows for a trade-off between high spatial resolution, high SNR, and short scan duration. Deconvolution-based SRR has recently received significant interest due to the convenience of using the image space. The most critical factor to succeed in deconvolution is the accuracy of the estimated blur kernels that characterize how the image was degraded in the acquisition process. Current methods use handcrafted filters, such as Gaussian filters, to approximate the blur kernels, and have achieved promising SRR results. As the image degradation is complex and varies with different sequences and scanners, handcrafted filters, unfortunately, do not necessarily ensure the success of the deconvolution. We sought to develop a technique that enables accurately estimating blur kernels from the image data itself. We designed a deep architecture that utilizes an adversarial scheme with a generative neural network against its degradation counterparts. This design allows for the SRR tailored to an individual subject, as the training requires the scan-specific data only, ie, it does not require auxiliary datasets of high-quality images, which are practically challenging to obtain. We achieved high-quality brain MRI at an isotropic resolution of 0.125 cubic mm with six minutes of imaging time. Experiments on both simulated data and clinical data acquired from ten pediatric patients demonstrated that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct high-resolution acquisitions. Link to paper https://doi.org/10.1007/978-3-030-87231-1_42 Link to the code repository N/A Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper This paper presents a deconvolution method that estimates the blurring kernels from the data, to achieve super-resolution. This is done in form of deep architecture that uses an adversarial scheme within a generative neural network against its degradation counterparts. Simulations of different kernels and original data are used to test this method on the HCP dataset, showing good visual results. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. well-written paper, introducing nice idea of predicting kernels for deconvolutions comparison against state-of-the-art deconvolution method, and extensive simulations some motion simulation is included Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. unclear whether CNN based image restoration method (e.g. convolutional autoencoders) do not implicitly estimate those kernels, which would reduce the novelty of this work motivation a bit unclear - why super-resolution restoration and not super-resolution reconstruction from k-space? discussion of point spread function and partial volume effect is missing difference between experiments 1 and 2 not clear - one simulates kernels for estimation, the other just uses a different resolution for reconstruction, but that does not really make it a clinical application Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Use of public HCP data. No code nor algorithms provided. It would be hard to reimplement without further details, although some optimization details are included Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html My key question is why this work is operating in the spatial domain and not in k-space, which is where undersampling might be applied, bringing in the need for super-resolution reconstruction. Also the effect of point-spread functions, and potentially how these could be better estimated, could be addressed there. The approach of estimating the (de)convolution kernels is interesting though, but perhaps may be better suited to e.g. optical imaging. Applying degradation in this generative setting is very interesting - are there any insights into whether this could lead to aliasing? Please state your overall opinion of the paper borderline accept (6) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is some nice work but methodological innovation is not entirely clear - this is a super-resolution and not image reconstruction paper which somewhat limits it applicability in the real clinic. It is quite well executed otherwise. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Very confident Review #2 Please describe the contribution of the paper Authors report a technique to estimate blur kernels from the MRI image data and use adversarial schemes with a generative neural network against its degradation counterparts. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. According to my initial search, application of Generative Degradation Learning to MRI data to assess the blur kernels is, perhaps, the first such demonstration (I will wait for the post-rebuttal discussion with the eother reviewers to confirm). Despite missing comparison tables, the paper is well written and reads well. My guess is that this work was just cut in size too severely and could benefit from a larger paper format (surprisingly, no supplementary information has been attached). Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The authors state: “Experimental results have shown that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct HR acquisitions.” or “…. considerably outperformed…” The submission would definitely benefit from a statistical justification of how superior the results are. It is hard to follow the text having no comparison tables at hand demonstrating quantitative evaluations of the proposed method and baselines such as HLH-GAN, DRCN etc. as in [1,2]. For example, I would recommend to adding a subsection with the results of SSIM, PSNR (and NRMSE) for different architectures and consider other datasets to show generalizability [3]. The validation set (N=10 patients) is limited. Mitigation on simulated data helps, but what is the rationale when popular datasets such as fastMRI or BRATS are publically available? It would be helpful to consider some perspectives to perform an ablation study. The architecture in Fig. 1 is rather complex, with potentially redundant operations performed by Degradation Networks at different levels. While regularization probably helps, it is hard to estimate its contribution from the provided description. Total Variation loss, by the way, is a well-established optimization constraint, making the novelty claims less strong. As with many MRI reconstruction papers, especially those involving GANs, it is vital to survey the results with radiologists. Even if a metric such as SSIM is improved, the generative method may be prone to producing unrealistic features and anatomiic artefacts, which degrades the value of the method. In fact, some of these artefacts are visible in Fig. 7. Very relevant paper, not referenced by the authors: https://arxiv.org/pdf/1812.04240.pdf Unsupervised Degradation Learning for Single Image Super-Resolution Mentioned (and suggested) References: [1] https://www.ijcai.org/Proceedings/2020/0090.pdf Super-Resolution and Inpainting with Degraded and Upgraded Generative Adversarial Network [2] https://arxiv.org/abs/2003.01217 MRI Super-Resolution with GAN and 3D Multi-Level DenseNet: Smaller, Faster, and Better [3] https://www.tnu.ethz.ch/fileadmin/user_upload/documents/Publications/2020/2020_Fitzgibbon_Harrison_Jenkinson_Baxter.pdf The developing Human Connectome Project (dHCP) automated resting-state functional processing framework for newborn infants Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Reproducibility of the submission is hard to assess due to the absence of any code attached to run the proposed methods versus the baselines. Statistics in Fig. 5 looks feasible. Datasets pose additional reproducibility concerns: one synthetic, the other - private and limited (N=10). Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Reduce the use of acronyms in the subsection titles. Legends in Fig. 3 do not correspond to the curves. Save space by removing extra details about estimating the blur kernel from synthetic data (just a calibration, if one thinks about it). Please add values of SSIM/PSNR in the corners of Fig. 7. I sincerely think a basic survey of two-three radiologists would benefit the paper significantly. Consider adding a discussion about the norms used in the formulae. In the precursor field of deconvolution microscopy, e.g., it is commonplace to use L1 norm which yields sharper images. Please state your overall opinion of the paper probably reject (4) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? Given that the authors submitted no supplemental material, while some important information is missing, I have had to assume that the SOTA experiments have not been conducted properly (they are not shown). This distributes the PROs and CONs as 40/60. Given that the idea of degradation learning holds promise, I will increase the score if the authors are allowed to append supplementary table showing full comparisons with confidence intervals. I will lower the score if additional evidence is found reporting application of degradation learning to MRI data, e.g., from the other reviewers. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors propose SR-GDN to improve the through-plane resolution of MR scans, under the hypothesis that the underlying blur kernel is unknown for degradation process. SR-GDN utilises a similar idea as deep image prior [21], which enables learning both HR reconstruction and degradation process simultaneously. The experiments on the simulated data and the clinical data show that SR-GDN outperformed TV, GGR, and TV-BKL. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. 1) The paper is well-written and the presentation is clear to understand. 2) The viewpoint of learning the blur kernel together with super resolution reconstruction in MRI seems somewhat innovative, compared to most of MRI super resolution studies having a commonly fixed down-sampling process. 3) The experimental designs convincingly prove the strong evaluation of the SR-GDN approach on a simulated dataset. Image quality metrics and spectrum of blur kernels were used for assessment. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. 1) There are no true reference HR scans for the clinical data, which may hinder the qualitative assessment of SR-GDN in Fig. 7. 2) Following 1), it is doubtful that the SR-GDN model trained on the simulated data is generalisable to the clinical data. 3) The detailed structures of networks, such as the 3D U-Net like network and the fully connected network, are unspecified, plus all source codes may not be available. This may hinder the reproducibility and clarity of the paper. Please rate the clarity and organization of this paper Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance The author has checked nearly half of the items, which probably make this paper irreproducible. Suggest at least providing the items which can also improve the clarity of presentation: A way to access the pre-trained models or the training/evaluation codes; A way to the dataset; A comprehensive list of all used parameters such as batch size. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html In addition to Point 4 and Point 6, I have some more concerns: 1) Is there a situation where the proposed SR-GDN may fail? 2) What do you think of the clinical significance of the proposed method? 3) The sentence related to “an adversarial scheme” in the abstract and Discussion confused me. Not sure if the interaction between generative network $f$ and the degradation function $g$ in Eq. (3) is in adversarial fashion. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The work has a new viewpoint for MR super-resolution reconstruction along with estimating degradation model. However, it is hardly reproducible without providing the source code, evaluation model, or the evaluation data, compared to other submissions. Besides, the model was trained on simulation data which may not be generated to the clinical LR scans. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 6 Reviewer confidence Very confident Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presents experiments on 10 subjects from HCP data (simulating LR process) and also show qualitative results on 30 paediatric acquisitions (LR available only). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. All the reviewers acknowledge this work is highly relevant and present some novelty, though R1 and R2 raised some points on author’s claims maybe too strong. I think the paper is interesting and tackles a practical problem of multiple-volume SR, I like the idea of self-supervision on the subject data only. However I think the authors presented a proof of concept more than demonstrate its real practical value. I was somehow disappointed to see this on only 10 subjects from HCP but more importantly I am not convinced by the study using real LR acquisitions in paediatric patients (using LR clinical acquisition without HR reference nor expert evaluation does not add much more as compared to the 1st experiment). It is a pity not to have acquired there a HR resolution scan, though probably a 3D 0.5x0.5x0.5 resolution would have been too noisy or not possible due to scanning time. But probably a T2w 1mm isotropic should have been possible. Otherwise maybe the authors can explore datasets such as fastMRI (suggested by one reviewer) or I would recommend to check Multires7T (OpenNeuro Accession Number: ds000113) where several image resolutions are acquired. Or considering acquiring phantom data (or scanning any object). I would like the authors to clarify some points before taking my final decision, I am summarising here important concerns from the reviewers: Clarify (and/or mild the novelty) Why only 10 subjects? Maybe you included more since the time of the submission? Statistical justification of your results in paediatric data, include the acquisition time that would be needed to acquire a single 3D T2w volume at which resolution Add network details Discuss on possible image artefacts and radiological evaluation Discuss on the decision to work in image space and not k-space as well as the possibility to include Point Spread Function and Partial volume. Comment on the concerns of R2 on SOTA methods. On my side I would add if space allows question on the influence of number and quality of LR to the final SR as well as how the proposed framework would deal with through plane motion in the LR stacks? I would like to remind authors that the purpose of this rebuttal is to provide clarification or to point out misunderstandings, and include new details that can better highlight the value of this work. I will not consider any promise of adding future experiments and results. What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). - Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presented originally experiments with simulated LR process on 10 subjects from HCP data and also show qualitative results on 30 paediatric acquisitions (no ground truth SR available). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. I had many points in my meta-review and most of them have been addressed. I think indeed that some reviewer misunderstood the fact that no external HR training data is needed here. Not needing external HR data has an important practical value. From the research point of view though I would like to see the performances of these different type of approaches. Please ensure though those important references missing in the original paper are included (the ones requested by R2). Remind also that supplementary material is allowed, and please include the requested statistical significance analysis of the results as requested in the main paper (this needs very few space). I did appreciate that the authors have now included many other subjects in the simulated experiments and results seems consistent with the initial ones. I am expecting these new results to be included in the paper. Just to clarify, I was not suggesting to scan babies at 7T. But your approach should also work in imaging other populations, so 7T images might be also a very nice playground to test your approach. I still believe this paper is a proof of concept of an original idea but given the methodological novelty and comparison with other methods, I think MICCAI community will be interested in this contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. This paper works on MRI image super-resolution based on multi-scan images. The proposed network is applied individually to LR images of a same subject instead of training on a training dataset. The network can generate image and the blur kernels given multiple LR MRI images. The reviewers and major meta-reviewer raised concerns on the clinical significance, reconstruction not in k-space, values of PSNR / SSIM, limited number of patients, etc. The responses clarified on the details, quantitative results. With these new results and revisions, the paper will have more convincing quantitative comparisons. The remaining unclear points to me is on the reason why not working in k-space (the explanations on this point in rebuttal is not totally convincing to me), practical impact in real clinical application, the optimization time (or number of training steps) for each set of LR images. Overall, the paper does have some merits, e.g., the joint estimation of blur kernel and image, training on single image set, but with the above mentioned weakness. My accurate score for this work is the borderline reject, and I am OK with either accept or reject. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Reject What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 10 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The idea of estimating blur kernels from the data to perform super-resolution reconstruction is a good one. The other aspects of the method are not as novel and the evaluation could have been better executed, as noted by the reviewers. In particular, Fig. 7 is not that convincing and should show the original data for comparison. With that said, I believe Reviewer 3 misunderstood that the algorithm is unsupervised. Some reviewers also expressed concerns about reproducibility. Although it is preferable to have data and code released, I understand that to do so may take time depending on the institution. Reviewer 1 also made an excellent point about the frequency domain. Although it may be challenging to work in the frequency domain, it would have been beneficial to see the effects of the approach within the frequency domain, and whether high frequency information is recovered. Reviewer 2 was concerned about similar approaches in the literature. There are a couple of related papers that have been released after this paper was submitted, so should not be counted against this work ( https://arxiv.org/abs/2104.00100, https://ieeexplore.ieee.org/abstract/document/9434137). I did not find other publications on this topic. Overall, although the clinical data results were not strong, other aspects of the evaluation showed that the method has merit. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 6 Author Feedback We thank the area chairs and the reviewers for providing thorough and invaluable feedback. We identified two main grounds of criticism: 1) implementation details, and 2) evaluation methods and datasets. Response: We would like to clarify the misunderstandings: Our model is trained for each individual patient, ie, on only the LR data acquired from a patient, with no requirement of auxiliary large-scale HR datasets. 1) We have included in the revised paper the network architectures and parameter settings for reproducibility. Artifacts: Artifacts in SR reconstructions are commonly from aliasing. The downsampling operation is the main source of aliasing. Our approach leverages low-pass filtering through the blur kernel learning before downsampling to ensure the downsampled data meets the requirement of Nyquist Theorem for avoiding aliasing. Also, our fast san protocol mitigates the motion artifacts due to intervolume motion. SR in k-space: Our technique allows for SRR on k-space data. However, it is convenient and efficient to perform SR in the image domain. K-space data consumes more GPU memory than intensity data, and may not be loaded entirely on a GPU for training. For the downsampling pointed out by R2, we downsampled the image in the Fourier domain for an arbitrary downsampling factor. Number of LR scans: The more the LR scans, the higher the SR quality, from the perspective of SR techniques. We use 3 LR scans considering the trade-off between scan time and SR quality. Motion: As we can acquire an LR image in 2min with our fast scan protocol, we consider intervolume motion only in this work. 2) We demonstrated that our approach offered correct reconstructions and kernel estimates through simulations in Experiment 1 in terms of PSNR/SSIM, and achieved high-quality MRI for clinical use in Experiment 2 in terms of AES (sharpness), estimated kernels (Fig 6), and qualitative evaluations (Fig 7). Number of subjects in simulations: We simulated 4 datasets for each subject corresponding to 4 types of kernels. So our approach was assessed on 40 simulated datasets with 10 subjects. We have included further evaluations in the revised paper on 120 simulated datasets from another 30 randomly picked subjects. The SSIM on all the 160 datasets was TV=0.953±0.028, GGR=0.958±0.031, TV-BKL=0.967±0.036, Ours=0.983±0.012 Datasets: The Multires7T dataset is excellent. However, the resolutions vary in voxel size isotropically rather than in thickness only. So it cannot be directly used in our approach. Also, 7T imaging cannot be performed for babies (&lt;66lbs). Assessments on the clinical data: It is costly for us to do radiological evaluations. Instead, we performed more quantitative assessments in the revised paper, including SNR, partial volume effect (PVE), and spatial resolution. SNR(dB): TV=25.1±1.7, GGR=25.7±1.8, TV-BKL=23.5±1.7, Ours=26.4±1.8 The percentage of the voxels suffering from PVE (Laidlaw et al, TMI98) and the measured spatial resolution were PVE(%): TV=7.9±6.9, GGR=8.1±7.3, TV-BKL=7.1±7.2, Ours=3.1±6.1 Spatial resolution(mm): TV=0.539±0.034, GGR=0.541±0.038, TV-BKL=0.535±0.036, Ours=0.518±0.030 These results were consistent with those in terms of AES and shown in Fig 7. Our approach offered high SNR and high spatial resolution due to the generative degradation learning. Baselines: The methods suggested by R2 are excellent. However, they rely on auxiliary large-scale HR training datasets that are difficult to obtain in practice. Our approach requires only the LR data acquired from a patient. It is thus unfair to compare our approach to those methods. Scan time: Our approach requires three 2min scans to achieve high-quality MRI at the isotropic resolution of 0.5mm with an SNR of 26.4±1.8dB. A 3D T2w SPACE MRI acquired at 1 cubic mm typically requires 6min on our 3T scanner. For an acquisition at 0.5 cubic mm with the matched SNR, it would require slightly longer than an entire day in the scanner. back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Sui, Yao,Afacan, Onur,Gholipour, Ali,Warfield, Simon K." />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>MRI Super-Resolution Through Generative Degradation Learning</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Sui, Yao"
+        class="post-tags">
+        Sui, Yao
+      </a> |  
+      
+      <a href="kittywong/tags#Afacan, Onur"
+        class="post-tags">
+        Afacan, Onur
+      </a> |  
+      
+      <a href="kittywong/tags#Gholipour, Ali"
+        class="post-tags">
+        Gholipour, Ali
+      </a> |  
+      
+      <a href="kittywong/tags#Warfield, Simon K."
+        class="post-tags">
+        Warfield, Simon K.
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Yao Sui, Onur Afacan, Ali Gholipour, Simon K. Warfield
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Spatial resolution plays a critically important role in MRI for the precise delineation of the imaged tissues. Unfortunately, acquisitions with high spatial resolution require increased imaging time, which increases the potential of subject motion, and suffers from reduced signal-to-noise ratio (SNR). Super-resolution reconstruction (SRR) has recently emerged as a technique that allows for a trade-off between high spatial resolution, high SNR, and short scan duration. Deconvolution-based SRR has recently received significant interest due to the convenience of using the image space. The most critical factor to succeed in deconvolution is the accuracy of the estimated blur kernels that characterize how the image was degraded in the acquisition process. Current methods use handcrafted filters, such as Gaussian filters, to approximate the blur kernels, and have achieved promising SRR results. As the image degradation is complex and varies with different sequences and scanners, handcrafted filters, unfortunately, do not necessarily ensure the success of the deconvolution. We sought to develop a technique that enables accurately estimating blur kernels from the image data itself. We designed a deep architecture that utilizes an adversarial scheme with a generative neural network against its degradation counterparts. This design allows for the SRR tailored to an individual subject, as the training requires the scan-specific data only, ie, it does not require auxiliary datasets of high-quality images, which are practically challenging to obtain. We achieved high-quality brain MRI at an isotropic resolution of 0.125 cubic mm with six minutes of imaging time. Experiments on both simulated data and clinical data acquired from ten pediatric patients demonstrated that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct high-resolution acquisitions.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87231-1_42">https://doi.org/10.1007/978-3-030-87231-1_42</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>N/A
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>This paper presents a deconvolution method that estimates the blurring kernels from the data, to achieve super-resolution. This is done in form of deep architecture that uses an adversarial scheme within a generative neural network against its degradation counterparts. Simulations of different kernels and original data are used to test this method on the HCP dataset, showing good visual results.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ul>
+        <li>well-written paper, introducing nice idea of predicting kernels for deconvolutions</li>
+        <li>comparison against state-of-the-art deconvolution method, and extensive simulations</li>
+        <li>some motion simulation is included</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>unclear whether CNN based image restoration method (e.g. convolutional autoencoders) do not implicitly estimate those kernels, which would reduce the novelty of this work</li>
+        <li>motivation a bit unclear - why super-resolution restoration and not super-resolution reconstruction from k-space?</li>
+        <li>discussion of point spread function and partial volume effect is missing</li>
+        <li>difference between experiments 1 and 2 not clear - one simulates kernels for estimation, the other just uses a different resolution for reconstruction, but that does not really make it a clinical application</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Use of public HCP data. No code nor algorithms provided. It would be hard to reimplement without further details, although some optimization details are included</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>My key question is why this work is operating in the spatial domain and not in k-space, which is where undersampling might be applied, bringing in the need for super-resolution reconstruction. Also the effect of point-spread functions, and potentially how these could be better estimated, could be addressed there. The approach of estimating the (de)convolution kernels is interesting though, but perhaps may be better suited to e.g. optical imaging. Applying degradation in this generative setting is very interesting - are there any insights into whether this could lead to aliasing?</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline accept (6)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This is some nice work but methodological innovation is not entirely clear - this is a super-resolution and not image reconstruction paper which somewhat limits it applicability in the real clinic. It is quite well executed otherwise.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>Authors report a technique to estimate blur kernels from the MRI image data and use adversarial schemes with a generative neural network against its degradation counterparts.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>According to my initial search, application of Generative Degradation Learning to MRI data to assess the blur kernels is, perhaps, the first such demonstration (I will wait for the post-rebuttal discussion with the eother reviewers to confirm).
+Despite missing comparison tables, the paper is well written and reads well. My guess is that this work was just cut in size too severely and could benefit from a larger paper format (surprisingly, no supplementary information has been attached).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ul>
+        <li>The authors state: “Experimental results have shown that our approach achieved superior SRR results as compared to state-of-the-art deconvolution-based methods, while in parallel, at substantially reduced imaging time in comparison to direct HR acquisitions.” or “…. considerably outperformed…”</li>
+        <li>
+          <p>The submission would definitely benefit from a statistical justification of how superior the results are.</p>
+        </li>
+        <li>
+          <p>It is hard to follow the text having no comparison tables at hand demonstrating quantitative evaluations of the proposed method and baselines such as HLH-GAN, DRCN etc. as in [1,2]. For example, I would recommend to adding a subsection with the results of SSIM, PSNR (and NRMSE) for different architectures and consider other datasets to show generalizability [3].</p>
+        </li>
+        <li>
+          <p>The validation set (N=10 patients) is limited. Mitigation on simulated data helps, but what is the rationale when popular datasets such as fastMRI or BRATS are publically available?</p>
+        </li>
+        <li>
+          <p>It would be helpful to consider some perspectives to perform an ablation study. The architecture in Fig. 1 is rather complex, with potentially redundant operations performed by Degradation Networks at different levels. While regularization probably helps, it is hard to estimate its contribution from the provided description. Total Variation loss, by the way, is a well-established optimization constraint, making the novelty claims less strong.</p>
+        </li>
+        <li>As with many MRI reconstruction papers, especially those involving GANs, it is vital to survey the results with radiologists. Even if a metric such as SSIM is improved, the generative method may be prone to producing unrealistic features and anatomiic artefacts, which degrades the value of the method. In fact, some of these artefacts are visible in Fig. 7.</li>
+      </ul>
+
+      <p>Very relevant paper, not referenced by the authors:
+https://arxiv.org/pdf/1812.04240.pdf Unsupervised Degradation Learning for Single Image Super-Resolution</p>
+
+      <p>Mentioned (and suggested) References:
+[1] https://www.ijcai.org/Proceedings/2020/0090.pdf Super-Resolution and Inpainting with Degraded and Upgraded Generative Adversarial Network
+[2] https://arxiv.org/abs/2003.01217 MRI Super-Resolution with GAN and 3D Multi-Level DenseNet: Smaller, Faster, and Better
+[3] https://www.tnu.ethz.ch/fileadmin/user_upload/documents/Publications/2020/2020_Fitzgibbon_Harrison_Jenkinson_Baxter.pdf  The developing Human Connectome Project (dHCP) automated
+resting-state functional processing framework for newborn infants</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Reproducibility of the submission is hard to assess due to the absence of any code attached to run the proposed methods versus the baselines. 
+Statistics in Fig. 5 looks feasible. 
+Datasets pose additional reproducibility concerns: one synthetic, the other - private and limited (N=10).</p>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Reduce the use of acronyms in the subsection titles.
+Legends in Fig. 3 do not correspond to the curves. 
+Save space by removing extra details about estimating the blur kernel from synthetic data (just a calibration, if one thinks about it).
+Please add values of SSIM/PSNR in the corners of Fig. 7.
+I sincerely think a basic survey of two-three radiologists would benefit the paper significantly.
+Consider adding a discussion about the norms used in the formulae. In the precursor field of deconvolution microscopy, e.g., it is commonplace to use L1 norm which yields sharper images.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>probably reject (4)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>Given that the authors submitted no supplemental material, while some important information is missing, I have had to assume that the SOTA experiments have not been conducted properly (they are not shown). This distributes the PROs and CONs as 40/60. Given that the idea of degradation learning holds promise, I will increase the score if the authors are allowed to append supplementary table showing full comparisons with confidence intervals. I will lower the score if additional evidence is found reporting application of degradation learning to MRI data, e.g., from the other reviewers.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors propose SR-GDN to improve the through-plane resolution of MR scans, under the hypothesis that the underlying blur kernel is unknown for degradation process. SR-GDN utilises a similar idea as deep image prior [21], which enables learning both HR reconstruction and degradation process simultaneously. The experiments on the simulated data and the clinical data show that SR-GDN outperformed TV, GGR, and TV-BKL.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>1) The paper is well-written and the presentation is clear to understand.
+2) The viewpoint of learning the blur kernel together with super resolution reconstruction in MRI seems somewhat innovative, compared to most of MRI super resolution studies having a commonly fixed down-sampling process.
+3) The experimental designs convincingly prove the strong evaluation of the SR-GDN approach on a simulated dataset. Image quality metrics and spectrum of blur kernels were used for assessment.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>1) There are no true reference HR scans for the clinical data, which may hinder the qualitative assessment of SR-GDN in Fig. 7.
+2) Following 1), it is doubtful that the SR-GDN model trained on the simulated data is generalisable to the clinical data.
+3) The detailed structures of networks, such as the 3D U-Net like network and the fully connected network, are unspecified, plus all source codes may not be available. This may hinder the reproducibility and clarity of the paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>The author has checked nearly half of the items, which probably make this paper irreproducible. Suggest at least providing the items which can also improve the clarity of presentation:</p>
+      <ul>
+        <li>A way to access the pre-trained models or the training/evaluation codes;</li>
+        <li>A way to the dataset;</li>
+        <li>A comprehensive list of all used parameters such as batch size.</li>
+      </ul>
+
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>In addition to Point 4 and Point 6, I have some more concerns:
+1) Is there a situation where the proposed SR-GDN may fail?
+2) What do you think of the clinical significance of the proposed method?
+3) The sentence related to “an adversarial scheme” in the abstract and Discussion confused me. Not sure if the interaction between generative network $f$ and the degradation function $g$ in Eq. (3) is in adversarial fashion.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The work has a new viewpoint for MR super-resolution reconstruction along with estimating degradation model. However, it is hardly reproducible without providing the source code, evaluation model, or the evaluation data, compared to other submissions. Besides, the model was trained on simulation data which may not be generated to the clinical LR scans.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Very confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presents experiments on 10 subjects from HCP data  (simulating LR process) and also show qualitative results on 30 paediatric acquisitions (LR available only). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. All the reviewers acknowledge this work is highly relevant and present some novelty, though R1 and R2 raised some points on author’s claims maybe too strong. 
+I think the paper is interesting and tackles a practical problem of multiple-volume SR, I like the idea of self-supervision on the subject data only. However I think the authors presented a proof of concept more than demonstrate its real practical value. I was somehow disappointed to see this on only 10 subjects from HCP but more importantly I am not convinced by the study using real LR acquisitions in paediatric patients (using LR clinical acquisition without HR reference nor expert evaluation does not add much more as compared to the 1st experiment). It is a pity not to have acquired there a HR resolution scan, though probably a 3D 0.5x0.5x0.5 resolution would have been too noisy or not possible due to scanning time. But probably a T2w 1mm isotropic should have been possible. Otherwise maybe the authors can explore datasets such as fastMRI (suggested by one reviewer) or I would recommend to check Multires7T (OpenNeuro Accession Number: ds000113) where several image resolutions are acquired. Or considering acquiring phantom data (or scanning any object). I would like the authors to clarify some points before taking my final decision, I am summarising here important concerns from the reviewers:</p>
+      <ul>
+        <li>Clarify (and/or mild the novelty)</li>
+        <li>Why only 10 subjects? Maybe you included more since the time of the submission?</li>
+        <li>Statistical justification of your results in paediatric data, include the acquisition time that would be needed to acquire a single 3D T2w volume at which resolution</li>
+        <li>Add network details</li>
+        <li>Discuss on possible image artefacts and radiological evaluation</li>
+        <li>Discuss on the decision to work in image space and not k-space as well as the possibility to include Point Spread Function and Partial volume.</li>
+        <li>Comment on the concerns of R2 on SOTA methods.</li>
+      </ul>
+
+      <p>On my side I would add if space allows question on the influence of number and quality of LR to the final SR as well as how the proposed framework would deal with through plane motion in the LR stacks?</p>
+
+      <p>I would like to remind authors that the purpose of this rebuttal is to provide clarification or to point out misunderstandings, and include new details that can better highlight the value of this work. I will not consider any promise of adding future experiments and results.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>-</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This work presents a super-resolution framework SR-GDN to improve the through-plane resolution of MR scan and estimates at the same time the image degradation blur kernel. Authors presented originally experiments with simulated LR process on 10 subjects from HCP data and also show qualitative results on 30 paediatric acquisitions (no ground truth SR available). The experiments show that SR-GDN outperformed existing methods like TV, GGR, and TV-BKL. I had many points in my meta-review and most of them have been addressed. I think indeed that some reviewer misunderstood the fact that no external HR training data is needed here. Not needing external HR data has an important practical value. From the research point of view though I would like to see the performances of these different type of approaches. Please ensure though those important references missing in the original paper are included (the ones requested by R2). Remind also that supplementary material is allowed, and please include the requested statistical significance analysis of the results as requested in the main paper (this needs very few space). I did appreciate that the authors have now included many other subjects in the simulated experiments and results seems consistent with the initial ones. I am expecting these new results to be included in the paper. 
+Just to clarify, I was not suggesting to scan babies at 7T. But your approach should also work in imaging other populations, so 7T images might be also a very nice playground to test your approach. I still believe this paper is a proof of concept of an original idea but given the methodological novelty and comparison with other methods, I think MICCAI community will be interested in this contribution.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>This paper works on MRI image super-resolution based on multi-scan images. The proposed network is applied individually to LR images of a same subject instead of training on a training dataset. The network can generate image and the blur kernels given multiple LR MRI images. The reviewers and major meta-reviewer raised concerns on the clinical significance, reconstruction not in k-space, values of PSNR / SSIM, limited number of patients, etc. The responses clarified on the details, quantitative results. With these new results and revisions, the paper will have more convincing quantitative comparisons.  The remaining unclear points to me is on the reason why not working in k-space (the explanations on this point in rebuttal is not totally convincing to me), practical impact in real clinical application, the optimization time (or number of training steps) for each set of LR images.  Overall, the paper does have some merits, e.g., the joint estimation of blur kernel and image, training on single image set, but with the above mentioned weakness. My accurate score for this work is the borderline reject, and I am OK with either accept or reject.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Reject</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>10</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The idea of estimating blur kernels from the data to perform super-resolution reconstruction is a good one.  The other aspects of the method are not as novel and the evaluation could have been better executed, as noted by the reviewers.  In particular, Fig. 7 is not that convincing and should show the original data for comparison.  With that said, I believe Reviewer 3 misunderstood that the algorithm is unsupervised.  Some reviewers also expressed concerns about reproducibility. 
+Although it is preferable to have data and code released, I understand that to do so may take time depending on the institution.  Reviewer 1 also made an excellent point about the frequency domain.  Although it may be challenging to work in the frequency domain, it would have been beneficial to see the effects of the approach within the frequency domain, and whether high frequency information is recovered.</p>
+
+      <p>Reviewer 2 was concerned about similar approaches in the literature.  There are a couple of related papers that have been released after this paper was submitted, so should not be counted against this  work ( https://arxiv.org/abs/2104.00100, https://ieeexplore.ieee.org/abstract/document/9434137).  I did not find other publications on this topic.</p>
+
+      <p>Overall, although the clinical data results were not strong, other aspects of the evaluation showed that the method has merit.</p>
+
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>6</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We thank the area chairs and the reviewers for providing thorough and invaluable feedback.</p>
+
+  <p>We identified two main grounds of criticism: 1) implementation details, and 2) evaluation methods and datasets.</p>
+
+  <p>Response: We would like to clarify the misunderstandings: Our model is trained for each individual patient, ie, on only the LR data acquired from a patient, with no requirement of auxiliary large-scale HR datasets.</p>
+
+  <p>1) We have included in the revised paper the network architectures and parameter settings for reproducibility.</p>
+
+  <ul>
+    <li>
+      <p>Artifacts: Artifacts in SR reconstructions are commonly from aliasing. The downsampling operation is the main source of aliasing. Our approach leverages low-pass filtering through the blur kernel learning before downsampling to ensure the downsampled data meets the requirement of Nyquist Theorem for avoiding aliasing. Also, our fast san protocol mitigates the motion artifacts due to intervolume motion.</p>
+    </li>
+    <li>
+      <p>SR in k-space: Our technique allows for SRR on k-space data. However, it is convenient and efficient to perform SR in the image domain. K-space data consumes more GPU memory than intensity data, and may not be loaded entirely on a GPU for training. For the downsampling pointed out by R2, we downsampled the image in the Fourier domain for an arbitrary downsampling factor.</p>
+    </li>
+    <li>
+      <p>Number of LR scans: The more the LR scans, the higher the SR quality, from the perspective of SR techniques. We use 3 LR scans considering the trade-off between scan time and SR quality.</p>
+    </li>
+    <li>
+      <p>Motion: As we can acquire an LR image in 2min with our fast scan protocol, we consider intervolume motion only in this work.</p>
+    </li>
+  </ul>
+
+  <p>2) We demonstrated that our approach offered correct reconstructions and kernel estimates through simulations in Experiment 1 in terms of PSNR/SSIM, and achieved high-quality MRI for clinical use in Experiment 2 in terms of AES (sharpness), estimated kernels (Fig 6), and qualitative evaluations (Fig 7).</p>
+
+  <ul>
+    <li>Number of subjects in simulations: We simulated 4 datasets for each subject corresponding to 4 types of kernels. So our approach was assessed on 40 simulated datasets with 10 subjects. We have included further evaluations in the revised paper on 120 simulated datasets from another 30 randomly picked subjects. The SSIM on all the 160 datasets was</li>
+  </ul>
+
+  <p>TV=0.953±0.028, GGR=0.958±0.031, TV-BKL=0.967±0.036, Ours=0.983±0.012</p>
+
+  <ul>
+    <li>
+      <p>Datasets: The Multires7T dataset is excellent. However, the resolutions vary in voxel size isotropically rather than in thickness only. So it cannot be directly used in our approach. Also, 7T imaging cannot be performed for babies (&lt;66lbs).</p>
+    </li>
+    <li>
+      <p>Assessments on the clinical data: It is costly for us to do radiological evaluations. Instead, we performed more quantitative assessments in the revised paper, including SNR, partial volume effect (PVE), and spatial resolution.</p>
+    </li>
+  </ul>
+
+  <p>SNR(dB): TV=25.1±1.7, GGR=25.7±1.8, TV-BKL=23.5±1.7, Ours=26.4±1.8</p>
+
+  <p>The percentage of the voxels suffering from PVE (Laidlaw et al, TMI98) and the measured spatial resolution were</p>
+
+  <p>PVE(%): TV=7.9±6.9, GGR=8.1±7.3, TV-BKL=7.1±7.2, Ours=3.1±6.1</p>
+
+  <p>Spatial resolution(mm): TV=0.539±0.034, GGR=0.541±0.038, TV-BKL=0.535±0.036, Ours=0.518±0.030</p>
+
+  <p>These results were consistent with those in terms of AES and shown in Fig 7. Our approach offered high SNR and high spatial resolution due to the generative degradation learning.</p>
+
+  <ul>
+    <li>
+      <p>Baselines: The methods suggested by R2 are excellent. However, they rely on auxiliary large-scale HR training datasets that are difficult to obtain in practice. Our approach requires only the LR data acquired from a patient. It is thus unfair to compare our approach to those methods.</p>
+    </li>
+    <li>
+      <p>Scan time: Our approach requires three 2min scans to achieve high-quality MRI at the isotropic resolution of 0.5mm with an SNR of 26.4±1.8dB. A 3D T2w SPACE MRI acquired at 1 cubic mm typically requires 6min on our 3T scanner. For an acquisition at 0.5 cubic mm with the matched SNR, it would require slightly longer than an entire day in the scanner.</p>
+    </li>
+  </ul>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0641-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0642-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Sui, Yao"
+        class="post-category">
+        Sui, Yao
+      </a> |  
+      
+      <a href="kittywong/tags#Afacan, Onur"
+        class="post-category">
+        Afacan, Onur
+      </a> |  
+      
+      <a href="kittywong/tags#Gholipour, Ali"
+        class="post-category">
+        Gholipour, Ali
+      </a> |  
+      
+      <a href="kittywong/tags#Warfield, Simon K."
+        class="post-category">
+        Warfield, Simon K.
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0642/12/31/Paper1982">
+          Task-Oriented Low-Dose CT Image Denoising
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0640/12/31/Paper1908">
+          Interpretable deep learning for multimodal super-resolution of medical images
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>

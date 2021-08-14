@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Label-Free Physics-Informed Image Sequence Reconstruction with Disentangled Spatial-Temporal Modeling | MICCAI 2021 - Accepted Papers and Reviews</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Label-Free Physics-Informed Image Sequence Reconstruction with Disentangled Spatial-Temporal Modeling" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiajun Jiang, Ryan Missel, Maryam Toloubidokhti, Zhiyuan Li, Omar Gharbia, John L. Sapp, Linwei Wang Abstract Traditional approaches to image reconstruction uses physics-based loss with data-efficient inference, although the difficulty to properly model the inverse solution precludes learning the reconstruction across a distribution of data. Modern deep learning approaches enable expressive modeling but rely on a large number of reconstructed images (labeled data) that are often not available in practice. To combine the best of the above two lines of works, we present a novel label-free image reconstruction network that is supervised by physics-based forward operators rather than labeled data. We further present an expressive yet disentangled spatial-temporal modeling of the inverse solution, where its latent dynamics is modeled by neural ordinary differential equations and its emission over non-Euclidean geometrical domains by graph convolutional neural networks. We applied the presented method to reconstruct electrical activity on the heart surface from body-surface potential. In simulation and real-data experiments in comparison to both traditional physics-based and modern data-driven reconstruction methods, we demonstrated the ability of the presented method to learn how to reconstruct using observational data without any corresponding labels. Link to paper https://doi.org/10.1007/978-3-030-87231-1_35 Link to the code repository https://github.com/john-x-jiang/phy_geo Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach for spatio-temporal modeling of ECG signals (acquired over a torso) in order to reconstruct the latent electric potential at different regions of the heart. In particular, the paper innovates on imposing structure on the temporal dynamics in the latent domain via ODEs which reduces the need for heavy supervision. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem sounds very interesting and indeed important. The paper deals with modeling spatio-temporal data, the authors disentangle the spatial and temporal modeling tasks by employing neural ODEs in the latent domain. Some additional components such as Laplacian smoothing regularization and GCN-GRUs are employed in addition to the ST-GCNN (the earlier state-of-the-art architecture for the same task.) The evaluation is good, it is performed both on simulations and on clinical in-vivo ECG data. The authors demonstrate benefits by being data-efficient and performing better in terms of MSE. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the paper is not ready for publication in its current form due to the following reasons: The writing is not clear, some seemingly very important information is left ambiguous. The paper is missing important details related to the method. The reasons for the performance benefit are not clear. IMHO, this is good work but it needs to be rewritten in order to clear ambiguities that might confuse the readers. These issues are elaborated below in the constructive critique section. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I believe if the authors were able to make the simulation code and data public, it would greatly benefit the community in recognizing this important problem. Secondly, the paper is missing many important details that might confuse readers and might unfortunately render the results, simulation and evaluation presented in the paper rather irreproducible. I hope the authors add these important details to the revised version of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Forward model: How does Eq. 4 map to the equation to Fig. 1? Where is the H in Figure 1? Laplacian smoothing: The authors seem to add Laplacian smoothing to X in Eq. 4 which is missing in the baseline ST-GCNN. How can one conclude that the performance improvements in ODE-GCNN is due to ODE and not due to Laplacian smoothing? An ablation study comparing ODE-GCNN with \lambda = 0 to ST-GCNN is required to verify this claim. Regarding graphs/geometry: In the beginning of section 2.2 the authors write, “…represent the heart and torso as two separate undirected graphs with edge attributes u(i, j)…”. Later in the “Latent Inverse Mapping” paragraph, the authors reintroduce this u(i, j) as “… edge attribute u(i, j) between torso vertex i and heart vertex j … ”. How do the authors have access to this “bipartite” graph? Is it some sense of correspondence? Do they have correspondence in the original domain? If so, how is the correspondence transferred to the latent domain over the spectrally coarsened graphs? How can one have correspondence between a heart and a torso? What does it even mean (clinically and practically)? Temporal modeling: The use of GRU’s to obtain z_t+ from z_t- seems arbitrary and not well motivated. If it is purely performance-driven, the authors could report plots of performance with and without the GRU, as they did for ODE. Evaluation on clinical data. It is not clear what authors mean by “quantitative accuracy was measured by the Euclidean distance between the reconstruction origin and the known sites of pacing” - is this a valid metric to measure successful reconstruction? Can the authors please add citations for this practice? Writing and paper organization Some sections of the paper that describe the method are not clearly written – I had a tough time following the paper. In particular, Section 2.2 and 2.3, that span about 1 page length, are dense and introduce too many ideas/details, namely: geometric representation of graphs, GRU, ODE, bi-partite graph between torso and heart, spline convolution. Is it really the optimal way to present this information? I understand that 8 pages might be too short, but I think the authors should try harder in presenting the method that doesn’t infuse confusion in the readers. IMHO, emphasis can be laid more on Section 2.2 and 2.3 by moving some ablation studies into the supplementary material. Minor: “Inverse solution” - it’s usually called latent variable in inverse problems or dynamical systems literature. Section 2.2: “As X_t and Y_t live in 3D geometry…” phrasing is incorrect. Eq. 5: P is not defined. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is good work but the presentation is not good, it misses crucial details that for example prohibit reproducibility, and is not in a state to be readable by general audience. it needs to be rewritten in order to clear ambiguities that might confuse the readers. Above I detailed the issues that needs attention, I believe fixing these issues carefully would make this a very good and impactful work. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #2 Please describe the contribution of the paper The paper presents a method to learn the electrical activity of the heart surface from body-surface potential using an unsupervised learning approach that is only based on physical constraints as well as a graph convolution based network approach. The neural network consists of an encoder part and decoder part both based on spatial graph convolutions, since the surface information is used as an input in form of a mesh. The latent representation is then processed by consecutive layers of neural ODEs and graph convolution based GRU cells, which create a latent representation of the heart surface as a combination of the current latent representation of the torso surface and the previous representations. Here, the training of the neural network is performed with a loss incorporating physical assumptions only and not relying on any label data. The performance is compared both on simulation and real data and similar performance to a supervised approach is shown with enough unlabeled data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the method is nicely explained. The combination of physics-informed loss generation with graph convolutional processing of 3D meshes and also consideration of the temporal aspects of the reconstructions is a strong contribution in my opinion. This is especially true, since the consideration of unsupervised learning is an important focus in the medical domain with sometimes only small amounts of labelled data. The usage of the GCN for modelling the non-Euclidian mesh structure is also reasonable and proves very effective with respect to the results and the comparison to an Euclidian approach. The evaluation is also done nicely, showing results both on simulation and real data and providing insights about different aspect of the methodology. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The network setup could be explained in a little more detail to improve reproducibility of the method (layer size, dimensionality). Additionally, the setting of the regularization function R(X) is not specified. Since this is an important part of the optimization, it would make sense to add this description to the paper. Additionally, some reference work could be cited regarding the used concept of training on physical losses, which exists in the medical and non-medical domain (e.g. Stewart, R., Ermon, S.: Label-free supervision of neural networks with physics and domain knowledge. 31st AAAI Conference on Artificial Intelligence, AAAI 2017, 1(1), 2576–2582). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Some aspects of the method like the R(X) function of the physical loss and the details of network setup should be explained in more detail to increase reproducibility. The evaluation itself is understandable. Additionally, the code of the method will be provided by the group. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper shows a really interesting combination of different methodological aspects. It would be great, if the paper could clarify the missing points mentioned in the feedback (description of R(X), calculation process of Eq. 7 …) to further improve the paper clarity. Additionally, it would be great if some citations for the usage of physical losses as well as training on simulation data could be provided, since there is some state of the art. Finally, an outline how this concept could be more generally applicable would be interesting. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The combination of the different methodological aspects in the proposed network is very strong in my opinion. A graph-based approach is combined with a temporal representation learning, while being completely unsupervised only relying on physical assumptions. Within the data critical medical domain this is an interesting work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors proposed a novel GCN-ODE architecture to model the electrical activity on the heart surface. They enforce physics constrained in the loss function, which enables label-free training. The authors presented synthetic data and real data experiments which have clinical application potential. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Enforcing physics prior to deep learning architecture is getting popular. And this paper finds a useful application for this idea. This work shows that label-free learning is possible where enough prior information about the underlying physics is known. The latent space modeling of temporal dynamics using ODE and GRU is a novel formulation. This paper has a moderately strong evaluation that has significant clinical importance. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The synthetic data experiments suggest marginal improvement over the state-of-the-art. The ablation study is missing for the latent dynamics part. Will a standalone GRU or ODE be good enough to model the latent dynamics? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper is a bit difficult to reproduce, since they used a private datasets. Few details such as how the temporal dynamics part is implemented is also not explained adequately. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The physics informed ST-GCNN were excluded from the comparison for clinical data experiment Fig 3. Why is that so? How is the localization in the Fig 4. computed? Authors should explain in detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors proposed a novel ODE-GCNN approach for a clinically relevant problem. Hence, I recommend acceptance. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes to reconstruct electrophysiology signal on the heart from body-surface maps using a graph convolutional network that enforce a spatio-temporal consistency on the electrical maps. One reviewer has serious concern about the general clarity of the current manuscript which misses several necessary details to appreciate the contribution, notably on the graph construction, the motivation of the temporal modeling. An evaluation of the proposed contribution, specifically on the ODE, is also missing. A second reviewer appreciates the use of a graph convolutions combined with the electrical maps, but also finds the method lacking key explanations and misses refs on physics-based learning of networks. A third reviewer further appreciates the use of the ODE formulation in the learning framework, but also indicates a lack of an ablation study to understand the contributions of the proposed ODE component. All three reviewers have a consensus on a lack of general clarity in the methodology, notably on the graph construction, but appreciate the incorporation of ODE to model a temporal signal such as electrophysiology. The manuscript would require a significant revision, making the current paper not ready for publication. What may be worrying is that inference of electrophysiology maps from torso measurements is an active field of study in several major groups of the cardiac modeling community, notably within the euHeart project among others, working on electrocardiography from body surface potential mapping. The evaluation should include, in my opinion, work from the field of cardiac electrophysiology from body surface. Authors are invited to discuss on the motivation of their evaluation and lack of such comparison in the field, as well as on the feasibility of providing the requested methodological details from the reviewers. Recommendation is towards an invitation for a Rebuttal What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided clarification in methodology, their ablation study. I do agree that there are multiple communities tackling electrophysiology from torso measurements. Addressing community-level obstacles of using cardiac modeling is obviously out of scope of the paper, but acknowledging existing work on cardiac modeling appears reasonable, since this submission addresses a directly related application, electrophysiology from torso measurements. The authors suggest a few relevant references to add. The methodology remains relevant to the field as it provides on original graph-based approach with a physics-based constraint and ODEs to reduce labeling effort. Clarifications will be made by working around figure spacings, which appears, in my opinion, feasible. For these reasons, Recommendation is toward Acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The article presents a neural network based reconstruction method for temporal electrophysiology maps on the heart surface based on body potentials. MR and some reviewers raise concerns regarding the clarity of the writing. While I agree on some part, I also note that there are multiple components of the model and it is difficult to give a clear description for people not in the field in the limited space. I also think the explanations can improve and I encourage authors to do so as they promise in the rebuttal. That said, the main drawback of the article is what MR raises, there are no comparisons with more advanced techniques for mapping body potentials back to cardiac surface. This field has been very active over the last decade with multiple solutions. Authors response here is not satisfactory. Despite the drawback in the evaluation, I think the article has an interesting model and therefore can be considered as a valuable contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses the criticisms of MT and reviewers on the positioning with respect to the cardiac modeling community and literature. On the methodological side, the choice for the experimental setup is clarified, in particular for the ablation study for NODE and GRU components. The paper appears quite dense in combining several methodological components, and the rebuttal is positive in clarifying some important aspect raised during the reviewing process. While there are several methodological and experimental details which definitely deserve further clarification, there is no critical aspect which seems to invalidate the work. Overall, the proposed idea is innovative and seems convincing in combining data-driven and physics-based methods for spatio-temporal moiling of ECG signals. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We appreciate the strong support from R2 &amp; R3 and the constructive suggestions from all. We provide clarifications to major confusion below. Major comments: Comparison to cardiac modeling (Metareviewer/MR): While related, there is a clear distinction between the cardiac modeling community (as mentioned by the MR), and the electrocardiographic-imaging (ECGI, this work): ECGI works typically do not involve cardiac modeling and – to the best of our knowledge – no published ECGI works have included comparisons with cardiac modeling. Indeed, body surface data have recently been seen [1-2] to personalize cardiac models. We agree with the MR that, as the distinction between the two communities becomes blurry, both should move towards understanding each other’s works. However, there are community-level obstacles including the availability of open-source tools for non-modeling (e.g. ECGI) groups to reproduce sophisticated cardiac simulations. Removing these obstacles requires collective efforts from the field and is beyond a reasonable scope of this individual paper. We will add this discussion in our revision. Clarity in methodology (R1/MR): We thank R2 for commenting that “the paper is well written and the method is nicely explained”. As suggested by R1 and MR, we will expand descriptions of methodological details in Sections 2.1-2.3, and make space by trimming down high-level motivations and resizing large figures. Missing ablation study of GRU/ODE (R1/R3): As explained in section 2.3 above eq. (8), the GRU and ODE work together to complete Bayesian filtering in the state-space model (SSM), where the ODE predicts the dynamics forward (to z_t-) and the GRU corrects the prediction using available data (to z_t+). Removing either will result in a model structure completely different from that proposed: 1) Removing the GRU results in a latent ODE model [3] where only the initial state z0 is inferred from data and the dynamics is purely described by the ODE. We have previously experimented with this model with unsatisfactory results. Hence they were not reported. 2) Removing the ODE regresses the model back to a traditional sequence-to-sequence model where RNNs are used in both the encoder and decoder, and are entangled with spatial modeling. This would be the ST-GCNN and Euclidean baselines already considered in our experiments. Euclidean Distance (R1/R3) The use of Euclidean distance to measure reconstruction is common practice in ECGI works (see [9] in our paper). It is done by identifying the region of the earliest activation in the reconstructions and using the centroid as the site of the earliest activation. Reproducibility (R1-3) Clinical data used are openly available at https://edgar.sci.utah.edu/ (citation will be added). We will also make our codes open. Other major misunderstandings R1 - Missing Laplacian smoothing in ST-GCNN: The physics-informed ST-GCNN does have Laplacian smoothing, which as pointed out by R1 works as an ablation study for the benefits of ODE. Data-driven baselines do not need Laplacian smoothing (as the ground truth labels are smooth). R3 - Missing physics-informed ST-GCNN on clinical data. The physics-informed ST-GCNN was included in Section 3.2. Additional comments of R1 The bipartite graph is created from the coarse graph representation of the heart and torso, as described in Section 2.2. An edge exists between every vertex on the torso and that on the heart. This follows the physics motivation that the geometrical relationship between any location on the heart and torso determines the forward and inverse mapping. The forward model H is multiplied to the output of the neural network X and then goes into the loss function. P in Eq. 5 is the Cartesian product of the B-spline bases. Citations [1] https://doi.org/10.1109/TBME.2016.2629849 [2] https://doi.org/10.1109/TBME.2018.2839713 [3] https://arxiv.org/abs/1907.03907 back to top" />
+<meta property="og:description" content="Paper Info Reviews Meta-review(s) Author Feedback Authors Xiajun Jiang, Ryan Missel, Maryam Toloubidokhti, Zhiyuan Li, Omar Gharbia, John L. Sapp, Linwei Wang Abstract Traditional approaches to image reconstruction uses physics-based loss with data-efficient inference, although the difficulty to properly model the inverse solution precludes learning the reconstruction across a distribution of data. Modern deep learning approaches enable expressive modeling but rely on a large number of reconstructed images (labeled data) that are often not available in practice. To combine the best of the above two lines of works, we present a novel label-free image reconstruction network that is supervised by physics-based forward operators rather than labeled data. We further present an expressive yet disentangled spatial-temporal modeling of the inverse solution, where its latent dynamics is modeled by neural ordinary differential equations and its emission over non-Euclidean geometrical domains by graph convolutional neural networks. We applied the presented method to reconstruct electrical activity on the heart surface from body-surface potential. In simulation and real-data experiments in comparison to both traditional physics-based and modern data-driven reconstruction methods, we demonstrated the ability of the presented method to learn how to reconstruct using observational data without any corresponding labels. Link to paper https://doi.org/10.1007/978-3-030-87231-1_35 Link to the code repository https://github.com/john-x-jiang/phy_geo Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach for spatio-temporal modeling of ECG signals (acquired over a torso) in order to reconstruct the latent electric potential at different regions of the heart. In particular, the paper innovates on imposing structure on the temporal dynamics in the latent domain via ODEs which reduces the need for heavy supervision. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem sounds very interesting and indeed important. The paper deals with modeling spatio-temporal data, the authors disentangle the spatial and temporal modeling tasks by employing neural ODEs in the latent domain. Some additional components such as Laplacian smoothing regularization and GCN-GRUs are employed in addition to the ST-GCNN (the earlier state-of-the-art architecture for the same task.) The evaluation is good, it is performed both on simulations and on clinical in-vivo ECG data. The authors demonstrate benefits by being data-efficient and performing better in terms of MSE. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the paper is not ready for publication in its current form due to the following reasons: The writing is not clear, some seemingly very important information is left ambiguous. The paper is missing important details related to the method. The reasons for the performance benefit are not clear. IMHO, this is good work but it needs to be rewritten in order to clear ambiguities that might confuse the readers. These issues are elaborated below in the constructive critique section. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I believe if the authors were able to make the simulation code and data public, it would greatly benefit the community in recognizing this important problem. Secondly, the paper is missing many important details that might confuse readers and might unfortunately render the results, simulation and evaluation presented in the paper rather irreproducible. I hope the authors add these important details to the revised version of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Forward model: How does Eq. 4 map to the equation to Fig. 1? Where is the H in Figure 1? Laplacian smoothing: The authors seem to add Laplacian smoothing to X in Eq. 4 which is missing in the baseline ST-GCNN. How can one conclude that the performance improvements in ODE-GCNN is due to ODE and not due to Laplacian smoothing? An ablation study comparing ODE-GCNN with \lambda = 0 to ST-GCNN is required to verify this claim. Regarding graphs/geometry: In the beginning of section 2.2 the authors write, “…represent the heart and torso as two separate undirected graphs with edge attributes u(i, j)…”. Later in the “Latent Inverse Mapping” paragraph, the authors reintroduce this u(i, j) as “… edge attribute u(i, j) between torso vertex i and heart vertex j … ”. How do the authors have access to this “bipartite” graph? Is it some sense of correspondence? Do they have correspondence in the original domain? If so, how is the correspondence transferred to the latent domain over the spectrally coarsened graphs? How can one have correspondence between a heart and a torso? What does it even mean (clinically and practically)? Temporal modeling: The use of GRU’s to obtain z_t+ from z_t- seems arbitrary and not well motivated. If it is purely performance-driven, the authors could report plots of performance with and without the GRU, as they did for ODE. Evaluation on clinical data. It is not clear what authors mean by “quantitative accuracy was measured by the Euclidean distance between the reconstruction origin and the known sites of pacing” - is this a valid metric to measure successful reconstruction? Can the authors please add citations for this practice? Writing and paper organization Some sections of the paper that describe the method are not clearly written – I had a tough time following the paper. In particular, Section 2.2 and 2.3, that span about 1 page length, are dense and introduce too many ideas/details, namely: geometric representation of graphs, GRU, ODE, bi-partite graph between torso and heart, spline convolution. Is it really the optimal way to present this information? I understand that 8 pages might be too short, but I think the authors should try harder in presenting the method that doesn’t infuse confusion in the readers. IMHO, emphasis can be laid more on Section 2.2 and 2.3 by moving some ablation studies into the supplementary material. Minor: “Inverse solution” - it’s usually called latent variable in inverse problems or dynamical systems literature. Section 2.2: “As X_t and Y_t live in 3D geometry…” phrasing is incorrect. Eq. 5: P is not defined. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is good work but the presentation is not good, it misses crucial details that for example prohibit reproducibility, and is not in a state to be readable by general audience. it needs to be rewritten in order to clear ambiguities that might confuse the readers. Above I detailed the issues that needs attention, I believe fixing these issues carefully would make this a very good and impactful work. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #2 Please describe the contribution of the paper The paper presents a method to learn the electrical activity of the heart surface from body-surface potential using an unsupervised learning approach that is only based on physical constraints as well as a graph convolution based network approach. The neural network consists of an encoder part and decoder part both based on spatial graph convolutions, since the surface information is used as an input in form of a mesh. The latent representation is then processed by consecutive layers of neural ODEs and graph convolution based GRU cells, which create a latent representation of the heart surface as a combination of the current latent representation of the torso surface and the previous representations. Here, the training of the neural network is performed with a loss incorporating physical assumptions only and not relying on any label data. The performance is compared both on simulation and real data and similar performance to a supervised approach is shown with enough unlabeled data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the method is nicely explained. The combination of physics-informed loss generation with graph convolutional processing of 3D meshes and also consideration of the temporal aspects of the reconstructions is a strong contribution in my opinion. This is especially true, since the consideration of unsupervised learning is an important focus in the medical domain with sometimes only small amounts of labelled data. The usage of the GCN for modelling the non-Euclidian mesh structure is also reasonable and proves very effective with respect to the results and the comparison to an Euclidian approach. The evaluation is also done nicely, showing results both on simulation and real data and providing insights about different aspect of the methodology. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The network setup could be explained in a little more detail to improve reproducibility of the method (layer size, dimensionality). Additionally, the setting of the regularization function R(X) is not specified. Since this is an important part of the optimization, it would make sense to add this description to the paper. Additionally, some reference work could be cited regarding the used concept of training on physical losses, which exists in the medical and non-medical domain (e.g. Stewart, R., Ermon, S.: Label-free supervision of neural networks with physics and domain knowledge. 31st AAAI Conference on Artificial Intelligence, AAAI 2017, 1(1), 2576–2582). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Some aspects of the method like the R(X) function of the physical loss and the details of network setup should be explained in more detail to increase reproducibility. The evaluation itself is understandable. Additionally, the code of the method will be provided by the group. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper shows a really interesting combination of different methodological aspects. It would be great, if the paper could clarify the missing points mentioned in the feedback (description of R(X), calculation process of Eq. 7 …) to further improve the paper clarity. Additionally, it would be great if some citations for the usage of physical losses as well as training on simulation data could be provided, since there is some state of the art. Finally, an outline how this concept could be more generally applicable would be interesting. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The combination of the different methodological aspects in the proposed network is very strong in my opinion. A graph-based approach is combined with a temporal representation learning, while being completely unsupervised only relying on physical assumptions. Within the data critical medical domain this is an interesting work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors proposed a novel GCN-ODE architecture to model the electrical activity on the heart surface. They enforce physics constrained in the loss function, which enables label-free training. The authors presented synthetic data and real data experiments which have clinical application potential. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Enforcing physics prior to deep learning architecture is getting popular. And this paper finds a useful application for this idea. This work shows that label-free learning is possible where enough prior information about the underlying physics is known. The latent space modeling of temporal dynamics using ODE and GRU is a novel formulation. This paper has a moderately strong evaluation that has significant clinical importance. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The synthetic data experiments suggest marginal improvement over the state-of-the-art. The ablation study is missing for the latent dynamics part. Will a standalone GRU or ODE be good enough to model the latent dynamics? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper is a bit difficult to reproduce, since they used a private datasets. Few details such as how the temporal dynamics part is implemented is also not explained adequately. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The physics informed ST-GCNN were excluded from the comparison for clinical data experiment Fig 3. Why is that so? How is the localization in the Fig 4. computed? Authors should explain in detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors proposed a novel ODE-GCNN approach for a clinically relevant problem. Hence, I recommend acceptance. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes to reconstruct electrophysiology signal on the heart from body-surface maps using a graph convolutional network that enforce a spatio-temporal consistency on the electrical maps. One reviewer has serious concern about the general clarity of the current manuscript which misses several necessary details to appreciate the contribution, notably on the graph construction, the motivation of the temporal modeling. An evaluation of the proposed contribution, specifically on the ODE, is also missing. A second reviewer appreciates the use of a graph convolutions combined with the electrical maps, but also finds the method lacking key explanations and misses refs on physics-based learning of networks. A third reviewer further appreciates the use of the ODE formulation in the learning framework, but also indicates a lack of an ablation study to understand the contributions of the proposed ODE component. All three reviewers have a consensus on a lack of general clarity in the methodology, notably on the graph construction, but appreciate the incorporation of ODE to model a temporal signal such as electrophysiology. The manuscript would require a significant revision, making the current paper not ready for publication. What may be worrying is that inference of electrophysiology maps from torso measurements is an active field of study in several major groups of the cardiac modeling community, notably within the euHeart project among others, working on electrocardiography from body surface potential mapping. The evaluation should include, in my opinion, work from the field of cardiac electrophysiology from body surface. Authors are invited to discuss on the motivation of their evaluation and lack of such comparison in the field, as well as on the feasibility of providing the requested methodological details from the reviewers. Recommendation is towards an invitation for a Rebuttal What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided clarification in methodology, their ablation study. I do agree that there are multiple communities tackling electrophysiology from torso measurements. Addressing community-level obstacles of using cardiac modeling is obviously out of scope of the paper, but acknowledging existing work on cardiac modeling appears reasonable, since this submission addresses a directly related application, electrophysiology from torso measurements. The authors suggest a few relevant references to add. The methodology remains relevant to the field as it provides on original graph-based approach with a physics-based constraint and ODEs to reduce labeling effort. Clarifications will be made by working around figure spacings, which appears, in my opinion, feasible. For these reasons, Recommendation is toward Acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The article presents a neural network based reconstruction method for temporal electrophysiology maps on the heart surface based on body potentials. MR and some reviewers raise concerns regarding the clarity of the writing. While I agree on some part, I also note that there are multiple components of the model and it is difficult to give a clear description for people not in the field in the limited space. I also think the explanations can improve and I encourage authors to do so as they promise in the rebuttal. That said, the main drawback of the article is what MR raises, there are no comparisons with more advanced techniques for mapping body potentials back to cardiac surface. This field has been very active over the last decade with multiple solutions. Authors response here is not satisfactory. Despite the drawback in the evaluation, I think the article has an interesting model and therefore can be considered as a valuable contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses the criticisms of MT and reviewers on the positioning with respect to the cardiac modeling community and literature. On the methodological side, the choice for the experimental setup is clarified, in particular for the ablation study for NODE and GRU components. The paper appears quite dense in combining several methodological components, and the rebuttal is positive in clarifying some important aspect raised during the reviewing process. While there are several methodological and experimental details which definitely deserve further clarification, there is no critical aspect which seems to invalidate the work. Overall, the proposed idea is innovative and seems convincing in combining data-driven and physics-based methods for spatio-temporal moiling of ECG signals. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We appreciate the strong support from R2 &amp; R3 and the constructive suggestions from all. We provide clarifications to major confusion below. Major comments: Comparison to cardiac modeling (Metareviewer/MR): While related, there is a clear distinction between the cardiac modeling community (as mentioned by the MR), and the electrocardiographic-imaging (ECGI, this work): ECGI works typically do not involve cardiac modeling and – to the best of our knowledge – no published ECGI works have included comparisons with cardiac modeling. Indeed, body surface data have recently been seen [1-2] to personalize cardiac models. We agree with the MR that, as the distinction between the two communities becomes blurry, both should move towards understanding each other’s works. However, there are community-level obstacles including the availability of open-source tools for non-modeling (e.g. ECGI) groups to reproduce sophisticated cardiac simulations. Removing these obstacles requires collective efforts from the field and is beyond a reasonable scope of this individual paper. We will add this discussion in our revision. Clarity in methodology (R1/MR): We thank R2 for commenting that “the paper is well written and the method is nicely explained”. As suggested by R1 and MR, we will expand descriptions of methodological details in Sections 2.1-2.3, and make space by trimming down high-level motivations and resizing large figures. Missing ablation study of GRU/ODE (R1/R3): As explained in section 2.3 above eq. (8), the GRU and ODE work together to complete Bayesian filtering in the state-space model (SSM), where the ODE predicts the dynamics forward (to z_t-) and the GRU corrects the prediction using available data (to z_t+). Removing either will result in a model structure completely different from that proposed: 1) Removing the GRU results in a latent ODE model [3] where only the initial state z0 is inferred from data and the dynamics is purely described by the ODE. We have previously experimented with this model with unsatisfactory results. Hence they were not reported. 2) Removing the ODE regresses the model back to a traditional sequence-to-sequence model where RNNs are used in both the encoder and decoder, and are entangled with spatial modeling. This would be the ST-GCNN and Euclidean baselines already considered in our experiments. Euclidean Distance (R1/R3) The use of Euclidean distance to measure reconstruction is common practice in ECGI works (see [9] in our paper). It is done by identifying the region of the earliest activation in the reconstructions and using the centroid as the site of the earliest activation. Reproducibility (R1-3) Clinical data used are openly available at https://edgar.sci.utah.edu/ (citation will be added). We will also make our codes open. Other major misunderstandings R1 - Missing Laplacian smoothing in ST-GCNN: The physics-informed ST-GCNN does have Laplacian smoothing, which as pointed out by R1 works as an ablation study for the benefits of ODE. Data-driven baselines do not need Laplacian smoothing (as the ground truth labels are smooth). R3 - Missing physics-informed ST-GCNN on clinical data. The physics-informed ST-GCNN was included in Section 3.2. Additional comments of R1 The bipartite graph is created from the coarse graph representation of the heart and torso, as described in Section 2.2. An edge exists between every vertex on the torso and that on the heart. This follows the physics motivation that the geometrical relationship between any location on the heart and torso determines the forward and inverse mapping. The forward model H is multiplied to the output of the neural network X and then goes into the loss function. P in Eq. 5 is the Cartesian product of the B-spline bases. Citations [1] https://doi.org/10.1109/TBME.2016.2629849 [2] https://doi.org/10.1109/TBME.2018.2839713 [3] https://arxiv.org/abs/1907.03907 back to top" />
+<link rel="canonical" href="https://kittywong.github.io/kittywong/0634/12/31/Paper1581" />
+<meta property="og:url" content="https://kittywong.github.io/kittywong/0634/12/31/Paper1581" />
+<meta property="og:site_name" content="MICCAI 2021 - Accepted Papers and Reviews" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="0634-12-31T23:58:56-05:17" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Label-Free Physics-Informed Image Sequence Reconstruction with Disentangled Spatial-Temporal Modeling" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://kittywong.github.io/kittywong/0634/12/31/Paper1581"},"@type":"BlogPosting","url":"https://kittywong.github.io/kittywong/0634/12/31/Paper1581","headline":"Label-Free Physics-Informed Image Sequence Reconstruction with Disentangled Spatial-Temporal Modeling","dateModified":"0635-01-04T00:00:00-05:17","datePublished":"0634-12-31T23:58:56-05:17","description":"Paper Info Reviews Meta-review(s) Author Feedback Authors Xiajun Jiang, Ryan Missel, Maryam Toloubidokhti, Zhiyuan Li, Omar Gharbia, John L. Sapp, Linwei Wang Abstract Traditional approaches to image reconstruction uses physics-based loss with data-efficient inference, although the difficulty to properly model the inverse solution precludes learning the reconstruction across a distribution of data. Modern deep learning approaches enable expressive modeling but rely on a large number of reconstructed images (labeled data) that are often not available in practice. To combine the best of the above two lines of works, we present a novel label-free image reconstruction network that is supervised by physics-based forward operators rather than labeled data. We further present an expressive yet disentangled spatial-temporal modeling of the inverse solution, where its latent dynamics is modeled by neural ordinary differential equations and its emission over non-Euclidean geometrical domains by graph convolutional neural networks. We applied the presented method to reconstruct electrical activity on the heart surface from body-surface potential. In simulation and real-data experiments in comparison to both traditional physics-based and modern data-driven reconstruction methods, we demonstrated the ability of the presented method to learn how to reconstruct using observational data without any corresponding labels. Link to paper https://doi.org/10.1007/978-3-030-87231-1_35 Link to the code repository https://github.com/john-x-jiang/phy_geo Link to the dataset(s) N/A Reviews Review #1 Please describe the contribution of the paper The paper proposes an approach for spatio-temporal modeling of ECG signals (acquired over a torso) in order to reconstruct the latent electric potential at different regions of the heart. In particular, the paper innovates on imposing structure on the temporal dynamics in the latent domain via ODEs which reduces the need for heavy supervision. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The problem sounds very interesting and indeed important. The paper deals with modeling spatio-temporal data, the authors disentangle the spatial and temporal modeling tasks by employing neural ODEs in the latent domain. Some additional components such as Laplacian smoothing regularization and GCN-GRUs are employed in addition to the ST-GCNN (the earlier state-of-the-art architecture for the same task.) The evaluation is good, it is performed both on simulations and on clinical in-vivo ECG data. The authors demonstrate benefits by being data-efficient and performing better in terms of MSE. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. I believe the paper is not ready for publication in its current form due to the following reasons: The writing is not clear, some seemingly very important information is left ambiguous. The paper is missing important details related to the method. The reasons for the performance benefit are not clear. IMHO, this is good work but it needs to be rewritten in order to clear ambiguities that might confuse the readers. These issues are elaborated below in the constructive critique section. Please rate the clarity and organization of this paper Poor Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance I believe if the authors were able to make the simulation code and data public, it would greatly benefit the community in recognizing this important problem. Secondly, the paper is missing many important details that might confuse readers and might unfortunately render the results, simulation and evaluation presented in the paper rather irreproducible. I hope the authors add these important details to the revised version of this paper. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html Forward model: How does Eq. 4 map to the equation to Fig. 1? Where is the H in Figure 1? Laplacian smoothing: The authors seem to add Laplacian smoothing to X in Eq. 4 which is missing in the baseline ST-GCNN. How can one conclude that the performance improvements in ODE-GCNN is due to ODE and not due to Laplacian smoothing? An ablation study comparing ODE-GCNN with \\lambda = 0 to ST-GCNN is required to verify this claim. Regarding graphs/geometry: In the beginning of section 2.2 the authors write, “…represent the heart and torso as two separate undirected graphs with edge attributes u(i, j)…”. Later in the “Latent Inverse Mapping” paragraph, the authors reintroduce this u(i, j) as “… edge attribute u(i, j) between torso vertex i and heart vertex j … ”. How do the authors have access to this “bipartite” graph? Is it some sense of correspondence? Do they have correspondence in the original domain? If so, how is the correspondence transferred to the latent domain over the spectrally coarsened graphs? How can one have correspondence between a heart and a torso? What does it even mean (clinically and practically)? Temporal modeling: The use of GRU’s to obtain z_t+ from z_t- seems arbitrary and not well motivated. If it is purely performance-driven, the authors could report plots of performance with and without the GRU, as they did for ODE. Evaluation on clinical data. It is not clear what authors mean by “quantitative accuracy was measured by the Euclidean distance between the reconstruction origin and the known sites of pacing” - is this a valid metric to measure successful reconstruction? Can the authors please add citations for this practice? Writing and paper organization Some sections of the paper that describe the method are not clearly written – I had a tough time following the paper. In particular, Section 2.2 and 2.3, that span about 1 page length, are dense and introduce too many ideas/details, namely: geometric representation of graphs, GRU, ODE, bi-partite graph between torso and heart, spline convolution. Is it really the optimal way to present this information? I understand that 8 pages might be too short, but I think the authors should try harder in presenting the method that doesn’t infuse confusion in the readers. IMHO, emphasis can be laid more on Section 2.2 and 2.3 by moving some ablation studies into the supplementary material. Minor: “Inverse solution” - it’s usually called latent variable in inverse problems or dynamical systems literature. Section 2.2: “As X_t and Y_t live in 3D geometry…” phrasing is incorrect. Eq. 5: P is not defined. Please state your overall opinion of the paper borderline reject (5) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? This is good work but the presentation is not good, it misses crucial details that for example prohibit reproducibility, and is not in a state to be readable by general audience. it needs to be rewritten in order to clear ambiguities that might confuse the readers. Above I detailed the issues that needs attention, I believe fixing these issues carefully would make this a very good and impactful work. What is the ranking of this paper in your review stack? 3 Number of papers in your stack 5 Reviewer confidence Somewhat confident Review #2 Please describe the contribution of the paper The paper presents a method to learn the electrical activity of the heart surface from body-surface potential using an unsupervised learning approach that is only based on physical constraints as well as a graph convolution based network approach. The neural network consists of an encoder part and decoder part both based on spatial graph convolutions, since the surface information is used as an input in form of a mesh. The latent representation is then processed by consecutive layers of neural ODEs and graph convolution based GRU cells, which create a latent representation of the heart surface as a combination of the current latent representation of the torso surface and the previous representations. Here, the training of the neural network is performed with a loss incorporating physical assumptions only and not relying on any label data. The performance is compared both on simulation and real data and similar performance to a supervised approach is shown with enough unlabeled data. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. The paper is well written and the method is nicely explained. The combination of physics-informed loss generation with graph convolutional processing of 3D meshes and also consideration of the temporal aspects of the reconstructions is a strong contribution in my opinion. This is especially true, since the consideration of unsupervised learning is an important focus in the medical domain with sometimes only small amounts of labelled data. The usage of the GCN for modelling the non-Euclidian mesh structure is also reasonable and proves very effective with respect to the results and the comparison to an Euclidian approach. The evaluation is also done nicely, showing results both on simulation and real data and providing insights about different aspect of the methodology. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The network setup could be explained in a little more detail to improve reproducibility of the method (layer size, dimensionality). Additionally, the setting of the regularization function R(X) is not specified. Since this is an important part of the optimization, it would make sense to add this description to the paper. Additionally, some reference work could be cited regarding the used concept of training on physical losses, which exists in the medical and non-medical domain (e.g. Stewart, R., Ermon, S.: Label-free supervision of neural networks with physics and domain knowledge. 31st AAAI Conference on Artificial Intelligence, AAAI 2017, 1(1), 2576–2582). Please rate the clarity and organization of this paper Very Good Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance Some aspects of the method like the R(X) function of the physical loss and the details of network setup should be explained in more detail to increase reproducibility. The evaluation itself is understandable. Additionally, the code of the method will be provided by the group. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The paper shows a really interesting combination of different methodological aspects. It would be great, if the paper could clarify the missing points mentioned in the feedback (description of R(X), calculation process of Eq. 7 …) to further improve the paper clarity. Additionally, it would be great if some citations for the usage of physical losses as well as training on simulation data could be provided, since there is some state of the art. Finally, an outline how this concept could be more generally applicable would be interesting. Please state your overall opinion of the paper strong accept (9) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The combination of the different methodological aspects in the proposed network is very strong in my opinion. A graph-based approach is combined with a temporal representation learning, while being completely unsupervised only relying on physical assumptions. Within the data critical medical domain this is an interesting work. What is the ranking of this paper in your review stack? 1 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Review #3 Please describe the contribution of the paper The authors proposed a novel GCN-ODE architecture to model the electrical activity on the heart surface. They enforce physics constrained in the loss function, which enables label-free training. The authors presented synthetic data and real data experiments which have clinical application potential. Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting. Enforcing physics prior to deep learning architecture is getting popular. And this paper finds a useful application for this idea. This work shows that label-free learning is possible where enough prior information about the underlying physics is known. The latent space modeling of temporal dynamics using ODE and GRU is a novel formulation. This paper has a moderately strong evaluation that has significant clinical importance. Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work. The synthetic data experiments suggest marginal improvement over the state-of-the-art. The ablation study is missing for the latent dynamics part. Will a standalone GRU or ODE be good enough to model the latent dynamics? Please rate the clarity and organization of this paper Satisfactory Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance This paper is a bit difficult to reproduce, since they used a private datasets. Few details such as how the temporal dynamics part is implemented is also not explained adequately. Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: https://miccai2021.org/en/REVIEWER-GUIDELINES.html The physics informed ST-GCNN were excluded from the comparison for clinical data experiment Fig 3. Why is that so? How is the localization in the Fig 4. computed? Authors should explain in detail for reproducibility. Please state your overall opinion of the paper accept (8) Please justify your recommendation. What were the major factors that led you to your overall score for this paper? The authors proposed a novel ODE-GCNN approach for a clinically relevant problem. Hence, I recommend acceptance. What is the ranking of this paper in your review stack? 2 Number of papers in your stack 5 Reviewer confidence Confident but not absolutely certain Meta-Review(s) Primary Meta-Review Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal. This paper proposes to reconstruct electrophysiology signal on the heart from body-surface maps using a graph convolutional network that enforce a spatio-temporal consistency on the electrical maps. One reviewer has serious concern about the general clarity of the current manuscript which misses several necessary details to appreciate the contribution, notably on the graph construction, the motivation of the temporal modeling. An evaluation of the proposed contribution, specifically on the ODE, is also missing. A second reviewer appreciates the use of a graph convolutions combined with the electrical maps, but also finds the method lacking key explanations and misses refs on physics-based learning of networks. A third reviewer further appreciates the use of the ODE formulation in the learning framework, but also indicates a lack of an ablation study to understand the contributions of the proposed ODE component. All three reviewers have a consensus on a lack of general clarity in the methodology, notably on the graph construction, but appreciate the incorporation of ODE to model a temporal signal such as electrophysiology. The manuscript would require a significant revision, making the current paper not ready for publication. What may be worrying is that inference of electrophysiology maps from torso measurements is an active field of study in several major groups of the cardiac modeling community, notably within the euHeart project among others, working on electrocardiography from body surface potential mapping. The evaluation should include, in my opinion, work from the field of cardiac electrophysiology from body surface. Authors are invited to discuss on the motivation of their evaluation and lack of such comparison in the field, as well as on the feasibility of providing the requested methodological details from the reviewers. Recommendation is towards an invitation for a Rebuttal What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 8 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The authors have provided clarification in methodology, their ablation study. I do agree that there are multiple communities tackling electrophysiology from torso measurements. Addressing community-level obstacles of using cardiac modeling is obviously out of scope of the paper, but acknowledging existing work on cardiac modeling appears reasonable, since this submission addresses a directly related application, electrophysiology from torso measurements. The authors suggest a few relevant references to add. The methodology remains relevant to the field as it provides on original graph-based approach with a physics-based constraint and ODEs to reduce labeling effort. Clarifications will be made by working around figure spacings, which appears, in my opinion, feasible. For these reasons, Recommendation is toward Acceptance. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 12 Meta-Review #2 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The article presents a neural network based reconstruction method for temporal electrophysiology maps on the heart surface based on body potentials. MR and some reviewers raise concerns regarding the clarity of the writing. While I agree on some part, I also note that there are multiple components of the model and it is difficult to give a clear description for people not in the field in the limited space. I also think the explanations can improve and I encourage authors to do so as they promise in the rebuttal. That said, the main drawback of the article is what MR raises, there are no comparisons with more advanced techniques for mapping body potentials back to cardiac surface. This field has been very active over the last decade with multiple solutions. Authors response here is not satisfactory. Despite the drawback in the evaluation, I think the article has an interesting model and therefore can be considered as a valuable contribution. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 3 Meta-Review #3 Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores, indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision. The rebuttal addresses the criticisms of MT and reviewers on the positioning with respect to the cardiac modeling community and literature. On the methodological side, the choice for the experimental setup is clarified, in particular for the ablation study for NODE and GRU components. The paper appears quite dense in combining several methodological components, and the rebuttal is positive in clarifying some important aspect raised during the reviewing process. While there are several methodological and experimental details which definitely deserve further clarification, there is no critical aspect which seems to invalidate the work. Overall, the proposed idea is innovative and seems convincing in combining data-driven and physics-based methods for spatio-temporal moiling of ECG signals. After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal. Accept What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers). 4 Author Feedback We appreciate the strong support from R2 &amp; R3 and the constructive suggestions from all. We provide clarifications to major confusion below. Major comments: Comparison to cardiac modeling (Metareviewer/MR): While related, there is a clear distinction between the cardiac modeling community (as mentioned by the MR), and the electrocardiographic-imaging (ECGI, this work): ECGI works typically do not involve cardiac modeling and – to the best of our knowledge – no published ECGI works have included comparisons with cardiac modeling. Indeed, body surface data have recently been seen [1-2] to personalize cardiac models. We agree with the MR that, as the distinction between the two communities becomes blurry, both should move towards understanding each other’s works. However, there are community-level obstacles including the availability of open-source tools for non-modeling (e.g. ECGI) groups to reproduce sophisticated cardiac simulations. Removing these obstacles requires collective efforts from the field and is beyond a reasonable scope of this individual paper. We will add this discussion in our revision. Clarity in methodology (R1/MR): We thank R2 for commenting that “the paper is well written and the method is nicely explained”. As suggested by R1 and MR, we will expand descriptions of methodological details in Sections 2.1-2.3, and make space by trimming down high-level motivations and resizing large figures. Missing ablation study of GRU/ODE (R1/R3): As explained in section 2.3 above eq. (8), the GRU and ODE work together to complete Bayesian filtering in the state-space model (SSM), where the ODE predicts the dynamics forward (to z_t-) and the GRU corrects the prediction using available data (to z_t+). Removing either will result in a model structure completely different from that proposed: 1) Removing the GRU results in a latent ODE model [3] where only the initial state z0 is inferred from data and the dynamics is purely described by the ODE. We have previously experimented with this model with unsatisfactory results. Hence they were not reported. 2) Removing the ODE regresses the model back to a traditional sequence-to-sequence model where RNNs are used in both the encoder and decoder, and are entangled with spatial modeling. This would be the ST-GCNN and Euclidean baselines already considered in our experiments. Euclidean Distance (R1/R3) The use of Euclidean distance to measure reconstruction is common practice in ECGI works (see [9] in our paper). It is done by identifying the region of the earliest activation in the reconstructions and using the centroid as the site of the earliest activation. Reproducibility (R1-3) Clinical data used are openly available at https://edgar.sci.utah.edu/ (citation will be added). We will also make our codes open. Other major misunderstandings R1 - Missing Laplacian smoothing in ST-GCNN: The physics-informed ST-GCNN does have Laplacian smoothing, which as pointed out by R1 works as an ablation study for the benefits of ODE. Data-driven baselines do not need Laplacian smoothing (as the ground truth labels are smooth). R3 - Missing physics-informed ST-GCNN on clinical data. The physics-informed ST-GCNN was included in Section 3.2. Additional comments of R1 The bipartite graph is created from the coarse graph representation of the heart and torso, as described in Section 2.2. An edge exists between every vertex on the torso and that on the heart. This follows the physics motivation that the geometrical relationship between any location on the heart and torso determines the forward and inverse mapping. The forward model H is multiplied to the output of the neural network X and then goes into the loss function. P in Eq. 5 is the Cartesian product of the B-spline bases. Citations [1] https://doi.org/10.1109/TBME.2016.2629849 [2] https://doi.org/10.1109/TBME.2018.2839713 [3] https://arxiv.org/abs/1907.03907 back to top","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<meta
+  name="keywords"
+  content="Jiang, Xiajun,Missel, Ryan,Toloubidokhti, Maryam,Li, Zhiyuan,Gharbia, Omar,L. Sapp, John,Wang, Linwei" />
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.ico" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="MICCAI 2021 - Accepted Papers and Reviews - "
+  href="kittywong/feed.xml" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/base.css" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="kittywong/assets/css/highlight.css" />
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+  async>
+</script>
+
+
+<script src="/assets/scripts/jekyllpaper.js" async></script>
+<script
+  src="https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js"
+  onload="javascript:loadMermaid();"
+  async>
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+      displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+    //,
+    //displayAlign: "left",
+    //displayIndent: "2em"
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <header class="container-header">
+        <div class="header-info">
+  <!-- Added by Elvis Chen -->
+  <img src="https://kittywong.github.io/assets/images/miccai2021header.jpg" alt="MICCAI banner">
+  <!-- END Added by Elvis Chen -->
+  <span class="header-info-name">MICCAI 2021 - Accepted Papers and Reviews</span>
+  <span class="header-info-desc"></span>
+</div>
+<nav class="header-nav">
+  <ul class="header-main-nav">
+    <h2>
+    
+    <li class="header-main-nav-item">
+      <a href="kittywong/">
+        
+          <b>List of Papers</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/categories">
+        
+          <b>By topics</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/tags">
+        
+          <b>Author List</b>
+        
+      </a>
+    </li>
+      
+    <li class="header-main-nav-item">
+      <a href="kittywong/about">
+        
+          <b>About</b>
+        
+      </a>
+    </li>
+      
+    </h2>
+  </ul>
+</nav>
+      </header>
+      <main class="container-main">
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<article class="container-post">
+  <div class="post-title">
+    <h1><span style="color:#1040a7"><b>Label-Free Physics-Informed Image Sequence Reconstruction with Disentangled Spatial-Temporal Modeling</b></span></h1>
+  </div>
+  
+  <div class="post-author print-post-author">
+    <span>Kitty K. Wong</span>
+  </div>
+  <hr>
+    
+   
+  <div class="post-content">
+    <!--
+    <div class="post-categories">
+      <h2><span style="color:#1040a7">Paper Topic(s):</span></h2> 
+      
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a>
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a>
+      
+      <a 
+        href="kittywong/categories#Modalities - EEG/ECG"
+        class="post-category">
+        Modalities - EEG/ECG
+      </a>
+      
+    
+    </div>
+    <div class="post-tags">
+      
+      <h2><span style="color:#1040a7">Author(s):</span></h2> 
+      
+      <a href="kittywong/tags#Jiang, Xiajun"
+        class="post-tags">
+        Jiang, Xiajun
+      </a> |  
+      
+      <a href="kittywong/tags#Missel, Ryan"
+        class="post-tags">
+        Missel, Ryan
+      </a> |  
+      
+      <a href="kittywong/tags#Toloubidokhti, Maryam"
+        class="post-tags">
+        Toloubidokhti, Maryam
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Zhiyuan"
+        class="post-tags">
+        Li, Zhiyuan
+      </a> |  
+      
+      <a href="kittywong/tags#Gharbia, Omar"
+        class="post-tags">
+        Gharbia, Omar
+      </a> |  
+      
+      <a href="kittywong/tags#L. Sapp, John"
+        class="post-tags">
+        L. Sapp, John
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Linwei"
+        class="post-tags">
+        Wang, Linwei
+      </a> |  
+      
+    </div>
+  -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    .sidenav {
+      width: 200px;
+      position: fixed;
+      z-index: 1;
+      top: 150px;
+      left: 50px;
+      background: #eee;
+      overflow-x: hidden;
+      padding: 0px 0;
+    }
+  
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #2196F3;
+      color: #FF4500;
+      display: block;
+    }
+  
+    .sidenav a:hover {
+      color: #064579;
+    }
+    </style>
+  </head>
+
+  <div class="sidenav">
+    <a href="#author-id">Paper Info</a>
+    <a href="#review-id">Reviews</a>
+    <a href="#metareview-id">Meta-Review(s)</a>
+    <a href="#authorFeedback-id">Author Feedback</a>
+    <a href="">Back to top</a>
+    <a href="https://kittywong.github.io">Back to List of papers</a>
+  </div>
+
+    <table>
+  <tbody>
+    <tr>
+      <td><a href="#author-id"><span style="color:#ff9900"><b>Paper Info</b></span></a></td>
+      <td><a href="#review-id"><span style="color:#ff9900"><b>Reviews</b></span></a></td>
+      <td><a href="#metareview-id"><span style="color:#ff9900"><b>Meta-review(s)</b></span></a></td>
+      <td><a href="#authorFeedback-id"><span style="color:#ff9900"><b>Author Feedback</b></span></a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="author-id">Authors</h1>
+<p>Xiajun Jiang, Ryan Missel, Maryam Toloubidokhti, Zhiyuan Li, Omar Gharbia, John L. Sapp, Linwei Wang
+<br /><br /></p>
+
+<h1 id="abstract-id">Abstract</h1>
+<p>Traditional approaches to image reconstruction uses physics-based loss with data-efficient inference, although the difficulty to properly model the inverse solution precludes learning the reconstruction across a distribution of data. Modern deep learning approaches enable expressive modeling but rely on a large number of reconstructed images (labeled data) that are often not available in practice. To combine the best of the above two lines of works, we present a novel label-free image reconstruction network that is supervised by physics-based forward operators rather than labeled data. We further present an expressive yet disentangled spatial-temporal modeling of the inverse solution, where its latent dynamics is modeled by neural ordinary differential equations and its emission over non-Euclidean geometrical domains by graph convolutional neural networks. We applied the presented method to reconstruct electrical activity on the heart surface from body-surface potential. In simulation and real-data experiments in comparison to both traditional physics-based and modern data-driven reconstruction methods, we demonstrated the ability of the presented method to learn how to reconstruct using observational data without any corresponding labels.
+<br /><br /></p>
+
+<h1 id="link-id">Link to paper</h1>
+<p><a href="https://doi.org/10.1007/978-3-030-87231-1_35">https://doi.org/10.1007/978-3-030-87231-1_35</a>
+<br /><br /></p>
+
+<h1 id="code-id">Link to the code repository</h1>
+<p>https://github.com/john-x-jiang/phy_geo
+<br /><br /></p>
+
+<h1 id="dataset-id">Link to the dataset(s)</h1>
+<p>N/A
+<br /><br /></p>
+
+<hr />
+<h1 id="review-id">Reviews</h1>
+
+<h3 id="review-1">Review #1</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper proposes an approach for spatio-temporal modeling of ECG signals (acquired over a torso) in order to reconstruct the latent electric potential at different regions of the heart. In particular, the paper innovates on imposing structure on the temporal dynamics in the latent domain via ODEs which reduces the need for heavy supervision.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>The problem sounds very interesting and indeed important.</li>
+        <li>The paper deals with modeling spatio-temporal data, the authors disentangle the spatial and temporal modeling tasks by employing neural ODEs in the latent domain. 
+Some additional components such as Laplacian smoothing regularization and GCN-GRUs are employed in addition to the ST-GCNN (the earlier state-of-the-art architecture for the same task.)</li>
+        <li>The evaluation is good, it is performed both on simulations and on clinical in-vivo ECG data.</li>
+        <li>The authors demonstrate benefits by being data-efficient and performing better in terms of MSE.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>I believe the paper is not ready for publication in its current form due to the following reasons:</p>
+      <ol>
+        <li>The writing is not clear, some seemingly very important information is left ambiguous.</li>
+        <li>The paper is missing important details related to the method.</li>
+        <li>The reasons for the performance benefit are not clear.</li>
+      </ol>
+
+      <p>IMHO, this is good work but it needs to be rewritten in order to clear ambiguities that might confuse the readers. These issues are elaborated below in the constructive critique section.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Poor</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>I believe if the authors were able to make the simulation code and data public, it would greatly benefit the community in recognizing this important problem.</p>
+
+      <p>Secondly, the paper is missing many important details that might confuse readers and might unfortunately render the results, simulation and evaluation presented in the paper rather irreproducible. I hope the authors add these important details to the revised version of this paper.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>Forward model: How does Eq. 4 map to the equation to Fig. 1? Where is the H in Figure 1?</p>
+
+      <p>Laplacian smoothing:</p>
+
+      <p>The authors seem to add Laplacian smoothing to X in Eq. 4 which is missing in the baseline ST-GCNN. How can one conclude that the performance improvements in ODE-GCNN is due to ODE and not due to Laplacian smoothing? An ablation study comparing ODE-GCNN with \lambda = 0 to ST-GCNN is required to verify this claim.</p>
+
+      <p>Regarding graphs/geometry: 
+In the beginning of section 2.2 the authors write, “…represent the heart and torso as two separate undirected graphs with edge attributes u(i, j)…”. Later in the “Latent Inverse Mapping” paragraph, the authors reintroduce this u(i, j) as “… edge attribute u(i, j) between torso vertex i and heart vertex j … ”.</p>
+      <ol>
+        <li>How do the authors have access to this “bipartite” graph? Is it some sense of correspondence?</li>
+        <li>Do they have correspondence in the original domain? If so, how is the correspondence transferred to the latent domain over the spectrally coarsened graphs?</li>
+        <li>How can one have correspondence between a heart and a torso? What does it even mean (clinically and practically)?</li>
+      </ol>
+
+      <p>Temporal modeling:</p>
+      <ol>
+        <li>The use of GRU’s to obtain z_t+ from z_t- seems arbitrary and not well motivated. If it is purely performance-driven, the authors could report plots of performance with and without the GRU, as they did for ODE.</li>
+      </ol>
+
+      <p>Evaluation on clinical data.</p>
+      <ol>
+        <li>It is not clear what authors mean by “quantitative accuracy was measured by the Euclidean distance between the reconstruction origin and the known sites of pacing” - is this a valid metric to measure successful reconstruction? Can the authors please add citations for this practice?</li>
+      </ol>
+
+      <p>Writing and paper organization</p>
+      <ol>
+        <li>Some sections of the paper that describe the method are not clearly written – I had a tough time following the paper.</li>
+        <li>In particular, Section 2.2 and 2.3, that span about 1 page length, are dense and introduce too many ideas/details, namely: geometric representation of graphs, GRU, ODE, bi-partite graph between torso and heart, spline convolution. Is it really the optimal way to present this information? I understand that 8 pages might be too short, but I think the authors should try harder in presenting the method that doesn’t infuse confusion in the readers.</li>
+        <li>IMHO, emphasis can be laid more on Section 2.2 and 2.3 by moving some ablation studies into the supplementary material.</li>
+      </ol>
+
+      <p>Minor:</p>
+      <ul>
+        <li>“Inverse solution” - it’s usually called latent variable in inverse problems or dynamical systems literature.</li>
+        <li>Section 2.2: “As X_t and Y_t live in 3D geometry…” phrasing is incorrect.</li>
+        <li>Eq. 5: P is not defined.</li>
+      </ul>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>borderline reject (5)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>This is good work but the presentation is not good, it misses crucial details that for example prohibit reproducibility, and is not in a state to be readable by general audience.</p>
+
+      <p>it needs to be rewritten in order to clear ambiguities that might confuse the readers. Above I detailed the issues that needs attention, I believe fixing these issues carefully would make this a very good and impactful work.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Somewhat confident</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-2">Review #2</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The paper presents a method to learn the electrical activity of the heart surface from body-surface potential using an unsupervised learning approach that is only based on physical constraints as well as a graph convolution based network approach. The neural network consists of an encoder part and decoder part both based on spatial graph convolutions, since the surface information is used as an input in form of a mesh. The latent representation is then processed by consecutive layers of neural ODEs and graph convolution based GRU cells, which create a latent representation of the heart surface as a combination of the current latent representation of the torso surface and the previous representations. Here, the training of the neural network is performed with a loss incorporating physical assumptions only and not relying on any label data. The performance is compared both on simulation and real data and similar performance to a supervised approach is shown with enough unlabeled data.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <p>The paper is well written and the method is nicely explained. The combination of physics-informed loss generation with graph convolutional processing of 3D meshes and also consideration of the temporal aspects of the reconstructions is a strong contribution in my opinion. This is especially true, since the consideration of unsupervised learning is an important focus in the medical domain with sometimes only small amounts of labelled data. The usage of the GCN for modelling the non-Euclidian mesh structure is also reasonable and proves very effective with respect to the results and the comparison to an Euclidian approach. The evaluation is also done nicely, showing results both on simulation and real data and providing insights about different aspect of the methodology.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <p>The network setup could be explained in a little more detail to improve reproducibility of the method (layer size, dimensionality). Additionally, the setting of the regularization function R(X) is not specified. Since this is an important part of the optimization, it would make sense to add this description to the paper. Additionally, some reference work could be cited regarding the used concept of training on physical losses, which exists in the medical and non-medical domain (e.g. Stewart, R., Ermon, S.: Label-free supervision of neural networks with physics and domain knowledge. 31st AAAI Conference on Artificial Intelligence, AAAI 2017, 1(1), 2576–2582).</p>
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Very Good</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>Some aspects of the method like the R(X) function of the physical loss and the details of network setup should be explained in more detail to increase reproducibility. The evaluation itself is understandable. Additionally, the code of the method will be provided by the group.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <p>The paper shows a really interesting combination of different methodological aspects. It would be great, if the paper could clarify the missing points mentioned in the feedback (description of R(X), calculation process of Eq. 7 …) to further improve the paper clarity. Additionally, it would be great if some citations for the usage of physical losses as well as training on simulation data could be provided, since there is some state of the art. Finally, an outline how this concept could be more generally applicable would be interesting.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>strong accept (9)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The combination of the different methodological aspects in the proposed network is very strong in my opinion. A graph-based approach is combined with a temporal representation learning, while being completely unsupervised only relying on physical assumptions. Within the data critical medical domain this is an interesting work.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>1</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h3 id="review-3">Review #3</h3>
+
+<ul>
+  <li><strong>Please describe the contribution of the paper</strong>
+    <blockquote>
+      <p>The authors proposed a novel GCN-ODE architecture to model the electrical activity on the heart surface. They enforce physics constrained in the loss function, which enables label-free training. The authors presented synthetic data and real data experiments which have clinical application potential.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please list the main strengths of the paper; you should write about a novel formulation, an original way to use data, demonstration of clinical feasibility, a novel application, a particularly strong evaluation, or anything else that is a strong aspect of this work. Please provide details, for instance, if a method is novel, explain what aspect is novel and why this is interesting.</strong>
+    <blockquote>
+      <ol>
+        <li>Enforcing physics prior to deep learning architecture is getting popular. And this paper finds a useful application for this idea.</li>
+        <li>This work shows that label-free learning is possible where enough prior information about the underlying physics is known.</li>
+        <li>The latent space modeling of temporal dynamics using ODE and GRU is a novel formulation.</li>
+        <li>This paper has a moderately strong evaluation that has significant clinical importance.</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please list the main weaknesses of the paper. Please provide details, for instance, if you think a method is not novel, explain why and provide a reference to prior work.</strong>
+    <blockquote>
+      <ol>
+        <li>The synthetic data experiments suggest marginal improvement over the state-of-the-art.</li>
+        <li>The ablation study is missing for the latent dynamics part. Will a standalone GRU or ODE be good enough to model the latent dynamics?</li>
+      </ol>
+
+    </blockquote>
+  </li>
+  <li><strong>Please rate the clarity and organization of this paper</strong>
+    <blockquote>
+      <p>Satisfactory</p>
+    </blockquote>
+  </li>
+  <li><strong>Please comment on the reproducibility of the paper. Note, that authors have filled out a reproducibility checklist upon submission. Please be aware that authors are not required to meet all criteria on the checklist - for instance, providing code and data is a plus, but not a requirement for acceptance</strong>
+    <blockquote>
+      <p>This paper is a bit difficult to reproduce, since they used a private datasets. Few details such as how the temporal dynamics part is implemented is also not explained adequately.</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide detailed and constructive comments for the authors. Please also refer to our Reviewer’s guide on what makes a good review: <a href="https://miccai2021.org/en/REVIEWER-GUIDELINES.html">https://miccai2021.org/en/REVIEWER-GUIDELINES.html</a></strong>
+    <blockquote>
+      <ol>
+        <li>The physics informed ST-GCNN were excluded from the comparison for clinical data experiment Fig 3. Why is that so?</li>
+        <li>How is the localization in the Fig 4. computed? Authors should explain in detail for reproducibility.</li>
+      </ol>
+    </blockquote>
+  </li>
+  <li><strong>Please state your overall opinion of the paper</strong>
+    <blockquote>
+      <p>accept (8)</p>
+    </blockquote>
+  </li>
+  <li><strong>Please justify your recommendation. What were the major factors that led you to your overall score for this paper?</strong>
+    <blockquote>
+      <p>The authors proposed a novel ODE-GCNN approach for a clinically relevant problem. Hence, I recommend acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your review stack?</strong>
+    <blockquote>
+      <p>2</p>
+    </blockquote>
+  </li>
+  <li><strong>Number of papers in your stack</strong>
+    <blockquote>
+      <p>5</p>
+    </blockquote>
+  </li>
+  <li><strong>Reviewer confidence</strong>
+    <blockquote>
+      <p>Confident but not absolutely certain</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<hr />
+<h1 id="metareview-id">Meta-Review(s)</h1>
+
+<h2 id="primary-meta-review">Primary Meta-Review</h2>
+<ul>
+  <li><strong>Please provide your assessment of this work, taking into account all reviews. Summarize the key strengths and weaknesses of the paper and justify your recommendation. In case you deviate from the reviewers’ recommendations, explain in detail the reasons why. In case of an invitation for rebuttal, clarify which points are important to address in the rebuttal.</strong>
+    <blockquote>
+      <p>This paper proposes to reconstruct electrophysiology signal on the heart from body-surface maps using a graph convolutional network that enforce a spatio-temporal consistency on the electrical maps.</p>
+
+      <p>One reviewer has serious concern about the general clarity of the current manuscript which misses several necessary details to appreciate the contribution, notably on the graph construction, the motivation of the temporal modeling. An evaluation of the proposed contribution, specifically on the ODE, is also missing.</p>
+
+      <p>A second reviewer appreciates the use of a graph convolutions combined with the electrical maps, but also finds the method lacking key explanations and misses refs on physics-based learning of networks.</p>
+
+      <p>A third reviewer further appreciates the use of the ODE formulation in the learning framework, but also indicates a lack of an ablation study to understand the contributions of the proposed ODE component.</p>
+
+      <p>All three reviewers have a consensus on a lack of general clarity in the methodology, notably on the graph construction, but appreciate the incorporation of ODE to model a temporal signal such as electrophysiology. The manuscript would require a significant revision, making the current paper not ready for publication.</p>
+
+      <p>What may be worrying is that inference of electrophysiology maps from torso measurements is an active field of study in several major groups of the cardiac modeling community, notably within the euHeart project among others, working on electrocardiography from body surface potential mapping. The evaluation should include, in my opinion, work from the field of cardiac electrophysiology from body surface. Authors are invited to discuss on the motivation of their evaluation and lack of such comparison in the field, as well as on the feasibility of providing the requested methodological details from the reviewers.</p>
+
+      <p>Recommendation is towards an invitation for a Rebuttal</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the ranking of this paper in your stack? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>8</p>
+    </blockquote>
+  </li>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The authors have provided clarification in methodology, their ablation study. I do agree that there are multiple communities tackling electrophysiology from torso measurements. Addressing community-level obstacles of using cardiac modeling is obviously out of scope of the paper, but acknowledging existing work on cardiac modeling appears reasonable, since this submission addresses a directly related application, electrophysiology from torso measurements. The authors suggest a few relevant references to add. The methodology remains relevant to the field as it provides on original graph-based approach with a physics-based constraint and ODEs to reduce labeling effort. Clarifications will be made by working around figure spacings, which appears, in my opinion, feasible.</p>
+
+      <p>For these reasons, Recommendation is toward Acceptance.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>12</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+
+<h2 id="meta-review-2">Meta-Review #2</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The article presents a neural network based reconstruction method for temporal electrophysiology maps on the heart surface based on body potentials. MR and some reviewers raise concerns regarding the clarity of the writing. While I agree on some part, I also note that there are multiple components of the model and it is difficult to give a clear description for people not in the field in the limited space. I also think the explanations can improve and I encourage authors to do so as they promise in the rebuttal.</p>
+
+      <p>That said, the main drawback of the article is what MR raises, there are no comparisons with more advanced techniques for mapping body potentials back to cardiac surface. This field has been very active over the last decade with multiple solutions. Authors response here is not satisfactory.</p>
+
+      <p>Despite the drawback in the evaluation, I think the article has an interesting model and therefore can be considered as a valuable contribution.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>3</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="meta-review-3">Meta-Review #3</h2>
+<ul>
+  <li><strong>Please provide your assessment of the paper taking all information into account, including rebuttal. Highlight the key strengths and weaknesses of the paper, clarify how you reconciled contrasting review comments and scores,  indicate if concerns were successfully addressed in the rebuttal, and provide a clear justification of your decision. If you disagree with some of the (meta)reviewer statements, you can indicate so in your meta-review. Please make sure that the authors, program chairs, and the public can understand the reason for your decision.</strong>
+    <blockquote>
+      <p>The rebuttal addresses the criticisms of MT and reviewers on the positioning with respect to the cardiac modeling community and literature. On the methodological side, the choice for the experimental setup is clarified, in particular for the ablation study for NODE and GRU components. The paper appears quite dense in combining several methodological components, and the rebuttal is positive in clarifying some important aspect raised during the reviewing process. While there are several methodological and experimental details which definitely deserve further clarification, there is no critical aspect which seems to invalidate the work. Overall, the proposed idea is innovative and seems convincing in combining data-driven and physics-based methods for spatio-temporal moiling of ECG signals.</p>
+    </blockquote>
+  </li>
+  <li><strong>After you have reviewed the rebuttal, please provide your final rating based on all reviews and the authors’ rebuttal.</strong>
+    <blockquote>
+      <p>Accept</p>
+    </blockquote>
+  </li>
+  <li><strong>What is the rank of this paper among all your rebuttal papers? Use a number between 1 (best paper in your stack) and n (worst paper in your stack of n papers).</strong>
+    <blockquote>
+      <p>4</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h2><br /><br /></h2>
+<h1 id="authorFeedback-id">Author Feedback</h1>
+<blockquote>
+  <p>We appreciate the strong support from R2 &amp; R3 and the constructive suggestions from all. We provide clarifications to major confusion below.</p>
+
+  <p>Major comments:
+Comparison to cardiac modeling (Metareviewer/MR): While related, there is a clear distinction between the cardiac modeling community (as mentioned by the MR), and the electrocardiographic-imaging (ECGI, this work): ECGI works typically do not involve cardiac modeling and – to the best of our knowledge – no published ECGI works have included comparisons with cardiac modeling.</p>
+
+  <p>Indeed, body surface data have recently been seen [1-2] to personalize cardiac models. We agree with the MR that, as the distinction between the two communities becomes blurry, both should move towards understanding each other’s works. However, there are community-level obstacles including the availability of open-source tools for non-modeling (e.g. ECGI) groups to reproduce sophisticated cardiac simulations. Removing these obstacles requires collective efforts from the field and is beyond a reasonable scope of this individual paper. We will add this discussion in our revision.</p>
+
+  <p>Clarity in methodology (R1/MR): We thank R2 for commenting that “the paper is well written and the method is nicely explained”. As suggested by R1 and MR, we will expand descriptions of methodological details in Sections 2.1-2.3, and make space by trimming down high-level motivations and resizing large figures.</p>
+
+  <p>Missing ablation study of GRU/ODE (R1/R3): As explained in section 2.3 above eq. (8), the GRU and ODE work together to complete Bayesian filtering in the state-space model (SSM), where the ODE predicts the dynamics forward (to z_t-) and the GRU corrects the prediction using available data (to z_t+). Removing either will result in a model structure completely different from that proposed: 1) Removing the GRU results in a latent ODE model [3] where only the initial state z0 is inferred from data and the dynamics is purely described by the ODE. We have previously experimented with this model with unsatisfactory results. Hence they were not reported. 2) Removing the ODE regresses the model back to a traditional sequence-to-sequence model where RNNs are used in both the encoder and decoder, and are entangled with spatial modeling. This would be the ST-GCNN and Euclidean baselines already considered in our experiments.</p>
+
+  <p>Euclidean Distance (R1/R3)
+The use of Euclidean distance to measure reconstruction is common practice in ECGI works (see [9] in our paper). It is done by identifying the region of the earliest activation in the reconstructions and using the centroid as the site of the earliest activation.</p>
+
+  <p>Reproducibility (R1-3)
+Clinical data used are openly available at https://edgar.sci.utah.edu/ (citation will be added). We will also make our codes open.</p>
+
+  <p>Other major misunderstandings
+R1 - Missing Laplacian smoothing in ST-GCNN: The physics-informed ST-GCNN does have Laplacian smoothing, which as pointed out by R1 works as an ablation study for the benefits of ODE. Data-driven baselines do not need Laplacian smoothing (as the ground truth labels are smooth).</p>
+
+  <p>R3 - Missing physics-informed ST-GCNN on clinical data. The physics-informed ST-GCNN was included in Section 3.2.</p>
+
+  <p>Additional comments of R1
+The bipartite graph is created from the coarse graph representation of the heart and torso, as described in Section 2.2. An edge exists between every vertex on the torso and that on the heart. This follows the physics motivation that the geometrical relationship between any location on the heart and torso determines the forward and inverse mapping.
+The forward model H is multiplied to the output of the neural network X and then goes into the loss function.
+P in Eq. 5 is the Cartesian product of the B-spline bases.</p>
+
+  <p>Citations
+[1] https://doi.org/10.1109/TBME.2016.2629849
+[2] https://doi.org/10.1109/TBME.2018.2839713
+[3] https://arxiv.org/abs/1907.03907</p>
+</blockquote>
+
+<p><br /><br />
+<a href=""><span style="color:#ff9900"><b>back to top</b></span></a></p>
+
+<hr />
+
+
+  </div>
+
+  <div class="post-info">
+    <!--
+    <div class="post-date">
+      Poster presentation date:  
+      0634-12-31
+      -->
+      <!--
+      
+        ,
+        updated at 
+        0635-01-01
+      
+      .
+      
+    </div>
+    -->
+    <!--
+    
+    <div class="post-author">
+      Author: Kitty K. Wong
+    </div>
+    
+    -->
+    <div class="post-categories">
+      <span><b>Topic(s): </b></span>
+      
+      <a 
+        href="kittywong/categories#Image Reconstruction"
+        class="post-category">
+        Image Reconstruction
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Machine Learning - Weakly supervised learning"
+        class="post-category">
+        Machine Learning - Weakly supervised learning
+      </a> |
+      
+      <a 
+        href="kittywong/categories#Modalities - EEG/ECG"
+        class="post-category">
+        Modalities - EEG/ECG
+      </a> |
+      
+    </div>
+    <div class="post-tags">
+      <!--<span>Author List</span>-->
+      <span><b> Author(s): </b></span>
+      
+      <a href="kittywong/tags#Jiang, Xiajun"
+        class="post-category">
+        Jiang, Xiajun
+      </a> |  
+      
+      <a href="kittywong/tags#Missel, Ryan"
+        class="post-category">
+        Missel, Ryan
+      </a> |  
+      
+      <a href="kittywong/tags#Toloubidokhti, Maryam"
+        class="post-category">
+        Toloubidokhti, Maryam
+      </a> |  
+      
+      <a href="kittywong/tags#Li, Zhiyuan"
+        class="post-category">
+        Li, Zhiyuan
+      </a> |  
+      
+      <a href="kittywong/tags#Gharbia, Omar"
+        class="post-category">
+        Gharbia, Omar
+      </a> |  
+      
+      <a href="kittywong/tags#L. Sapp, John"
+        class="post-category">
+        L. Sapp, John
+      </a> |  
+      
+      <a href="kittywong/tags#Wang, Linwei"
+        class="post-category">
+        Wang, Linwei
+      </a> |  
+      
+    </div>
+    <div class="post-other">
+      
+      <div>
+        <span><b>
+          Next paper: 
+        </b>
+        </span>
+        <a href="/0635/12/31/Paper1596">
+          High-Resolution Hierarchical Adversarial Learning for OCT Speckle Noise Reduction
+        </a>
+      </div>
+      
+      
+      <div>
+        <span><b>
+          Previous paper: 
+        </b>
+        </span>
+        <a href="/0633/12/31/Paper1539">
+          Deep J-Sense: Accelerated MRI Reconstruction via Unrolled Alternating Optimization
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+</article>
+
+      </main>
+      <footer class="container-footer">
+        <div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. Kitty K. Wong, The MICCAI Society
+  </span>
+</div>
+<!--
+<div class="footer-copyright">
+  <span class="footer-copyright-text float-left">
+    Copyright &copy; 2021. example.com.
+  </span>
+  <span class="footer-copyright-text float-right">
+    Powered by <a href="https://jekyllrb.com/">Jekyll</a>, themed by <a href="https://github.com/ghosind/Jekyll-Paper-Github">Jekyll-Paper-Github</a>.
+  </span>
+</div>
+-->
+
+      </footer>
+    </div>
+  </body>
+</html>
